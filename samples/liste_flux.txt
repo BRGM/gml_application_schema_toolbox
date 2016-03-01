@@ -1,0 +1,93 @@
+# Portrayal classes GeoSciML
+
+Ajouté au périmètre comme vu en réunion
+
+-          En V4 : http://schemas.geosciml.org/geosciml/4.0/geosciml-portrayal.xsd
+
+-          Pour l’instant nous n’avons pas d’exemple de flux en V4. Je vais voir pour en récupérer/générer en 2016.
+
+Exemples en V2.
+
+-          Xsd V2 (/!\ gml 3.1.1) : http://schemas.geosciml.org/geosciml-portrayal/2.0/geosciml-portrayal.xsd
+
+-          Flux V2 : http://auscope.dpi.nsw.gov.au/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=1.1.0&maxFeatures=5&typeName=gsmlp:BoreholeView
+
+==> points plats
+
+ 
+
+# INSPIRE thème Environmental Monitoring Facilities (EF)
+
+-          Xsd : http://inspire.ec.europa.eu/schemas/ef/4.0/EnvironmentalMonitoringFacilities.xsd
+
+-          Instance : https://wfspoc.brgm-rec.fr/geoserver/ows?service=wfs&version=2.0.0&request=GetCapabilities
+
+Une page html pour vous permettre d’aller plus vite dans la découverte : https://wfspoc.brgm-rec.fr/geoserver/www/testing_links.html
+
+-          Pour info, exemple hors BRGM (données qualité air) : http://luft.umweltbundesamt.at/inspire/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=aqd:AQD_SamplingPoint&srsName=EPSG:4258&count=1
+
+Il s’agit de l’extension du thème Inspire EF pour le rapportage qualité air (tout ce qui est du namespace aqd peut être supprimé)
+
+ 
+
+#   INSPIRE thème – Geology– package ‘Hydrogeology’ (GE)
+
+-          http://inspire.ec.europa.eu/schemas/ge_hg/4.0/HydrogeologyCore.xsd
+
+-          Instance : le flux de test devrait être mis en place début 2016 (travail de mapping vers nos bases en cours).
+
+ 
+
+# GroundWaterML2
+
+-          Xsd : http://external.opengeospatial.org/twiki_public/HydrologyDWG/GWML2-XML-Schema
+
+Prendre la version 2.1 : « Main (units / aquifers, fluid bodies, voids) » et « Well (water wells, monitoring sites, springs) »
+
+-          Instances :
+
+Flux : https://wfspoc.brgm-rec.fr/constellation/WS/wfs/BRGM:GWML2?service=WFS&version=2.0.0&request=GetCapabilities
+
+                Je vous ai mis en pj un exemple de requêtes post sur le service
+
+Exemple fichier: https://xp-dev.com/svn/gwml2/Documents/instance/  (GW_Well_BRGM-uc1.xml est un exemple intéressant)
+
+ 
+
+# Eléments complémentaires :
+
+En l’absence de certains flux, et comme vu en réunion, d’autres exemples de cas complexes.
+
+## GeoSciML V4
+
+-          xsd : http://schemas.geosciml.org/geosciml/4.0/
+
+-          instances : http://schemas.geosciml.org/geosciml/4.0/examples/
+
+En première approche :
+
+-          Les flux ‘Inspire’ sont basés surgeoSciMLBasic.xsd
+
+-          Ceux concernant GeologicUnit, MappedFeature et Borehole sont un bon début
+
+ 
+
+## Inspire thème Ressources Minérales / Minerals4EU
+
+Minerals4EU (FP7) étend le thème Inspire
+
+-          Xsd : http://minerals4eu.brgm-rec.fr/deegree/resources/appschemas/Minerals4EUExtension.xsd
+
+-          Instance :  http://minerals4eu.brgm-rec.fr/deegree/services/m4eu?request=GetFeature&version=2.0.0&service=WFS&typeName=mr-m4eu:MineralOccurrence_Extension&srsName=EPSG:4258&count=1
+
+ 
+
+@Olivier : ces contenus pourront être ajoutés au CR.
+
+ 
+
+Si l’on ne se recroise pas d’ici là, je vous souhaite de bonne fêtes de fin d’année.
+
+ 
+
+Sylvain
