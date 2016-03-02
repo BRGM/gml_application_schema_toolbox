@@ -2,7 +2,7 @@
 
 PLUGINNAME = complex_features
 
-PY_FILES = main.py __init__.py
+PY_FILES = main.py __init__.py complex_features.py
 
 EXTRAS = icon.png metadata.txt
 

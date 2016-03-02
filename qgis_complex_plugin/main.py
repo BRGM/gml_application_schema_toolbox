@@ -7,68 +7,27 @@ from qgis.core import *
 from qgis.gui import *
 
 import os
-import re
 os.environ["XML_CATALOG_FILES"]="file:///home/hme/src/brgm_gml/scripts/catalog.xml"
+
+from complex_features import ComplexFeatureSource
 
 from lxml import etree
 
-from osgeo import ogr
-
-
-def noPrefix(tag):
-    if tag.startswith('{'):
-        return tag[tag.rfind('}')+1:]
-    return tag
-
-def qgsGeometryFromGml(tree):
-    # extract the srid
-    srid = None
-    for k, v in tree.attrib.iteritems():
-        if noPrefix(k) == 'srsName':
-            # EPSG:4326
-		  	# urn:EPSG:geographicCRS:4326
-		  	# urn:ogc:def:crs:EPSG:4326
-		 	# urn:ogc:def:crs:EPSG::4326
-		  	# urn:ogc:def:crs:EPSG:6.6:4326
-		   	# urn:x-ogc:def:crs:EPSG:6.6:4326
-			# http://www.opengis.net/gml/srs/epsg.xml#4326
-			# http://www.epsg.org/6.11.2/4326
-            # get the last number
-            m = re.search('[0-9]+$', v)
-            srid = m.group(0)
-            break
-            
-    # call ogr for GML parsing
-    s = etree.tostring(tree)
-    g = ogr.CreateGeometryFromGML(s)
-    qgs = QgsGeometry()
-    qgs.fromWkb(g.ExportToWkb())
-    return (qgs, srid)
-
-def extractGmlGeometry(tree):
-    if tree.prefix == "gml" and noPrefix(tree.tag) == "Point":
-        return qgsGeometryFromGml(tree)
-    for child in tree:
-        g = extractGmlGeometry(child)
-        if g is not None:
-            return g
-    return None
-
-class ComplexFeatureSource:
-    def __init__(self, xml_file):
-        doc = etree.parse(open(xml_file))
-        self.root = doc.getroot()
-        if self.root.nsmap[self.root.prefix] != "http://www.opengis.net/wfs/2.0":
-            raise RuntimeError("only wfs 2 streams are supported for now")
-
-    def getFeatures(self):
-        for child in self.root:
-            fid = None
-            for k, v in child[0].attrib.iteritems():
-                if noPrefix(k) == "id":
-                    fid = v
-            geom = extractGmlGeometry(child[0])
-            yield fid, geom, child[0]
+def createMemoryLayer(type, srid, attributes):
+    """
+    Creates an empty memory layer
+    :param type: 'Point', 'LineString', 'Polygon', etc.
+    :param srid: CRS ID of the layer
+    :param attributes: list of (attribute_name, attribute_type)
+    """
+    layer = QgsVectorLayer("{}?crs=epsg:{}&field=id:string".format(type, srid), "points", "memory")
+    pr = layer.dataProvider()
+    pr.addAttributes([QgsField("_xml_", QVariant.String)])
+    for aname, atype in attributes:
+        pr.addAttributes([QgsField(aname, atype)])
+    layer.updateFields()
+    QgsMapLayerRegistry.instance().addMapLayer(layer)
+    return layer
 
 class MyResolver(etree.Resolver):
     def resolve(self, url, id, context):
@@ -94,43 +53,31 @@ class MainPlugin:
         self.iface.removePluginMenu(u"Complex Features",self.action)
 
 
-    def load_xml(self, xml_file, schema_file):
-        if False:
-            parser = etree.XMLParser(ns_clean=True)
-            parser.resolvers.add( MyResolver() )
-            schema_tree = etree.parse(open(schema_file), parser)
-            print schema_tree
-
-            print "load schema"
-            xml_schema = etree.XMLSchema(schema_tree)
-
-            print "parse XML"
-            doc = etree.parse(open(xml_file))
-
-            print "validate"
-            xml_schema.assertValid(doc)
-
-        src = ComplexFeatureSource(xml_file)
+    def load_xml(self, xml_file, schema_file, attributes = {}):
+        """
+        :param xml_file: the XML filename
+        :param schema_file: the schema filename
+        :param attributes: { 'attr1' : ( '//xpath/expression', QVariant.Int ) }
+        """
+        src = ComplexFeatureSource(xml_file, attributes)
 
         self.pointLayer = None
-        for fid, g, xml in src.getFeatures():
-            geom = None
-            qgsgeom, srid = g
+        for fid, g, xml, attrs in src.getFeatures():
+            wkb, srid = g
+            qgsgeom = QgsGeometry()
+            qgsgeom.fromWkb(wkb)
             if qgsgeom and qgsgeom.type() == QGis.Point:
-                self.addToPointLayer(fid, qgsgeom, srid, xml)
+                if self.pointLayer is None:
+                    self.pointLayer = createMemoryLayer('Point', srid, [ (k, v[1]) for k, v in attributes.iteritems() ])
 
-    def addToPointLayer(self, fid, geom, srid, xml):
-        if self.pointLayer is None:
-            self.pointLayer = QgsVectorLayer("Point?crs=epsg:{}&field=id:string".format(srid), "points", "memory")
-            pr = self.pointLayer.dataProvider()
-            pr.addAttributes([QgsField("_tree_", QVariant.String)])
-            self.pointLayer.updateFields()
-            QgsMapLayerRegistry.instance().addMapLayer(self.pointLayer)
-        pr = self.pointLayer.dataProvider()
-        f = QgsFeature()
-        f.setGeometry(geom)
-        f.setAttributes([fid, etree.tostring(xml)])
-        pr.addFeatures([f])
+                pr = self.pointLayer.dataProvider()
+                f = QgsFeature(pr.fields())
+                f.setGeometry(qgsgeom)
+                f.setAttribute("id", fid)
+                f.setAttribute("_xml_", etree.tostring(xml))
+                for k, v in attrs.iteritems():
+                    r = f.setAttribute(k, v)
+                pr.addFeatures([f])
 
     def run(self):
         #xml_file = QFileDialog.getOpenFileName (None, "Select XML File", "/home/hme/src/brgm_xml", "*.xml;;*.gml")
@@ -138,7 +85,9 @@ class MainPlugin:
         #    return
 
         #self.load_xml(xml_file, "")
-        self.load_xml("/home/hme/src/brgm_gml/samples/env_monitoring.xml", "")
+        #self.load_xml("/home/hme/src/brgm_gml/samples/env_monitoring.xml", "", attributes = { 'inspireId' : ('.//ef:inspireId//base:localId', QVariant.String) })
+        self.load_xml("/home/hme/src/brgm_gml/samples/airquality.xml", "", { 'mainEmissionSources' : ('.//aqd:mainEmissionSources/@xlink:href', QVariant.String),
+                                                                             'stationClassification' : ('.//aqd:stationClassification/@xlink:href', QVariant.String) })
 
         #schema_file = QFileDialog.getOpenFileName (None, "Select Schema File", "/home/hme/src/brgm_xml", "*.xsd")
         #if not schema_file:
