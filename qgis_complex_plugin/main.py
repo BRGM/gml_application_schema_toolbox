@@ -42,7 +42,6 @@ def createMemoryLayer(type, srid, attributes, title):
     for aname, atype in attributes:
         pr.addAttributes([QgsField(aname, atype)])
     layer.updateFields()
-    QgsMapLayerRegistry.instance().addMapLayer(layer)
     return layer
 
 def addPropertiesToLayer(layer, xml_uri, is_remote, attributes):
@@ -50,6 +49,12 @@ def addPropertiesToLayer(layer, xml_uri, is_remote, attributes):
     layer.setCustomProperty("xml_uri", xml_uri)
     layer.setCustomProperty("is_remote", is_remote)
     layer.setCustomProperty("attributes", attributes)
+
+def propertiesFromLayer(layer):
+    return (layer.customProperty("complex_features", False),
+            layer.customProperty("xml_uri", ""),
+            layer.customProperty("is_remote", False),
+            layer.customProperty("attributes", {}))
 
 class MyResolver(etree.Resolver):
     def resolve(self, url, id, context):
@@ -63,7 +68,7 @@ class MainPlugin:
 
     def initGui(self):
         self.action = QAction(QIcon(os.path.dirname(__file__) + "/mActionAddGMLLayer.svg"), \
-                              u"Add Complex Features Layer", self.iface.mainWindow())
+                              u"Add/Edit Complex Features Layer", self.iface.mainWindow())
         self.action.triggered.connect(self.onAddLayer)
         self.identifyAction = QAction(QIcon(os.path.dirname(__file__) + "/mActionIdentifyGML.svg"), \
                               u"Identify GML feature", self.iface.mainWindow())
@@ -87,6 +92,7 @@ class MainPlugin:
         :param xml_uri: the XML URI
         :param is_remote: True if it has to be fetched by http
         :param attributes: { 'attr1' : ( '//xpath/expression', QVariant.Int ) }
+        :returns: the created layer
         """
         if is_remote:
             xml_file, _ = urllib.urlretrieve(xml_uri)
@@ -94,9 +100,7 @@ class MainPlugin:
             xml_file = xml_uri
         src = ComplexFeatureSource(xml_file, attributes)
 
-        self.pointLayer = None
-        self.lineLayer = None
-        self.polygonLayer = None
+        self.layer = None
         for fid, g, xml, attrs in src.getFeatures():
             if g is None:
                 # ignore geometry-less features
@@ -105,24 +109,20 @@ class MainPlugin:
             wkb, srid = g
             qgsgeom = QgsGeometry()
             qgsgeom.fromWkb(wkb)
-            layer = None
             if qgsgeom and qgsgeom.type() == QGis.Point:
-                if self.pointLayer is None:
-                    self.pointLayer = createMemoryLayer('Point', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (points)")
-                layer = self.pointLayer
+                if self.layer is None:
+                    self.layer = createMemoryLayer('Point', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (points)")
             elif qgsgeom and qgsgeom.type() == QGis.Line:
-                if self.lineLayer is None:
-                    self.lineLayer = createMemoryLayer('LineString', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (lines)")
-                layer = self.lineLayer
+                if self.layer is None:
+                    self.layer = createMemoryLayer('LineString', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (lines)")
             elif qgsgeom and qgsgeom.type() == QGis.Polygon:
-                if self.polygonLayer is None:
-                    self.polygonLayer = createMemoryLayer('Polygon', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (polygons)")
-                layer = self.polygonLayer
+                if self.layer is None:
+                    self.layer = createMemoryLayer('Polygon', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (polygons)")
 
-            if layer:
-                addPropertiesToLayer(layer, xml_uri, is_remote, attributes)
+            if self.layer:
+                addPropertiesToLayer(self.layer, xml_uri, is_remote, attributes)
 
-                pr = layer.dataProvider()
+                pr = self.layer.dataProvider()
                 f = QgsFeature(pr.fields())
                 f.setGeometry(qgsgeom)
                 f.setAttribute("id", fid)
@@ -131,25 +131,43 @@ class MainPlugin:
                     r = f.setAttribute(k, v)
                 pr.addFeatures([f])
 
+        return self.layer
+
     def onAddLayer(self):
-        creation_dlg = CreationDialog()
+        layer_edited = False
+        sel = self.iface.legendInterface().selectedLayers()
+        if len(sel) > 0:
+            sel_layer = sel[0]
+        if sel:
+            layer_edited, xml_uri, is_remote, attributes = propertiesFromLayer(sel_layer)
+
+        if layer_edited:
+            creation_dlg = CreationDialog(xml_uri, is_remote, attributes)
+        else:
+            creation_dlg = CreationDialog()
         r = creation_dlg.exec_()
         if r:
             is_remote, url = creation_dlg.source()
             mapping = creation_dlg.attribute_mapping()
-            self.load_xml(url, is_remote, mapping)
-        #xml_file = QFileDialog.getOpenFileName (None, "Select XML File", "/home/hme/src/brgm_xml", "*.xml;;*.gml")
-        #if not xml_file:
-        #    return
+            new_layer = self.load_xml(url, is_remote, mapping)
 
-        #self.load_xml(xml_file, "")
-        #self.load_xml("/home/hme/src/brgm_gml/samples/env_monitoring.xml", "", { 'inspireId' : ('.//ef:inspireId//base:localId', QVariant.String) })
-        #self.load_xml("/home/hme/src/brgm_gml/samples/airquality.xml", "", { 'mainEmissionSources' : ('.//aqd:mainEmissionSources/@xlink:href', QVariant.String),
-        #                                                                     'stationClassification' : ('.//aqd:stationClassification/@xlink:href', QVariant.String) })
-
-        #schema_file = QFileDialog.getOpenFileName (None, "Select Schema File", "/home/hme/src/brgm_xml", "*.xsd")
-        #if not schema_file:
-        #    return
+            if creation_dlg.replace_current_layer():
+                # Add to the registry, but not to the legend
+                QgsMapLayerRegistry.instance().addMapLayer(new_layer, False)
+                # insert the new layer above the old one
+                root = QgsProject.instance().layerTreeRoot()
+                in_tree = root.findLayer(sel_layer.id())
+                idx = 0
+                for vl in in_tree.parent().children():
+                    if vl.layer() == sel_layer:
+                        break
+                    idx += 1
+                parent = in_tree.parent() if in_tree.parent() else root
+                parent.insertLayer(idx, new_layer)
+                QgsMapLayerRegistry.instance().removeMapLayer(sel_layer)
+            else:
+                # a new layer
+                QgsMapLayerRegistry.instance().addMapLayer(new_layer)
 
     def onIdentify(self):
         self.mapTool = IdentifyGeometry(self.iface.mapCanvas())

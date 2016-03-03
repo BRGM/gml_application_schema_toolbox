@@ -13,12 +13,17 @@ import urllib
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'identify_dialog.ui'))
 
-def fill_tree_with_element(widget, treeItem, elt):
+def fill_tree_with_element(widget, treeItem, elt, inv_nsmap = None):
     # attributes
     for k, v in elt.attrib.iteritems():
         child = QTreeWidgetItem()
-        n = noPrefix(k)
         treeItem.addChild(child)
+        if inv_nsmap and '}' in k:
+            i = k.index('}')
+            ns = k[1:i]
+            n = inv_nsmap[ns] + ":" + k[i+1:]
+        else:
+            n = noPrefix(k)
         child.setText(0, "@" + n)
         if n == 'href' and v.startswith('http'):
             html = QLabel(widget)
@@ -46,7 +51,7 @@ def fill_tree_with_element(widget, treeItem, elt):
         f = child.font(0)
         f.setBold(True)
         child.setFont(0,f)
-        fill_tree_with_element(widget, child, xmlChild)
+        fill_tree_with_element(widget, child, xmlChild, inv_nsmap)
         treeItem.addChild(child)
 
 def recurse_expand(treeItem):
@@ -63,7 +68,11 @@ def fill_tree_with_xml(treeWidget, xml):
     tree = etree.XML(xml)
     treeWidget.clear()
     treeWidget.setColumnCount(2)
-    fill_tree_with_element(treeWidget, treeWidget.invisibleRootItem(), tree)
+    # create an inverse map to map namespace uri to namespace prefix
+    inv_nsmap = {}
+    for k, v in tree.nsmap.iteritems():
+        inv_nsmap[v] = k
+    fill_tree_with_element(treeWidget, treeWidget.invisibleRootItem(), tree, inv_nsmap)
     recurse_expand(treeWidget.invisibleRootItem())
     treeWidget.resizeColumnToContents(0)
 
@@ -83,12 +92,13 @@ class IdentifyDialog(QtGui.QDialog, FORM_CLASS):
 
         # install signals
         self.treeWidget.itemDoubleClicked.connect(self.onItemDoubleClicked)
+        self.treeWidget.customContextMenuRequested.connect(self.onContextMenu)
 
         for i in range(layer.fields().count()):
             field = layer.fields().at(i)
             if field.name() == "_xml_":
                 continue
-            lineEdit = QLineEdit(feature.attribute(field.name()))
+            lineEdit = QLineEdit(feature.attribute(field.name()) or "")
             lineEdit.setReadOnly(True)
             self.formLayout.addRow(field.name(), lineEdit)
 
@@ -109,4 +119,29 @@ class IdentifyDialog(QtGui.QDialog, FORM_CLASS):
                 fill_tree_with_element(self.treeWidget, item.parent(), xml.getroot())
             finally:
                 QApplication.restoreOverrideCursor()
-            
+    def onContextMenu(self, pos):
+        row = self.treeWidget.selectionModel().selectedRows()[0]
+        menu = QMenu(self.treeWidget)
+        copyAction = QAction(u"Copy value", self.treeWidget)
+        #copyAction.triggered.connect(self.onCopyItemValue)
+        copyXPathAction = QAction(u"Copy XPath", self.treeWidget)
+        copyXPathAction.triggered.connect(self.onCopyXPath)
+        menu.addAction(copyAction)
+        menu.addAction(copyXPathAction)
+        menu.popup(self.treeWidget.mapToGlobal(pos))
+
+    def onCopyXPath(self):
+        def get_xpath(item):
+            s = ''
+            if item.parent():
+                s = get_xpath(item.parent())
+            return s + "/" + item.text(0)
+
+        # make sure to select the first column
+        idx = self.treeWidget.indexFromItem(self.treeWidget.currentItem())
+        idx = idx.sibling(idx.row(), 0)
+        item = self.treeWidget.itemFromIndex(idx)
+        
+        xpath = get_xpath(item)
+        QApplication.clipboard().setText(xpath)
+        

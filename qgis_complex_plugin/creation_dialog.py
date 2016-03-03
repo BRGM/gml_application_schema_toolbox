@@ -8,7 +8,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'creation_dialog.ui'))
 
 class CreationDialog(QtGui.QDialog, FORM_CLASS):
-    def __init__(self, parent=None):
+    def __init__(self, xml_uri=None, is_remote = False, attributes = {}, parent=None):
         """Constructor."""
         super(CreationDialog, self).__init__(parent)
         # Set up the user interface from Designer.
@@ -17,6 +17,23 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+
+        # populate widgets if passed at the construction
+        self.replaceLayerChck.setEnabled(xml_uri is not None)
+        if xml_uri:
+            if is_remote:
+                self.urlText.setText(xml_uri)
+            else:
+                self.filenameText.setText(xml_uri)
+            self.replaceLayerChck.setCheckState(Qt.Checked)
+        if attributes:
+            for aname, v in attributes.iteritems():
+                xpath, type = v
+                self.onAddMapping() # add a row
+                last = self.attributeTable.rowCount() - 1
+                self.attributeTable.item(last, 0).setText(aname)
+                self.attributeTable.cellWidget(last, 1).setCurrentIndex([QVariant.String, QVariant.Int, QVariant.Double].index(type))
+                self.attributeTable.item(last, 2).setText(xpath)
 
         self.browseButton.clicked.connect(self.onBrowse)
         self.addMappingBtn.clicked.connect(self.onAddMapping)
@@ -34,13 +51,15 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
         self.removeMappingBtn.setEnabled(selected != -1)
 
     def onAddMapping(self):
-        self.attributeTable.insertRow(0)
-        lastRow = self.attributeTable.rowCount() - 1
+        lastRow = self.attributeTable.rowCount()
+        self.attributeTable.insertRow(lastRow)
         combo = QComboBox(self.attributeTable)
+        combo.addItem("String", QVariant.String)
         combo.addItem("Integer", QVariant.Int)
         combo.addItem("Real", QVariant.Double)
-        combo.addItem("String", QVariant.String)
         self.attributeTable.setCellWidget(lastRow, 1, combo)
+        self.attributeTable.setItem(lastRow, 0, QTableWidgetItem())
+        self.attributeTable.setItem(lastRow, 2, QTableWidgetItem())
 
     def onRemoveMapping(self):
         idx = self.attributeTable.currentIndex()
@@ -65,3 +84,6 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
             return (False, self.filenameText.text())
         #else
         return (True, self.urlText.text())
+
+    def replace_current_layer(self):
+        return self.replaceLayerChck.isChecked()

@@ -87,8 +87,10 @@ class ComplexFeatureSource:
             attrvalues = {}
             for attr, xpath_t in self.xpath_mapping.iteritems():
                 xpath, type = xpath_t
-                r = child.xpath(xpath, namespaces = child.nsmap)
+                # resolve xpath
+                r = child.xpath("./" + xpath, namespaces = child.nsmap)
                 v = None
+                value = None
                 if len(r) > 0:
                     if isinstance(r[0], unicode):
                         v = r[0]
@@ -98,17 +100,19 @@ class ComplexFeatureSource:
                         v = r[0].text
                     else:
                         v = None
-                try:
-                    if type == QVariant.Int:
-                        value = int(v)
-                    elif type == QVariant.String:
-                        value = v
-                    elif type == QVariant.Double:
-                        value = float(v)
-                    else:
                         value = None
-                except ValueError:
-                    value = None
+                if v is not None:
+                    try:
+                        if type == QVariant.Int:
+                            value = int(v)
+                        elif type == QVariant.String:
+                            value = v
+                        elif type == QVariant.Double:
+                            value = float(v)
+                        else:
+                            value = None
+                    except ValueError:
+                        value = None
                 attrvalues[attr] = value
 
             yield fid, wkb, child[0], attrvalues
