@@ -3,6 +3,7 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4.QtXml import *
 from qgis.core import *
 from qgis.gui import *
 
@@ -55,6 +56,32 @@ def propertiesFromLayer(layer):
             layer.customProperty("xml_uri", ""),
             layer.customProperty("is_remote", False),
             layer.customProperty("attributes", {}))
+
+def replace_layer(old_layer, new_layer):
+    """Convenience function to replace a layer in the legend"""
+    # Add to the registry, but not to the legend
+    QgsMapLayerRegistry.instance().addMapLayer(new_layer, False)
+    # Copy symbology
+    dom = QDomImplementation()
+    doc = QDomDocument(dom.createDocumentType("qgis", "http://mrcc.com/qgis.dtd", "SYSTEM"))
+    root_node = doc.createElement("qgis")
+    root_node.setAttribute("version", "%s" % QGis.QGIS_VERSION)
+    doc.appendChild(root_node)
+    error = ""
+    old_layer.writeSymbology(root_node, doc, error)
+    new_layer.readSymbology(root_node, error)
+    # insert the new layer above the old one
+    root = QgsProject.instance().layerTreeRoot()
+    in_tree = root.findLayer(old_layer.id())
+    idx = 0
+    for vl in in_tree.parent().children():
+        if vl.layer() == old_layer:
+            break
+        idx += 1
+    parent = in_tree.parent() if in_tree.parent() else root
+    parent.insertLayer(idx, new_layer)
+    QgsMapLayerRegistry.instance().removeMapLayer(old_layer)
+
 
 class MyResolver(etree.Resolver):
     def resolve(self, url, id, context):
@@ -152,19 +179,7 @@ class MainPlugin:
             new_layer = self.load_xml(url, is_remote, mapping)
 
             if creation_dlg.replace_current_layer():
-                # Add to the registry, but not to the legend
-                QgsMapLayerRegistry.instance().addMapLayer(new_layer, False)
-                # insert the new layer above the old one
-                root = QgsProject.instance().layerTreeRoot()
-                in_tree = root.findLayer(sel_layer.id())
-                idx = 0
-                for vl in in_tree.parent().children():
-                    if vl.layer() == sel_layer:
-                        break
-                    idx += 1
-                parent = in_tree.parent() if in_tree.parent() else root
-                parent.insertLayer(idx, new_layer)
-                QgsMapLayerRegistry.instance().removeMapLayer(sel_layer)
+                replace_layer(sel_layer, new_layer)
             else:
                 # a new layer
                 QgsMapLayerRegistry.instance().addMapLayer(new_layer)
