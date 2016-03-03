@@ -103,7 +103,7 @@ class MainPlugin:
         self.layer = None
         for fid, g, xml, attrs in src.getFeatures():
             if g is None:
-                # ignore geometry-less features
+                raise RuntimeError("Feature {} has no geometry !".format(fid))
                 continue
             
             wkb, srid = g
