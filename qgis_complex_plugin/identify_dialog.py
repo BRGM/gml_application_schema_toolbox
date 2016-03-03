@@ -25,7 +25,7 @@ def fill_tree_with_element(widget, treeItem, elt, inv_nsmap = None):
         else:
             n = noPrefix(k)
         child.setText(0, "@" + n)
-        if n == 'href' and v.startswith('http'):
+        if n == 'xlink:href' and v.startswith('http'):
             html = QLabel(widget)
             html.setOpenExternalLinks(True)
             html.setTextFormat(Qt.RichText)
@@ -105,7 +105,7 @@ class IdentifyDialog(QtGui.QDialog, FORM_CLASS):
         fill_tree_with_xml(self.treeWidget, feature.attribute('_xml_'))
         
     def onItemDoubleClicked(self, item, column):
-        if item.text(0) == '@href' and item.data(1, Qt.UserRole).startswith('http'):
+        if item.text(0) == '@xlink:href' and item.data(1, Qt.UserRole).startswith('http'):
             QApplication.setOverrideCursor(Qt.WaitCursor)
             uri = item.data(1, Qt.UserRole)
             try:
