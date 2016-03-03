@@ -2,23 +2,11 @@
 
 PLUGINNAME = complex_features
 
-PY_FILES = main.py __init__.py complex_features.py
+PY_FILES = main.py __init__.py complex_features.py identify_dialog.py creation_dialog.py
 
-EXTRAS = icon.png metadata.txt
+EXTRAS = *.svg metadata.txt
 
-UI_FILES =
-
-RESOURCE_FILES =
-
-default: compile
-
-compile: $(UI_FILES) $(RESOURCE_FILES)
-
-%_rc.py : %.qrc
-	pyrcc4 -o $*_rc.py  $<
-
-%.py : %.ui
-	pyuic4 -o $@ $<
+UI_FILES = identify_dialog.ui creation_dialog.ui
 
 %.qm : %.ts
 	lrelease $<
@@ -26,13 +14,11 @@ compile: $(UI_FILES) $(RESOURCE_FILES)
 # The deploy  target only works on unix like operating system where
 # the Python plugin directory is located at:
 # $HOME/.qgis2/python/plugins
-deploy: compile transcompile
+deploy: transcompile
 	mkdir -p $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
 	cp -vf $(PY_FILES) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
-	#cp -vf $(UI_FILES) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
-	#cp -vf $(RESOURCE_FILES) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
+	cp -vf $(UI_FILES) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
 	cp -vf $(EXTRAS) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
-	#cp -vfr i18n $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
 
 # The dclean target removes compiled python files from plugin directory
 # also delets any .svn entry
