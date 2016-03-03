@@ -94,8 +94,8 @@ class IdentifyDialog(QtGui.QDialog, FORM_CLASS):
         self.treeWidget.itemDoubleClicked.connect(self.onItemDoubleClicked)
         self.treeWidget.customContextMenuRequested.connect(self.onContextMenu)
 
-        for i in range(layer.fields().count()):
-            field = layer.fields().at(i)
+        for i in range(layer.pendingFields().count()):
+            field = layer.pendingFields().at(i)
             if field.name() == "_xml_":
                 continue
             lineEdit = QLineEdit(unicode(feature.attribute(field.name()) or ""))
