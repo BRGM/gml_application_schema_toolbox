@@ -36,6 +36,8 @@ def fill_tree_with_element(widget, treeItem, elt):
         
     # children
     for xmlChild in elt:
+        if isinstance(xmlChild, etree._Comment):
+            continue
         child = QTreeWidgetItem()
         if xmlChild.prefix:
             child.setText(0, xmlChild.prefix + ':' + noPrefix(xmlChild.tag))

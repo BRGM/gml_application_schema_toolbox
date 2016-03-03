@@ -29,14 +29,14 @@ class IdentifyGeometry(QgsMapToolIdentify):
         if len(results) > 0:
             self.geomIdentified.emit(results[0].mLayer, results[0].mFeature)
 
-def createMemoryLayer(type, srid, attributes):
+def createMemoryLayer(type, srid, attributes, title):
     """
     Creates an empty memory layer
     :param type: 'Point', 'LineString', 'Polygon', etc.
     :param srid: CRS ID of the layer
     :param attributes: list of (attribute_name, attribute_type)
     """
-    layer = QgsVectorLayer("{}?crs=epsg:{}&field=id:string".format(type, srid), "points", "memory")
+    layer = QgsVectorLayer("{}?crs=epsg:{}&field=id:string".format(type, srid), title, "memory")
     pr = layer.dataProvider()
     pr.addAttributes([QgsField("_xml_", QVariant.String)])
     for aname, atype in attributes:
@@ -95,16 +95,34 @@ class MainPlugin:
         src = ComplexFeatureSource(xml_file, attributes)
 
         self.pointLayer = None
+        self.lineLayer = None
+        self.polygonLayer = None
         for fid, g, xml, attrs in src.getFeatures():
+            if g is None:
+                # ignore geometry-less features
+                continue
+            
             wkb, srid = g
             qgsgeom = QgsGeometry()
             qgsgeom.fromWkb(wkb)
+            layer = None
             if qgsgeom and qgsgeom.type() == QGis.Point:
                 if self.pointLayer is None:
-                    self.pointLayer = createMemoryLayer('Point', srid, [ (k, v[1]) for k, v in attributes.iteritems() ])
-                    addPropertiesToLayer(self.pointLayer, xml_uri, is_remote, attributes)
+                    self.pointLayer = createMemoryLayer('Point', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (points)")
+                layer = self.pointLayer
+            elif qgsgeom and qgsgeom.type() == QGis.Line:
+                if self.lineLayer is None:
+                    self.lineLayer = createMemoryLayer('LineString', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (lines)")
+                layer = self.lineLayer
+            elif qgsgeom and qgsgeom.type() == QGis.Polygon:
+                if self.polygonLayer is None:
+                    self.polygonLayer = createMemoryLayer('Polygon', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (polygons)")
+                layer = self.polygonLayer
 
-                pr = self.pointLayer.dataProvider()
+            if layer:
+                addPropertiesToLayer(layer, xml_uri, is_remote, attributes)
+
+                pr = layer.dataProvider()
                 f = QgsFeature(pr.fields())
                 f.setGeometry(qgsgeom)
                 f.setAttribute("id", fid)

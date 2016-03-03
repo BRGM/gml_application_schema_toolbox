@@ -35,8 +35,13 @@ def wkbFromGml(tree):
     return (g.ExportToWkb(), srid)
 
 def extractGmlGeometry(tree):
-    if tree.prefix == "gml" and noPrefix(tree.tag) == "Point":
-        return wkbFromGml(tree)
+    if tree.prefix == "gml":
+        if noPrefix(tree.tag) in ["Point", "LineString", "Polygon",
+                                  "MultiPoint", "MultiCurve", "MultiSurface",
+                                  "Curve", "OrientableCurve", "Surface", 
+                                  "CompositeCurve", "CompositeSurface", "MultiGeometry"]:
+            return wkbFromGml(tree)
+        
     for child in tree:
         g = extractGmlGeometry(child)
         if g is not None:
@@ -57,6 +62,11 @@ class ComplexFeatureSource:
         if self.root.nsmap[self.root.prefix] != "http://www.opengis.net/wfs/2.0":
             raise RuntimeError("only wfs 2 streams are supported for now")
         self.xpath_mapping = xpath_mapping
+
+        if len(self.root) > 0 and len(self.root[0]) > 0:
+            self.title = noPrefix(self.root[0][0].tag)
+        else:
+            self.title = "Complex Features"
 
     def getFeatures(self):
         """
