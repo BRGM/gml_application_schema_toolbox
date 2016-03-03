@@ -98,7 +98,7 @@ class IdentifyDialog(QtGui.QDialog, FORM_CLASS):
             field = layer.fields().at(i)
             if field.name() == "_xml_":
                 continue
-            lineEdit = QLineEdit(feature.attribute(field.name()) or "")
+            lineEdit = QLineEdit(unicode(feature.attribute(field.name()) or ""))
             lineEdit.setReadOnly(True)
             self.formLayout.addRow(field.name(), lineEdit)
 

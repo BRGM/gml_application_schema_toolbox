@@ -58,37 +58,44 @@ class ComplexFeatureSource:
         """
         
         doc = etree.parse(open(xml_file))
-        self.root = doc.getroot()
-        if self.root.nsmap[self.root.prefix] != "http://www.opengis.net/wfs/2.0":
-            raise RuntimeError("only wfs 2 streams are supported for now")
-        self.xpath_mapping = xpath_mapping
-
-        if len(self.root) > 0 and len(self.root[0]) > 0:
-            self.title = noPrefix(self.root[0][0].tag)
+        root = doc.getroot()
+        if noPrefix(root.tag) != 'FeatureCollection':
+            # this seems to be an isolated feature
+            self.features = [root]
+            self.title = noPrefix(root.tag)
         else:
-            self.title = "Complex Features"
+            if len(root) > 0 and noPrefix(root[0].tag) == 'member':
+                self.title = noPrefix(root[0][0].tag)
+                self.features = [x[0] for x in root]
+            elif len(root) > 0 and noPrefix(root[0].tag) == "featureMembers":
+                self.title = noPrefix(root[0][0].tag)
+                self.features = root[0]
+            else:
+                raise RuntimeError("Unrecognized XML file")
+
+        self.xpath_mapping = xpath_mapping
 
     def getFeatures(self):
         """
         The iterator that will yield a new feature.
         The yielded value is (feature_id, QgsGeometry or None, xml_tree: Element, { 'attr1' : value, 'attr2' : 'value' })
         """
-        for child in self.root:
+        for feature in self.features:
             # get the id
             fid = None
-            for k, v in child[0].attrib.iteritems():
+            for k, v in feature.attrib.iteritems():
                 if noPrefix(k) == "id":
                     fid = v
 
             # get the geometry
-            wkb = extractGmlGeometry(child[0])
+            wkb = extractGmlGeometry(feature)
 
             # get attribute values
             attrvalues = {}
             for attr, xpath_t in self.xpath_mapping.iteritems():
                 xpath, type = xpath_t
                 # resolve xpath
-                r = child.xpath("./" + xpath, namespaces = child.nsmap)
+                r = feature.xpath("./" + xpath, namespaces = feature.nsmap)
                 v = None
                 value = None
                 if len(r) > 0:
@@ -115,11 +122,24 @@ class ComplexFeatureSource:
                         value = None
                 attrvalues[attr] = value
 
-            yield fid, wkb, child[0], attrvalues
+            yield fid, wkb, feature, attrvalues
 
 
 if __name__ == '__main__':
-    src = ComplexFeatureSource( "/home/hme/src/brgm_gml/samples/airquality.xml", { 'mainEmissionSources' : ('.//aqd:mainEmissionSources/@xlink:href', QVariant.String),
-                                                                                   'stationClassification' : ('.//aqd:stationClassification/@xlink:href', QVariant.String) })
+    src = ComplexFeatureSource( "../samples/airquality.xml", { 'mainEmissionSources' : ('.//aqd:mainEmissionSources/@xlink:href', QVariant.String),
+                                                               'stationClassification' : ('.//aqd:stationClassification/@xlink:href', QVariant.String) })
     for x in src.getFeatures():
         print x
+
+    src = ComplexFeatureSource( "../samples/env_monitoring.xml")
+    for x in src.getFeatures():
+        print x
+
+    src = ComplexFeatureSource( "../samples/env_monitoring1.xml")
+    for x in src.getFeatures():
+        print x
+
+    src = ComplexFeatureSource( "../samples/BoreholeView.xml")
+    for x in src.getFeatures():
+        print x
+
