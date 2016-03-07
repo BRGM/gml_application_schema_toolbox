@@ -25,8 +25,8 @@ def wkbFromGml(tree):
 			# http://www.opengis.net/gml/srs/epsg.xml#4326
 			# http://www.epsg.org/6.11.2/4326
             # get the last number
-            m = re.search('[0-9]+$', v)
-            srid = m.group(0)
+            m = re.search('([0-9]+)/?$', v)
+            srid = m.group(1)
             break
             
     # call ogr for GML parsing
