@@ -64,12 +64,16 @@ class ComplexFeatureSource:
             self.features = [root]
             self.title = noPrefix(root.tag)
         else:
-            if len(root) > 0 and noPrefix(root[0].tag) == 'member':
-                self.title = noPrefix(root[0][0].tag)
-                self.features = [x[0] for x in root]
-            elif len(root) > 0 and noPrefix(root[0].tag) == "featureMembers":
-                self.title = noPrefix(root[0][0].tag)
-                self.features = root[0]
+            i = 0
+            if len(root) > 0 and noPrefix(root[0].tag) == 'boundedBy':
+                # skip this child
+                i += 1
+            if len(root) > 0 and noPrefix(root[i].tag) == 'member':
+                self.title = noPrefix(root[i][0].tag)
+                self.features = [x[0] for x in root[i:]]
+            elif len(root) > 0 and noPrefix(root[i].tag) == "featureMembers":
+                self.title = noPrefix(root[i][0].tag)
+                self.features = root[i]
             else:
                 raise RuntimeError("Unrecognized XML file")
 
