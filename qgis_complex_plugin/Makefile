@@ -2,11 +2,11 @@
 
 PLUGINNAME = complex_features
 
-PY_FILES = main.py __init__.py complex_features.py identify_dialog.py creation_dialog.py
+PY_FILES = main.py __init__.py complex_features.py identify_dialog.py creation_dialog.py xml_tree_widget.py
 
 EXTRAS = *.svg metadata.txt
 
-UI_FILES = identify_dialog.ui creation_dialog.ui
+UI_FILES = creation_dialog.ui
 
 %.qm : %.ts
 	lrelease $<
