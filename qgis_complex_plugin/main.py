@@ -16,6 +16,8 @@ from creation_dialog import CreationDialog
 
 from lxml import etree
 
+from xml_tree_widget import XMLTreeWidget
+
 import urllib
 
 class IdentifyGeometry(QgsMapToolIdentify):
@@ -43,6 +45,11 @@ def createMemoryLayer(type, srid, attributes, title):
     for aname, atype in attributes:
         pr.addAttributes([QgsField(aname, atype)])
     layer.updateFields()
+
+    # add init code
+    layer.editFormConfig().setInitCode(u'import complex_features\nimport complex_features.main\nfrom complex_features.main import on_qgis_form_open')
+    layer.editFormConfig().setInitCodeSource(QgsEditFormConfig.CodeSourceDialog)
+    layer.editFormConfig().setInitFunction("on_qgis_form_open")
     return layer
 
 def addPropertiesToLayer(layer, xml_uri, is_remote, attributes):
@@ -196,4 +203,24 @@ class MainPlugin:
         self.dlg = IdentifyDialog(layer, feature)
         self.dlg.exec_()
         
-        
+
+# Function to be called when a form on the complex feature layer is opened
+def on_qgis_form_open(dialog, layer, feature):
+    # look for the '_xml_' QLabel in the form dialog
+    label = [o for o in dialog.findChildren(QLabel) if o.text() == '_xml_'][0]
+    grid = label.parent().layout()
+    w = None
+    wi = 0
+    # look for the associated widget (most probably a QLineEdit)
+    for i in range(grid.rowCount()):
+        if grid.itemAtPosition(i, 0).widget() == label:
+            w = grid.itemAtPosition(i, 1).widget()
+            wi = i
+            break
+    if w is None:
+        return
+
+    # replace the QLineEdit with a XMLTreeWidget
+    nw = XMLTreeWidget(layer, feature, dialog)
+    del w
+    grid.addWidget(nw, wi, 1)

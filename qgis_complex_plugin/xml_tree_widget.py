@@ -96,7 +96,11 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         self.itemDoubleClicked.connect(self.onItemDoubleClicked)
         self.customContextMenuRequested.connect(self.onContextMenu)
 
-        fill_tree_with_xml(self, feature.attribute('_xml_'))
+        try:
+            x = feature.attribute('_xml_')
+            fill_tree_with_xml(self, feature.attribute('_xml_'))
+        except KeyError:
+            pass
 
     def onItemDoubleClicked(self, item, column):
         if item.text(0) == '@xlink:href' and item.data(1, Qt.UserRole).startswith('http'):
