@@ -64,18 +64,13 @@ class ComplexFeatureSource:
             self.features = [root]
             self.title = noPrefix(root.tag)
         else:
-            i = 0
-            if len(root) > 0 and noPrefix(root[0].tag) == 'boundedBy':
-                # skip this child
-                i += 1
-            if len(root) > 0 and noPrefix(root[i].tag) == 'member':
-                self.title = noPrefix(root[i][0].tag)
-                self.features = [x[0] for x in root[i:]]
-            elif len(root) > 0 and noPrefix(root[i].tag) == "featureMembers":
-                self.title = noPrefix(root[i][0].tag)
-                self.features = root[i]
-            else:
-                raise RuntimeError("Unrecognized XML file")
+            self.features = root.xpath("/wfs:FeatureCollection/wfs:member/*", namespaces = root.nsmap)
+            if len(self.features) == 0:
+                self.features = root.xpath("/wfs:FeatureCollection/gml:featureMembers/*", namespaces = root.nsmap)
+                if len(self.features) == 0:
+                    raise RuntimeError("Unrecognized XML file")
+
+            self.title = noPrefix(self.features[0].tag)
 
         self.xpath_mapping = xpath_mapping
 
@@ -90,6 +85,7 @@ class ComplexFeatureSource:
             for k, v in feature.attrib.iteritems():
                 if noPrefix(k) == "id":
                     fid = v
+                    break
 
             # get the geometry
             wkb = extractGmlGeometry(feature)
@@ -130,6 +126,15 @@ class ComplexFeatureSource:
 
 
 if __name__ == '__main__':
+    src = ComplexFeatureSource( "../samples/mineral.xml")
+    for fid, wkb, feature, attrvalues in src.getFeatures():
+        print feature[7]
+    exit(0)
+
+    src = ComplexFeatureSource( "../samples/BoreholeView.xml")
+    for x in src.getFeatures():
+        print x
+
     src = ComplexFeatureSource( "../samples/airquality.xml", { 'mainEmissionSources' : ('.//aqd:mainEmissionSources/@xlink:href', QVariant.String),
                                                                'stationClassification' : ('.//aqd:stationClassification/@xlink:href', QVariant.String) })
     for x in src.getFeatures():
@@ -140,10 +145,6 @@ if __name__ == '__main__':
         print x
 
     src = ComplexFeatureSource( "../samples/env_monitoring1.xml")
-    for x in src.getFeatures():
-        print x
-
-    src = ComplexFeatureSource( "../samples/BoreholeView.xml")
     for x in src.getFeatures():
         print x
 

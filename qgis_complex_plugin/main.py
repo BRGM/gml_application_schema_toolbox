@@ -8,7 +8,7 @@ from qgis.core import *
 from qgis.gui import *
 
 import os
-os.environ["XML_CATALOG_FILES"]="file:///home/hme/src/brgm_gml/scripts/catalog.xml"
+#os.environ["XML_CATALOG_FILES"]="file:///home/hme/src/brgm_gml/scripts/catalog.xml"
 
 from complex_features import ComplexFeatureSource, noPrefix
 from identify_dialog import IdentifyDialog
