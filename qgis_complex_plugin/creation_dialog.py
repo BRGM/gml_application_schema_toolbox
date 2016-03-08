@@ -8,7 +8,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'creation_dialog.ui'))
 
 class CreationDialog(QtGui.QDialog, FORM_CLASS):
-    def __init__(self, xml_uri=None, is_remote = False, attributes = {}, parent=None):
+    def __init__(self, xml_uri=None, is_remote = False, attributes = {}, geometry_mapping = None, parent=None):
         """Constructor."""
         super(CreationDialog, self).__init__(parent)
         # Set up the user interface from Designer.
@@ -34,6 +34,9 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
                 self.attributeTable.item(last, 0).setText(aname)
                 self.attributeTable.cellWidget(last, 1).setCurrentIndex([QVariant.String, QVariant.Int, QVariant.Double].index(type))
                 self.attributeTable.item(last, 2).setText(xpath)
+        if geometry_mapping:
+            self.geometryColumnCheck.setChecked(True)
+            self.geometryColumnEdit.setText(geometry_mapping)
 
         self.browseButton.clicked.connect(self.onBrowse)
         self.addMappingBtn.clicked.connect(self.onAddMapping)
@@ -77,6 +80,12 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
             type = combo.itemData(combo.currentIndex())
             mapping[attr] = (xpath, type)
         return mapping
+
+    def geometry_mapping(self):
+        """Returns the geometry column XPath or None"""
+        if self.geometryColumnCheck.isChecked() and self.geometryColumnEdit.text():
+            return self.geometryColumnEdit.text()
+        return None
 
     def source(self):
         """Returns a pair (isRemote:bool, url:str)"""

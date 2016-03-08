@@ -55,17 +55,20 @@ def createMemoryLayer(type, srid, attributes, title):
     layer.editFormConfig().setInitFunction("on_qgis_form_open")
     return layer
 
-def addPropertiesToLayer(layer, xml_uri, is_remote, attributes):
+def addPropertiesToLayer(layer, xml_uri, is_remote, attributes, geom_mapping):
     layer.setCustomProperty("complex_features", True)
     layer.setCustomProperty("xml_uri", xml_uri)
     layer.setCustomProperty("is_remote", is_remote)
     layer.setCustomProperty("attributes", attributes)
+    layer.setCustomProperty("geom_mapping", geom_mapping)
 
 def propertiesFromLayer(layer):
     return (layer.customProperty("complex_features", False),
             layer.customProperty("xml_uri", ""),
             layer.customProperty("is_remote", False),
-            layer.customProperty("attributes", {}))
+            layer.customProperty("attributes", {}),
+            layer.customProperty("geom_mapping", None)
+    )
 
 def replace_layer(old_layer, new_layer):
     """Convenience function to replace a layer in the legend"""
@@ -124,18 +127,19 @@ class MainPlugin:
         self.iface.removePluginMenu(u"Complex Features",self.identifyAction)
 
 
-    def load_xml(self, xml_uri, is_remote, attributes = {}):
+    def load_xml(self, xml_uri, is_remote, attributes = {}, geometry_mapping = None):
         """
         :param xml_uri: the XML URI
         :param is_remote: True if it has to be fetched by http
         :param attributes: { 'attr1' : ( '//xpath/expression', QVariant.Int ) }
+        :param geometry_mapping: XPath expression to a gml geometry node
         :returns: the created layer
         """
         if is_remote:
             xml_file, _ = urllib.urlretrieve(xml_uri)
         else:
             xml_file = xml_uri
-        src = ComplexFeatureSource(xml_file, attributes)
+        src = ComplexFeatureSource(xml_file, attributes, geometry_mapping)
 
         self.layer = None
         for fid, g, xml, attrs in src.getFeatures():
@@ -158,7 +162,7 @@ class MainPlugin:
                         self.layer = createMemoryLayer('polygon', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (polygons)")
 
             if self.layer:
-                addPropertiesToLayer(self.layer, xml_uri, is_remote, attributes)
+                addPropertiesToLayer(self.layer, xml_uri, is_remote, attributes, geometry_mapping)
 
                 pr = self.layer.dataProvider()
                 f = QgsFeature(pr.fields())
@@ -178,17 +182,18 @@ class MainPlugin:
         if len(sel) > 0:
             sel_layer = sel[0]
         if sel:
-            layer_edited, xml_uri, is_remote, attributes = propertiesFromLayer(sel_layer)
+            layer_edited, xml_uri, is_remote, attributes, geom_mapping = propertiesFromLayer(sel_layer)
 
         if layer_edited:
-            creation_dlg = CreationDialog(xml_uri, is_remote, attributes)
+            creation_dlg = CreationDialog(xml_uri, is_remote, attributes, geom_mapping)
         else:
             creation_dlg = CreationDialog()
         r = creation_dlg.exec_()
         if r:
             is_remote, url = creation_dlg.source()
             mapping = creation_dlg.attribute_mapping()
-            new_layer = self.load_xml(url, is_remote, mapping)
+            geom_mapping = creation_dlg.geometry_mapping()
+            new_layer = self.load_xml(url, is_remote, mapping, geom_mapping)
 
             if creation_dlg.replace_current_layer():
                 replace_layer(sel_layer, new_layer)

@@ -110,6 +110,24 @@
     </widget>
    </item>
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <widget class="QCheckBox" name="geometryColumnCheck">
+       <property name="text">
+        <string>Geometry column XPath</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="geometryColumnEdit">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
       <widget class="QCheckBox" name="replaceLayerChck">
@@ -224,6 +242,22 @@
     <hint type="destinationlabel">
      <x>409</x>
      <y>58</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>geometryColumnCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>geometryColumnEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>110</x>
+     <y>450</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>453</y>
     </hint>
    </hints>
   </connection>

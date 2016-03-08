@@ -48,13 +48,20 @@ def extractGmlGeometry(tree):
             return g
     return None
 
+def extractGmlFromXPath(tree, xpath):
+    r = tree.xpath(xpath, namespaces = tree.nsmap)
+    if len(r) > 0:
+        return wkbFromGml(r[0])
+    return None
+
 class ComplexFeatureSource:
-    def __init__(self, xml_file, xpath_mapping = {}):
+    def __init__(self, xml_file, xpath_mapping = {}, geometry_mapping = None):
         """
         Construct a ComplexFeatureSource
 
         :param xml_file: The input XML file name
         :param xpath_mapping: A mapping of XPath expressions to attributes. Example: { 'attribute' : ('//xpath/expression', QVariant.Int) }
+        :param geometry_mapping: An XPath expression used to extract the geometry
         """
         
         doc = etree.parse(open(xml_file))
@@ -73,6 +80,7 @@ class ComplexFeatureSource:
             self.title = noPrefix(self.features[0].tag)
 
         self.xpath_mapping = xpath_mapping
+        self.geometry_mapping = geometry_mapping
 
     def getFeatures(self):
         """
@@ -88,7 +96,10 @@ class ComplexFeatureSource:
                     break
 
             # get the geometry
-            wkb = extractGmlGeometry(feature)
+            if self.geometry_mapping:
+                wkb = extractGmlFromXPath(feature, self.geometry_mapping)
+            else:
+                wkb = extractGmlGeometry(feature)
 
             # get attribute values
             attrvalues = {}
@@ -126,6 +137,10 @@ class ComplexFeatureSource:
 
 
 if __name__ == '__main__':
+    src = ComplexFeatureSource( "../samples/GSML4-Borehole.xml", geometry_mapping = "//gsmlbh:location/gml:Point")
+    for x in src.getFeatures():
+        print x
+        
     src = ComplexFeatureSource( "../samples/mineral.xml")
     for fid, wkb, feature, attrvalues in src.getFeatures():
         print feature[7]
