@@ -139,6 +139,7 @@ class MainPlugin:
 
         self.layer = None
         for fid, g, xml, attrs in src.getFeatures():
+            qgsgeom = None
             if g is None:
                 if self.layer is None:
                     self.layer = createMemoryLayer('none', None, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title)
@@ -161,7 +162,8 @@ class MainPlugin:
 
                 pr = self.layer.dataProvider()
                 f = QgsFeature(pr.fields())
-                f.setGeometry(qgsgeom)
+                if qgsgeom:
+                    f.setGeometry(qgsgeom)
                 f.setAttribute("id", fid)
                 f.setAttribute("_xml_", etree.tostring(xml))
                 for k, v in attrs.iteritems():
