@@ -214,18 +214,21 @@ def on_qgis_form_open(dialog, layer, feature):
     # look for the '_xml_' QLabel in the form dialog
     label = [o for o in dialog.findChildren(QLabel) if o.text() == '_xml_'][0]
     grid = label.parent().layout()
-    w = None
+    witem = None
     wi = 0
     # look for the associated widget (most probably a QLineEdit)
     for i in range(grid.rowCount()):
         if grid.itemAtPosition(i, 0).widget() == label:
-            w = grid.itemAtPosition(i, 1).widget()
+            witem = grid.itemAtPosition(i, 1)
             wi = i
             break
-    if w is None:
+    if witem is None:
         return
 
     # replace the QLineEdit with a XMLTreeWidget
-    nw = XMLTreeWidget(layer, feature, dialog)
+    grid.removeItem(witem)
+    w = witem.widget()
+    w.hide()
     del w
+    nw = XMLTreeWidget(feature, dialog)
     grid.addWidget(nw, wi, 1)

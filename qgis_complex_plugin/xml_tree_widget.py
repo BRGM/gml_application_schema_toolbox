@@ -10,15 +10,25 @@ from complex_features import noPrefix
 
 import urllib
 
-def fill_tree_with_element(widget, treeItem, elt, inv_nsmap = None):
+def fill_tree_with_element(widget, treeItem, elt):
+    # tag
+    if elt.prefix:
+        treeItem.setText(0, elt.prefix + ':' + noPrefix(elt.tag))
+    else:
+        treeItem.setText(0, noPrefix(elt.tag))
+    f = treeItem.font(0)
+    f.setBold(True)
+    treeItem.setFont(0,f)
+
     # attributes
     for k, v in elt.attrib.iteritems():
         child = QTreeWidgetItem()
         treeItem.addChild(child)
-        if inv_nsmap and '}' in k:
+        if '}' in k:
             i = k.index('}')
             ns = k[1:i]
-            n = inv_nsmap[ns] + ":" + k[i+1:]
+            # get ns prefix from ns uri
+            n = elt.nsmap.keys()[elt.nsmap.values().index(ns)] + ":" + k[i+1:]
         else:
             n = noPrefix(k)
         child.setText(0, "@" + n)
@@ -41,15 +51,8 @@ def fill_tree_with_element(widget, treeItem, elt, inv_nsmap = None):
         if isinstance(xmlChild, etree._Comment):
             continue
         child = QTreeWidgetItem()
-        if xmlChild.prefix:
-            child.setText(0, xmlChild.prefix + ':' + noPrefix(xmlChild.tag))
-        else:
-            child.setText(0, noPrefix(xmlChild.tag))
-        f = child.font(0)
-        f.setBold(True)
-        child.setFont(0,f)
-        fill_tree_with_element(widget, child, xmlChild, inv_nsmap)
         treeItem.addChild(child)
+        fill_tree_with_element(widget, child, xmlChild)
 
 def recurse_expand(treeItem):
     treeItem.setExpanded(True)
@@ -65,18 +68,14 @@ def fill_tree_with_xml(treeWidget, xml):
     tree = etree.XML(xml)
     treeWidget.clear()
     treeWidget.setColumnCount(2)
-    # create an inverse map to map namespace uri to namespace prefix
-    inv_nsmap = {}
-    for k, v in tree.nsmap.iteritems():
-        inv_nsmap[v] = k
-    fill_tree_with_element(treeWidget, treeWidget.invisibleRootItem(), tree, inv_nsmap)
+    fill_tree_with_element(treeWidget, treeWidget.invisibleRootItem(), tree)
     recurse_expand(treeWidget.invisibleRootItem())
     treeWidget.resizeColumnToContents(0)
+    treeWidget.resizeColumnToContents(1)
 
 class XMLTreeWidget(QtGui.QTreeWidget):
-    def __init__(self, layer, feature, parent = None):
+    def __init__(self, feature, parent = None):
         """Constructor.
-        :param layer: QgsVectorLayer the feature is from
         :param feature: a QgsFeature
         :param parent: a QWidget parent
         """
@@ -96,11 +95,17 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         self.itemDoubleClicked.connect(self.onItemDoubleClicked)
         self.customContextMenuRequested.connect(self.onContextMenu)
 
+        self.updateFeature(feature)
+
+    def updateFeature(self, feature):
+        self.clear()
+        x = None
         try:
             x = feature.attribute('_xml_')
-            fill_tree_with_xml(self, feature.attribute('_xml_'))
         except KeyError:
             pass
+        if x:
+            fill_tree_with_xml(self, x)
 
     def onItemDoubleClicked(self, item, column):
         if item.text(0) == '@xlink:href' and item.data(1, Qt.UserRole).startswith('http'):
