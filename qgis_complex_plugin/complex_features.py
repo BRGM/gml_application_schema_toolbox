@@ -49,7 +49,7 @@ def extractGmlGeometry(tree):
     return None
 
 def extractGmlFromXPath(tree, xpath):
-    r = tree.xpath(xpath, namespaces = tree.nsmap)
+    r = tree.xpath("./" + xpath, namespaces = tree.nsmap)
     if len(r) > 0:
         return wkbFromGml(r[0])
     return None
