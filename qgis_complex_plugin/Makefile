@@ -2,7 +2,7 @@
 
 PLUGINNAME = complex_features
 
-PY_FILES = main.py __init__.py complex_features.py identify_dialog.py creation_dialog.py xml_tree_widget.py
+PY_FILES = main.py __init__.py complex_features.py creation_dialog.py xml_tree_widget.py
 
 EXTRAS = *.svg metadata.txt
 
