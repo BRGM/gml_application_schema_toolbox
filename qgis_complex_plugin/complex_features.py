@@ -87,13 +87,13 @@ class ComplexFeatureSource:
         The iterator that will yield a new feature.
         The yielded value is (feature_id, QgsGeometry or None, xml_tree: Element, { 'attr1' : value, 'attr2' : 'value' })
         """
+        i = 1
         for feature in self.features:
-            # get the id
-            fid = None
-            for k, v in feature.attrib.iteritems():
-                if noPrefix(k) == "id":
-                    fid = v
-                    break
+            # get the id from gml:identifier
+            x = feature.xpath(".//gml:identifier/text()", namespaces = feature.nsmap)
+            fid = unicode(i)
+            if len(x) > 0:
+                fid = unicode(x[0])
 
             # get the geometry
             if self.geometry_mapping:
@@ -134,31 +134,37 @@ class ComplexFeatureSource:
                 attrvalues[attr] = value
 
             yield fid, wkb, feature, attrvalues
+            i += 1
 
 
 if __name__ == '__main__':
-    src = ComplexFeatureSource( "../samples/GSML4-Borehole.xml", geometry_mapping = "//gsmlbh:location/gml:Point")
+    print "GSML4"
+    src = ComplexFeatureSource( "../samples/GSML4-Borehole.xml", geometry_mapping = "/gsmlbh:location/gml:Point")
     for x in src.getFeatures():
         print x
         
+    print("mineral")
     src = ComplexFeatureSource( "../samples/mineral.xml")
-    for fid, wkb, feature, attrvalues in src.getFeatures():
-        print feature[7]
-    exit(0)
+    for x in src.getFeatures():
+        print x
 
+    print("Boreholeview")
     src = ComplexFeatureSource( "../samples/BoreholeView.xml")
     for x in src.getFeatures():
         print x
 
+    print("airquality")
     src = ComplexFeatureSource( "../samples/airquality.xml", { 'mainEmissionSources' : ('.//aqd:mainEmissionSources/@xlink:href', QVariant.String),
                                                                'stationClassification' : ('.//aqd:stationClassification/@xlink:href', QVariant.String) })
     for x in src.getFeatures():
         print x
 
+    print("env_monitoring")
     src = ComplexFeatureSource( "../samples/env_monitoring.xml")
     for x in src.getFeatures():
         print x
 
+    print("env_monitoring1")
     src = ComplexFeatureSource( "../samples/env_monitoring1.xml")
     for x in src.getFeatures():
         print x
