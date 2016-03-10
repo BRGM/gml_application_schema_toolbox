@@ -49,7 +49,7 @@ def createMemoryLayer(type, srid, attributes, title):
     layer.updateFields()
 
     # add init code
-    layer.editFormConfig().setInitCode(u'import complex_features\nimport complex_features.main\nfrom complex_features.main import on_qgis_form_open')
+    layer.editFormConfig().setInitCode(u'import qgis_complex_features\nimport qgis_complex_features.main\nfrom qgis_complex_features.main import on_qgis_form_open')
     layer.editFormConfig().setInitCodeSource(QgsEditFormConfig.CodeSourceDialog)
     layer.editFormConfig().setInitFunction("on_qgis_form_open")
     return layer
