@@ -1,6 +1,6 @@
 import os
 
-from PyQt4 import QtGui
+from PyQt4 import QtGui, uic
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -73,40 +73,51 @@ def fill_tree_with_xml(treeWidget, xml):
     treeWidget.resizeColumnToContents(0)
     treeWidget.resizeColumnToContents(1)
 
-class XMLTreeWidget(QtGui.QTreeWidget):
+FORM_CLASS, _ = uic.loadUiType(os.path.join(
+    os.path.dirname(__file__), 'xml_tree_widget.ui'))
+    
+class XMLTreeWidget(QtGui.QWidget, FORM_CLASS):
     def __init__(self, feature, parent = None):
         """Constructor.
         :param feature: a QgsFeature
         :param parent: a QWidget parent
         """
         super(XMLTreeWidget, self).__init__(parent)
+        self.setupUi(self)
 
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.setAlternatingRowColors(True)
-        self.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
-        self.setWordWrap(True)
-        self.setExpandsOnDoubleClick(False)
-        self.headerItem().setText(0, "Element")
-        self.headerItem().setText(1, "Value")
-        self.header().setVisible(True)
-        self.header().setCascadingSectionResizes(True)
+        #self.treeWidget = QTreeWidget(self)
+        #self.treeWidget.setContextMenuPolicy(Qt.CustomContextMenu)
+        #self.treeWidget.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        #self.treeWidget.setAlternatingRowColors(True)
+        #self.treeWidget.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        #self.treeWidget.setWordWrap(True)
+        #self.treeWidget.setExpandsOnDoubleClick(False)
+        #self.treeWidget.headerItem().setText(0, "Element")
+        #self.treeWidget.headerItem().setText(1, "Value")
+        #self.treeWidget.header().setVisible(True)
+        #self.treeWidget.header().setCascadingSectionResizes(True)
 
-        self.itemDoubleClicked.connect(self.onItemDoubleClicked)
-        self.customContextMenuRequested.connect(self.onContextMenu)
+        self.treeWidget.itemDoubleClicked.connect(self.onItemDoubleClicked)
+        self.treeWidget.customContextMenuRequested.connect(self.onContextMenu)
+
+        self.xpathBtn.clicked.connect(self.onCopyXPath)
+        self.downloadBtn.clicked.connect(self.onDownloadBtn)
 
         self.updateFeature(feature)
 
     def updateFeature(self, feature):
-        self.clear()
         x = None
         try:
             x = feature.attribute('_xml_')
         except KeyError:
             pass
         if x:
-            fill_tree_with_xml(self, x)
+            fill_tree_with_xml(self.treeWidget, x)
 
+    def onDownloadBtn(self):
+        item = self.treeWidget.currentItem()
+        self.onItemDoubleClicked(item, 0)
+        
     def onItemDoubleClicked(self, item, column):
         if item.text(0) == '@xlink:href' and item.data(1, Qt.UserRole).startswith('http'):
             QApplication.setOverrideCursor(Qt.WaitCursor)
@@ -119,20 +130,20 @@ class XMLTreeWidget(QtGui.QTreeWidget):
                     # probably not an XML
                     return
 
-                fill_tree_with_element(self, item.parent(), xml.getroot())
+                fill_tree_with_element(self.treeWidget, item.parent(), xml.getroot())
             finally:
                 QApplication.restoreOverrideCursor()
 
     def onContextMenu(self, pos):
-        row = self.selectionModel().selectedRows()[0]
-        menu = QMenu(self)
-        copyAction = QAction(u"Copy value", self)
+        row = self.treeWidget.selectionModel().selectedRows()[0]
+        menu = QMenu(self.treeWidget)
+        copyAction = QAction(u"Copy value", self.treeWidget)
         #copyAction.triggered.connect(self.onCopyItemValue)
-        copyXPathAction = QAction(u"Copy XPath", self)
+        copyXPathAction = QAction(u"Copy XPath", self.treeWidget)
         copyXPathAction.triggered.connect(self.onCopyXPath)
         menu.addAction(copyAction)
         menu.addAction(copyXPathAction)
-        menu.popup(self.mapToGlobal(pos))
+        menu.popup(self.treeWidget.mapToGlobal(pos))
 
     def onCopyXPath(self):
         def get_xpath(item):
@@ -142,9 +153,9 @@ class XMLTreeWidget(QtGui.QTreeWidget):
             return s + "/" + item.text(0)
 
         # make sure to select the first column
-        idx = self.indexFromItem(self.currentItem())
+        idx = self.treeWidget.indexFromItem(self.treeWidget.currentItem())
         idx = idx.sibling(idx.row(), 0)
-        item = self.itemFromIndex(idx)
+        item = self.treeWidget.itemFromIndex(idx)
         
         xpath = get_xpath(item)
         QApplication.clipboard().setText(xpath)

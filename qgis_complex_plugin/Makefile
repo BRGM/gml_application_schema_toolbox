@@ -1,12 +1,12 @@
 # global
 
-PLUGINNAME = complex_features
+PLUGINNAME = qgis_complex_features
 
 PY_FILES = main.py __init__.py complex_features.py creation_dialog.py xml_tree_widget.py
 
 EXTRAS = *.svg metadata.txt
 
-UI_FILES = creation_dialog.ui
+UI_FILES = creation_dialog.ui xml_tree_widget.ui
 
 %.qm : %.ts
 	lrelease $<
@@ -41,7 +41,7 @@ zip: deploy dclean
 # git repository).
 # To use, pass a valid commit or tag as follows:
 #   make package VERSION=Version_0.3.2
-package: compile
+package:
 		rm -f $(PLUGINNAME).zip
 		git archive --prefix=$(PLUGINNAME)/ -o $(PLUGINNAME).zip $(VERSION)
 		echo "Created package: $(PLUGINNAME).zip"
