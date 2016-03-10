@@ -87,7 +87,7 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         self.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.setWordWrap(True)
         self.setExpandsOnDoubleClick(False)
-        self.headerItem().setText(0, "Element2")
+        self.headerItem().setText(0, "Element")
         self.headerItem().setText(1, "Value")
         self.header().setVisible(True)
         self.header().setCascadingSectionResizes(True)
