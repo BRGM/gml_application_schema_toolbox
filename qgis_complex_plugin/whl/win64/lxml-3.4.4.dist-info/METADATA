@@ -25,14 +25,14 @@ Classifier: Operating System :: OS Independent
 Classifier: Topic :: Text Processing :: Markup :: HTML
 Classifier: Topic :: Text Processing :: Markup :: XML
 Classifier: Topic :: Software Development :: Libraries :: Python Modules
-Provides-Extra: source
-Requires-Dist: Cython (>=0.20); extra == 'source'
 Provides-Extra: cssselect
 Requires-Dist: cssselect (>=0.7); extra == 'cssselect'
 Provides-Extra: html5
 Requires-Dist: html5lib; extra == 'html5'
 Provides-Extra: htmlsoup
 Requires-Dist: BeautifulSoup4; extra == 'htmlsoup'
+Provides-Extra: source
+Requires-Dist: Cython (>=0.20); extra == 'source'
 
 lxml is a Pythonic, mature binding for the libxml2 and libxslt libraries.  It
 provides safe and convenient access to these libraries using the ElementTree
