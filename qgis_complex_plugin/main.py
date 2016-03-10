@@ -8,12 +8,24 @@ from qgis.core import *
 from qgis.gui import *
 
 import os
-#os.environ["XML_CATALOG_FILES"]="file:///home/hme/src/brgm_gml/scripts/catalog.xml"
+
+try:
+    from lxml import etree
+except ImportError:
+    import platform
+    if platform.architecture() == ('64bit', 'WindowsPE'):
+        package_path = os.path.join(os.path.dirname(__file__), "whl", "win64")
+    elif platform.architecture() == ('32bit', 'WindowsPE'):
+        package_path = os.path.join(os.path.dirname(__file__), "whl", "win32")
+    else:
+        raise
+    import sys
+    sys.path.append(package_path)
+    # try again
+    from lxml import etree
 
 from complex_features import ComplexFeatureSource, noPrefix
 from creation_dialog import CreationDialog
-
-from lxml import etree
 
 from xml_tree_widget import XMLTreeWidget
 
