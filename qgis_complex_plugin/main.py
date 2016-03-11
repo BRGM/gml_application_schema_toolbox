@@ -123,7 +123,7 @@ class MainPlugin:
                               u"Identify GML feature", self.iface.mainWindow())
         self.identifyAction.triggered.connect(self.onIdentify)
         self.tableAction = QAction(QIcon(os.path.dirname(__file__) + "/mActionOpenTableGML.svg"), \
-                              u"Identify GML feature", self.iface.mainWindow())
+                              u"Open feature list", self.iface.mainWindow())
         self.tableAction.triggered.connect(self.onOpenTable)
 
         self.iface.addToolBarIcon(self.action)
