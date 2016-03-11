@@ -6,7 +6,7 @@ from PyQt4.QtGui import *
 
 from lxml import etree
 
-from complex_features import noPrefix, load_complex_gml
+from complex_features import noPrefix, load_complex_gml, is_layer_complex
 
 from qgis.core import QgsMapLayerRegistry
 
@@ -126,6 +126,17 @@ class XMLTreeWidget(QtGui.QTreeWidget):
             resolveNewLayerAction.triggered.connect(self.onResolveNewLayer)
             resolveMenu.addAction(resolveNewLayerAction)
 
+            addToMenu = QMenu("Add to layer", menu)
+            addToEmpty = True
+            for id, l in QgsMapLayerRegistry.instance().mapLayers().iteritems():
+                if is_layer_complex(l):
+                    action = QAction(l.name(), addToMenu)
+                    action.triggered.connect(lambda checked, layer=l: self.onResolveAddToLayer(layer))
+                    addToMenu.addAction(action)
+                    addToEmpty = False
+            if not addToEmpty:
+                resolveMenu.addMenu(addToMenu)
+
             menu.addMenu(resolveMenu)
 
         menu.popup(self.mapToGlobal(pos))
@@ -170,4 +181,16 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         new_layer = load_complex_gml(uri, True)
         if new_layer:
             QgsMapLayerRegistry.instance().addMapLayer(new_layer)
-        
+
+    def onResolveAddToLayer(self, layer, checked=False):
+        item = self.currentItem()
+        uri = item.data(1, Qt.UserRole)
+        new_layer = load_complex_gml(uri, True)
+        if new_layer:
+            # read the feature from the new_layer and insert it in the selected layer
+            f_in = next(new_layer.getFeatures())
+            pr = layer.dataProvider()
+            # FIXME test layer compatibility ?
+            pr.addFeatures([f_in])
+            
+

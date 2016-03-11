@@ -5,7 +5,7 @@ from lxml import etree
 from osgeo import ogr
 from PyQt4.QtCore import QVariant
 
-from qgis.core import QGis, QgsGeometry, QgsVectorLayer, QgsField, QgsFeature
+from qgis.core import QGis, QgsGeometry, QgsVectorLayer, QgsField, QgsFeature, QgsMapLayer
 
 import re
 
@@ -174,7 +174,7 @@ def properties_from_layer(layer):
     )
 
 def is_layer_complex(layer):
-    return layer.customProperty("complex_features", False)
+    return layer.type() == QgsMapLayer.VectorLayer and layer.customProperty("complex_features", False)
 
 def load_complex_gml(xml_uri, is_remote, attributes = {}, geometry_mapping = None):
     """
