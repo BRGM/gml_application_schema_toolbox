@@ -6,7 +6,9 @@ from PyQt4.QtGui import *
 
 from lxml import etree
 
-from complex_features import noPrefix
+from complex_features import noPrefix, load_complex_gml
+
+from qgis.core import QgsMapLayerRegistry
 
 import urllib
 
@@ -110,14 +112,21 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         copyAction.triggered.connect(self.onCopyItemValue)
         copyXPathAction = QAction(u"Copy XPath", self)
         copyXPathAction.triggered.connect(self.onCopyXPath)
-        resolveAction = QAction(u"Resolve external", self)
-        resolveAction.triggered.connect(self.onResolveExternal)
         menu.addAction(copyAction)
         menu.addAction(copyXPathAction)
 
         item = self.currentItem()
         if item.text(0) == '@xlink:href' and item.data(1, Qt.UserRole).startswith('http'):
-            menu.addAction(resolveAction)
+            resolveMenu = QMenu("Resolve external", menu)
+            resolveEmbeddedAction = QAction(u"Embedded", self)
+            resolveEmbeddedAction.triggered.connect(self.onResolveEmbedded)
+            resolveMenu.addAction(resolveEmbeddedAction)
+
+            resolveNewLayerAction = QAction(u"As a new layer", self)
+            resolveNewLayerAction.triggered.connect(self.onResolveNewLayer)
+            resolveMenu.addAction(resolveNewLayerAction)
+
+            menu.addMenu(resolveMenu)
 
         menu.popup(self.mapToGlobal(pos))
 
@@ -132,23 +141,33 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         QApplication.clipboard().setText(xpath)
 
     def onCopyItemValue(self):
-        QApplication.clipboard().setText(self.currentItem().text(1))
+        t = self.currentItem().text(1)
+        if not t:
+            t = self.currentItem().data(1, Qt.UserRole)
+        QApplication.clipboard().setText(t)
 
-    def onResolveExternal(self):
+    def onResolveEmbedded(self):
         item = self.currentItem()
-        if item.text(0) == '@xlink:href' and item.data(1, Qt.UserRole).startswith('http'):
-            QApplication.setOverrideCursor(Qt.WaitCursor)
-            uri = item.data(1, Qt.UserRole)
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        uri = item.data(1, Qt.UserRole)
+        try:
+            f = urllib.urlopen(uri)
             try:
-                f = urllib.urlopen(uri)
-                try:
-                    xml = etree.parse(f)
-                except etree.XMLSyntaxError:
-                    # probably not an XML
-                    QApplication.restoreOverrideCursor()
-                    QMessageBox.warning(self, "XML parsing error", "The external resource is not a well formed XML")
-                    return
-
-                fill_tree_with_element(self, item.parent(), xml.getroot())
-            finally:
+                xml = etree.parse(f)
+            except etree.XMLSyntaxError:
+                # probably not an XML
                 QApplication.restoreOverrideCursor()
+                QMessageBox.warning(self, "XML parsing error", "The external resource is not a well formed XML")
+                return
+
+            fill_tree_with_element(self, item.parent(), xml.getroot())
+        finally:
+            QApplication.restoreOverrideCursor()
+
+    def onResolveNewLayer(self):
+        item = self.currentItem()
+        uri = item.data(1, Qt.UserRole)
+        new_layer = load_complex_gml(uri, True)
+        if new_layer:
+            QgsMapLayerRegistry.instance().addMapLayer(new_layer)
+        
