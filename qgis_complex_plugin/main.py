@@ -43,7 +43,7 @@ class IdentifyGeometry(QgsMapToolIdentify):
         if len(results) > 0:
             self.geomIdentified.emit(results[0].mLayer, results[0].mFeature)
 
-def createMemoryLayer(type, srid, attributes, title):
+def create_memory_layer(type, srid, attributes, title):
     """
     Creates an empty memory layer
     :param type: 'Point', 'LineString', 'Polygon', etc.
@@ -61,14 +61,14 @@ def createMemoryLayer(type, srid, attributes, title):
     layer.updateFields()
     return layer
 
-def addPropertiesToLayer(layer, xml_uri, is_remote, attributes, geom_mapping):
+def add_properties_to_layer(layer, xml_uri, is_remote, attributes, geom_mapping):
     layer.setCustomProperty("complex_features", True)
     layer.setCustomProperty("xml_uri", xml_uri)
     layer.setCustomProperty("is_remote", is_remote)
     layer.setCustomProperty("attributes", attributes)
     layer.setCustomProperty("geom_mapping", geom_mapping)
 
-def propertiesFromLayer(layer):
+def properties_from_layer(layer):
     return (layer.customProperty("complex_features", False),
             layer.customProperty("xml_uri", ""),
             layer.customProperty("is_remote", False),
@@ -76,7 +76,7 @@ def propertiesFromLayer(layer):
             layer.customProperty("geom_mapping", None)
     )
 
-def isLayerComplex(layer):
+def is_layer_complex(layer):
     return layer.customProperty("complex_features", False)
 
 def replace_layer(old_layer, new_layer):
@@ -131,16 +131,16 @@ def load_complex_gml(xml_uri, is_remote, attributes = {}, geometry_mapping = Non
             qgsgeom.fromWkb(wkb)
             if qgsgeom and qgsgeom.type() == QGis.Point:
                 if layer is None:
-                    layer = createMemoryLayer('point', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (points)")
+                    layer = create_memory_layer('point', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (points)")
             elif qgsgeom and qgsgeom.type() == QGis.Line:
                 if layer is None:
-                    layer = createMemoryLayer('linestring', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (lines)")
+                    layer = create_memory_layer('linestring', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (lines)")
             elif qgsgeom and qgsgeom.type() == QGis.Polygon:
                 if layer is None:
-                    layer = createMemoryLayer('polygon', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (polygons)")
+                    layer = create_memory_layer('polygon', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (polygons)")
 
         if layer:
-            addPropertiesToLayer(layer, xml_uri, is_remote, attributes, geometry_mapping)
+            add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)
 
             pr = layer.dataProvider()
             f = QgsFeature(pr.fields())
@@ -197,7 +197,7 @@ class MainPlugin:
         if len(sel) > 0:
             sel_layer = sel[0]
         if sel:
-            layer_edited, xml_uri, is_remote, attributes, geom_mapping = propertiesFromLayer(sel_layer)
+            layer_edited, xml_uri, is_remote, attributes, geom_mapping = properties_from_layer(sel_layer)
 
         if layer_edited:
             creation_dlg = CreationDialog(xml_uri, is_remote, attributes, geom_mapping)
@@ -237,7 +237,7 @@ class MainPlugin:
 
     def onOpenTable(self):
         layer = self.iface.activeLayer()
-        if not isLayerComplex(layer):
+        if not is_layer_complex(layer):
             return
         
         self.table = TableDialog(layer)
