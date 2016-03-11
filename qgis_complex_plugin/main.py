@@ -24,12 +24,10 @@ except ImportError:
     # try again
     from lxml import etree
 
-from complex_features import ComplexFeatureSource, noPrefix, load_complex_gml, properties_from_layer
+from complex_features import ComplexFeatureSource, noPrefix, load_complex_gml, properties_from_layer, is_layer_complex
 from identify_dialog import IdentifyDialog
 from creation_dialog import CreationDialog
 from table_dialog import TableDialog
-
-import urllib
 
 class IdentifyGeometry(QgsMapToolIdentify):
     geomIdentified = pyqtSignal(QgsVectorLayer, QgsFeature)

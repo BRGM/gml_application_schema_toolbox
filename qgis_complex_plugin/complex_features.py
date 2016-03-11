@@ -185,6 +185,7 @@ def load_complex_gml(xml_uri, is_remote, attributes = {}, geometry_mapping = Non
     :returns: the created layer
     """
     if is_remote:
+        import urllib
         xml_file, _ = urllib.urlretrieve(xml_uri)
     else:
         xml_file = xml_uri
