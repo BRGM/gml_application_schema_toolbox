@@ -105,6 +105,55 @@ def replace_layer(old_layer, new_layer):
     QgsMapLayerRegistry.instance().removeMapLayer(old_layer)
 
 
+def load_complex_gml(xml_uri, is_remote, attributes = {}, geometry_mapping = None):
+    """
+    :param xml_uri: the XML URI
+    :param is_remote: True if it has to be fetched by http
+    :param attributes: { 'attr1' : ( '//xpath/expression', QVariant.Int ) }
+    :param geometry_mapping: XPath expression to a gml geometry node
+    :returns: the created layer
+    """
+    if is_remote:
+        xml_file, _ = urllib.urlretrieve(xml_uri)
+    else:
+        xml_file = xml_uri
+    src = ComplexFeatureSource(xml_file, attributes, geometry_mapping)
+
+    layer = None
+    for fid, g, xml, attrs in src.getFeatures():
+        qgsgeom = None
+        if g is None:
+            if layer is None:
+                layer = createMemoryLayer('none', None, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title)
+        else:
+            wkb, srid = g
+            qgsgeom = QgsGeometry()
+            qgsgeom.fromWkb(wkb)
+            if qgsgeom and qgsgeom.type() == QGis.Point:
+                if layer is None:
+                    layer = createMemoryLayer('point', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (points)")
+            elif qgsgeom and qgsgeom.type() == QGis.Line:
+                if layer is None:
+                    layer = createMemoryLayer('linestring', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (lines)")
+            elif qgsgeom and qgsgeom.type() == QGis.Polygon:
+                if layer is None:
+                    layer = createMemoryLayer('polygon', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (polygons)")
+
+        if layer:
+            addPropertiesToLayer(layer, xml_uri, is_remote, attributes, geometry_mapping)
+
+            pr = layer.dataProvider()
+            f = QgsFeature(pr.fields())
+            if qgsgeom:
+                f.setGeometry(qgsgeom)
+            f.setAttribute("id", fid)
+            f.setAttribute("_xml_", etree.tostring(xml))
+            for k, v in attrs.iteritems():
+                r = f.setAttribute(k, v)
+            pr.addFeatures([f])
+
+    return layer
+
 class MyResolver(etree.Resolver):
     def resolve(self, url, id, context):
         print url
@@ -142,56 +191,6 @@ class MainPlugin:
         self.iface.removeToolBarIcon(self.tableAction)
         self.iface.removePluginMenu(u"Complex Features",self.tableAction)
 
-
-    def load_xml(self, xml_uri, is_remote, attributes = {}, geometry_mapping = None):
-        """
-        :param xml_uri: the XML URI
-        :param is_remote: True if it has to be fetched by http
-        :param attributes: { 'attr1' : ( '//xpath/expression', QVariant.Int ) }
-        :param geometry_mapping: XPath expression to a gml geometry node
-        :returns: the created layer
-        """
-        if is_remote:
-            xml_file, _ = urllib.urlretrieve(xml_uri)
-        else:
-            xml_file = xml_uri
-        src = ComplexFeatureSource(xml_file, attributes, geometry_mapping)
-
-        self.layer = None
-        for fid, g, xml, attrs in src.getFeatures():
-            qgsgeom = None
-            if g is None:
-                if self.layer is None:
-                    self.layer = createMemoryLayer('none', None, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title)
-            else:
-                wkb, srid = g
-                qgsgeom = QgsGeometry()
-                qgsgeom.fromWkb(wkb)
-                if qgsgeom and qgsgeom.type() == QGis.Point:
-                    if self.layer is None:
-                        self.layer = createMemoryLayer('point', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (points)")
-                elif qgsgeom and qgsgeom.type() == QGis.Line:
-                    if self.layer is None:
-                        self.layer = createMemoryLayer('linestring', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (lines)")
-                elif qgsgeom and qgsgeom.type() == QGis.Polygon:
-                    if self.layer is None:
-                        self.layer = createMemoryLayer('polygon', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (polygons)")
-
-            if self.layer:
-                addPropertiesToLayer(self.layer, xml_uri, is_remote, attributes, geometry_mapping)
-
-                pr = self.layer.dataProvider()
-                f = QgsFeature(pr.fields())
-                if qgsgeom:
-                    f.setGeometry(qgsgeom)
-                f.setAttribute("id", fid)
-                f.setAttribute("_xml_", etree.tostring(xml))
-                for k, v in attrs.iteritems():
-                    r = f.setAttribute(k, v)
-                pr.addFeatures([f])
-
-        return self.layer
-
     def onAddLayer(self):
         layer_edited = False
         sel = self.iface.legendInterface().selectedLayers()
@@ -209,7 +208,7 @@ class MainPlugin:
             is_remote, url = creation_dlg.source()
             mapping = creation_dlg.attribute_mapping()
             geom_mapping = creation_dlg.geometry_mapping()
-            new_layer = self.load_xml(url, is_remote, mapping, geom_mapping)
+            new_layer = load_complex_gml(url, is_remote, mapping, geom_mapping)
 
             do_replace = False
             if creation_dlg.replace_current_layer():
