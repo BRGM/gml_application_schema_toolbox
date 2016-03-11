@@ -74,7 +74,7 @@ def fill_tree_with_xml(treeWidget, xml):
     treeWidget.resizeColumnToContents(1)
 
 class XMLTreeWidget(QtGui.QTreeWidget):
-    def __init__(self, feature, parent = None):
+    def __init__(self, parent = None):
         """Constructor.
         :param feature: a QgsFeature
         :param parent: a QWidget parent
@@ -95,10 +95,7 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         self.itemDoubleClicked.connect(self.onItemDoubleClicked)
         self.customContextMenuRequested.connect(self.onContextMenu)
 
-        self.updateFeature(feature)
-
     def updateFeature(self, feature):
-        self.clear()
         x = None
         try:
             x = feature.attribute('_xml_')

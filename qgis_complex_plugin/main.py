@@ -27,6 +27,7 @@ except ImportError:
 from complex_features import ComplexFeatureSource, noPrefix
 from identify_dialog import IdentifyDialog
 from creation_dialog import CreationDialog
+from table_dialog import TableDialog
 
 import urllib
 
@@ -75,6 +76,9 @@ def propertiesFromLayer(layer):
             layer.customProperty("geom_mapping", None)
     )
 
+def isLayerComplex(layer):
+    return layer.customProperty("complex_features", False)
+
 def replace_layer(old_layer, new_layer):
     """Convenience function to replace a layer in the legend"""
     # Add to the registry, but not to the legend
@@ -118,11 +122,16 @@ class MainPlugin:
         self.identifyAction = QAction(QIcon(os.path.dirname(__file__) + "/mActionIdentifyGML.svg"), \
                               u"Identify GML feature", self.iface.mainWindow())
         self.identifyAction.triggered.connect(self.onIdentify)
+        self.tableAction = QAction(QIcon(os.path.dirname(__file__) + "/mActionOpenTableGML.svg"), \
+                              u"Identify GML feature", self.iface.mainWindow())
+        self.tableAction.triggered.connect(self.onOpenTable)
 
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu(u"Complex Features", self.action)
         self.iface.addToolBarIcon(self.identifyAction)
         self.iface.addPluginToMenu(u"Complex Features", self.identifyAction)
+        self.iface.addToolBarIcon(self.tableAction)
+        self.iface.addPluginToMenu(u"Complex Features", self.tableAction)
     
     def unload(self):
         # Remove the plugin menu item and icon
@@ -130,6 +139,8 @@ class MainPlugin:
         self.iface.removePluginMenu(u"Complex Features",self.action)
         self.iface.removeToolBarIcon(self.identifyAction)
         self.iface.removePluginMenu(u"Complex Features",self.identifyAction)
+        self.iface.removeToolBarIcon(self.tableAction)
+        self.iface.removePluginMenu(u"Complex Features",self.tableAction)
 
 
     def load_xml(self, xml_uri, is_remote, attributes = {}, geometry_mapping = None):
@@ -216,4 +227,13 @@ class MainPlugin:
         self.iface.mapCanvas().setMapTool(None)
 
         self.dlg = IdentifyDialog(layer, feature)
-        self.dlg.exec_()
+        self.dlg.setWindowModality(Qt.ApplicationModal)
+        self.dlg.show()
+
+    def onOpenTable(self):
+        layer = self.iface.activeLayer()
+        if not isLayerComplex(layer):
+            return
+        
+        self.table = TableDialog(layer)
+        self.table.show()
