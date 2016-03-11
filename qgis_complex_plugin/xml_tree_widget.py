@@ -114,7 +114,10 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         resolveAction.triggered.connect(self.onResolveExternal)
         menu.addAction(copyAction)
         menu.addAction(copyXPathAction)
-        menu.addAction(resolveAction)
+
+        item = self.currentItem()
+        if item.text(0) == '@xlink:href' and item.data(1, Qt.UserRole).startswith('http'):
+            menu.addAction(resolveAction)
 
         menu.popup(self.mapToGlobal(pos))
 
@@ -142,6 +145,8 @@ class XMLTreeWidget(QtGui.QTreeWidget):
                     xml = etree.parse(f)
                 except etree.XMLSyntaxError:
                     # probably not an XML
+                    QApplication.restoreOverrideCursor()
+                    QMessageBox.warning(self, "XML parsing error", "The external resource is not a well formed XML")
                     return
 
                 fill_tree_with_element(self, item.parent(), xml.getroot())
