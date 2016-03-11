@@ -1,6 +1,6 @@
 # global
 
-PLUGINNAME = complex_features
+PLUGINNAME = qgis_complex_features
 
 PY_FILES = main.py __init__.py complex_features.py identify_dialog.py creation_dialog.py xml_tree_widget.py
 
