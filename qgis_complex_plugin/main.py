@@ -211,7 +211,13 @@ class MainPlugin:
             geom_mapping = creation_dlg.geometry_mapping()
             new_layer = self.load_xml(url, is_remote, mapping, geom_mapping)
 
+            do_replace = False
             if creation_dlg.replace_current_layer():
+                r = QMessageBox.question(None, "Replace layer ?", "You are about to replace the active layer. Are you sure ?", QMessageBox.Yes | QMessageBox.No)
+                if r == QMessageBox.Yes:
+                    do_replace = True
+
+            if do_replace:
                 replace_layer(sel_layer, new_layer)
             else:
                 # a new layer
