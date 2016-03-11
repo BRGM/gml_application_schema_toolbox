@@ -92,7 +92,6 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         self.header().setVisible(True)
         self.header().setCascadingSectionResizes(True)
 
-        self.itemDoubleClicked.connect(self.onItemDoubleClicked)
         self.customContextMenuRequested.connect(self.onContextMenu)
 
     def updateFeature(self, feature):
@@ -104,7 +103,36 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         if x:
             fill_tree_with_xml(self, x)
 
-    def onItemDoubleClicked(self, item, column):
+    def onContextMenu(self, pos):
+        row = self.selectionModel().selectedRows()[0]
+        menu = QMenu(self)
+        copyAction = QAction(u"Copy value", self)
+        copyAction.triggered.connect(self.onCopyItemValue)
+        copyXPathAction = QAction(u"Copy XPath", self)
+        copyXPathAction.triggered.connect(self.onCopyXPath)
+        resolveAction = QAction(u"Resolve external", self)
+        resolveAction.triggered.connect(self.onResolveExternal)
+        menu.addAction(copyAction)
+        menu.addAction(copyXPathAction)
+        menu.addAction(resolveAction)
+
+        menu.popup(self.mapToGlobal(pos))
+
+    def onCopyXPath(self):
+        def get_xpath(item):
+            s = ''
+            if item.parent():
+                s = get_xpath(item.parent())
+            return s + "/" + item.text(0)
+
+        xpath = get_xpath(self.currentItem())
+        QApplication.clipboard().setText(xpath)
+
+    def onCopyItemValue(self):
+        QApplication.clipboard().setText(self.currentItem().text(1))
+
+    def onResolveExternal(self):
+        item = self.currentItem()
         if item.text(0) == '@xlink:href' and item.data(1, Qt.UserRole).startswith('http'):
             QApplication.setOverrideCursor(Qt.WaitCursor)
             uri = item.data(1, Qt.UserRole)
@@ -119,37 +147,3 @@ class XMLTreeWidget(QtGui.QTreeWidget):
                 fill_tree_with_element(self, item.parent(), xml.getroot())
             finally:
                 QApplication.restoreOverrideCursor()
-
-    def onContextMenu(self, pos):
-        row = self.selectionModel().selectedRows()[0]
-        menu = QMenu(self)
-        copyAction = QAction(u"Copy value", self)
-        copyAction.triggered.connect(self.onCopyItemValue)
-        copyXPathAction = QAction(u"Copy XPath", self)
-        copyXPathAction.triggered.connect(self.onCopyXPath)
-        menu.addAction(copyAction)
-        menu.addAction(copyXPathAction)
-        menu.popup(self.mapToGlobal(pos))
-
-    def onCopyXPath(self):
-        def get_xpath(item):
-            s = ''
-            if item.parent():
-                s = get_xpath(item.parent())
-            return s + "/" + item.text(0)
-
-        # make sure to select the first column
-        idx = self.indexFromItem(self.currentItem())
-        idx = idx.sibling(idx.row(), 0)
-        item = self.itemFromIndex(idx)
-        
-        xpath = get_xpath(item)
-        QApplication.clipboard().setText(xpath)
-
-    def onCopyItemValue(self):
-        # make sure to select the second column
-        idx = self.indexFromItem(self.currentItem())
-        idx = idx.sibling(idx.row(), 1)
-        item = self.itemFromIndex(idx)
-        
-        QApplication.clipboard().setText(item.text(1))
