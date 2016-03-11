@@ -93,10 +93,11 @@ class ComplexFeatureSource:
         i = 1
         for feature in self.features:
             # get the id from gml:identifier
-            x = feature.xpath(".//gml:identifier/text()", namespaces = feature.nsmap)
             fid = unicode(i)
-            if len(x) > 0:
-                fid = unicode(x[0])
+            if feature.nsmap.has_key('gml'):
+                x = feature.xpath(".//gml:identifier/text()", namespaces = feature.nsmap)
+                if len(x) > 0:
+                    fid = unicode(x[0])
 
             # get the geometry
             if self.geometry_mapping:
