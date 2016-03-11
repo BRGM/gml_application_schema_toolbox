@@ -25,11 +25,24 @@ except ImportError:
     from lxml import etree
 
 from complex_features import ComplexFeatureSource, noPrefix
+from identify_dialog import IdentifyDialog
 from creation_dialog import CreationDialog
 
 from xml_tree_widget import XMLTreeWidget
 
 import urllib
+
+class IdentifyGeometry(QgsMapToolIdentify):
+    geomIdentified = pyqtSignal(QgsVectorLayer, QgsFeature)
+    
+    def __init__(self, canvas):
+        self.canvas = canvas
+        QgsMapToolIdentify.__init__(self, canvas)
+ 
+    def canvasReleaseEvent(self, mouseEvent):
+        results = self.identify(mouseEvent.x(), mouseEvent.y(), self.TopDownStopAtFirst, self.VectorLayer)
+        if len(results) > 0:
+            self.geomIdentified.emit(results[0].mLayer, results[0].mFeature)
 
 def createMemoryLayer(type, srid, attributes, title):
     """
@@ -109,14 +122,22 @@ class MainPlugin:
         self.action = QAction(QIcon(os.path.dirname(__file__) + "/mActionAddGMLLayer.svg"), \
                               u"Add/Edit Complex Features Layer", self.iface.mainWindow())
         self.action.triggered.connect(self.onAddLayer)
+        self.identifyAction = QAction(QIcon(os.path.dirname(__file__) + "/mActionIdentifyGML.svg"), \
+                              u"Identify GML feature", self.iface.mainWindow())
+        self.identifyAction.triggered.connect(self.onIdentify)
 
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu(u"Complex Features", self.action)
+        self.iface.addToolBarIcon(self.identifyAction)
+        self.iface.addPluginToMenu(u"Complex Features", self.identifyAction)
     
     def unload(self):
         # Remove the plugin menu item and icon
         self.iface.removeToolBarIcon(self.action)
         self.iface.removePluginMenu(u"Complex Features",self.action)
+        self.iface.removeToolBarIcon(self.identifyAction)
+        self.iface.removePluginMenu(u"Complex Features",self.identifyAction)
+
 
     def load_xml(self, xml_uri, is_remote, attributes = {}, geometry_mapping = None):
         """
@@ -190,7 +211,20 @@ class MainPlugin:
                 replace_layer(sel_layer, new_layer)
             else:
                 # a new layer
-                QgsMapLayerRegistry.instance().addMapLayer(new_layer)        
+                QgsMapLayerRegistry.instance().addMapLayer(new_layer)
+
+    def onIdentify(self):
+        self.mapTool = IdentifyGeometry(self.iface.mapCanvas())
+        self.mapTool.geomIdentified.connect(self.onGeometryIdentified)
+        self.iface.mapCanvas().setMapTool(self.mapTool)
+
+    def onGeometryIdentified(self, layer, feature):
+        # disable map tool
+        self.iface.mapCanvas().setMapTool(None)
+
+        self.dlg = IdentifyDialog(layer, feature)
+        self.dlg.exec_()
+        
 
 # Function to be called when a form on the complex feature layer is opened
 def on_qgis_form_open(dialog, layer, feature):
