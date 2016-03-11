@@ -4,7 +4,7 @@ PLUGINNAME = qgis_complex_features
 
 PY_FILES = main.py __init__.py complex_features.py identify_dialog.py creation_dialog.py xml_tree_widget.py table_dialog.py
 
-EXTRAS = *.svg metadata.txt
+EXTRAS = *.svg metadata.txt whl
 
 UI_FILES = creation_dialog.ui
 
@@ -20,7 +20,7 @@ deploy: transcompile
 	mkdir -p $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
 	cp -vf $(PY_FILES) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
 	cp -vf $(UI_FILES) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
-	cp -vf $(EXTRAS) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
+	cp -vfR $(EXTRAS) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
 
 # The dclean target removes compiled python files from plugin directory
 # also delets any .svn entry
