@@ -16,7 +16,7 @@ class IdentifyDialog(QtGui.QDialog):
         # #widgets-and-dialogs-with-auto-connect
         #self.setupUi(self)
 
-        self.treeWidget = XMLTreeWidget(layer, feature, self)
+        self.treeWidget = XMLTreeWidget(feature, self)
 
         self.mainLayout = QVBoxLayout(self)
         self.formLayout = QFormLayout(self)
