@@ -124,7 +124,7 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         row = self.selectionModel().selectedRows()[0]
         menu = QMenu(self)
         copyAction = QAction(u"Copy value", self)
-        #copyAction.triggered.connect(self.onCopyItemValue)
+        copyAction.triggered.connect(self.onCopyItemValue)
         copyXPathAction = QAction(u"Copy XPath", self)
         copyXPathAction.triggered.connect(self.onCopyXPath)
         menu.addAction(copyAction)
@@ -145,3 +145,11 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         
         xpath = get_xpath(item)
         QApplication.clipboard().setText(xpath)
+
+    def onCopyItemValue(self):
+        # make sure to select the second column
+        idx = self.indexFromItem(self.currentItem())
+        idx = idx.sibling(idx.row(), 1)
+        item = self.itemFromIndex(idx)
+        
+        QApplication.clipboard().setText(item.text(1))
