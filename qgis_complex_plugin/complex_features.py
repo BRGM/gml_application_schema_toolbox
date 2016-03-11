@@ -196,7 +196,7 @@ def load_complex_gml(xml_uri, is_remote, attributes = {}, geometry_mapping = Non
         qgsgeom = None
         if g is None:
             if layer is None:
-                layer = createMemoryLayer('none', None, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title)
+                layer = create_memory_layer('none', None, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title)
         else:
             wkb, srid = g
             qgsgeom = QgsGeometry()
