@@ -13,7 +13,7 @@ name=Complex Features in QGIS
 qgisMinimumVersion=1.8
 qgisMaximumVersion=2.99
 description=Prototype to load OGC Complex Features in QGIS
-version=0.3
+version=0.4
 
 # end of mandatory metadata
 
