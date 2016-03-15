@@ -6,11 +6,9 @@ from PyQt4.QtGui import *
 
 from lxml import etree
 
-from complex_features import noPrefix, load_complex_gml, is_layer_complex
+from complex_features import noPrefix, load_complex_gml, is_layer_complex, remote_open_from_qgis
 
 from qgis.core import QgsMapLayerRegistry
-
-import urllib
 
 def fill_tree_with_element(widget, treeItem, elt):
     # tag
@@ -162,7 +160,7 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         QApplication.setOverrideCursor(Qt.WaitCursor)
         uri = item.data(1, Qt.UserRole)
         try:
-            f = urllib.urlopen(uri)
+            f = remote_open_from_qgis(uri)
             try:
                 xml = etree.parse(f)
             except etree.XMLSyntaxError:

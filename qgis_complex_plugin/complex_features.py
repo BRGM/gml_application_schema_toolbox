@@ -9,6 +9,20 @@ from qgis.core import QGis, QgsGeometry, QgsVectorLayer, QgsField, QgsFeature, Q
 
 import re
 
+def remote_open_from_qgis(uri):
+    """Opens a remote URL using QGIS proxy preferences"""
+    from PyQt4.QtCore import QUrl, QEventLoop
+    from PyQt4.QtNetwork import QNetworkRequest
+    from StringIO import StringIO
+    from qgis.core import QgsNetworkAccessManager
+    nm = QgsNetworkAccessManager.instance()
+    pause = QEventLoop()
+    reply = nm.get(QNetworkRequest(QUrl(uri)))
+    reply.finished.connect(pause.quit)
+    pause.exec_()
+    r = str(reply.readAll())
+    return StringIO(r)
+
 def noPrefix(tag):
     if tag.startswith('{'):
         return tag[tag.rfind('}')+1:]
@@ -58,16 +72,15 @@ def extractGmlFromXPath(tree, xpath):
     return None
 
 class ComplexFeatureSource:
-    def __init__(self, xml_file, xpath_mapping = {}, geometry_mapping = None):
+    def __init__(self, xml, xpath_mapping = {}, geometry_mapping = None):
         """
         Construct a ComplexFeatureSource
 
-        :param xml_file: The input XML file name
+        :param xml: The input XML, as file io
         :param xpath_mapping: A mapping of XPath expressions to attributes. Example: { 'attribute' : ('//xpath/expression', QVariant.Int) }
         :param geometry_mapping: An XPath expression used to extract the geometry
         """
-        
-        doc = etree.parse(open(xml_file))
+        doc = etree.parse(xml)
         root = doc.getroot()
         if noPrefix(root.tag) != 'FeatureCollection':
             # this seems to be an isolated feature
@@ -185,11 +198,10 @@ def load_complex_gml(xml_uri, is_remote, attributes = {}, geometry_mapping = Non
     :returns: the created layer
     """
     if is_remote:
-        import urllib
-        xml_file, _ = urllib.urlretrieve(xml_uri)
+        xml = remote_open_from_qgis(xml_uri)
     else:
-        xml_file = xml_uri
-    src = ComplexFeatureSource(xml_file, attributes, geometry_mapping)
+        xml = open(xml_uri)
+    src = ComplexFeatureSource(xml, attributes, geometry_mapping)
 
     layer = None
     for fid, g, xml, attrs in src.getFeatures():
