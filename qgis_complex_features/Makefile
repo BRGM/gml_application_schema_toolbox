@@ -39,18 +39,10 @@ zip: deploy dclean
 	rm -f $(PLUGINNAME)*.zip
 	cd $(HOME)/.qgis2/python/plugins; zip -9r $(CURDIR)/$(PLUGINNAME)-$(VERSION).zip $(PLUGINNAME)
 
-# Create a zip package of the plugin named $(PLUGINNAME).zip. 
-# This requires use of git (your plugin development directory must be a 
-# git repository).
-# To use, pass a valid commit or tag as follows:
-#   make package VERSION=Version_0.3.2
-package: compile
-		rm -f $(PLUGINNAME).zip
-		git archive --prefix=$(PLUGINNAME)/ -o $(PLUGINNAME).zip $(VERSION)
-		echo "Created package: $(PLUGINNAME).zip"
-
 upload: zip
-	$(PLUGIN_UPLOAD) $(PLUGINNAME).zip
+	sed s/_VERSION_/$(VERSION)/g < plugins.xml.tmpl > plugins.xml
+	scp plugins.xml hekla:~/brgm_gml
+	scp $(PLUGINNAME)-$(VERSION).zip hekla:~/brgm_gml/plugins
 
 # transup
 # update .ts translation files

@@ -10,17 +10,11 @@
 
 [general]
 name=Complex Features in QGIS
-qgisMinimumVersion=1.8
+qgisMinimumVersion=2.14
 qgisMaximumVersion=2.99
 description=Prototype to load OGC Complex Features in QGIS
-version=0.4
-
-# end of mandatory metadata
-
-# Optional items:
-
- # Uncomment the following line and add your changelog entries:
-# changelog=
+version=0.5.0
+changelog=
 
 # tags are comma separated with spaces allowed
 tags=ogc, complex, features
