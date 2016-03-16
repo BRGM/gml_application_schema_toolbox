@@ -110,10 +110,10 @@ class MainPlugin:
         if len(sel) > 0:
             sel_layer = sel[0]
         if sel:
-            layer_edited, xml_uri, is_remote, attributes, geom_mapping = properties_from_layer(sel_layer)
+            layer_edited, xml_uri, is_remote, attributes, geom_mapping, output_filename = properties_from_layer(sel_layer)
 
         if layer_edited:
-            creation_dlg = CreationDialog(xml_uri, is_remote, attributes, geom_mapping)
+            creation_dlg = CreationDialog(xml_uri, is_remote, attributes, geom_mapping, output_filename)
         else:
             creation_dlg = CreationDialog()
         r = creation_dlg.exec_()
@@ -121,7 +121,8 @@ class MainPlugin:
             is_remote, url = creation_dlg.source()
             mapping = creation_dlg.attribute_mapping()
             geom_mapping = creation_dlg.geometry_mapping()
-            new_layer = load_complex_gml(url, is_remote, mapping, geom_mapping)
+            output_filename = creation_dlg.output_filename()
+            new_layer = load_complex_gml(url, is_remote, mapping, geom_mapping, output_filename)
 
             do_replace = False
             if creation_dlg.replace_current_layer():

@@ -5,7 +5,9 @@ from lxml import etree
 from osgeo import ogr
 from PyQt4.QtCore import QVariant
 
-from qgis.core import QGis, QgsGeometry, QgsVectorLayer, QgsField, QgsFeature, QgsMapLayer
+from qgis.core import QGis, QgsGeometry, QgsVectorLayer, QgsField, QgsFeature, QgsMapLayer, QgsDataSourceURI
+
+from pyspatialite import dbapi2 as sqlite3
 
 import re
 

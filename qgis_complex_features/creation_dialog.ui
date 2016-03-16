@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>856</width>
-    <height>611</height>
+    <width>925</width>
+    <height>708</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <item>
       <widget class="QRadioButton" name="filenameRadio">
        <property name="text">
-        <string>Filename</string>
+        <string>Input filename</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -43,7 +43,7 @@
      <item>
       <widget class="QRadioButton" name="urlRadio">
        <property name="text">
-        <string>URL</string>
+        <string>Input URL</string>
        </property>
       </widget>
      </item>
@@ -51,6 +51,27 @@
       <widget class="QLineEdit" name="urlText">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Output filename</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="outFilenameText"/>
+     </item>
+     <item>
+      <widget class="QToolButton" name="browseOutButton">
+       <property name="text">
+        <string>...</string>
        </property>
       </widget>
      </item>

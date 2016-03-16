@@ -8,7 +8,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'creation_dialog.ui'))
 
 class CreationDialog(QtGui.QDialog, FORM_CLASS):
-    def __init__(self, xml_uri=None, is_remote = False, attributes = {}, geometry_mapping = None, parent=None):
+    def __init__(self, xml_uri=None, is_remote = False, attributes = {}, geometry_mapping = None, output_filename = None, parent=None):
         """Constructor."""
         super(CreationDialog, self).__init__(parent)
         # Set up the user interface from Designer.
@@ -38,10 +38,19 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
             self.geometryColumnCheck.setChecked(True)
             self.geometryColumnEdit.setText(geometry_mapping)
 
+        if output_filename:
+            self.outFilenameText.setText(output_filename)
+        else:
+            import tempfile
+            f = tempfile.NamedTemporaryFile()
+            self.outFilenameText.setText(f.name)
+            f.close()
+
         self.browseButton.clicked.connect(self.onBrowse)
         self.addMappingBtn.clicked.connect(self.onAddMapping)
         self.removeMappingBtn.clicked.connect(self.onRemoveMapping)
         self.attributeTable.selectionModel().selectionChanged.connect(self.onSelectMapping)
+        self.browseOutButton.clicked.connect(self.onBrowseOut)
 
     def onBrowse(self):
         openDir = QSettings("complex_features").value("xml_file_location", "")
@@ -49,6 +58,13 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
         if xml_file:
             QSettings("complex_features").setValue("xml_file_location", os.path.dirname(xml_file))
             self.filenameText.setText(xml_file)
+
+    def onBrowseOut(self):
+        openDir = QSettings("complex_features").value("out_file_location", "")
+        sqlite_file = QFileDialog.getSaveFileName (None, "Select Sqlite File", openDir, "*.sqlite")
+        if sqlite_file:
+            QSettings("complex_features").setValue("out_file_location", os.path.dirname(sqlite_file))
+            self.outFilenameText.setText(sqlite_file)
 
     def onSelectMapping(self, selected, deselected):
         self.removeMappingBtn.setEnabled(selected != -1)
@@ -96,3 +112,6 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
 
     def replace_current_layer(self):
         return self.replaceLayerChck.isChecked()
+
+    def output_filename(self):
+        return self.outFilenameText.text()
