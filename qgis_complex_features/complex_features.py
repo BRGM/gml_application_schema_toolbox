@@ -17,10 +17,11 @@ def remote_open_from_qgis(uri):
     from qgis.core import QgsNetworkAccessManager
     nm = QgsNetworkAccessManager.instance()
     pause = QEventLoop()
-    reply = nm.get(QNetworkRequest(QUrl(uri)))
+    reply = nm.get(QNetworkRequest(QUrl.fromEncoded(uri)))
     reply.finished.connect(pause.quit)
     pause.exec_()
     r = str(reply.readAll())
+    reply.close()
     return StringIO(r)
 
 def noPrefix(tag):
