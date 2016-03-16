@@ -154,90 +154,225 @@ class ComplexFeatureSource:
             yield fid, wkb, feature, attrvalues
             i += 1
 
-def create_memory_layer(type, srid, attributes, title):
-    """
-    Creates an empty memory layer
-    :param type: 'Point', 'LineString', 'Polygon', etc.
-    :param srid: CRS ID of the layer
-    :param attributes: list of (attribute_name, attribute_type)
-    """
-    if srid:
-        layer = QgsVectorLayer("{}?crs=EPSG:{}&field=id:string".format(type, srid), title, "memory")
-    else:
-        layer = QgsVectorLayer("none?field=id:string", title, "memory")
-    pr = layer.dataProvider()
-    pr.addAttributes([QgsField("_xml_", QVariant.String)])
-    for aname, atype in attributes:
-        pr.addAttributes([QgsField(aname, atype)])
-    layer.updateFields()
-    return layer
 
-def add_properties_to_layer(layer, xml_uri, is_remote, attributes, geom_mapping):
-    layer.setCustomProperty("complex_features", True)
-    layer.setCustomProperty("xml_uri", xml_uri)
-    layer.setCustomProperty("is_remote", is_remote)
-    layer.setCustomProperty("attributes", attributes)
-    layer.setCustomProperty("geom_mapping", geom_mapping)
+class ComplexFeatureLoader:
+    """Allows to load a complex feature source and put features in a QGIS layer"""
+
+    def _create_layer(self, geometry_type, srid, attributes, title):
+        raise RuntimeError("No default implementation, use a derived class")
+
+    def _add_properties_to_layer(self, layer, xml_uri, is_remote, attributes, geom_mapping):
+        raise RuntimeError("No default implementation, use a derived class")
+
+    @staticmethod
+    def properties_from_layer(layer):
+        raise RuntimeError("No default implementation, use a derived class")
+
+    @staticmethod
+    def is_layer_complex(layer):
+        raise RuntimeError("No default implementation, use a derived class")
+
+    def load_complex_gml(self, xml_uri, is_remote, attributes = {}, geometry_mapping = None):
+        """
+        :param xml_uri: the XML URI
+        :param is_remote: True if it has to be fetched by http
+        :param attributes: { 'attr1' : ( '//xpath/expression', QVariant.Int ) }
+        :param geometry_mapping: XPath expression to a gml geometry node
+        :returns: the created layer
+        """
+        if is_remote:
+            xml = remote_open_from_qgis(xml_uri)
+        else:
+            xml = open(xml_uri)
+        src = ComplexFeatureSource(xml, attributes, geometry_mapping)
+
+        layer = None
+        attr_list = [ (k, v[1]) for k, v in attributes.iteritems() ]
+        for fid, g, xml, attrs in src.getFeatures():
+            qgsgeom = None
+            if g is None:
+                if layer is None:
+                    layer = self._create_layer('none', None, attr_list, src.title)
+            else:
+                wkb, srid = g
+                qgsgeom = QgsGeometry()
+                qgsgeom.fromWkb(wkb)
+                if qgsgeom and qgsgeom.type() == QGis.Point:
+                    if layer is None:
+                        layer = self._create_layer('point', srid, attr_list, src.title + " (points)")
+                elif qgsgeom and qgsgeom.type() == QGis.Line:
+                    if layer is None:
+                        layer = self._create_layer('linestring', srid, attr_list, src.title + " (lines)")
+                elif qgsgeom and qgsgeom.type() == QGis.Polygon:
+                    if layer is None:
+                        layer = self._create_layer('polygon', srid, attr_list, src.title + " (polygons)")
+
+            if layer:
+                self._add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)
+
+                pr = layer.dataProvider()
+                f = QgsFeature(pr.fields())
+                if qgsgeom:
+                    f.setGeometry(qgsgeom)
+                f.setAttribute("id", fid)
+                f.setAttribute("_xml_", etree.tostring(xml))
+                for k, v in attrs.iteritems():
+                    r = f.setAttribute(k, v)
+                pr.addFeatures([f])
+
+        return layer
+
+class ComplexFeatureLoaderInMemory(ComplexFeatureLoader):
+
+    def _create_layer(self, geometry_type, srid, attributes, title):
+        """
+        Creates an empty memory layer
+        :param type: 'Point', 'LineString', 'Polygon', etc.
+        :param srid: CRS ID of the layer
+        :param attributes: list of (attribute_name, attribute_type)
+        :param title: title of the layer
+        """
+        if srid:
+            layer = QgsVectorLayer("{}?crs=EPSG:{}&field=id:string".format(type, srid), title, "memory")
+        else:
+            layer = QgsVectorLayer("none?field=id:string", title, "memory")
+        pr = layer.dataProvider()
+        pr.addAttributes([QgsField("_xml_", QVariant.String)])
+        for aname, atype in attributes:
+            pr.addAttributes([QgsField(aname, atype)])
+        layer.updateFields()
+        return layer
+
+    def _add_properties_to_layer(self, layer, xml_uri, is_remote, attributes, geom_mapping):
+        layer.setCustomProperty("complex_features", True)
+        layer.setCustomProperty("xml_uri", xml_uri)
+        layer.setCustomProperty("is_remote", is_remote)
+        layer.setCustomProperty("attributes", attributes)
+        layer.setCustomProperty("geom_mapping", geom_mapping)
+        
+    @staticmethod
+    def properties_from_layer(layer):
+        return (layer.customProperty("complex_features", False),
+                layer.customProperty("xml_uri", ""),
+                layer.customProperty("is_remote", False),
+                layer.customProperty("attributes", {}),
+                layer.customProperty("geom_mapping", None),
+                None #output filename
+        )
+
+    @staticmethod
+    def is_layer_complex(layer):
+        return layer.type() == QgsMapLayer.VectorLayer and layer.customProperty("complex_features", False)
+
+
+class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
+
+    def __init__(self, output_local_file):
+        """
+        :param output_local_file: name of the local sqlite file
+        """
+        self.output_local_file = output_local_file
+
+    def _create_layer(self, type, srid, attributes, title):
+        """
+        Creates an empty spatialite layer
+        :param type: 'Point', 'LineString', 'Polygon', etc.
+        :param srid: CRS ID of the layer
+        :param attributes: list of (attribute_name, attribute_type)
+        :param title: title of the layer
+        """
+        conn = sqlite3.connect(self.output_local_file)
+        cur = conn.cursor()
+        cur.execute("SELECT InitSpatialMetadata(1)")
+        cur.execute("DROP TABLE IF EXISTS meta")
+        cur.execute("DROP TABLE IF EXISTS data")
+        cur.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
+        cur.execute("CREATE TABLE data (id TEXT NOT NULL PRIMARY KEY)")
+        if srid:
+            cur.execute("SELECT AddGeometryColumn('data', 'geometry', {}, '{}', 'XY')".format(srid, type))
+        conn.close()
+
+        if srid:
+            layer = QgsVectorLayer("dbname='{}' table=\"data\" (geometry) sql=".format(self.output_local_file), title, "spatialite")
+        else:
+            layer = QgsVectorLayer("dbname='{}' table=\"data\" sql=".format(self.output_local_file), title, "spatialite")
+
+        pr = layer.dataProvider()
+        pr.addAttributes([QgsField("_xml_", QVariant.String)])
+        for aname, atype in attributes:
+            pr.addAttributes([QgsField(aname, atype)])
+        layer.updateFields()
+        return layer
+
+    def _add_properties_to_layer(self, layer, xml_uri, is_remote, attributes, geom_mapping):
+        import json
+        conn = sqlite3.connect(self.output_local_file)
+        cur = conn.cursor()
+        cur.execute("INSERT OR REPLACE INTO meta VALUES('complex_features', '1')")
+        cur.execute("INSERT OR REPLACE INTO meta VALUES('xml_uri', ?)", (xml_uri,))
+        cur.execute("INSERT OR REPLACE INTO meta VALUES('is_remote', ?)", ('1' if is_remote else '0',))
+        cur.execute("INSERT OR REPLACE INTO meta VALUES('attributes', ?)", (json.dumps(attributes),))
+        cur.execute("INSERT OR REPLACE INTO meta VALUES('geom_mapping', ?)", (json.dumps(geom_mapping),))
+        cur.execute("INSERT OR REPLACE INTO meta VALUES('output_filename', ?)", (self.output_local_file,))
+        conn.commit()
+
+    @staticmethod
+    def properties_from_layer(layer):
+        import json
+        nil = (False, None, None, None, None, None)
+        if layer.type() != QgsMapLayer.VectorLayer:
+            return nil
+        if layer.providerType() != "spatialite":
+            return nil
+        u = QgsDataSourceURI(layer.source())
+        conn = sqlite3.connect(u.database())
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM meta")
+        ret = list(nil)
+        for r in cur:
+            if r[0] == 'complex_features':
+                ret[0] = r[1] == '1'
+            elif r[0] == 'xml_uri':
+                ret[1] = r[1]
+            elif r[0] == 'is_remote':
+                ret[2] = r[1] == '1'
+            elif r[0] == 'attributes':
+                ret[3] = json.loads(r[1])
+            elif r[0] == 'geom_mapping':
+                ret[4] = json.loads(r[1])
+            elif r[0] == 'output_filename':
+                ret[5] = r[1]
+        return ret
+
+    @staticmethod
+    def is_layer_complex(layer):
+        if layer.type() != QgsMapLayer.VectorLayer:
+            return False
+        if layer.providerType() != "spatialite":
+            return False
+        u = QgsDataSourceURI(layer.source())
+        conn = sqlite3.connect(u.database())
+        cur = conn.cursor()
+        cur.execute("SELECT value FROM meta WHERE key='complex_features'")
+        for r in cur:
+            return r[0] == '1'
+        return False
+
+def load_complex_gml(xml_uri, is_remote, attributes = {}, geometry_mapping = None, output_local_file = None):
+    if not output_local_file:
+        import tempfile
+        f = tempfile.NamedTemporaryFile()
+        output_local_file = f.name
+        f.close()
+
+    s = ComplexFeatureLoaderInSpatialite(output_local_file)
+    return s.load_complex_gml(xml_uri, is_remote, attributes, geometry_mapping)
 
 def properties_from_layer(layer):
-    return (layer.customProperty("complex_features", False),
-            layer.customProperty("xml_uri", ""),
-            layer.customProperty("is_remote", False),
-            layer.customProperty("attributes", {}),
-            layer.customProperty("geom_mapping", None)
-    )
+    return ComplexFeatureLoaderInSpatialite.properties_from_layer(layer)
 
 def is_layer_complex(layer):
-    return layer.type() == QgsMapLayer.VectorLayer and layer.customProperty("complex_features", False)
-
-def load_complex_gml(xml_uri, is_remote, attributes = {}, geometry_mapping = None):
-    """
-    :param xml_uri: the XML URI
-    :param is_remote: True if it has to be fetched by http
-    :param attributes: { 'attr1' : ( '//xpath/expression', QVariant.Int ) }
-    :param geometry_mapping: XPath expression to a gml geometry node
-    :returns: the created layer
-    """
-    if is_remote:
-        xml = remote_open_from_qgis(xml_uri)
-    else:
-        xml = open(xml_uri)
-    src = ComplexFeatureSource(xml, attributes, geometry_mapping)
-
-    layer = None
-    for fid, g, xml, attrs in src.getFeatures():
-        qgsgeom = None
-        if g is None:
-            if layer is None:
-                layer = create_memory_layer('none', None, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title)
-        else:
-            wkb, srid = g
-            qgsgeom = QgsGeometry()
-            qgsgeom.fromWkb(wkb)
-            if qgsgeom and qgsgeom.type() == QGis.Point:
-                if layer is None:
-                    layer = create_memory_layer('point', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (points)")
-            elif qgsgeom and qgsgeom.type() == QGis.Line:
-                if layer is None:
-                    layer = create_memory_layer('linestring', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (lines)")
-            elif qgsgeom and qgsgeom.type() == QGis.Polygon:
-                if layer is None:
-                    layer = create_memory_layer('polygon', srid, [ (k, v[1]) for k, v in attributes.iteritems() ], src.title + " (polygons)")
-
-        if layer:
-            add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)
-
-            pr = layer.dataProvider()
-            f = QgsFeature(pr.fields())
-            if qgsgeom:
-                f.setGeometry(qgsgeom)
-            f.setAttribute("id", fid)
-            f.setAttribute("_xml_", etree.tostring(xml))
-            for k, v in attrs.iteritems():
-                r = f.setAttribute(k, v)
-            pr.addFeatures([f])
-
-    return layer
+    return ComplexFeatureLoaderInSpatialite.is_layer_complex(layer)
 
 if __name__ == '__main__':
     print "GSML4"
