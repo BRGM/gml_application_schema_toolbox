@@ -1,0 +1,17 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:y="http://test.com/Y"
+           xsi:schemaLocation="http://test.com/Y y.xsd">
+    <xs:element name="a">
+        <xs:complexType mixed="true">
+          <xs:attribute name="at" type="xs:string"/>
+          <xs:sequence>
+            <xs:element name="b" type="y:percentage"/>
+            <xs:choice>
+              <xs:element name="c" type="xs:string"/>
+              <xs:element name="d" type="xs:integer"/>
+            </xs:choice>
+          </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
