@@ -15,6 +15,7 @@ from type_resolver import resolve_types, no_prefix, type_definition_name
 
 import os
 import sys
+import urllib2
 
 def mkdir_p(path):
     """Recursively create all subdirectories of a given path"""

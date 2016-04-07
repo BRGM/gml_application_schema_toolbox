@@ -28,7 +28,10 @@ def fill_tree_with_element(widget, treeItem, elt):
             i = k.index('}')
             ns = k[1:i]
             # get ns prefix from ns uri
-            n = elt.nsmap.keys()[elt.nsmap.values().index(ns)] + ":" + k[i+1:]
+            if ns in elt.nsmap.values():
+                n = elt.nsmap.keys()[elt.nsmap.values().index(ns)] + ":" + k[i+1:]
+            else:
+                n = k[i+1:]
         else:
             n = noPrefix(k)
         child.setText(0, "@" + n)
@@ -114,7 +117,7 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         menu.addAction(copyXPathAction)
 
         item = self.currentItem()
-        if item.text(0) == '@xlink:href' and item.data(1, Qt.UserRole).startswith('http'):
+        if item.text(0) == '@xlink:href' and item.data(1, Qt.UserRole) and item.data(1, Qt.UserRole).startswith('http'):
             resolveMenu = QMenu("Resolve external", menu)
             resolveEmbeddedAction = QAction(u"Embedded", self)
             resolveEmbeddedAction.triggered.connect(self.onResolveEmbedded)
