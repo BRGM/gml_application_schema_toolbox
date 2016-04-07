@@ -19,7 +19,10 @@ def remote_open_from_qgis(uri):
     from qgis.core import QgsNetworkAccessManager
     nm = QgsNetworkAccessManager.instance()
     pause = QEventLoop()
-    reply = nm.get(QNetworkRequest(QUrl.fromEncoded(uri)))
+    req = QNetworkRequest(QUrl.fromEncoded(uri))
+    req.setRawHeader("Accept", "application/xml")
+    req.setRawHeader("Accept-Language", "fr")
+    reply = nm.get(req)
     reply.finished.connect(pause.quit)
     pause.exec_()
     r = str(reply.readAll())
