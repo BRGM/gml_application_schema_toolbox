@@ -173,64 +173,13 @@ def is_derived_from(td, type_name):
         td = td.baseTypeDefinition()
     return False
 
-def type_to_table(td):
-    # list of fields
-    fields = []
-    if isinstance(td, ComplexTypeDefinition):
-        # attributes
-        for au in td.attributeUses():
-            # au.required()
-            ad = au.attributeDeclaration()
-            fields.append(Column(ad.name(), not au.required(), ad.typeDefinition()))
-        
-        # child elements
-        content = td.contentType()[1]
-        if isinstance(content, Particle):
-            parts = [content.term()]
-            minOccurs = 1
-            maxOccurs = 1
-            while parts:
-                part = parts[0]
-                parts = parts[1:]
-                #print(part)
-                if isinstance(part, ElementDeclaration):
-                    if maxOccurs == 1 and is_simple(part.typeDefinition()):
-                        fields.append(Column(part.name(), minOccurs == 0, part.typeDefinition()))
-                    elif maxOccurs == 1 and is_derived_from(part.typeDefinition(), u'AbstractGeometryType'):
-                        fields.append(Geometry(part.name(), minOccurs == 0))
-                    else:
-                        fields.append(Link(part.name(), minOccurs, maxOccurs, part.typeDefinition()))
-                elif isinstance(part, Particle):
-                    minOccurs = part.minOccurs()
-                    maxOccurs = part.maxOccurs()
-                    parts.insert(0, part.term())
-                elif isinstance(part, ModelGroup):
-                    if part.compositor() == part.C_CHOICE:
-                        print("CHOICE compositor treated as SEQUENCE in " + td.name())
-                    parts = part.particles() + parts
-
-    return fields
-
 class Table:
     """A Table is a list of Columns or Links to other tables, a list of geometry columns and an id"""
 
     def __init__(self, name = '', fields = [], uid = None):
         self.__name = name
         self.__fields = list(fields)
-        if uid is None:
-            uid = Column("id", auto_incremented = True)
-            self.__fields.append(uid)
         self.__uid_column = uid
-
-    @staticmethod
-    def from_type(name, td):
-        """Creates a table from a type definition"""
-        fields = type_to_table(td)
-        uid_column = None
-        for field in fields:
-            if isinstance(field, Column) and field.name() == "id":
-                uid_column = field
-        return Table(name, fields, uid = uid_column)
 
     def name(self):
         return self.__name
@@ -317,12 +266,34 @@ def _create_tables(node, parent_node, type_info_dict, tables):
         fields.append(c)
         if no_prefix(attr_name) == "id":
             uid_column = c
-        
+    if uid_column is None:
+        uid_column = Column("id", auto_incremented = True)
+        fields.append(uid_column)
+
+    # number in the current sequence, 0 if not in a sequence
+    seq_num = 0
+    # type of the sequence
+    seq_td = None
     for child in node:
         child_ti = type_info_dict[child]
         child_td = child_ti.type_info().typeDefinition()
-        if is_simple(child_td):
+        if child_ti.max_occurs() is None: # "*" cardinality
+            if seq_num > 0 and seq_td == child_td:
+                # if already in a sequence, increment seq_num
+                seq_num += 1
+                continue
+            else:
+                seq_num = 1
+                seq_td = child_td
+        else:
+            seq_num = 0
+        if seq_num == 0 and is_simple(child_td):
             fields.append(Column(no_prefix(child.tag), ref_type = child_td, optional = child_ti.min_occurs() == 0))
+        elif seq_num > 0 and is_simple(child_td):
+            table_name = no_prefix(node.tag) + "_" + no_prefix(child.tag)
+            table = Table(table_name, [Column("v", ref_type=child_td)])
+            tables[table_name] = table
+            fields.append(Link(no_prefix(child.tag), child_ti.min_occurs(), child_ti.max_occurs(), child_td, table))
         elif is_derived_from(child_td, "AbstractGeometryType"):
             fields.append(Geometry(no_prefix(child.tag)))
         else:
@@ -393,18 +364,18 @@ def create_sql_schema(tables):
             else:
                 nullity = ""
 
-            id_type = link.ref_table().uid_column().ref_type()
-            if id_type is not None:
-                fk_constraints.append((link.name(), link.ref_table(), simple_type_to_sql_type(id_type) + nullity))
+            id = link.ref_table().uid_column()
+            if id is not None and id.ref_type() is not None:
+                fk_constraints.append((link.name(), link.ref_table(), simple_type_to_sql_type(id.ref_type()) + nullity))
             else:
                 fk_constraints.append((link.name(), link.ref_table(), "INT" + nullity))
 
         for bl in table.back_links():
             if bl.ref_table() is None:
                 continue
-            id_type = bl.ref_table().uid_column().ref_type()
-            if id_type is not None:
-                fk_constraints.append((bl.ref_table().name(), bl.ref_table(), simple_type_to_sql_type(id_type)))
+            id = bl.ref_table().uid_column()
+            if id is not None and id.ref_type() is not None:
+                fk_constraints.append((bl.ref_table().name(), bl.ref_table(), simple_type_to_sql_type(id.ref_type())))
             else:
                 fk_constraints.append((bl.ref_table().name(), bl.ref_table(), "INT"))
 
@@ -415,8 +386,6 @@ def create_sql_schema(tables):
 
         yield(",\n".join(columns))
         yield(");")
-
-
 
 if len(sys.argv) < 3:
     print("Argument: xsd_file xml_file")
@@ -429,15 +398,15 @@ uri_resolver = URIResolver("archive")
 
 ns = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
 
-root_type = ns.typeDefinitions()[u'EnvironmentalMonitoringFacilityType']
-root_name = u'EnvironmentalMonitoringFacility'
-
 import xml.etree.ElementTree as ET
 doc = ET.parse(xml_file)
 
+root_name = no_prefix(doc.getroot().tag)
+root_type = ns.elementDeclarations()[root_name].typeDefinition()
+
 type_info_dict = resolve_types(doc, ns)
 
-#print_etree(doc.getroot(), type_info_dict)
+print_etree(doc.getroot(), type_info_dict)
 
 tables = create_tables(doc, type_info_dict)
 for line in create_sql_schema(tables):
