@@ -92,8 +92,9 @@ def print_schema(obj, lvl):
 class Link:
     """A Link represents a link to another type/table"""
 
-    def __init__(self, name, min_occurs, max_occurs, ref_type, ref_table = None):
+    def __init__(self, name, optional, min_occurs, max_occurs, ref_type, ref_table = None):
         self.__name = name
+        self.__optional = optional
         self.__min_occurs = min_occurs
         self.__max_occurs = max_occurs
         self.__ref_type = ref_type
@@ -107,6 +108,8 @@ class Link:
         return self.__ref_table
     def set_ref_table(self, ref_table):
         self.__ref_table = ref_table
+    def optional(self):
+        return self.__optional
     def min_occurs(self):
         return self.__min_occurs
     def max_occurs(self):
@@ -156,16 +159,25 @@ class Column:
 class Geometry:
     """A geometry column"""
 
-    def __init__(self, name, optional = False):
+    def __init__(self, name, type, dim, srid, optional = False):
         self.__name = name
+        self.__type = type
+        self.__dim = dim
+        self.__srid = srid
         self.__optional = optional
 
     def name(self):
         return self.__name
+    def type(self):
+        return self.__type
+    def dimension(self):
+        return self.__dim
+    def srid(self):
+        return self.__srid
     def optional(self):
         return self.__optional
     def __repr__(self):
-        return "Geometry<{}{}>".format(self.__name, " optional" if self.__optional else "")
+        return "Geometry<{} {}{}({}){}>".format(self.name(), self.type(), "Z" if self.dimension() == 3 else "", self.srid(), " optional" if self.__optional else "")
 
 def is_simple(td):
     return isinstance(td, SimpleTypeDefinition) or (isinstance(td, ComplexTypeDefinition) and td.contentType()[0] == 'SIMPLE')
@@ -182,7 +194,9 @@ class Table:
 
     def __init__(self, name = '', fields = [], uid = None):
         self.__name = name
-        self.__fields = list(fields)
+        self.__fields = {}
+        for f in fields:
+            self.__fields[f.name()] = f
         # uid column
         self.__uid_column = uid
         # last value for autoincremented id
@@ -197,15 +211,21 @@ class Table:
     def fields(self):
         return self.__fields
     def add_fields(self, fields):
-        self.__fields += fields
+        for f in fields:
+            self.__fields[f.name()] = f
+    def has_field(self, field_name):
+        return self.__fields.has_key(field_name)
+    def field(self, field_name):
+        return self.__fields.get(field_name)
+    
     def links(self):
-        return [x for x in self.__fields if isinstance(x, Link)]
+        return [x for k, x in self.fields().iteritems() if isinstance(x, Link)]
     def columns(self):
-        return [x for x in self.__fields if isinstance(x, Column)]
+        return [x for k, x in self.fields().iteritems() if isinstance(x, Column)]
     def geometries(self):
-        return [x for x in self.__fields if isinstance(x, Geometry)]
+        return [x for k, x in self.fields().iteritems() if isinstance(x, Geometry)]
     def back_links(self):
-        return [x for x in self.__fields if isinstance(x, BackLink)]
+        return [x for k, x in self.fields().iteritems() if isinstance(x, BackLink)]
 
     def uid_column(self):
         return self.__uid_column
@@ -215,17 +235,17 @@ class Table:
     def has_autoincrement_id(self):
         return self.__last_uid is not None
     def set_autoincrement_id(self):
-        self.__fields.append(Column("id", auto_incremented = True))
+        self.__uid_column = Column("id", auto_incremented = True)
+        self.__fields['id'] = self.__uid_column
         self.__last_uid = 0
     def increment_id(self):
         self.__last_uid += 1
         return self.__last_uid
         
-
     def add_back_link(self, name, table):
         f = [x for x in table.back_links() if x.name() == name and x.table() == table]
         if len(f) == 0:
-            self.__fields.append(BackLink(name, table))
+            self.__fields[name] = BackLink(name, table)
         
 def print_etree(node, type_info_dict, indent = 0):
     ti = type_info_dict[node]
@@ -268,8 +288,36 @@ def simple_type_to_sql_type(td):
     }
     return type_map.get(type_name) or type_name
 
+def gml_geometry_type(node):
+    import re
+    srid = None
+    dim = 2
+    type = no_prefix(node.tag)
+    print("geometry type:", type)
+    if type in ['Point', 'LineString', 'Polygon', 'MultiPoint', 'MultiLineString', 'MultiPolygon']:
+        type = type.upper()
+    else:
+        type = 'GEOMETRYCOLLECTION'
+    for k, v in node.attrib.iteritems():
+        if no_prefix(k) == 'srsDimension':
+            dim = int(v)
+        elif no_prefix(k) == 'srsName':
+            # EPSG:4326
+		  	# urn:EPSG:geographicCRS:4326
+		  	# urn:ogc:def:crs:EPSG:4326
+		 	# urn:ogc:def:crs:EPSG::4326
+		  	# urn:ogc:def:crs:EPSG:6.6:4326
+		   	# urn:x-ogc:def:crs:EPSG:6.6:4326
+			# http://www.opengis.net/gml/srs/epsg.xml#4326
+			# http://www.epsg.org/6.11.2/4326
+            # get the last number
+            m = re.search('([0-9]+)/?$', v)
+            srid = int(m.group(1))
+    return type, dim, srid
+
+
 def _create_tables(node, table_name, type_info_dict, tables):
-    """Creates tables from a hierarchy of node
+    """Creates or updates tables from a hierarchy of node
     :param node: the node
     :param table_name: the name of the table for this node
     :param type_info_dict: a dict to associate a node to its TypeInfo
@@ -280,11 +328,10 @@ def _create_tables(node, table_name, type_info_dict, tables):
         # empty table
         return
 
-    if tables.has_key(table_name):
-        # alread there, abort
-        return
-    table = Table(table_name)
-    tables[table_name] = table
+    table = tables.get(table_name)
+    if table is None:
+        table = Table(table_name)
+        tables[table_name] = table
     
     fields = []
     uid_column = None
@@ -293,15 +340,18 @@ def _create_tables(node, table_name, type_info_dict, tables):
         if no_prefix(attr_name) == 'nil':
             continue
         au = ti.attribute_type_info_map()[attr_name]
-        c = Column(no_prefix(attr_name), ref_type = au.attributeDeclaration().typeDefinition(), optional = not au.required())
-        fields.append(c)
-        if no_prefix(attr_name) == "id":
-            uid_column = c
+        n_attr = no_prefix(attr_name)
+        if not table.has_field(n_attr):
+            c = Column(n_attr, ref_type = au.attributeDeclaration().typeDefinition(), optional = not au.required())
+            fields.append(c)
+            if n_attr == "id":
+                uid_column = c
 
-    if uid_column is None:
-        table.set_autoincrement_id()
-    else:
-        table.set_uid_column(uid_column)
+    if table.uid_column() is None:
+        if uid_column is None:
+            table.set_autoincrement_id()
+        else:
+            table.set_uid_column(uid_column)
 
     # in a sequence ?
     in_seq = False
@@ -310,6 +360,7 @@ def _create_tables(node, table_name, type_info_dict, tables):
     for child in node:
         child_ti = type_info_dict[child]
         child_td = child_ti.type_info().typeDefinition()
+        n_child_tag = no_prefix(child.tag)
         if child_ti.max_occurs() is None: # "*" cardinality
             if in_seq and seq_td == child_td:
                 # if already in a sequence, skip
@@ -319,18 +370,24 @@ def _create_tables(node, table_name, type_info_dict, tables):
                 seq_td = child_td
         else:
             in_seq = False
+
+        is_optional = child_ti.min_occurs() == 0 or child_ti.type_info().nillable()
         if is_simple(child_td):
             if not in_seq:
                 # simple type, 1:1 cardinality => column
-                fields.append(Column(no_prefix(child.tag), ref_type = child_td, optional = child_ti.min_occurs() == 0))
+                if not table.has_field(n_child_tag):
+                    fields.append(Column(n_child_tag, ref_type = child_td, optional = is_optional))
             else:
                 # simple type, 1:N cardinality => table
-                child_table_name = no_prefix(node.tag) + "_" + no_prefix(child.tag)
-                child_table = Table(child_table_name, [Column("v", ref_type=child_td)])
-                tables[child_table_name] = child_table
-                fields.append(Link(no_prefix(child.tag), child_ti.min_occurs(), child_ti.max_occurs(), child_td, child_table))
+                if not table.has_field(n_child_tag):
+                    child_table_name = no_prefix(node.tag) + "_" + n_child_tag
+                    child_table = Table(child_table_name, [Column("v", ref_type=child_td)])
+                    tables[child_table_name] = child_table
+                    fields.append(Link(n_child_tag, is_optional, child_ti.min_occurs(), child_ti.max_occurs(), child_td, child_table))
         elif is_derived_from(child_td, "AbstractGeometryType"):
-            fields.append(Geometry(no_prefix(child.tag)))
+            if not table.has_field(n_child_tag):
+                gtype, gdim, gsrid = gml_geometry_type(child)
+                fields.append(Geometry(n_child_tag, gtype, gdim, gsrid))
         else:
             has_id = any([1 for n in child.attrib.keys() if no_prefix(n) == "id"])
             if has_id:
@@ -338,12 +395,13 @@ def _create_tables(node, table_name, type_info_dict, tables):
                 child_table_name = child_td.name() or no_prefix(node.tag) + "_t"
                 _create_tables(child, child_table_name, type_info_dict, tables)
             else:
-                child_table_name = no_prefix(node.tag) + "_" + no_prefix(child.tag)
+                child_table_name = no_prefix(node.tag) + "_" + n_child_tag
                 _create_tables(child, child_table_name, type_info_dict, tables)
             child_table = tables.get(child_table_name)
             if child_table is not None: # may be None if the child_table is empty
                 # create link
-                fields.append(Link(no_prefix(child.tag), child_ti.min_occurs(), child_ti.max_occurs(), child_td, child_table))
+                if not table.has_field(n_child_tag):
+                    fields.append(Link(n_child_tag, is_optional, child_ti.min_occurs(), child_ti.max_occurs(), child_td, child_table))
 
     table.add_fields(fields)
 
@@ -407,8 +465,9 @@ def _populate_tables(node, table_name, parent_id, type_info_dict, tables, tables
 
         elif is_derived_from(child_td, "AbstractGeometryType"):
             # add geometry
+            g_column = table.field(no_prefix(child.tag))
             g = ogr.CreateGeometryFromGML(ET.tostring(child))
-            row.append((no_prefix(child.tag), ("GeomFromText", g.ExportToWkt())))
+            row.append((no_prefix(child.tag), ("GeomFromText('%s', %d)", g.ExportToWkt(), g_column.srid())))
         else:
             has_id = any([1 for n in child.attrib.keys() if no_prefix(n) == "id"])
             if has_id:
@@ -427,9 +486,9 @@ def _populate_tables(node, table_name, parent_id, type_info_dict, tables, tables
     # return last inserted id
     return current_id
 
-def populate_tables(doc, type_info_dict, tables):
+def populate_tables(root_node, type_info_dict, tables):
     """Returns values to insert in tables from a DOM document
-    :param doc: the document
+    :param root_node: the root node
     :param  type_info_dict: the TypeInfo dict
     :param tables: the tables dict, returned by create_tables
     :returns: a dict {table_name: [ [(column_name, column_value), (...)]]
@@ -437,25 +496,28 @@ def populate_tables(doc, type_info_dict, tables):
     tables_rows = {}
     for n in tables.keys():
         tables_rows[n] = []
-    _populate_tables(doc.getroot(), no_prefix(doc.getroot().tag), None, type_info_dict, tables, tables_rows)
+    _populate_tables(root_node, no_prefix(root_node.tag), None, type_info_dict, tables, tables_rows)
     return tables_rows
 
-def create_tables(doc, type_info_dict):
-    """Creates table definitions from a document and its TypeInfo dict
-    :param doc: the document
+def create_or_update_tables(root_node, type_info_dict, tables = None):
+    """Creates or updates table definitions from a document and its TypeInfo dict
+    :param root_node: the root node
     :param type_info_dict: the TypeInfo dict
+    :param tables: the existing table dict to update
     :returns: a dict {table_name : Table}
     """
-    tables = {}
-    table_name = no_prefix(doc.getroot().tag)
-    _create_tables(doc.getroot(), table_name, type_info_dict, tables)
+    if tables is None:
+        tables = {}
+    table_name = no_prefix(root_node.tag)
+    _create_tables(root_node, table_name, type_info_dict, tables)
 
     # create backlinks
     for name, table in tables.iteritems():
         for link in table.links():
             # only for links with a "*" cardinality
             if link.max_occurs() is None and link.ref_table() is not None:
-                link.ref_table().add_back_link(link.name(), table)
+                if not link.ref_table().has_field(link.name()):
+                    link.ref_table().add_back_link(link.name(), table)
     return tables
 
 def stream_sql_schema(tables):
@@ -474,14 +536,11 @@ def stream_sql_schema(tables):
                 l += u" NOT NULL"
             columns.append("  " + l)
 
-        for g in table.geometries():
-            columns.append("  " + g.name() + u" GEOMETRY")
-
         fk_constraints = []
         for link in table.links():
             if link.ref_table() is None or link.max_occurs() is None:
                 continue
-            if link.min_occurs() > 0:
+            if not link.optional():
                 nullity = u" NOT NULL"
             else:
                 nullity = u""
@@ -509,6 +568,10 @@ def stream_sql_schema(tables):
         yield(u",\n".join(columns))
         yield(u");")
 
+        for g in table.geometries():
+            yield(u"SELECT AddGeometryColumn('{}', '{}', {}, '{}', '{}');".format(table.name(), g.name(), g.srid(), g.type(), "XY" if g.dimension() == 2 else "XYZ"))
+
+
 def stream_sql_rows(tables_rows):
     def escape_value(v):
         if v is None:
@@ -516,9 +579,10 @@ def stream_sql_rows(tables_rows):
         if isinstance(v, (str,unicode)):
             return u"'" + unicode(v).replace("'", "''") + u"'"
         if isinstance(v, tuple):
-            # ('GeomFromText', 'POINT(...)')
-            foo, data = v
-            return foo + "('" + unicode(data).replace("'", "''") + "')"
+            # ('GeomFromText('%s', %d)', 'POINT(...)')
+            pattern = v[0]
+            args = v[1:]
+            return pattern % args
         else:
             return unicode(v)
 
@@ -530,6 +594,25 @@ def stream_sql_rows(tables_rows):
             yield(u"INSERT INTO {} ({}) VALUES ({});".format(table_name, ",".join(columns), ",".join(values)))
     yield(u"PRAGMA foreign_keys = ON;")
 
+def extract_features(doc):
+    """Extract (Complex) features from a XML doc
+    :param doc: a DOM document
+    :returns: a list of nodes for each feature
+    """
+    nodes = []
+    root = doc.getroot()
+    if root.tag.startswith(u'{http://www.opengis.net/wfs') and root.tag.endswith('FeatureCollection'):
+        # WFS features
+        for child in root:
+            if no_prefix(child.tag) == 'member':
+                nodes.append(child[0])
+            elif no_prefix(child.tag) == 'featureMembers':
+                nodes.append(child[0])
+    else:
+        # it seems to be an isolated feature
+        nodes.append(root)
+    return nodes
+
 if len(sys.argv) < 4:
     print("Argument: xsd_file xml_file sql_file")
     exit(1)
@@ -539,28 +622,40 @@ xml_file = sys.argv[-2]
 sql_file = sys.argv[-1]
     
 uri_resolver = URIResolver("archive")
-
 ns = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
 
 doc = ET.parse(xml_file)
 
-root_name = no_prefix(doc.getroot().tag)
+features = extract_features(doc)
+root = features[0]
+
+root_name = no_prefix(root.tag)
 root_type = ns.elementDeclarations()[root_name].typeDefinition()
 
-type_info_dict = resolve_types(doc, ns)
 
 #print_etree(doc.getroot(), type_info_dict)
 
-tables = create_tables(doc, type_info_dict)
-
-tables_rows = populate_tables(doc, type_info_dict, tables)
+tables = None
+tables_rows = None
+for idx, node in enumerate(features):
+    print("Feature {}".format(idx))
+    type_info_dict = resolve_types(node, ns)
+    tables = create_or_update_tables(node, type_info_dict, tables)
+    trows = populate_tables(node, type_info_dict, tables)
+    if tables_rows is None:
+        tables_rows = trows
+    else:
+        for table, rows in trows.iteritems():
+            if tables_rows.has_key(table):
+                tables_rows[table] += rows
+            else:
+                tables_rows[table] = rows
 
 import io
 fo = io.open(sql_file, "w")
 for line in stream_sql_schema(tables):
     fo.write(line + "\n")
 for line in stream_sql_rows(tables_rows):
-    print(line)
     fo.write(line + "\n")
 
 #import ipdb; ipdb.set_trace()

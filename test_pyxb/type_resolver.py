@@ -9,7 +9,7 @@ def _xsd_isinstance(type, base_type):
     return False
 
 def _find_element_declarations(obj, min_occurs = 1, max_occurs = 1):
-    """Returns a flatten list of (ElementDeclaration, cardinality) from the given node"""
+    """Returns a flatten list of (ElementDeclaration, minOccurs, maxOccurs) from the given node"""
     if isinstance(obj, ElementDeclaration):
         if isinstance(obj.typeDefinition(), ComplexTypeDefinition) and obj.typeDefinition().abstract():
             types = []
@@ -111,15 +111,14 @@ def _resolve_types(etree_node, declaration, min_occurs, max_occurs, type_info_di
         else:
             raise RuntimeError("Can't find declaration for element {}", c_name)
 
-def resolve_types(etree_doc, namespace):
+def resolve_types(root_node, namespace):
     """
-    Augment the ElementTree document with type informations for each element and each attribute.
+    Augment the ElementTree with type informations for each element and each attribute.
 
-    :param etree_doc: An XML document following the ElementTree API
+    :param etree_node: An XML node following the ElementTree API
     :param namespace: A PyXB's Namespace
     :returns: a dict {Element : TypeInfo}
     """
-    root_node = etree_doc.getroot()
     type_info_dict = {}
     _resolve_types(root_node, namespace.elementDeclarations()[no_prefix(root_node.tag)], 1, 1, type_info_dict)
     return type_info_dict
