@@ -21,6 +21,8 @@ import xml.etree.ElementTree as ET
 # for GML geometry to WKT
 from osgeo import ogr
 
+import pickle
+
 class URIResolver(object):
     def __init__(self, cachedir):
         self.__cachedir = cachedir
@@ -97,8 +99,8 @@ class Link:
         self.__optional = optional
         self.__min_occurs = min_occurs
         self.__max_occurs = max_occurs
-        self.__ref_type = ref_type
-        self.__ref_table = ref_table
+        self.__ref_type = ref_type # SQL type (str)
+        self.__ref_table = ref_table # Table
 
     def name(self):
         return self.__name
@@ -278,13 +280,13 @@ def simple_type_to_sql_type(td):
         else:
             type_name += std.name()
     else:
-        raise RuntimeError("Not simple type" + td)
-    type_map = {'string': 'TEXT',
-                'integer' : 'INT',
-                'decimal' : 'INT',
-                'boolean' : 'BOOLEAN',
-                'NilReasonType' : 'TEXT',
-                'anyURI' : 'TEXT'
+        raise RuntimeError("Not simple type" + repr(td))
+    type_map = {u'string': u'TEXT',
+                u'integer' : u'INT',
+                u'decimal' : u'INT',
+                u'boolean' : u'BOOLEAN',
+                u'NilReasonType' : u'TEXT',
+                u'anyURI' : u'TEXT'
     }
     return type_map.get(type_name) or type_name
 
@@ -341,7 +343,7 @@ def _create_tables(node, table_name, type_info_dict, tables):
         au = ti.attribute_type_info_map()[attr_name]
         n_attr = no_prefix(attr_name)
         if not table.has_field(n_attr):
-            c = Column(n_attr, ref_type = au.attributeDeclaration().typeDefinition(), optional = not au.required())
+            c = Column(n_attr, ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition()), optional = not au.required())
             fields.append(c)
             if n_attr == "id":
                 uid_column = c
@@ -375,14 +377,14 @@ def _create_tables(node, table_name, type_info_dict, tables):
             if not in_seq:
                 # simple type, 1:1 cardinality => column
                 if not table.has_field(n_child_tag):
-                    fields.append(Column(n_child_tag, ref_type = child_td, optional = is_optional))
+                    fields.append(Column(n_child_tag, ref_type = simple_type_to_sql_type(child_td), optional = is_optional))
             else:
                 # simple type, 1:N cardinality => table
                 if not table.has_field(n_child_tag):
                     child_table_name = no_prefix(node.tag) + "_" + n_child_tag
-                    child_table = Table(child_table_name, [Column("v", ref_type=child_td)])
+                    child_table = Table(child_table_name, [Column("v", ref_type = simple_type_to_sql_type(child_td))])
                     tables[child_table_name] = child_table
-                    fields.append(Link(n_child_tag, is_optional, child_ti.min_occurs(), child_ti.max_occurs(), child_td, child_table))
+                    fields.append(Link(n_child_tag, is_optional, child_ti.min_occurs(), child_ti.max_occurs(), simple_type_to_sql_type(child_td), child_table))
         elif is_derived_from(child_td, "AbstractGeometryType"):
             if not table.has_field(n_child_tag):
                 gtype, gdim, gsrid = gml_geometry_type(child)
@@ -400,7 +402,7 @@ def _create_tables(node, table_name, type_info_dict, tables):
             if child_table is not None: # may be None if the child_table is empty
                 # create link
                 if not table.has_field(n_child_tag):
-                    fields.append(Link(n_child_tag, is_optional, child_ti.min_occurs(), child_ti.max_occurs(), child_td, child_table))
+                    fields.append(Link(n_child_tag, is_optional, child_ti.min_occurs(), child_ti.max_occurs(), None, child_table))
 
     table.add_fields(fields)
 
@@ -528,7 +530,7 @@ def stream_sql_schema(tables):
         columns = []
         for c in table.columns():
             if c.ref_type():
-                l = c.name() + u" " + simple_type_to_sql_type(c.ref_type())
+                l = c.name() + u" " + c.ref_type()
             else:
                 l = c.name() + u" INT PRIMARY KEY"
             if not c.optional():
@@ -546,7 +548,7 @@ def stream_sql_schema(tables):
 
             id = link.ref_table().uid_column()
             if id is not None and id.ref_type() is not None:
-                fk_constraints.append((link.name(), link.ref_table(), simple_type_to_sql_type(id.ref_type()) + nullity))
+                fk_constraints.append((link.name(), link.ref_table(), id.ref_type() + nullity))
             else:
                 fk_constraints.append((link.name(), link.ref_table(), u"INT" + nullity))
 
@@ -555,7 +557,7 @@ def stream_sql_schema(tables):
                 continue
             id = bl.ref_table().uid_column()
             if id is not None and id.ref_type() is not None:
-                fk_constraints.append((bl.ref_table().name(), bl.ref_table(), simple_type_to_sql_type(id.ref_type())))
+                fk_constraints.append((bl.ref_table().name(), bl.ref_table(), id.ref_type()))
             else:
                 fk_constraints.append((bl.ref_table().name(), bl.ref_table(), u"INT"))
 
@@ -619,40 +621,51 @@ if len(sys.argv) < 4:
 xsd_files = sys.argv[1:-2]
 xml_file = sys.argv[-2]
 sqlite_file = sys.argv[-1]
-    
-uri_resolver = URIResolver("archive")
-ns = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
 
-doc = ET.parse(xml_file)
+if not os.path.exists("cache.bin"):
 
-features = extract_features(doc)
-root = features[0]
+    uri_resolver = URIResolver("archive")
+    ns = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
 
-root_name = no_prefix(root.tag)
-root_type = ns.elementDeclarations()[root_name].typeDefinition()
+    doc = ET.parse(xml_file)
+
+    features = extract_features(doc)
+    root = features[0]
+
+    root_name = no_prefix(root.tag)
+    root_type = ns.elementDeclarations()[root_name].typeDefinition()
 
 
-#print_etree(doc.getroot(), type_info_dict)
+    #print_etree(doc.getroot(), type_info_dict)
 
-print("Creating database schema ... ")
+    print("Creating database schema ... ")
 
-tables = None
-tables_rows = None
-for idx, node in enumerate(features):
-    print("+ Feature #{}/{}".format(idx+1, len(features)))
-    type_info_dict = resolve_types(node, ns)
-    tables = create_or_update_tables(node, type_info_dict, tables)
-    trows = populate_tables(node, type_info_dict, tables)
-    if tables_rows is None:
-        tables_rows = trows
-    else:
-        for table, rows in trows.iteritems():
-            if tables_rows.has_key(table):
-                tables_rows[table] += rows
-            else:
-                tables_rows[table] = rows
+    tables = None
+    tables_rows = None
+    for idx, node in enumerate(features):
+        print("+ Feature #{}/{}".format(idx+1, len(features)))
+        type_info_dict = resolve_types(node, ns)
+        tables = create_or_update_tables(node, type_info_dict, tables)
+        trows = populate_tables(node, type_info_dict, tables)
+        if tables_rows is None:
+            tables_rows = trows
+        else:
+            for table, rows in trows.iteritems():
+                if tables_rows.has_key(table):
+                    tables_rows[table] += rows
+                else:
+                    tables_rows[table] = rows
 
-print("OK")
+    print("OK")
+
+    print("Writing cache file ... ")
+    fo = open("cache.bin", "w")
+    fo.write(pickle.dumps([tables, tables_rows]))
+    fo.close()
+else:
+    print("Reading from cache file ... ")
+    fi = open("cache.bin", "r")
+    tables, tables_rows = pickle.loads(fi.read())
 
 import pyspatialite.dbapi2 as db
 
