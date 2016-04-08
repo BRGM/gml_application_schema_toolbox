@@ -293,7 +293,6 @@ def gml_geometry_type(node):
     srid = None
     dim = 2
     type = no_prefix(node.tag)
-    print("geometry type:", type)
     if type in ['Point', 'LineString', 'Polygon', 'MultiPoint', 'MultiLineString', 'MultiPolygon']:
         type = type.upper()
     else:
@@ -525,7 +524,7 @@ def stream_sql_schema(tables):
     :returns: a generator that yield a new SQL line
     """
     for name, table in tables.iteritems():
-        yield(u"CREATE TABLE " + name + u"(")
+        stmt = u"CREATE TABLE " + name + u"(";
         columns = []
         for c in table.columns():
             if c.ref_type():
@@ -565,8 +564,8 @@ def stream_sql_schema(tables):
         for n, table, type_str in fk_constraints:
             columns.append(u"  FOREIGN KEY({}_id) REFERENCES {}(id)".format(n, table.name()))
 
-        yield(u",\n".join(columns))
-        yield(u");")
+        stmt += u",\n".join(columns) + u");"
+        yield(stmt)
 
         for g in table.geometries():
             yield(u"SELECT AddGeometryColumn('{}', '{}', {}, '{}', '{}');".format(table.name(), g.name(), g.srid(), g.type(), "XY" if g.dimension() == 2 else "XYZ"))
@@ -614,12 +613,12 @@ def extract_features(doc):
     return nodes
 
 if len(sys.argv) < 4:
-    print("Argument: xsd_file xml_file sql_file")
+    print("Argument: xsd_file xml_file sqlite_file")
     exit(1)
 
 xsd_files = sys.argv[1:-2]
 xml_file = sys.argv[-2]
-sql_file = sys.argv[-1]
+sqlite_file = sys.argv[-1]
     
 uri_resolver = URIResolver("archive")
 ns = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
@@ -635,10 +634,12 @@ root_type = ns.elementDeclarations()[root_name].typeDefinition()
 
 #print_etree(doc.getroot(), type_info_dict)
 
+print("Creating database schema ... ")
+
 tables = None
 tables_rows = None
 for idx, node in enumerate(features):
-    print("Feature {}".format(idx))
+    print("+ Feature #{}/{}".format(idx+1, len(features)))
     type_info_dict = resolve_types(node, ns)
     tables = create_or_update_tables(node, type_info_dict, tables)
     trows = populate_tables(node, type_info_dict, tables)
@@ -651,12 +652,21 @@ for idx, node in enumerate(features):
             else:
                 tables_rows[table] = rows
 
-import io
-fo = io.open(sql_file, "w")
-for line in stream_sql_schema(tables):
-    fo.write(line + "\n")
-for line in stream_sql_rows(tables_rows):
-    fo.write(line + "\n")
+print("OK")
 
-#import ipdb; ipdb.set_trace()
-    
+import pyspatialite.dbapi2 as db
+
+conn = db.connect(sqlite_file)
+
+cur = conn.cursor()
+
+print("Writing to SQLite file ... ")
+cur.execute("SELECT InitSpatialMetadata(1);")
+conn.commit()
+for line in stream_sql_schema(tables):
+    cur.execute(line)
+conn.commit()
+for line in stream_sql_rows(tables_rows):
+    cur.execute(line)
+conn.commit()
+print("OK")
