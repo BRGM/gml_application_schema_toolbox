@@ -219,9 +219,11 @@ class Table:
         self.__name = name
     def fields(self):
         return self.__fields
+    def add_field(self, field):
+        self.__fields[field.name()] = field
     def add_fields(self, fields):
         for f in fields:
-            self.__fields[f.name()] = f
+            self.add_field(f)
     def has_field(self, field_name):
         return self.__fields.has_key(field_name)
     def field(self, field_name):
@@ -324,103 +326,17 @@ def gml_geometry_type(node):
     return type, dim, srid
 
 
-def _create_tables(node, table_name, type_info_dict, tables):
-    """Creates or updates tables from a hierarchy of node
-    :param node: the node
-    :param table_name: the name of the table for this node
-    :param type_info_dict: a dict to associate a node to its TypeInfo
-    :param tables: the dict {table_name : Table} to be populated
-    :returns: the created Table for the given node
-    """
+def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_rows):
     if len(node.attrib) == 0 and len(node) == 0:
         # empty table
-        return
+        return None
+    print("Build table", table_name)
 
     table = tables.get(table_name)
     if table is None:
         table = Table(table_name)
         tables[table_name] = table
-    
-    fields = []
-    uid_column = None
-    ti = type_info_dict[node]
-    for attr_name in node.attrib.keys():
-        if no_prefix(attr_name) == 'nil':
-            continue
-        au = ti.attribute_type_info_map()[attr_name]
-        n_attr = no_prefix(attr_name)
-        if not table.has_field(n_attr):
-            c = Column(n_attr, ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition()), optional = not au.required())
-            fields.append(c)
-            if n_attr == "id":
-                uid_column = c
-
-    if table.uid_column() is None:
-        if uid_column is None:
-            table.set_autoincrement_id()
-        else:
-            table.set_uid_column(uid_column)
-
-    # in a sequence ?
-    in_seq = False
-    # type of the sequence
-    seq_td = None
-    for child in node:
-        child_ti = type_info_dict[child]
-        child_td = child_ti.type_info().typeDefinition()
-        n_child_tag = no_prefix(child.tag)
-        if child_ti.max_occurs() is None: # "*" cardinality
-            if not (in_seq and seq_td == child_td):
-                in_seq = True
-                seq_td = child_td
-        else:
-            in_seq = False
-
-        is_optional = child_ti.min_occurs() == 0 or child_ti.type_info().nillable()
-        if is_simple(child_td):
-            if not in_seq:
-                # simple type, 1:1 cardinality => column
-                if not table.has_field(n_child_tag):
-                    fields.append(Column(n_child_tag, ref_type = simple_type_to_sql_type(child_td), optional = is_optional))
-            else:
-                # simple type, 1:N cardinality => table
-                if not table.has_field(n_child_tag):
-                    child_table_name = no_prefix(node.tag) + "_" + n_child_tag
-                    child_table = Table(child_table_name, [Column("v", ref_type = simple_type_to_sql_type(child_td))])
-                    tables[child_table_name] = child_table
-                    fields.append(Link(n_child_tag, is_optional, child_ti.min_occurs(), child_ti.max_occurs(), simple_type_to_sql_type(child_td), child_table))
-        elif is_derived_from(child_td, "AbstractGeometryType"):
-            if not table.has_field(n_child_tag):
-                gtype, gdim, gsrid = gml_geometry_type(child)
-                fields.append(Geometry(n_child_tag, gtype, gdim, gsrid))
-        else: # complex type
-            has_id = any([1 for n in child.attrib.keys() if no_prefix(n) == "id"])
-            if has_id:
-                # shared table
-                child_table_name = child_td.name() or no_prefix(node.tag) + "_t"
-                _create_tables(child, child_table_name, type_info_dict, tables)
-            else:
-                child_table_name = no_prefix(node.tag) + "_" + n_child_tag
-                _create_tables(child, child_table_name, type_info_dict, tables)
-            child_table = tables.get(child_table_name)
-            if child_table is not None: # may be None if the child_table is empty
-                # create link
-                if not table.has_field(n_child_tag):
-                    sgroup = None
-                    if child_ti.abstract_type_info() is not None:
-                        sgroup = child_ti.abstract_type_info().name()
-                    fields.append(Link(n_child_tag, is_optional, child_ti.min_occurs(), child_ti.max_occurs(), None, child_table, substitution_group = sgroup))
-
-    table.add_fields(fields)
-
-def _populate_tables(node, table_name, parent_id, type_info_dict, tables, tables_rows):
-    if len(node.attrib) == 0 and len(node) == 0:
-        # empty table
-        return None
-    print("Populate table", table_name)
-
-    table = tables[table_name]
-    # tables_rows is supposed to have an entry for each table
+        tables_rows[table_name] = []
     table_rows = tables_rows[table_name]
 
     row = []
@@ -429,54 +345,99 @@ def _populate_tables(node, table_name, parent_id, type_info_dict, tables, tables
     if parent_id is not None:
         row.append(parent_id)
 
+    uid_column = None
+    ti = type_info_dict[node]
+    current_id = None
+    #--------------------------------------------------
+    # attributes
+    #--------------------------------------------------
+    for attr_name, attr_value in node.attrib.iteritems():
+        n_attr_name = no_prefix(attr_name)
+        if n_attr_name == 'nil':
+            continue
+
+        au = ti.attribute_type_info_map()[attr_name]
+        if not table.has_field(n_attr_name):
+            c = Column(n_attr_name,
+                       ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition()),
+                       optional = not au.required())
+            table.add_field(c)
+            if n_attr_name == "id":
+                uid_column = c
+
+        row.append((n_attr_name, attr_value))
+        if n_attr_name == "id":
+            current_id = attr_value
+
+    # id column
+    if table.uid_column() is None:
+        if uid_column is None:
+            table.set_autoincrement_id()
+        else:
+            table.set_uid_column(uid_column)
+
     if table.has_autoincrement_id():
         current_id = table.increment_id()
         row.append(("id", current_id))
-    else:
-        current_id = None
 
-    # attributes
-    for attr_name, attr_value in node.attrib.iteritems():
-        if no_prefix(attr_name) == 'nil':
-            continue
-        row.append((no_prefix(attr_name), attr_value))
-        if no_prefix(attr_name) == "id":
-            current_id = attr_value
-
-    # number in the sequence
-    seq_num = 0
+    #--------------------------------------------------
+    # child elements
+    #--------------------------------------------------
+    # in a sequence ?
+    in_seq = False
     # tag of the sequence
     seq_tag = None
     for child in node:
         child_ti = type_info_dict[child]
         child_td = child_ti.type_info().typeDefinition()
+        n_child_tag = no_prefix(child.tag)
+        
         if child_ti.max_occurs() is None: # "*" cardinality
-            if seq_num > 0 and seq_tag == child.tag:
-                # if already in a sequence, increment seq_num
-                seq_num += 1
-            else:
-                seq_num = 1
+            if not (in_seq and seq_tag == child.tag):
+                in_seq = True
                 seq_tag = child.tag
         else:
-            seq_num = 0
+            in_seq = False
+
+        is_optional = child_ti.min_occurs() == 0 or child_ti.type_info().nillable()
         if is_simple(child_td):
-            if seq_num == 0:
+            if not in_seq:
                 # simple type, 1:1 cardinality => column
+                if not table.has_field(n_child_tag):
+                    table.add_field(Column(n_child_tag,
+                                           ref_type = simple_type_to_sql_type(child_td),
+                                           optional = is_optional))
+
                 v = child.text if child.text is not None else '' # FIXME replace by the default value ?
                 row.append((no_prefix(child.tag), v))
             else:
                 # simple type, 1:N cardinality => table
-                v = child.text if child.text is not None else ''
                 child_table_name = no_prefix(node.tag) + "_" + no_prefix(child.tag)
+                if not table.has_field(n_child_tag):
+                    child_table = Table(child_table_name, [Column("v", ref_type = simple_type_to_sql_type(child_td))])
+                    tables[child_table_name] = child_table
+                    tables_rows[child_table_name] = []
+                    table.add_field(Link(n_child_tag,
+                                         is_optional,
+                                         child_ti.min_occurs(),
+                                         child_ti.max_occurs(),
+                                         simple_type_to_sql_type(child_td), child_table))
+
+                v = child.text if child.text is not None else ''
                 child_table_rows = tables_rows[child_table_name]
                 child_row = [(table_name + "_id", current_id), ("v", v)]
-                child_table_rows.append(child_row)
+                child_table_rows.append(child_row)                
 
         elif is_derived_from(child_td, "AbstractGeometryType"):
             # add geometry
-            g_column = table.field(no_prefix(child.tag))
+            if not table.has_field(n_child_tag):
+                gtype, gdim, gsrid = gml_geometry_type(child)
+                table.add_field(Geometry(n_child_tag, gtype, gdim, gsrid))
+            
+            g_column = table.field(n_child_tag)
             g = ogr.CreateGeometryFromGML(ET.tostring(child))
-            row.append((no_prefix(child.tag), ("GeomFromText('%s', %d)", g.ExportToWkt(), g_column.srid())))
+            row.append((n_child_tag, ("GeomFromText('%s', %d)", g.ExportToWkt(), g_column.srid())))
+
         else:
             has_id = any([1 for n in child.attrib.keys() if no_prefix(n) == "id"])
             if has_id:
@@ -484,42 +445,49 @@ def _populate_tables(node, table_name, parent_id, type_info_dict, tables, tables
                 child_table_name = child_td.name() or no_prefix(node.tag) + "_t"
             else:
                 child_table_name = no_prefix(node.tag) + "_" + no_prefix(child.tag)
-            if seq_num == 0:
+            if not in_seq:
                 # 1:1 cardinality
-                row_id = _populate_tables(child, child_table_name, None, type_info_dict, tables, tables_rows)
+                row_id = _build_tables(child, child_table_name, None, type_info_dict, tables, tables_rows)
                 row.append((no_prefix(child.tag)+"_id", row_id))
             else:
                 # 1:N cardinality
                 child_parent_id = (table_name + "_id", current_id)
-                _populate_tables(child, child_table_name, child_parent_id, type_info_dict, tables, tables_rows)
+                _build_tables(child, child_table_name, child_parent_id, type_info_dict, tables, tables_rows)
+            child_table = tables.get(child_table_name)
+            if child_table is not None: # may be None if the child_table is empty
+                # create link
+                if not table.has_field(n_child_tag):
+                    sgroup = None
+                    if child_ti.abstract_type_info() is not None:
+                        sgroup = child_ti.abstract_type_info().name()
+                    table.add_field(Link(n_child_tag,
+                                         is_optional,
+                                         child_ti.min_occurs(),
+                                         child_ti.max_occurs(),
+                                         None,
+                                         child_table,
+                                         substitution_group = sgroup))
+
     # return last inserted id
-    print("End", table_name)
+    print(table_name, row)
     return current_id
 
-def populate_tables(root_node, type_info_dict, tables):
-    """Returns values to insert in tables from a DOM document
-    :param root_node: the root node
-    :param  type_info_dict: the TypeInfo dict
-    :param tables: the tables dict, returned by create_tables
-    :returns: a dict {table_name: [ [(column_name, column_value), (...)]]
-    """
-    tables_rows = {}
-    for n in tables.keys():
-        tables_rows[n] = []
-    _populate_tables(root_node, no_prefix(root_node.tag), None, type_info_dict, tables, tables_rows)
-    return tables_rows
 
-def create_or_update_tables(root_node, type_info_dict, tables = None):
+def build_tables(root_node, type_info_dict, tables = None, tables_rows = None):
     """Creates or updates table definitions from a document and its TypeInfo dict
     :param root_node: the root node
     :param type_info_dict: the TypeInfo dict
     :param tables: the existing table dict to update
-    :returns: a dict {table_name : Table}
+    :param tables_rows: the existing tables rows to update
+    :returns: ({table_name : Table}, {table_name : rows})
     """
     if tables is None:
         tables = {}
+    if tables_rows is None:
+        tables_rows = {}
+        
     table_name = no_prefix(root_node.tag)
-    _create_tables(root_node, table_name, type_info_dict, tables)
+    _build_tables(root_node, table_name, None, type_info_dict, tables, tables_rows)
 
     # create backlinks
     for name, table in tables.iteritems():
@@ -528,7 +496,8 @@ def create_or_update_tables(root_node, type_info_dict, tables = None):
             if link.max_occurs() is None and link.ref_table() is not None:
                 if not link.ref_table().has_field(link.name()):
                     link.ref_table().add_back_link(link.name(), table)
-    return tables
+    return tables, tables_rows
+
 
 def stream_sql_schema(tables):
     """Creates SQL(ite) table creation statements from a dict of Table
@@ -679,16 +648,7 @@ if not os.path.exists("cache.bin"):
     for idx, node in enumerate(features):
         print("+ Feature #{}/{}".format(idx+1, len(features)))
         type_info_dict = resolve_types(node, ns)
-        tables = create_or_update_tables(node, type_info_dict, tables)
-        trows = populate_tables(node, type_info_dict, tables)
-        if tables_rows is None:
-            tables_rows = trows
-        else:
-            for table, rows in trows.iteritems():
-                if tables_rows.has_key(table):
-                    tables_rows[table] += rows
-                else:
-                    tables_rows[table] = rows
+        tables, tables_rows = build_tables(node, type_info_dict, tables, tables_rows)
 
     print("OK")
 
