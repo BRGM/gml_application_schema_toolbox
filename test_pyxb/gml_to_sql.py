@@ -660,26 +660,203 @@ if not os.path.exists("cache.bin"):
 
     print("Writing cache file ... ")
     fo = open("cache.bin", "w")
-    fo.write(pickle.dumps([tables, tables_rows]))
+    fo.write(pickle.dumps([tables, tables_rows, root_name]))
     fo.close()
 else:
     print("Reading from cache file ... ")
     fi = open("cache.bin", "r")
-    tables, tables_rows = pickle.loads(fi.read())
+    tables, tables_rows, root_name = pickle.loads(fi.read())
 
 import pyspatialite.dbapi2 as db
 
-conn = db.connect(sqlite_file)
+if os.path.exists(sqlite_file):
+    print("SQlite file already exists")
+else:
+    conn = db.connect(sqlite_file)
+    cur = conn.cursor()
+    print("Writing to SQLite file ... ")
+    cur.execute("SELECT InitSpatialMetadata(1);")
+    conn.commit()
+    for line in stream_sql_schema(tables):
+        cur.execute(line)
+    conn.commit()
+    for line in stream_sql_rows(tables_rows):
+        cur.execute(line)
+    conn.commit()
+    print("OK")
 
-cur = conn.cursor()
+qgis_file = sqlite_file.replace(".sqlite", ".qgs")
+sys.path.append("/home/hme/src/QGIS/build/output/python")
 
-print("Writing to SQLite file ... ")
-cur.execute("SELECT InitSpatialMetadata(1);")
-conn.commit()
-for line in stream_sql_schema(tables):
-    cur.execute(line)
-conn.commit()
-for line in stream_sql_rows(tables_rows):
-    cur.execute(line)
-conn.commit()
-print("OK")
+from qgis.core import QgsApplication, QgsVectorLayer, QgsMapLayerRegistry, QgsProject, QgsRelation
+from PyQt4.QtCore import QFileInfo
+
+app = QgsApplication(sys.argv, True)
+app.setPrefixPath("/home/hme/src/QGIS/build/output", True)
+app.initQgis()
+
+# load a layer for each table
+layers = {}
+root_group = QgsProject.instance().layerTreeRoot()
+child_group = root_group.addGroup(root_name + u"'s linked tables")
+child_group.setExpanded(False)
+for table_name, table in tables.iteritems():
+    geometry = table.geometries()[0].name() if len(table.geometries()) > 0 else None
+    src = "dbname='{}' table=\"{}\"{} sql=".format(sqlite_file, table.name(), " (" + geometry + ")" if geometry is not None else "")
+    l = QgsVectorLayer(src, table.name(), "spatialite")
+    layers[table.name()] = l
+    QgsMapLayerRegistry.instance().addMapLayer(l, False) # do not add to the legend
+    if table_name == root_name:
+        root_group.insertLayer(0, l)
+    else:
+        child_group.addLayer(l)
+    
+
+# declare relations 1:N
+#  <relations>
+#    <relation referencingLayer="EnvironmentalMonitoringFacility_reportedTo20160408154405050" referencedLayer="EnvironmentalMonitoringFacility20160408154405098" id="EnvironmentalMonitoringFacility_reportedTo20160408154405050_EnvironmentalMonitoringFacility_id_EnvironmentalMonitoringFacility20160408154405098_id" name="_reportedTo">
+#      <fieldRef referencedField="id" referencingField="EnvironmentalMonitoringFacility_id"/>
+#    </relation>
+#  </relations>
+# relations 1:1
+#    <relation referencingLayer="EnvironmentalMonitoringFacility20160412165324596" referencedLayer="EnvironmentalMonitoringFacility_inspireId20160412165324591" id="EnvironmentalMonitoringFacility20160412165324596_inspireId_id_EnvironmentalMonitoringFacility_inspireId20160412165324591_id" name="qq">
+#      <fieldRef referencedField="id" referencingField="inspireId_id"/>
+#    </relation>
+
+
+for table_name, table in tables.iteritems():
+    for link in table.links():
+        if link.max_occurs() is None:
+            continue
+
+        rel = QgsRelation()
+        referencingLayer = layers[table.name()]
+        referencingField = link.name() + "_id"
+        referencedLayer = layers[link.ref_table().name()]
+        referencedField = "id"
+        rel.setReferencedLayer(referencedLayer.id())
+        rel.setReferencingLayer(referencingLayer.id())
+        rel.addFieldPair(referencingField, referencedField)
+        rel.setRelationName(table.name() + "_" + link.name())
+        rel.setRelationId(table.name() + "_" + link.name())
+        if not rel.isValid():
+            raise RuntimeError("not valid")
+        QgsProject.instance().relationManager().addRelation(rel)
+    for bl in table.back_links():
+        # create a relation for this backlink
+        rel = QgsRelation()
+        referencingLayer = layers[table.name()]
+        referencingField = bl.ref_table().name() + u"_id"
+        referencedLayer = layers[bl.ref_table().name()]
+        referencedField = "id"
+        rel.setReferencedLayer(referencedLayer.id())
+        rel.setReferencingLayer(referencingLayer.id())
+        rel.addFieldPair(referencingField, referencedField)
+        rel.setRelationName(table.name())
+        rel.setRelationId(table.name())
+        QgsProject.instance().relationManager().addRelation(rel)
+
+        # set the layer's edit widget to "relation reference"
+        #field_idx = referencingLayer.fieldNameIndex(referencingField)
+        #print("********* field_idx", field_idx)
+        #referencingLayer.editFormConfig().setWidgetType(field_idx, "RelationReference")
+
+fi = QFileInfo(qgis_file)
+QgsProject.instance().write(fi)
+QgsApplication.exitQgis()
+
+#        <edittype widgetv2type="RelationReference" name="EnvironmentalMonitoringFacility_id">
+#          <widgetv2config OrderByValue="0" fieldEditable="1" ShowForm="0" Relation="_belongsTo" ReadOnly="0" MapIdentification="0" labelOnTop="0" AllowNULL="0"/>
+#        </edittype>
+
+#        <edittype widgetv2type="RelationReference" name="inspireId_id">
+#          <widgetv2config OrderByValue="0" fieldEditable="1" AllowAddFeatures="0" ShowForm="1" Relation="EnvironmentalMonitoringFacility20160412165324596_inspireId_id_EnvironmentalMonitoringFacility_inspireId20160412165324591_id" ReadOnly="0" MapIdentification="0" labelOnTop="0" AllowNULL="0"/>
+#        </edittype>
+
+doc = ET.parse(qgis_file)
+root = doc.getroot()
+for child in root:
+    if child.tag == "projectlayers":
+        for layer in child:
+            for field in layer:
+                if field.tag == "layername":
+                    layer_name = field.text
+                if field.tag == "annotationform" or field.tag == "editform":
+                    field.text = "."
+                if field.tag == "editorlayout":
+                    field.text = "tablayout"
+
+            print("layer_name", layer_name)
+            #raw_input()
+            table = tables[layer_name]
+            edittypes = ET.Element("edittypes")
+            editform = ET.Element("attributeEditorForm")
+
+            layer.append(edittypes)
+            layer.append(editform)
+
+            columns_container = ET.Element("attributeEditorContainer")
+            columns_container.attrib["name"] = "Columns"
+            columns_container.attrib["columnCount"] = "1"
+            relations_container = ET.Element("attributeEditorContainer")
+            relations_container.attrib["name"] = "Relations"
+            relations_container.attrib["columnCount"] = "1"
+            editform.append(columns_container)
+
+            for idx, c in enumerate(table.columns()):
+                edittype = ET.Element("edittype")
+                edittype.attrib["widgetv2type"] = "TextEdit"
+                edittype.attrib["name"] = c.name()
+                wconfig = ET.Element("widgetv2config")
+                wconfig.attrib["IsMultiline"] = "0"
+                wconfig.attrib["fieldEditable"] = "0"
+                wconfig.attrib["UseHtml"] = "0"
+                wconfig.attrib["labelOnTop"] = "0"
+                edittype.append(wconfig)
+                edittypes.append(edittype)
+
+                field = ET.Element("attributeEditorField")
+                field.attrib["index"] = str(idx)
+                field.attrib["name"] = c.name()
+                columns_container.append(field)
+                
+            for link in table.links():
+                if link.max_occurs() is None:
+                    relation = ET.Element("attributeEditorRelation")
+                    relation.attrib["relation"] = link.ref_table().name()
+                    relation.attrib["name"] = link.name()
+                    relations_container.append(relation)
+                    continue
+                print("link to", link.ref_table().name(), "via", link.name())
+                edittype = ET.Element("edittype")
+                edittype.attrib["widgetv2type"] = "RelationReference"
+                edittype.attrib["name"] = link.name() + "_id"
+                wconfig = ET.Element("widgetv2config")
+                wconfig.attrib["OrderByValue"] = "0"
+                wconfig.attrib["fieldEditable"] = "0"
+                wconfig.attrib["ShowForm"] = "1" # embed the form
+                wconfig.attrib["Relation"] = table.name() + "_" + link.name()
+                wconfig.attrib["ReadOnly"] = "1"
+                # allow map selection tools ?
+                ref_layer = layers[link.ref_table().name()]
+                has_geometry = len(link.ref_table().geometries()) > 0
+                wconfig.attrib["MapIdentification"] = "1" if has_geometry else "0"
+                wconfig.attrib["labelOnTop"] = "0"
+                wconfig.attrib["AllowNULL"] = "1"
+                edittype.append(wconfig)
+                edittypes.append(edittype)
+
+                field = ET.Element("attributeEditorField")
+                field.attrib["index"] = str(idx)
+                field.attrib["name"] = link.name() + "_id"
+                columns_container.append(field)
+                idx += 1
+
+            if len(relations_container) > 0:
+                editform.append(relations_container)
+
+fo = open(qgis_file, "w")
+fo.write(ET.tostring(root))
+fo.close()
+
+
