@@ -9,16 +9,16 @@ def _xsd_isinstance(type, base_type):
     return False
 
 def _find_element_declarations(obj, min_occurs = 1, max_occurs = 1):
-    """Returns a flatten list of (ElementDeclaration, minOccurs, maxOccurs) from the given node"""
+    """Returns a flatten list of (ElementDeclaration, ElementDeclaration(abstract), minOccurs, maxOccurs) from the given node"""
     if isinstance(obj, ElementDeclaration):
         if isinstance(obj.typeDefinition(), ComplexTypeDefinition) and obj.typeDefinition().abstract():
             types = []
             # look for concrete types that derives from this abstract type
             for n, ed in obj.targetNamespace().elementDeclarations().iteritems():
                 if _xsd_isinstance(ed.typeDefinition(), obj.typeDefinition()):
-                    types.append((ed, min_occurs, max_occurs))
+                    types.append((ed, obj, min_occurs, max_occurs))
             return types
-        return [(obj, min_occurs, max_occurs)]
+        return [(obj, obj, min_occurs, max_occurs)]
     elif isinstance(obj, ComplexTypeDefinition):
         return _find_element_declarations(obj.contentType()[1], min_occurs, max_occurs)
     elif isinstance(obj, Particle):
@@ -59,14 +59,18 @@ def type_definition_name(td):
 
 class TypeInfo(object):
 
-    def __init__(self, type_info, attribute_type_info_map, min_occurs = 1, max_occurs = 1):
+    def __init__(self, type_info, attribute_type_info_map, min_occurs = 1, max_occurs = 1, abstract_type_info = None):
         self.__type_info = type_info
+        self.__abstract_type_info = abstract_type_info
         self.__attribute_type_info_map = attribute_type_info_map
         self.__min_occurs = min_occurs
         self.__max_occurs = max_occurs # None for unbounded
 
     def type_info(self):
         return self.__type_info
+
+    def abstract_type_info(self):
+        return self.__abstract_type_info
 
     def min_occurs(self):
         return self.__min_occurs
@@ -80,14 +84,15 @@ class TypeInfo(object):
     def attribute_type_info(self, attribute_key):
         return self.__attribute_type_info_map[attribute_key]
         
-def _resolve_types(etree_node, declaration, min_occurs, max_occurs, type_info_dict):
+def _resolve_types(etree_node, declaration, abstract_declaration, min_occurs, max_occurs, type_info_dict):
     """
     :param etree_node: a node of a tree, following the etree API
-    :param declaration: ElementDeclaration of the node
+    :param declaration: (concrete) ElementDeclaration of the node
+    :param declaration: (abstract) ElementDeclaration of the node, may be None
     :param cadrinality: cardinality of the node
     :param type_info_dict: a dict {Element : TypeInfo} to augment
     """
-    type_info_dict[etree_node] = TypeInfo(declaration, {}, min_occurs, max_occurs)
+    type_info_dict[etree_node] = TypeInfo(declaration, {}, min_occurs, max_occurs, abstract_declaration)
 
     if len(etree_node.attrib) > 0:
         attrs_uses = declaration.typeDefinition().attributeUses()
@@ -104,10 +109,10 @@ def _resolve_types(etree_node, declaration, min_occurs, max_occurs, type_info_di
     child_declarations = _find_element_declarations(declaration.typeDefinition())
     for child in etree_node:
         c_name = no_prefix(child.tag)
-        child_decl = [(ed, min_o, max_o) for ed, min_o, max_o in child_declarations if ed.name() == c_name]
+        child_decl = [(ed, abs_ed, min_o, max_o) for ed, abs_ed, min_o, max_o in child_declarations if ed.name() == c_name]
         if len(child_decl) > 0:
-            ed, min_o, max_o = child_decl[0]
-            _resolve_types(child, ed, min_o, max_o, type_info_dict)
+            ed, abs_ed, min_o, max_o = child_decl[0]
+            _resolve_types(child, ed, abs_ed if abs_ed.abstract() else None, min_o, max_o, type_info_dict)
         else:
             raise RuntimeError("Can't find declaration for element {}", c_name)
 
@@ -120,6 +125,6 @@ def resolve_types(root_node, namespace):
     :returns: a dict {Element : TypeInfo}
     """
     type_info_dict = {}
-    _resolve_types(root_node, namespace.elementDeclarations()[no_prefix(root_node.tag)], 1, 1, type_info_dict)
+    _resolve_types(root_node, namespace.elementDeclarations()[no_prefix(root_node.tag)], None, 1, 1, type_info_dict)
     return type_info_dict
 

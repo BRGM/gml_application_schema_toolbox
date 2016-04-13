@@ -27,7 +27,7 @@ class URIResolver(object):
     def __init__(self, cachedir):
         self.__cachedir = cachedir
 
-    def data_from_uri(self, uri):
+    def cache_uri(self, uri):
         def mkdir_p(path):
             """Recursively create all subdirectories of a given path"""
             dirs = path.split('/')
@@ -55,8 +55,12 @@ class URIResolver(object):
             fo.write(f.read())
             fo.close()
             f.close()
-        f = open(out_file_name)
         print("OK")
+        return out_file_name
+    
+    def data_from_uri(self, uri):
+        out_file_name = self.cache_uri(uri)
+        f = open(out_file_name)
         return f.read()
 
 def print_schema(obj, lvl):
@@ -94,13 +98,14 @@ def print_schema(obj, lvl):
 class Link:
     """A Link represents a link to another type/table"""
 
-    def __init__(self, name, optional, min_occurs, max_occurs, ref_type, ref_table = None):
+    def __init__(self, name, optional, min_occurs, max_occurs, ref_type, ref_table = None, substitution_group = None):
         self.__name = name
         self.__optional = optional
         self.__min_occurs = min_occurs
         self.__max_occurs = max_occurs
         self.__ref_type = ref_type # SQL type (str)
         self.__ref_table = ref_table # Table
+        self.__substitution_group = substitution_group # for element that derives from a common element
 
     def name(self):
         return self.__name
@@ -116,6 +121,8 @@ class Link:
         return self.__min_occurs
     def max_occurs(self):
         return self.__max_occurs
+    def substitution_group(self):
+        return self.__substitution_group
 
     def __repr__(self):
         return "Link<{}({}-{}){}>".format(self.name(), self.min_occurs(),
@@ -363,10 +370,7 @@ def _create_tables(node, table_name, type_info_dict, tables):
         child_td = child_ti.type_info().typeDefinition()
         n_child_tag = no_prefix(child.tag)
         if child_ti.max_occurs() is None: # "*" cardinality
-            if in_seq and seq_td == child_td:
-                # if already in a sequence, skip
-                continue
-            else:
+            if not (in_seq and seq_td == child_td):
                 in_seq = True
                 seq_td = child_td
         else:
@@ -389,7 +393,7 @@ def _create_tables(node, table_name, type_info_dict, tables):
             if not table.has_field(n_child_tag):
                 gtype, gdim, gsrid = gml_geometry_type(child)
                 fields.append(Geometry(n_child_tag, gtype, gdim, gsrid))
-        else:
+        else: # complex type
             has_id = any([1 for n in child.attrib.keys() if no_prefix(n) == "id"])
             if has_id:
                 # shared table
@@ -402,7 +406,10 @@ def _create_tables(node, table_name, type_info_dict, tables):
             if child_table is not None: # may be None if the child_table is empty
                 # create link
                 if not table.has_field(n_child_tag):
-                    fields.append(Link(n_child_tag, is_optional, child_ti.min_occurs(), child_ti.max_occurs(), None, child_table))
+                    sgroup = None
+                    if child_ti.abstract_type_info() is not None:
+                        sgroup = child_ti.abstract_type_info().name()
+                    fields.append(Link(n_child_tag, is_optional, child_ti.min_occurs(), child_ti.max_occurs(), None, child_table, substitution_group = sgroup))
 
     table.add_fields(fields)
 
@@ -410,6 +417,7 @@ def _populate_tables(node, table_name, parent_id, type_info_dict, tables, tables
     if len(node.attrib) == 0 and len(node) == 0:
         # empty table
         return None
+    print("Populate table", table_name)
 
     table = tables[table_name]
     # tables_rows is supposed to have an entry for each table
@@ -485,6 +493,7 @@ def _populate_tables(node, table_name, parent_id, type_info_dict, tables, tables
                 child_parent_id = (table_name + "_id", current_id)
                 _populate_tables(child, child_table_name, child_parent_id, type_info_dict, tables, tables_rows)
     # return last inserted id
+    print("End", table_name)
     return current_id
 
 def populate_tables(root_node, type_info_dict, tables):
@@ -538,13 +547,22 @@ def stream_sql_schema(tables):
             columns.append("  " + l)
 
         fk_constraints = []
+        sub_groups = {}
         for link in table.links():
             if link.ref_table() is None or link.max_occurs() is None:
                 continue
-            if not link.optional():
+            if not link.optional() and not link.substitution_group():
                 nullity = u" NOT NULL"
             else:
                 nullity = u""
+
+            # deal with substitution groups
+            sgroup = link.substitution_group()
+            if sgroup is not None:
+                if not sub_groups.has_key(sgroup):
+                    sub_groups[sgroup] = [link]
+                else:
+                    sub_groups[sgroup].append(link)
 
             id = link.ref_table().uid_column()
             if id is not None and id.ref_type() is not None:
@@ -565,6 +583,10 @@ def stream_sql_schema(tables):
             columns.append("  " + n + u"_id " + type_str)
         for n, table, type_str in fk_constraints:
             columns.append(u"  FOREIGN KEY({}_id) REFERENCES {}(id)".format(n, table.name()))
+
+        # substitution group checks
+        for sg, links in sub_groups.iteritems():
+            columns.append(u"  CHECK (NOT(" + " AND ".join([l.name() + u"_id IS NULL" for l in links]) + "))")
 
         stmt += u",\n".join(columns) + u");"
         yield(stmt)
@@ -614,8 +636,8 @@ def extract_features(doc):
         nodes.append(root)
     return nodes
 
-if len(sys.argv) < 4:
-    print("Argument: xsd_file xml_file sqlite_file")
+if len(sys.argv) < 3:
+    print("Argument: [xsd_files] xml_file sqlite_file")
     exit(1)
 
 xsd_files = sys.argv[1:-2]
@@ -623,11 +645,23 @@ xml_file = sys.argv[-2]
 sqlite_file = sys.argv[-1]
 
 if not os.path.exists("cache.bin"):
-
     uri_resolver = URIResolver("archive")
-    ns = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
 
     doc = ET.parse(xml_file)
+    if len(xsd_files) == 0:
+        # try to download schemas
+        root = doc.getroot()
+        for an, av in root.attrib.iteritems():
+            if no_prefix(an) == "schemaLocation":
+                # assume the main schema is the first pair
+                schemaLocation = av.split()[1]
+                xsd_files = [uri_resolver.cache_uri(schemaLocation)]
+
+    if len(xsd_files) == 0:
+        print("No schema found, please specify them as arguments")
+        exit(1)
+
+    ns = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
 
     features = extract_features(doc)
     root = features[0]
@@ -658,10 +692,11 @@ if not os.path.exists("cache.bin"):
 
     print("OK")
 
-    print("Writing cache file ... ")
-    fo = open("cache.bin", "w")
-    fo.write(pickle.dumps([tables, tables_rows, root_name]))
-    fo.close()
+    if False:
+        print("Writing cache file ... ")
+        fo = open("cache.bin", "w")
+        fo.write(pickle.dumps([tables, tables_rows, root_name]))
+        fo.close()
 else:
     print("Reading from cache file ... ")
     fi = open("cache.bin", "r")
@@ -786,7 +821,6 @@ for child in root:
                 if field.tag == "editorlayout":
                     field.text = "tablayout"
 
-            print("layer_name", layer_name)
             #raw_input()
             table = tables[layer_name]
             edittypes = ET.Element("edittypes")
