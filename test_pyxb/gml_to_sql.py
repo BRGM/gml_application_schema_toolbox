@@ -555,7 +555,10 @@ def stream_sql_schema(tables):
 
         # substitution group checks
         for sg, links in sub_groups.iteritems():
-            columns.append(u"  CHECK (NOT(" + " AND ".join([l.name() + u"_id IS NULL" for l in links]) + "))")
+            # XOR constraint
+            c = [[l2.name() + u"_id IS " + ("NOT NULL" if l == l2 else "NULL") for l2 in links] for l in links]
+            txt = u"(" + u") OR (".join([u" AND ".join(e) for e in c]) + u")"
+            columns.append(u"  CHECK (" + txt +u")")
 
         stmt += u",\n".join(columns) + u");"
         yield(stmt)
