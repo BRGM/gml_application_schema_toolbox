@@ -272,6 +272,8 @@ def print_etree(node, type_info_dict, indent = 0):
         print_etree(child, type_info_dict, indent + 2)
 
 def simple_type_to_sql_type(td):
+    if td.name() == "anyType":
+        return "TEXT"
     std = None
     if isinstance(td, ComplexTypeDefinition):
         if td.contentType()[0] == 'SIMPLE':
@@ -325,6 +327,78 @@ def gml_geometry_type(node):
             srid = int(m.group(1))
     return type, dim, srid
 
+def _simple_cardinality_size(node, type_info_dict):
+    """Compute the number of new columns that would be created if every children with simple cardinality are merged
+    :returns: (width, depth) width is the number of news columns that would be created
+    and depth is the maximum depth of these columns (number of child levels)
+    """
+    ti = type_info_dict[node]
+    if ti.max_occurs() is None:
+        # not simple cardinality
+        return None
+
+    if "id" in [no_prefix(an) for an in node.attrib.keys()]:
+        # shared table, cannot be merged
+        return None
+            
+    width = len(node.attrib)
+    depth = 1
+
+    if node.text is not None and len(node.text.strip()) > 0:
+        width += 1
+        print("node.text", node.text)
+
+    for child in node:
+        r = _simple_cardinality_size(child, type_info_dict)
+        if r is None:
+            return None
+        child_width, child_depth = r
+        width += child_width
+        if child_depth + 1 > depth:
+            depth = child_depth + 1
+
+    return (width, depth)
+
+def _merged_columns(node, prefix, type_info_dict):
+    ti = type_info_dict[node]
+    if ti.max_occurs() is None:
+        # not simple cardinality
+        return None
+
+    columns = []
+    values = []
+
+    n_tag = no_prefix(node.tag)
+    p = prefix + "_" if prefix != "" else ""
+
+    for an, av in node.attrib.iteritems():
+        n_an = no_prefix(an)
+        if n_an == "id":
+            # shared table, cannot be merged
+            return None
+        if n_an == "nil":
+            continue
+        cname = p + n_tag + "_" + n_an
+        au = ti.attribute_type_info_map()[an]
+        columns.append(Column(cname,
+                              ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition()),
+                              optional = not au.required()))
+        values.append((cname, av))
+
+    if node.text is not None and len(node.text.strip()) > 0:
+        cname = p + n_tag
+        columns.append(Column(cname, ref_type = simple_type_to_sql_type(ti.type_info().typeDefinition())))
+        values.append((cname, node.text))
+
+    for child in node:
+        r = _merged_columns(child, p + n_tag, type_info_dict)
+        if r is None:
+            return None
+        child_columns, child_values = r
+        columns += child_columns
+        values += child_values
+
+    return columns, values
 
 def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_rows):
     if len(node.attrib) == 0 and len(node) == 0:
@@ -447,8 +521,16 @@ def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_ro
                 child_table_name = no_prefix(node.tag) + "_" + no_prefix(child.tag)
             if not in_seq:
                 # 1:1 cardinality
-                row_id = _build_tables(child, child_table_name, None, type_info_dict, tables, tables_rows)
-                row.append((no_prefix(child.tag)+"_id", row_id))
+                r = _simple_cardinality_size(child, type_info_dict)
+                if r is not None:
+                    child_columns, child_values = _merged_columns(child, "", type_info_dict)
+                    for c in child_columns:
+                        if not table.has_field(c.name()):
+                            table.add_field(c)
+                    row += child_values
+                else:
+                    row_id = _build_tables(child, child_table_name, None, type_info_dict, tables, tables_rows)
+                    row.append((n_child_tag + "_id", row_id))
             else:
                 # 1:N cardinality
                 child_parent_id = (table_name + "_id", current_id)
@@ -469,7 +551,6 @@ def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_ro
                                          substitution_group = sgroup))
 
     # return last inserted id
-    print(table_name, row)
     return current_id
 
 
