@@ -701,25 +701,28 @@ if not os.path.exists("cache.bin"):
     uri_resolver = URIResolver("archive")
 
     doc = ET.parse(xml_file)
+    features = extract_features(doc)
+    root = features[0]
+    root_name = no_prefix(root.tag)
+    main_ns_name = None
+    if root.tag.startswith('{'):
+        main_ns_name = root.tag[1:root.tag.index('}')]
+
     if len(xsd_files) == 0:
         # try to download schemas
         root = doc.getroot()
         for an, av in root.attrib.iteritems():
             if no_prefix(an) == "schemaLocation":
-                # assume the main schema is the first pair
-                schemaLocation = av.split()[1]
-                xsd_files = [uri_resolver.cache_uri(schemaLocation)]
+                if main_ns_name is not None:
+                    locations = dict(zip(av.split()[0::2], av.split()[1::2]))
+                    xsd_files = [uri_resolver.cache_uri(locations[main_ns_name])]
 
     if len(xsd_files) == 0:
         print("No schema found, please specify them as arguments")
         exit(1)
 
     ns = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
-
-    features = extract_features(doc)
-    root = features[0]
-
-    root_name = no_prefix(root.tag)
+    
     root_type = ns.elementDeclarations()[root_name].typeDefinition()
 
 
@@ -763,6 +766,8 @@ else:
         cur.execute(line)
     conn.commit()
     print("OK")
+
+#exit(0)
 
 qgis_file = sqlite_file.replace(".sqlite", ".qgs")
 sys.path.append("/home/hme/src/QGIS/build/output/python")
