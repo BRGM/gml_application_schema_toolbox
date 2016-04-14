@@ -336,6 +336,9 @@ def _simple_cardinality_size(node, type_info_dict):
     if ti.max_occurs() is None:
         # not simple cardinality
         return None
+    if is_derived_from(ti.type_info().typeDefinition(), "AbstractGeometryType"):
+        # geometry, cannot merge
+        return None
 
     if "id" in [no_prefix(an) for an in node.attrib.keys()]:
         # shared table, cannot be merged
@@ -346,7 +349,6 @@ def _simple_cardinality_size(node, type_info_dict):
 
     if node.text is not None and len(node.text.strip()) > 0:
         width += 1
-        print("node.text", node.text)
 
     for child in node:
         r = _simple_cardinality_size(child, type_info_dict)
@@ -363,6 +365,9 @@ def _merged_columns(node, prefix, type_info_dict):
     ti = type_info_dict[node]
     if ti.max_occurs() is None:
         # not simple cardinality
+        return None
+    if is_derived_from(ti.type_info().typeDefinition(), "AbstractGeometryType"):
+        # geometry, cannot merge
         return None
 
     columns = []
@@ -496,6 +501,7 @@ def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_ro
                                          child_ti.min_occurs(),
                                          child_ti.max_occurs(),
                                          simple_type_to_sql_type(child_td), child_table))
+                    print("#", table.name(), "is linked to", child_table_name, "via", n_child_tag)
 
                 v = child.text if child.text is not None else ''
                 child_table_rows = tables_rows[child_table_name]
@@ -535,6 +541,7 @@ def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_ro
                 # 1:N cardinality
                 child_parent_id = (table_name + "_id", current_id)
                 _build_tables(child, child_table_name, child_parent_id, type_info_dict, tables, tables_rows)
+
             child_table = tables.get(child_table_name)
             if child_table is not None: # may be None if the child_table is empty
                 # create link
@@ -576,6 +583,7 @@ def build_tables(root_node, type_info_dict, tables = None, tables_rows = None):
             # only for links with a "*" cardinality
             if link.max_occurs() is None and link.ref_table() is not None:
                 if not link.ref_table().has_field(link.name()):
+                    print(link.ref_table().name(), "backlink to", table.name())
                     link.ref_table().add_back_link(link.name(), table)
     return tables, tables_rows
 
@@ -683,7 +691,8 @@ def extract_features(doc):
             if no_prefix(child.tag) == 'member':
                 nodes.append(child[0])
             elif no_prefix(child.tag) == 'featureMembers':
-                nodes.append(child[0])
+                for cchild in child:
+                    nodes.append(cchild)
     else:
         # it seems to be an isolated feature
         nodes.append(root)
@@ -767,8 +776,12 @@ else:
     conn.commit()
     print("OK")
 
-#exit(0)
+for table_name, table in tables.iteritems():
+    for column in table.columns():
+        print(table_name, column.name())
 
+#exit(0)
+    
 qgis_file = sqlite_file.replace(".sqlite", ".qgs")
 sys.path.append("/home/hme/src/QGIS/build/output/python")
 
@@ -857,6 +870,14 @@ QgsApplication.exitQgis()
 #          <widgetv2config OrderByValue="0" fieldEditable="1" AllowAddFeatures="0" ShowForm="1" Relation="EnvironmentalMonitoringFacility20160412165324596_inspireId_id_EnvironmentalMonitoringFacility_inspireId20160412165324591_id" ReadOnly="0" MapIdentification="0" labelOnTop="0" AllowNULL="0"/>
 #        </edittype>
 
+simple_back_links = {}
+for table_name, table in tables.iteritems():
+    for link in table.links():
+        print(table_name, "links to", link.ref_table().name(), "via", link.name())
+        if link.max_occurs() == 1:
+            dest_table = link.ref_table().name()
+            simple_back_links[dest_table] = (simple_back_links.get(dest_table) or []) + [(table_name, link)]
+
 doc = ET.parse(qgis_file)
 root = doc.getroot()
 for child in root:
@@ -882,8 +903,11 @@ for child in root:
             columns_container.attrib["name"] = "Columns"
             columns_container.attrib["columnCount"] = "1"
             relations_container = ET.Element("attributeEditorContainer")
-            relations_container.attrib["name"] = "Relations"
+            relations_container.attrib["name"] = "Links"
             relations_container.attrib["columnCount"] = "1"
+            backrelations_container = ET.Element("attributeEditorContainer")
+            backrelations_container.attrib["name"] = "Back Links"
+            backrelations_container.attrib["columnCount"] = "1"
             editform.append(columns_container)
 
             for idx, c in enumerate(table.columns()):
@@ -902,7 +926,14 @@ for child in root:
                 field.attrib["index"] = str(idx)
                 field.attrib["name"] = c.name()
                 columns_container.append(field)
-                
+
+            if simple_back_links.get(table.name()) is not None:
+                for sl in simple_back_links[table.name()]:
+                    backrelation = ET.Element("attributeEditorRelation")
+                    backrelation.attrib["relation"] = sl[0] + "_" + sl[1].name()
+                    backrelation.attrib["name"] = sl[0] + "_" + sl[1].name()
+                    backrelations_container.append(backrelation)
+
             for link in table.links():
                 if link.max_occurs() is None:
                     relation = ET.Element("attributeEditorRelation")
@@ -935,8 +966,36 @@ for child in root:
                 columns_container.append(field)
                 idx += 1
 
+            for link in table.back_links():
+                print("*** backlink to", link.ref_table().name(), "via", link.name())
+                edittype = ET.Element("edittype")
+                edittype.attrib["widgetv2type"] = "RelationReference"
+                edittype.attrib["name"] = link.ref_table().name() + "_id"
+                wconfig = ET.Element("widgetv2config")
+                wconfig.attrib["OrderByValue"] = "0"
+                wconfig.attrib["fieldEditable"] = "0"
+                wconfig.attrib["ShowForm"] = "0" # embed the form
+                wconfig.attrib["Relation"] = link.ref_table().name() + "_" + link.name()
+                wconfig.attrib["ReadOnly"] = "1"
+                # allow map selection tools ?
+                ref_layer = layers[link.ref_table().name()]
+                has_geometry = len(link.ref_table().geometries()) > 0
+                wconfig.attrib["MapIdentification"] = "1" if has_geometry else "0"
+                wconfig.attrib["labelOnTop"] = "0"
+                wconfig.attrib["AllowNULL"] = "1"
+                edittype.append(wconfig)
+                edittypes.append(edittype)
+
+                field = ET.Element("attributeEditorField")
+                field.attrib["index"] = str(idx)
+                field.attrib["name"] = link.ref_table().name() + "_id"
+                columns_container.append(field)
+                idx += 1
+
             if len(relations_container) > 0:
                 editform.append(relations_container)
+            if len(backrelations_container) > 0:
+                editform.append(backrelations_container)
 
 fo = open(qgis_file, "w")
 fo.write(ET.tostring(root))
