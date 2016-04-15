@@ -6,7 +6,7 @@ def parse_schemas(schema_files, urlopen = urllib2.urlopen):
     Every dependent schemas will be downloaded thanks to the urlopen function passed in argument.
     :param schema_files: list of schema filename
     :param urlopen: function that takes an URL and returns a file-like object
-    :returns: a pyxb Namespace that is resolved
+    :returns: a dict {namespace_uri: pyxb Namespace that is resolved}
     """
     import pyxb.binding.generate
     import pyxb.utils.utility
@@ -29,9 +29,20 @@ def parse_schemas(schema_files, urlopen = urllib2.urlopen):
         # restore the initial DataFromURI
         pyxb.utils.utility.DataFromURI = old_DataFromURI
 
-    schema = generator.schemas()[0]
-    ns = schema.targetNamespace()
+    schemas = generator.schemas()
+    ns_map = {}
+    for schema in schemas:
+        ns = schema.targetNamespace()
 
-    # must call resolve to have a walkable schema tree
-    ns.resolveDefinitions()
-    return ns
+        # must call resolve to have a walkable schema tree
+        ns.resolveDefinitions()
+        ns_map[ns.uri()] = ns
+
+        for ns in schema.referencedNamespaces():
+            ns_map[ns.uri()] = ns
+
+    # remove special namespaces
+    for uri in ['http://www.w3.org/2000/xmlns/', 'http://www.w3.org/2001/XMLSchema', 'http://www.w3.org/XML/1998/namespace']:
+        if ns_map.has_key(uri):
+            del ns_map[uri]
+    return ns_map

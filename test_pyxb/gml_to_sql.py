@@ -11,7 +11,7 @@ sys.path = ['/home/hme/src/pyxb'] + sys.path
 from pyxb.xmlschema.structures import Schema, ElementDeclaration, ComplexTypeDefinition, Particle, ModelGroup, SimpleTypeDefinition, Wildcard, AttributeUse, AttributeDeclaration
 
 from schema_parser import parse_schemas
-from type_resolver import resolve_types, no_prefix, type_definition_name
+from type_resolver import resolve_types, split_tag, no_prefix, type_definition_name
 
 import os
 import sys
@@ -27,22 +27,28 @@ class URIResolver(object):
     def __init__(self, cachedir):
         self.__cachedir = cachedir
 
-    def cache_uri(self, uri):
+    def cache_uri(self, uri, parent_uri = '', lvl = 0):
         def mkdir_p(path):
             """Recursively create all subdirectories of a given path"""
             dirs = path.split('/')
-            p = ""
+            if dirs[0] == '':
+                p = '/'
+                dirs = dirs[1:]
+            else:
+                p = ''
             for d in dirs:
                 p = os.path.join(p, d)
                 if not os.path.exists(p):
                     os.mkdir(p)
 
-        if uri.startswith('http://'):
-            base_uri = 'http://' + '/'.join(uri[7:].split('/')[:-1])
-        else:
-            base_uri = os.path.dirname(uri)
+        print(" "*lvl, "Resolving schema {} ... ".format(uri))
 
-        print("Resolving schema {} ... ".format(uri), end="")
+        if not uri.startswith('http://'):
+            if uri.startswith('/'):
+                # absolute file name
+                return uri
+            uri = parent_uri + uri
+        base_uri = 'http://' + '/'.join(uri[7:].split('/')[:-1]) + "/"
 
         out_file_name = uri
         if uri.startswith('http://'):
@@ -55,7 +61,15 @@ class URIResolver(object):
             fo.write(f.read())
             fo.close()
             f.close()
-        print("OK")
+
+        # process imports
+        doc = ET.parse(out_file_name)
+        root = doc.getroot()
+        for child in root:
+            if no_prefix(child.tag) == "import":
+                for an, av in child.attrib.iteritems():
+                    if no_prefix(an) == "schemaLocation":
+                        self.cache_uri(av, base_uri, lvl+2)
         return out_file_name
     
     def data_from_uri(self, uri):
@@ -220,6 +234,8 @@ class Table:
     def fields(self):
         return self.__fields
     def add_field(self, field):
+        if self.__fields.has_key(field.name()):
+            raise RuntimeError("add_field {} already existing".format(field.name()))
         self.__fields[field.name()] = field
     def add_fields(self, fields):
         for f in fields:
@@ -431,8 +447,8 @@ def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_ro
     # attributes
     #--------------------------------------------------
     for attr_name, attr_value in node.attrib.iteritems():
-        n_attr_name = no_prefix(attr_name)
-        if n_attr_name == 'nil':
+        ns, n_attr_name = split_tag(attr_name)
+        if ns == "http://www.w3.org/2001/XMLSchema-instance":
             continue
 
         au = ti.attribute_type_info_map()[attr_name]
@@ -524,7 +540,7 @@ def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_ro
                 # shared table
                 child_table_name = child_td.name() or no_prefix(node.tag) + "_t"
             else:
-                child_table_name = no_prefix(node.tag) + "_" + no_prefix(child.tag)
+                child_table_name = table_name + "_"  + no_prefix(child.tag)
             if not in_seq:
                 # 1:1 cardinality
                 r = _simple_cardinality_size(child, type_info_dict)
@@ -595,7 +611,9 @@ def stream_sql_schema(tables):
     for name, table in tables.iteritems():
         stmt = u"CREATE TABLE " + name + u"(";
         columns = []
+        print("table", name)
         for c in table.columns():
+            print("column", c.name())
             if c.ref_type():
                 l = c.name() + u" " + c.ref_type()
             else:
@@ -673,6 +691,7 @@ def stream_sql_rows(tables_rows):
     yield(u"PRAGMA foreign_keys = OFF;")
     for table_name, rows in tables_rows.iteritems():
         for row in rows:
+            print(row)
             columns = [n for n,v in row if v is not None]
             values = [escape_value(v) for _,v in row if v is not None]
             yield(u"INSERT INTO {} ({}) VALUES ({});".format(table_name, ",".join(columns), ",".join(values)))
@@ -707,33 +726,31 @@ xml_file = sys.argv[-2]
 sqlite_file = sys.argv[-1]
 
 if not os.path.exists("cache.bin"):
-    uri_resolver = URIResolver("archive")
+    #uri_resolver = URIResolver("archive")
+    uri_resolver = URIResolver("/tmp")
 
     doc = ET.parse(xml_file)
     features = extract_features(doc)
     root = features[0]
-    root_name = no_prefix(root.tag)
-    main_ns_name = None
-    if root.tag.startswith('{'):
-        main_ns_name = root.tag[1:root.tag.index('}')]
+    root_ns, root_name = split_tag(root.tag)
 
     if len(xsd_files) == 0:
         # try to download schemas
         root = doc.getroot()
         for an, av in root.attrib.iteritems():
             if no_prefix(an) == "schemaLocation":
-                if main_ns_name is not None:
-                    locations = dict(zip(av.split()[0::2], av.split()[1::2]))
-                    xsd_files = [uri_resolver.cache_uri(locations[main_ns_name])]
+                xsd_files = [uri_resolver.cache_uri(x) for x in av.split()[1::2]]
 
     if len(xsd_files) == 0:
         print("No schema found, please specify them as arguments")
         exit(1)
 
-    ns = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
-    
+    ns_map = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
+    print(xsd_files)
+    print(ns_map.keys())
+    #exit(0)
+    ns = ns_map[root_ns]
     root_type = ns.elementDeclarations()[root_name].typeDefinition()
-
 
     #print_etree(doc.getroot(), type_info_dict)
 
@@ -743,7 +760,7 @@ if not os.path.exists("cache.bin"):
     tables_rows = None
     for idx, node in enumerate(features):
         print("+ Feature #{}/{}".format(idx+1, len(features)))
-        type_info_dict = resolve_types(node, ns)
+        type_info_dict = resolve_types(node, ns_map)
         tables, tables_rows = build_tables(node, type_info_dict, tables, tables_rows)
 
     print("OK")
@@ -769,9 +786,11 @@ else:
     cur.execute("SELECT InitSpatialMetadata(1);")
     conn.commit()
     for line in stream_sql_schema(tables):
+        print(line)
         cur.execute(line)
     conn.commit()
     for line in stream_sql_rows(tables_rows):
+        print(line)
         cur.execute(line)
     conn.commit()
     print("OK")
@@ -903,10 +922,10 @@ for child in root:
             columns_container.attrib["name"] = "Columns"
             columns_container.attrib["columnCount"] = "1"
             relations_container = ET.Element("attributeEditorContainer")
-            relations_container.attrib["name"] = "Links"
+            relations_container.attrib["name"] = "1:N Links"
             relations_container.attrib["columnCount"] = "1"
             backrelations_container = ET.Element("attributeEditorContainer")
-            backrelations_container.attrib["name"] = "Back Links"
+            backrelations_container.attrib["name"] = "N:1 Back Links"
             backrelations_container.attrib["columnCount"] = "1"
             editform.append(columns_container)
 
