@@ -54,19 +54,23 @@ class URIResolver(object):
         if uri.startswith('http://'):
             out_file_name = uri[7:]
         out_file_name = os.path.join(self.__cachedir, out_file_name)
-        if not os.path.exists(out_file_name):
-            f = urllib2.urlopen(uri)
-            mkdir_p(os.path.dirname(out_file_name))
-            fo = open(out_file_name, "w")
-            fo.write(f.read())
-            fo.close()
-            f.close()
+        if os.path.exists(out_file_name):
+            return out_file_name
+        
+        f = urllib2.urlopen(uri)
+        mkdir_p(os.path.dirname(out_file_name))
+        fo = open(out_file_name, "w")
+        fo.write(f.read())
+        fo.close()
+        f.close()
 
         # process imports
         doc = ET.parse(out_file_name)
         root = doc.getroot()
+
         for child in root:
-            if no_prefix(child.tag) == "import":
+            n_child_tag = no_prefix(child.tag)
+            if n_child_tag == "import" or n_child_tag == "include":
                 for an, av in child.attrib.iteritems():
                     if no_prefix(an) == "schemaLocation":
                         self.cache_uri(av, base_uri, lvl+2)
@@ -403,12 +407,13 @@ def _merged_columns(node, prefix, type_info_dict):
         au = ti.attribute_type_info_map()[an]
         columns.append(Column(cname,
                               ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition()),
-                              optional = not au.required()))
+                              optional = True))
+        #optional = not au.required()))
         values.append((cname, av))
 
     if node.text is not None and len(node.text.strip()) > 0:
         cname = p + n_tag
-        columns.append(Column(cname, ref_type = simple_type_to_sql_type(ti.type_info().typeDefinition())))
+        columns.append(Column(cname, ref_type = simple_type_to_sql_type(ti.type_info().typeDefinition()), optional = True))
         values.append((cname, node.text))
 
     for child in node:
@@ -726,8 +731,7 @@ xml_file = sys.argv[-2]
 sqlite_file = sys.argv[-1]
 
 if not os.path.exists("cache.bin"):
-    #uri_resolver = URIResolver("archive")
-    uri_resolver = URIResolver("/tmp")
+    uri_resolver = URIResolver("archive")
 
     doc = ET.parse(xml_file)
     features = extract_features(doc)
@@ -814,8 +818,11 @@ app.initQgis()
 # load a layer for each table
 layers = {}
 root_group = QgsProject.instance().layerTreeRoot()
-child_group = root_group.addGroup(root_name + u"'s linked tables")
+main_group = root_group.addGroup(root_name)
+child_group = main_group.addGroup(u"linked tables")
 child_group.setExpanded(False)
+geom_group = main_group.addGroup(u"geometries")
+geom_group.setExpanded(True)
 for table_name, table in tables.iteritems():
     geometry = table.geometries()[0].name() if len(table.geometries()) > 0 else None
     src = "dbname='{}' table=\"{}\"{} sql=".format(sqlite_file, table.name(), " (" + geometry + ")" if geometry is not None else "")
@@ -823,7 +830,9 @@ for table_name, table in tables.iteritems():
     layers[table.name()] = l
     QgsMapLayerRegistry.instance().addMapLayer(l, False) # do not add to the legend
     if table_name == root_name:
-        root_group.insertLayer(0, l)
+        main_group.insertLayer(0, l)
+    elif geometry is not None:
+        geom_group.addLayer(l)
     else:
         child_group.addLayer(l)
     
@@ -925,7 +934,7 @@ for child in root:
             relations_container.attrib["name"] = "1:N Links"
             relations_container.attrib["columnCount"] = "1"
             backrelations_container = ET.Element("attributeEditorContainer")
-            backrelations_container.attrib["name"] = "N:1 Back Links"
+            backrelations_container.attrib["name"] = "Back Links"
             backrelations_container.attrib["columnCount"] = "1"
             editform.append(columns_container)
 
