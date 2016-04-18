@@ -1,3 +1,4 @@
+from xml_utils import no_prefix, split_tag, prefix
 from pyxb.xmlschema.structures import Schema, ElementDeclaration, ComplexTypeDefinition, Particle, ModelGroup, SimpleTypeDefinition, Wildcard, AttributeUse, AttributeDeclaration
 
 def _xsd_isinstance(type, base_type):
@@ -30,25 +31,6 @@ def _find_element_declarations(obj, ns_map, min_occurs = 1, max_occurs = 1):
             r += _find_element_declarations(p, ns_map, min_occurs, max_occurs)
         return r
     return []
-
-def no_prefix(tag):
-    """Remove the namespace prefix from the given name"""
-    if tag.startswith('{'):
-        return tag[tag.rfind('}')+1:]
-    return tag
-
-def prefix(tag):
-    """Return the namespace prefix from the given name"""
-    if tag.startswith('{'):
-        return tag[1:tag.rfind('}')]
-    return ""
-
-def split_tag(tag):
-    """Return a pair (ns prefix, tag) from a tag name"""
-    if tag.startswith('{'):
-        i = tag.rfind('}')
-        return (tag[1:i], tag[i+1:])
-    return ("", tag)
 
 def type_definition_name(td):
     std = None
