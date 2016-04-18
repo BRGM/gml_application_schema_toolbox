@@ -5,8 +5,9 @@ from __future__ import print_function
 import logging
 logging.basicConfig()
 
+import os
 import sys
-sys.path = ['/home/hme/src/pyxb'] + sys.path
+sys.path = [os.path.join(os.path.dirname(__file__), "pyxb")] + sys.path
 
 from schema_parser import parse_schemas
 from type_resolver import resolve_types, type_definition_name
@@ -16,7 +17,6 @@ from relational_model_builder import build_tables
 from sqlite_writer import create_sqlite_from_model
 from qgis_project_writer import qgis_project_from_model
 
-import os
 import sys
 import urllib2
 
