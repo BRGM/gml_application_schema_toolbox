@@ -1,6 +1,16 @@
+from __future__ import print_function
 from xml_utils import split_tag, no_prefix
 from pyxb.xmlschema.structures import Schema, ElementDeclaration, ComplexTypeDefinition, Particle, ModelGroup, SimpleTypeDefinition, Wildcard, AttributeUse, AttributeDeclaration
+from schema_parser import parse_schemas
+from type_resolver import resolve_types
 from relational_model import *
+
+import urllib2
+import os
+# for GML geometry to WKT
+from osgeo import ogr
+
+import xml.etree.ElementTree as ET
 
 def is_simple(td):
     return isinstance(td, SimpleTypeDefinition) or (isinstance(td, ComplexTypeDefinition) and td.contentType()[0] == 'SIMPLE')
@@ -47,10 +57,8 @@ def gml_geometry_type(node):
     srid = None
     dim = 2
     type = no_prefix(node.tag)
-    if type in ['Point', 'LineString', 'Polygon', 'MultiPoint', 'MultiLineString', 'MultiPolygon']:
-        type = type.upper()
-    else:
-        type = 'GEOMETRYCOLLECTION'
+    if type not in ['Point', 'LineString', 'Polygon', 'MultiPoint', 'MultiLineString', 'MultiPolygon']:
+        type = 'GeometryCollection'
     for k, v in node.attrib.iteritems():
         if no_prefix(k) == 'srsDimension':
             dim = int(v)
@@ -329,3 +337,125 @@ def build_tables(root_node, type_info_dict, tables = None, tables_rows = None):
                     link.ref_table().add_back_link(link.name(), table)
     return tables, tables_rows
 
+class URIResolver(object):
+    def __init__(self, cachedir, urlopener = urllib2.urlopen):
+        self.__cachedir = cachedir
+        self.__urlopener = urlopener
+
+    def cache_uri(self, uri, parent_uri = '', lvl = 0):
+        def mkdir_p(path):
+            """Recursively create all subdirectories of a given path"""
+            dirs = path.split('/')
+            if dirs[0] == '':
+                p = '/'
+                dirs = dirs[1:]
+            else:
+                p = ''
+            for d in dirs:
+                p = os.path.join(p, d)
+                if not os.path.exists(p):
+                    os.mkdir(p)
+
+        print(" "*lvl, "Resolving schema {} ... ".format(uri))
+
+        if not uri.startswith('http://'):
+            if uri.startswith('/'):
+                # absolute file name
+                return uri
+            uri = parent_uri + uri
+        base_uri = 'http://' + '/'.join(uri[7:].split('/')[:-1]) + "/"
+
+        out_file_name = uri
+        if uri.startswith('http://'):
+            out_file_name = uri[7:]
+        out_file_name = os.path.join(self.__cachedir, out_file_name)
+        if os.path.exists(out_file_name):
+            return out_file_name
+        
+        f = self.__urlopener(uri)
+        mkdir_p(os.path.dirname(out_file_name))
+        fo = open(out_file_name, "w")
+        fo.write(f.read())
+        fo.close()
+        f.close()
+
+        # process imports
+        doc = ET.parse(out_file_name)
+        root = doc.getroot()
+
+        for child in root:
+            n_child_tag = no_prefix(child.tag)
+            if n_child_tag == "import" or n_child_tag == "include":
+                for an, av in child.attrib.iteritems():
+                    if no_prefix(an) == "schemaLocation":
+                        self.cache_uri(av, base_uri, lvl+2)
+        return out_file_name
+    
+    def data_from_uri(self, uri):
+        out_file_name = self.cache_uri(uri)
+        f = open(out_file_name)
+        return f.read()
+
+def extract_features(doc):
+    """Extract (Complex) features from a XML doc
+    :param doc: a DOM document
+    :returns: a list of nodes for each feature
+    """
+    nodes = []
+    root = doc.getroot()
+    if root.tag.startswith(u'{http://www.opengis.net/wfs') and root.tag.endswith('FeatureCollection'):
+        # WFS features
+        for child in root:
+            if no_prefix(child.tag) == 'member':
+                nodes.append(child[0])
+            elif no_prefix(child.tag) == 'featureMembers':
+                for cchild in child:
+                    nodes.append(cchild)
+    else:
+        # it seems to be an isolated feature
+        nodes.append(root)
+    return nodes
+
+
+def load_gml_model(xml_file, archive_dir, xsd_files = []):
+    cachefile = os.path.join(archive_dir, xml_file + ".model")
+
+    if os.path.exists(cachefile):
+        return load_model_from(cachefile)
+
+    uri_resolver = URIResolver(archive_dir)
+
+    doc = ET.parse(xml_file)
+    features = extract_features(doc)
+    root = features[0]
+    root_ns, root_name = split_tag(root.tag)
+
+    if len(xsd_files) == 0:
+        # try to download schemas
+        root = doc.getroot()
+        for an, av in root.attrib.iteritems():
+            if no_prefix(an) == "schemaLocation":
+                xsd_files = [uri_resolver.cache_uri(x) for x in av.split()[1::2]]
+
+    if len(xsd_files) == 0:
+        raise RuntimeError("No schema found")
+
+    ns_map = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
+    ns = ns_map[root_ns]
+    root_type = ns.elementDeclarations()[root_name].typeDefinition()
+
+    print("Creating database schema ... ")
+
+    tables = None
+    tables_rows = None
+    for idx, node in enumerate(features):
+        print("+ Feature #{}/{}".format(idx+1, len(features)))
+        type_info_dict = resolve_types(node, ns_map)
+        tables, tables_rows = build_tables(node, type_info_dict, tables, tables_rows)
+
+    print("OK")
+
+    model = Model(tables, tables_rows, root_name)
+    save_model_to(model, cachefile)
+    
+    return model

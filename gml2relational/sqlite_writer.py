@@ -1,3 +1,4 @@
+from __future__ import print_function
 import pyspatialite.dbapi2 as db
 
 def stream_sql_schema(tables):
@@ -94,15 +95,15 @@ def stream_sql_rows(tables_rows):
     yield(u"PRAGMA foreign_keys = ON;")
 
 
-def create_sqlite_from_model(tables, tables_rows, sqlite_file):
+def create_sqlite_from_model(model, sqlite_file):
     conn = db.connect(sqlite_file)
     cur = conn.cursor()
     cur.execute("SELECT InitSpatialMetadata(1);")
     conn.commit()
-    for line in stream_sql_schema(tables):
+    for line in stream_sql_schema(model.tables()):
         cur.execute(line)
     conn.commit()
-    for line in stream_sql_rows(tables_rows):
+    for line in stream_sql_rows(model.tables_rows()):
         cur.execute(line)
     conn.commit()
 

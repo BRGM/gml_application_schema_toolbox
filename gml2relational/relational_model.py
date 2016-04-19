@@ -1,3 +1,5 @@
+import pickle
+
 class Link:
     """A Link represents a link to another type/table"""
 
@@ -72,6 +74,13 @@ class Geometry:
     """A geometry column"""
 
     def __init__(self, name, type, dim, srid, optional = False):
+        """
+        :param name: Name of the geometry column
+        :param type: Geometry type in ['Point', 'LineString', 'Polygon', 'MultiPoint', 'MultiLineString', 'MultiPolygon']
+        :param dim: dimension : 2 or 3
+        :param srid: epsg code
+        :param optional: is it optional
+        """
         self.__name = name
         self.__type = type
         self.__dim = dim
@@ -152,3 +161,41 @@ class Table:
         f = [x for x in table.back_links() if x.name() == name and x.table() == table]
         if len(f) == 0:
             self.__fields[name] = BackLink(name, table)
+
+class Model:
+    def __init__(self, tables, tables_rows, root_name):
+        self.__tables = tables
+        self.__tables_rows = tables_rows
+        self.__root_name = root_name
+
+    def tables(self):
+        return self.__tables
+
+    def tables_rows(self):
+        return self.__tables_rows
+
+    def root_name(self):
+        return self.__root_name
+
+model_file_magic = "GML2Relational model"
+model_file_version = 1
+
+def save_model_to(model, filename):
+    fo = open(filename, "w")
+    pickle.dump(model_file_magic, fo)
+    pickle.dump(model_file_version, fo)
+    pickle.dump(model, fo)
+    fo.close()
+
+def load_model_from(filename):
+    fi = open(filename, "r")
+    file_magic = pickle.load(fi)
+    if file_magic != model_file_magic:
+        raise RuntimeError("Invalid model file")
+    version = pickle.load(fi)
+    if version > model_file_version:
+        raise RuntimeError("Invalid model file version")
+    model = pickle.load(fi)
+    fi.close()
+    return model
+
