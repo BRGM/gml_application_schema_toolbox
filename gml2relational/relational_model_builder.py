@@ -159,7 +159,6 @@ def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_ro
     if len(node.attrib) == 0 and len(node) == 0:
         # empty table
         return None
-    print("Build table", table_name)
 
     table = tables.get(table_name)
     if table is None:
@@ -251,7 +250,6 @@ def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_ro
                                          child_ti.min_occurs(),
                                          child_ti.max_occurs(),
                                          simple_type_to_sql_type(child_td), child_table))
-                    print("#", table.name(), "is linked to", child_table_name, "via", n_child_tag)
 
                 v = child.text if child.text is not None else ''
                 child_table_rows = tables_rows[child_table_name]
@@ -333,7 +331,6 @@ def build_tables(root_node, type_info_dict, tables = None, tables_rows = None):
             # only for links with a "*" cardinality
             if link.max_occurs() is None and link.ref_table() is not None:
                 if not link.ref_table().has_field(link.name()):
-                    print(link.ref_table().name(), "backlink to", table.name())
                     link.ref_table().add_back_link(link.name(), table)
     return tables, tables_rows
 
@@ -421,6 +418,7 @@ def load_gml_model(xml_file, archive_dir, xsd_files = []):
     cachefile = os.path.join(archive_dir, xml_file + ".model")
 
     if os.path.exists(cachefile):
+        print("Model loaded from " + cachefile)
         return load_model_from(cachefile)
 
     uri_resolver = URIResolver(archive_dir)
@@ -444,16 +442,12 @@ def load_gml_model(xml_file, archive_dir, xsd_files = []):
     ns = ns_map[root_ns]
     root_type = ns.elementDeclarations()[root_name].typeDefinition()
 
-    print("Creating database schema ... ")
-
     tables = None
     tables_rows = None
     for idx, node in enumerate(features):
         print("+ Feature #{}/{}".format(idx+1, len(features)))
         type_info_dict = resolve_types(node, ns_map)
         tables, tables_rows = build_tables(node, type_info_dict, tables, tables_rows)
-
-    print("OK")
 
     model = Model(tables, tables_rows, root_name)
     save_model_to(model, cachefile)

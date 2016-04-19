@@ -30,7 +30,7 @@ def to_pretty_xml(node, level = 0):
         yield "  " * level + "</{}>".format(node.tag)
         
 
-def create_qgis_project_from_model(model, sqlite_file, qgis_file):
+def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file):
     layers_xml = {}
     main_group_xml = XMLNode('layer-tree-group', {'checked' : 'Qt::Checked', 'expanded' : '1'})
     child_group_xml = ET.SubElement(main_group_xml, 'layer-tree-group', {'name': u'linked tables', 'expanded' : '0'})
@@ -43,7 +43,7 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file):
     tables_rows = model.tables_rows()
     root_name = model.root_name()
 
-    srs_conn = db.connect("/tmp/srs.db")
+    srs_conn = db.connect(srs_db_file)
     srs_cur = srs_conn.cursor()
 
     # load a layer for each table
@@ -116,7 +116,6 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file):
     simple_back_links = {}
     for table_name, table in tables.iteritems():
         for link in table.links():
-            print(table_name, "links to", link.ref_table().name(), "via", link.name())
             if link.max_occurs() == 1:
                 dest_table = link.ref_table().name()
                 simple_back_links[dest_table] = (simple_back_links.get(dest_table) or []) + [(table_name, link)]
@@ -167,7 +166,6 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file):
                 relation.attrib["name"] = link.name()
                 relations_container.append(relation)
                 continue
-            print("link to", link.ref_table().name(), "via", link.name())
             edittype = XMLNode("edittype")
             edittype.attrib["widgetv2type"] = "RelationReference"
             edittype.attrib["name"] = link.name() + "_id"
@@ -192,7 +190,6 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file):
             idx += 1
 
         for link in table.back_links():
-            print("*** backlink to", link.ref_table().name(), "via", link.name())
             edittype = XMLNode("edittype")
             edittype.attrib["widgetv2type"] = "RelationReference"
             edittype.attrib["name"] = link.ref_table().name() + "_id"
