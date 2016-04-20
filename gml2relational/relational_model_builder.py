@@ -356,8 +356,6 @@ def _populate(node, table, parent_id, tables_rows):
             row.append((link.name() + "_id", child_id))
         else:
             children = resolve_xpath(node, link.name())
-#            if link.name() == "belongsTo":
-#                import ipdb; ipdb.set_trace()
             if children is None:
                 continue
             for child in children:
