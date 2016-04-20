@@ -31,17 +31,18 @@ def to_pretty_xml(node, level = 0):
         
 
 def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file):
-    layers_xml = {}
-    main_group_xml = XMLNode('layer-tree-group', {'checked' : 'Qt::Checked', 'expanded' : '1'})
-    child_group_xml = ET.SubElement(main_group_xml, 'layer-tree-group', {'name': u'linked tables', 'expanded' : '0'})
-    geom_group_xml = ET.SubElement(main_group_xml, 'layer-tree-group', {'name': u"'s geometries", 'expanded' : '1', 'checked' : 'Qt::Checked'})
-    project_xml = XMLNode('qgis', {'version' : '2.15' })
-    relations_xml = XMLNode('relations')
-    project_xml.extend([main_group_xml, relations_xml])
-
     tables = model.tables()
     tables_rows = model.tables_rows()
     root_name = model.root_name()
+
+    layers_xml = {}
+    main_group_xml = XMLNode('layer-tree-group', {'checked' : 'Qt::Checked', 'expanded' : '1'})
+    group_xml = ET.SubElement(main_group_xml, 'layer-tree-group', {'name': root_name, 'expanded' : '1'})
+    child_group_xml = ET.SubElement(group_xml, 'layer-tree-group', {'name': u'linked tables', 'expanded' : '0'})
+    geom_group_xml = ET.SubElement(group_xml, 'layer-tree-group', {'name': u"geometries", 'expanded' : '1', 'checked' : 'Qt::Checked'})
+    project_xml = XMLNode('qgis', {'version' : '2.15' })
+    relations_xml = XMLNode('relations')
+    project_xml.extend([main_group_xml, relations_xml])
 
     srs_conn = db.connect(srs_db_file)
     srs_cur = srs_conn.cursor()
@@ -79,7 +80,7 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file):
         
         l_xml = XMLNode('layer-tree-layer', {'checked' : 'Qt::Checked', 'expanded' : '1', 'name' : table_name, 'id' : table_name})
         if table_name == root_name:
-            main_group_xml.insert(0, l_xml)
+            group_xml.insert(0, l_xml)
         elif geometry is not None:
             geom_group_xml.append(l_xml)
         else:
@@ -218,7 +219,7 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file):
         if len(backrelations_container) > 0:
             editform.append(backrelations_container)
 
-    fo = open("t.qgs", "w")
+    fo = open(qgis_file, "w")
     for line in to_pretty_xml(project_xml):
         fo.write(line + "\n")
     fo.close()

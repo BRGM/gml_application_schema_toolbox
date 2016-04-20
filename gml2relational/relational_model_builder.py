@@ -101,12 +101,11 @@ def _simple_cardinality_size(node, type_info_dict):
 
     for child in node:
         r = _simple_cardinality_size(child, type_info_dict)
-        if r is None:
-            return None
-        child_width, child_depth = r
-        width += child_width
-        if child_depth + 1 > depth:
-            depth = child_depth + 1
+        if r is not None:
+            child_width, child_depth = r
+            width += child_width
+            if child_depth + 1 > depth:
+                depth = child_depth + 1
 
     return (width, depth)
 
@@ -120,10 +119,9 @@ def _merged_columns(node, prefix, type_info_dict):
         return None
 
     columns = []
-    values = []
 
     n_tag = no_prefix(node.tag)
-    p = prefix + "_" if prefix != "" else ""
+    p = prefix + "/" if prefix != "" else ""
 
     for an, av in node.attrib.iteritems():
         n_an = no_prefix(an)
@@ -132,30 +130,25 @@ def _merged_columns(node, prefix, type_info_dict):
             return None
         if n_an == "nil":
             continue
-        cname = p + n_tag + "_" + n_an
+        cname = p + n_tag + "/@" + n_an
         au = ti.attribute_type_info_map()[an]
         columns.append(Column(cname,
                               ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition()),
                               optional = True))
         #optional = not au.required()))
-        values.append((cname, av))
 
     if node.text is not None and len(node.text.strip()) > 0:
         cname = p + n_tag
         columns.append(Column(cname, ref_type = simple_type_to_sql_type(ti.type_info().typeDefinition()), optional = True))
-        values.append((cname, node.text))
 
     for child in node:
-        r = _merged_columns(child, p + n_tag, type_info_dict)
-        if r is None:
-            return None
-        child_columns, child_values = r
-        columns += child_columns
-        values += child_values
+        child_columns = _merged_columns(child, p + n_tag, type_info_dict)
+        if child_columns is not None:
+            columns += child_columns
 
-    return columns, values
+    return columns
 
-def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_rows):
+def _build_tables(node, table_name, type_info_dict, tables):
     if len(node.attrib) == 0 and len(node) == 0:
         # empty table
         return None
@@ -164,14 +157,6 @@ def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_ro
     if table is None:
         table = Table(table_name)
         tables[table_name] = table
-        tables_rows[table_name] = []
-    table_rows = tables_rows[table_name]
-
-    row = []
-    table_rows.append(row)
-
-    if parent_id is not None:
-        row.append(parent_id)
 
     uid_column = None
     ti = type_info_dict[node]
@@ -185,17 +170,13 @@ def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_ro
             continue
 
         au = ti.attribute_type_info_map()[attr_name]
-        if not table.has_field(n_attr_name):
-            c = Column(n_attr_name,
+        if not table.has_field("@" + n_attr_name):
+            c = Column("@" + n_attr_name,
                        ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition()),
                        optional = not au.required())
             table.add_field(c)
             if n_attr_name == "id":
                 uid_column = c
-
-        row.append((n_attr_name, attr_value))
-        if n_attr_name == "id":
-            current_id = attr_value
 
     # id column
     if table.uid_column() is None:
@@ -203,10 +184,6 @@ def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_ro
             table.set_autoincrement_id()
         else:
             table.set_uid_column(uid_column)
-
-    if table.has_autoincrement_id():
-        current_id = table.increment_id()
-        row.append(("id", current_id))
 
     #--------------------------------------------------
     # child elements
@@ -235,36 +212,23 @@ def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_ro
                     table.add_field(Column(n_child_tag,
                                            ref_type = simple_type_to_sql_type(child_td),
                                            optional = is_optional))
-
-                v = child.text if child.text is not None else '' # FIXME replace by the default value ?
-                row.append((no_prefix(child.tag), v))
             else:
                 # simple type, 1:N cardinality => table
                 child_table_name = no_prefix(node.tag) + "_" + no_prefix(child.tag)
                 if not table.has_field(n_child_tag):
-                    child_table = Table(child_table_name, [Column("v", ref_type = simple_type_to_sql_type(child_td))])
+                    child_table = Table(child_table_name, [Column("text()", ref_type = simple_type_to_sql_type(child_td))])
                     tables[child_table_name] = child_table
-                    tables_rows[child_table_name] = []
                     table.add_field(Link(n_child_tag,
                                          is_optional,
                                          child_ti.min_occurs(),
                                          child_ti.max_occurs(),
                                          simple_type_to_sql_type(child_td), child_table))
 
-                v = child.text if child.text is not None else ''
-                child_table_rows = tables_rows[child_table_name]
-                child_row = [(table_name + "_id", current_id), ("v", v)]
-                child_table_rows.append(child_row)                
-
         elif is_derived_from(child_td, "AbstractGeometryType"):
             # add geometry
             if not table.has_field(n_child_tag):
                 gtype, gdim, gsrid = gml_geometry_type(child)
                 table.add_field(Geometry(n_child_tag, gtype, gdim, gsrid))
-            
-            g_column = table.field(n_child_tag)
-            g = ogr.CreateGeometryFromGML(ET.tostring(child))
-            row.append((n_child_tag, ("GeomFromText('%s', %d)", g.ExportToWkt(), g_column.srid())))
 
         else:
             has_id = any([1 for n in child.attrib.keys() if no_prefix(n) == "id"])
@@ -276,19 +240,16 @@ def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_ro
             if not in_seq:
                 # 1:1 cardinality
                 r = _simple_cardinality_size(child, type_info_dict)
-                if r is not None:
-                    child_columns, child_values = _merged_columns(child, "", type_info_dict)
+                if r is not None and r[0] > 0:
+                    child_columns = _merged_columns(child, "", type_info_dict)
                     for c in child_columns:
                         if not table.has_field(c.name()):
                             table.add_field(c)
-                    row += child_values
                 else:
-                    row_id = _build_tables(child, child_table_name, None, type_info_dict, tables, tables_rows)
-                    row.append((n_child_tag + "_id", row_id))
+                    _build_tables(child, child_table_name, type_info_dict, tables)
             else:
                 # 1:N cardinality
-                child_parent_id = (table_name + "_id", current_id)
-                _build_tables(child, child_table_name, child_parent_id, type_info_dict, tables, tables_rows)
+                _build_tables(child, child_table_name, type_info_dict, tables)
 
             child_table = tables.get(child_table_name)
             if child_table is not None: # may be None if the child_table is empty
@@ -305,25 +266,130 @@ def _build_tables(node, table_name, parent_id, type_info_dict, tables, tables_ro
                                          child_table,
                                          substitution_group = sgroup))
 
-    # return last inserted id
+
+
+def xpath_to_column_name(xpath):
+    if xpath == "text()":
+        return "v"
+    return xpath.replace('/', '_').replace('@', '')
+
+def resolve_xpath(node, xpath, trace = False):
+    if trace:
+        print("resolve_xpath", xpath)
+    if xpath == "":
+        return node.text
+
+    path = xpath.split('/')
+    leaf = path[0]
+
+    if leaf == "text()":
+        return node.text
+
+    if no_prefix(node.tag) == leaf:
+        return node
+    
+    if leaf.startswith("@"):
+        for an, av in node.attrib.iteritems():
+            if no_prefix(an) == leaf[1:]:
+                return av
+    
+    nodes = []
+    for child in node:
+        if no_prefix(child.tag) == leaf:
+            if len(path) == 1:
+                nodes.append(child)
+            else:
+                return resolve_xpath(child, '/'.join(path[1:]), trace)
+
+    if len(nodes) >= 1:
+        return nodes
+
+    # not found
+    return None
+
+def _populate(node, table, parent_id, tables_rows):
+    if not isinstance(node, ET.Element):
+        raise RuntimeError("Invalid type for node")
+    table_name = table.name()
+    rows = tables_rows.get(table_name)
+    if rows is None:
+        rows = []
+        tables_rows[table_name] = rows
+    row = []
+    rows.append(row)
+
+    # attributes
+    current_id = None
+    attr_cols = [c for c in table.columns() if c.name().startswith('@')]
+    for attr_name, attr_value in node.attrib.iteritems():
+        ns, n_attr_name = split_tag(attr_name)
+        if '@' + n_attr_name in [c.name() for c in attr_cols]:
+            row.append(('@' + n_attr_name, attr_value))
+            if n_attr_name == "id":
+                current_id = attr_value
+    if current_id is None:
+        if table.has_autoincrement_id():
+            current_id = table.increment_id()
+            row.append(("id", current_id))
+
+   # columns
+    cols = [c for c in table.columns() if not c.name().startswith('@')]
+    for c in cols:
+        child = resolve_xpath(node, c.name())
+        if child is None:
+            continue
+        if isinstance(child, (str, unicode)):
+            v = child
+        else:
+            v = child[0].text
+        if v is None:
+            v = ''
+        row.append((xpath_to_column_name(c.name()), v))
+
+    # links
+    for link in table.links():
+        if link.max_occurs() is not None:
+            child = resolve_xpath(node, link.name())
+            if child is None:
+                continue
+            child_id = _populate(child[0], link.ref_table(), current_id, tables_rows)
+            row.append((link.name() + "_id", child_id))
+        else:
+            children = resolve_xpath(node, link.name())
+#            if link.name() == "belongsTo":
+#                import ipdb; ipdb.set_trace()
+            if children is None:
+                continue
+            for child in children:
+                _populate(child, link.ref_table(), current_id, tables_rows)
+
+    # backlinks
+    for bl in table.back_links():
+        row.append((bl.ref_table().name() + "_id", parent_id))
+
+    # geometry
+    geometries = table.geometries()
+    if len(geometries) > 0:
+        geom = geometries[0]
+        g_nodes = resolve_xpath(node, geom.name())
+        if g_nodes is not None:
+            g = ogr.CreateGeometryFromGML(ET.tostring(g_nodes[0]))
+            row.append((geom.name(), ("GeomFromText('%s', %d)", g.ExportToWkt(), geom.srid())))
+
     return current_id
-
-
-def build_tables(root_node, type_info_dict, tables = None, tables_rows = None):
+    
+def build_tables(root_node, type_info_dict, tables = None):
     """Creates or updates table definitions from a document and its TypeInfo dict
     :param root_node: the root node
     :param type_info_dict: the TypeInfo dict
     :param tables: the existing table dict to update
-    :param tables_rows: the existing tables rows to update
-    :returns: ({table_name : Table}, {table_name : rows})
+    :returns: {table_name : Table}
     """
     if tables is None:
         tables = {}
-    if tables_rows is None:
-        tables_rows = {}
         
     table_name = no_prefix(root_node.tag)
-    _build_tables(root_node, table_name, None, type_info_dict, tables, tables_rows)
+    _build_tables(root_node, table_name, type_info_dict, tables)
 
     # create backlinks
     for name, table in tables.iteritems():
@@ -332,7 +398,8 @@ def build_tables(root_node, type_info_dict, tables = None, tables_rows = None):
             if link.max_occurs() is None and link.ref_table() is not None:
                 if not link.ref_table().has_field(link.name()):
                     link.ref_table().add_back_link(link.name(), table)
-    return tables, tables_rows
+
+    return tables
 
 class URIResolver(object):
     def __init__(self, cachedir, urlopener = urllib2.urlopen):
@@ -443,11 +510,16 @@ def load_gml_model(xml_file, archive_dir, xsd_files = []):
     root_type = ns.elementDeclarations()[root_name].typeDefinition()
 
     tables = None
-    tables_rows = None
+    tables_rows = {}
     for idx, node in enumerate(features):
         print("+ Feature #{}/{}".format(idx+1, len(features)))
         type_info_dict = resolve_types(node, ns_map)
-        tables, tables_rows = build_tables(node, type_info_dict, tables, tables_rows)
+        tables = build_tables(node, type_info_dict, tables)
+    for idx, node in enumerate(features):
+        print("+ Feature #{}/{}".format(idx+1, len(features)))
+        type_info_dict = resolve_types(node, ns_map)
+        _populate(node, tables[root_name], None, tables_rows)
+        
 
     model = Model(tables, tables_rows, root_name)
     save_model_to(model, cachefile)

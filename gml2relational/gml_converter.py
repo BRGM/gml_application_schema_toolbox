@@ -27,6 +27,9 @@ parser.add_option("-s", "--output-spatialite",
 parser.add_option("-q", "--output-qgis",
                   dest="qgis_file", default=None,
                   help="generate a QGIS project file from the model")
+parser.add_option("--srs-db",
+                  dest="srs_db", default="/tmp/srs.db",
+                  help="location of the QGIS SRS database")
 
 (options, args) = parser.parse_args()
 
@@ -48,4 +51,4 @@ if options.sqlite_file is not None:
 
     if options.qgis_file is not None:
         print("QGIS project file: {}".format(options.qgis_file))
-        create_qgis_project_from_model(model, options.sqlite_file, options.qgis_file, "/tmp/srs.db")
+        create_qgis_project_from_model(model, options.sqlite_file, options.qgis_file, options.srs_db)
