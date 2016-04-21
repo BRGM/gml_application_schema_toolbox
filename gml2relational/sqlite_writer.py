@@ -1,4 +1,5 @@
 from __future__ import print_function
+import logging
 import pyspatialite.dbapi2 as db
 
 def stream_sql_schema(tables):
@@ -98,11 +99,11 @@ def create_sqlite_from_model(model, sqlite_file):
     cur.execute("SELECT InitSpatialMetadata(1);")
     conn.commit()
     for line in stream_sql_schema(model.tables()):
-        print(line)
+        logging.debug(line)
         cur.execute(line)
     conn.commit()
     for line in stream_sql_rows(model.tables_rows()):
-        print(line)
+        logging.debug(line)
         cur.execute(line)
     conn.commit()
 

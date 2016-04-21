@@ -1,4 +1,5 @@
 from __future__ import print_function
+import logging
 from xml_utils import split_tag, no_prefix
 from pyxb.xmlschema.structures import Schema, ElementDeclaration, ComplexTypeDefinition, Particle, ModelGroup, SimpleTypeDefinition, Wildcard, AttributeUse, AttributeDeclaration
 from schema_parser import parse_schemas
@@ -276,9 +277,7 @@ def _build_tables(node, table_name, type_info_dict, tables, merge_max_depth):
 
 
 
-def resolve_xpath(node, xpath, trace = False):
-    if trace:
-        print("resolve_xpath", xpath)
+def resolve_xpath(node, xpath):
     if xpath == "":
         return node.text
 
@@ -302,7 +301,7 @@ def resolve_xpath(node, xpath, trace = False):
             if len(path) == 1:
                 nodes.append(child)
             else:
-                return resolve_xpath(child, '/'.join(path[1:]), trace)
+                return resolve_xpath(child, '/'.join(path[1:]))
 
     if len(nodes) >= 1:
         return nodes
@@ -427,7 +426,7 @@ class URIResolver(object):
                 if not os.path.exists(p):
                     os.mkdir(p)
 
-        print(" "*lvl, "Resolving schema {} ... ".format(uri))
+        logging.info(" "*lvl + "Resolving schema {} ... ".format(uri))
 
         if not uri.startswith('http://'):
             if uri.startswith('/'):
@@ -492,7 +491,7 @@ def load_gml_model(xml_file, archive_dir, xsd_files = [], merge_max_depth = 6):
     cachefile = os.path.join(archive_dir, xml_file + ".model")
 
     if os.path.exists(cachefile):
-        print("Model loaded from " + cachefile)
+        logging.info("Model loaded from " + cachefile)
         return load_model_from(cachefile)
 
     doc = ET.parse(xml_file)
@@ -519,12 +518,14 @@ def load_gml_model(xml_file, archive_dir, xsd_files = [], merge_max_depth = 6):
 
     tables = None
     tables_rows = {}
+    logging.info("Tables construction ...")
     for idx, node in enumerate(features):
-        print("+ Feature #{}/{}".format(idx+1, len(features)))
+        logging.info("+ Feature #{}/{}".format(idx+1, len(features)))
         type_info_dict = resolve_types(node, ns_map)
         tables = build_tables(node, type_info_dict, tables, merge_max_depth)
+    logging.info("Tables population ...")
     for idx, node in enumerate(features):
-        print("+ Feature #{}/{}".format(idx+1, len(features)))
+        logging.info("+ Feature #{}/{}".format(idx+1, len(features)))
         type_info_dict = resolve_types(node, ns_map)
         _populate(node, tables[root_name], None, tables_rows)
         

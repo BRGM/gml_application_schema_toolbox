@@ -331,7 +331,7 @@ def ResolveSiblingNamespaces (sibling_namespaces):
                         dns = dc.expandedName().namespace()
                         if dns != ns:
                             deps.add(dns)
-                _log.info('Holding incomplete resolution %s depending on: ', ns.uri(), six.u(' ; ').join([ six.text_type(_dns) for _dns in deps ]))
+                _log.info('Holding incomplete resolution %s depending on: %s', ns.uri(), six.u(' ; ').join([ six.text_type(_dns) for _dns in deps ]))
                 need_resolved_set.add(ns)
         # Exception termination check: if we have the same set of incompletely
         # resolved namespaces, and each has the same number of unresolved

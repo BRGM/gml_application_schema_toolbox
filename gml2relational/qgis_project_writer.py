@@ -1,4 +1,5 @@
 from __future__ import print_function
+import logging
 import sys
 
 import xml.etree.ElementTree as ET
@@ -81,7 +82,7 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file, q
                 x.append(XMLNode("geographicflag", text = "1" if is_geo else "0"))
                 layer_xml.append(srs_xml)
             else:
-                print("Warning: SRID {} not found !".format(table.geometries()[0].srid()))
+                logging.warning("SRID {} not found !".format(table.geometries()[0].srid()))
         
         layers_xml[table_name] = layer_xml
         
