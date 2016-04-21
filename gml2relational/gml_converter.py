@@ -30,6 +30,9 @@ parser.add_option("-q", "--output-qgis",
 parser.add_option("--srs-db",
                   dest="srs_db", default="/tmp/srs.db",
                   help="location of the QGIS SRS database")
+parser.add_option("--merge-depth",
+                  dest="merge_depth", default=6, type="int",
+                  help="maximum depth to consider when merging tables")
 
 (options, args) = parser.parse_args()
 
@@ -39,8 +42,9 @@ if options.gml_file is None:
 
 print("Input file: {}".format(options.gml_file))
 print("Archive directory: {}".format(options.archive_dir))
+print("Merge max depth: {}".format(options.merge_depth))
 
-model = load_gml_model(options.gml_file, options.archive_dir)
+model = load_gml_model(options.gml_file, options.archive_dir, [], options.merge_depth)
 
 if options.sqlite_file is not None:
     print("Spatialite output file: {}".format(options.sqlite_file))

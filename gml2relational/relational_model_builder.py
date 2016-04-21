@@ -142,7 +142,14 @@ def _merged_columns(node, prefix, type_info_dict):
 
     return columns
 
-def _build_tables(node, table_name, type_info_dict, tables):
+def _build_tables(node, table_name, type_info_dict, tables, merge_max_depth):
+    """
+    :param node: the DOM node
+    :param table_name: the table name corresponding to this node
+    :param type_info_dict: dict that gives type information on a node
+    :param tables: the input/output dict {table_name: Table}
+    :param merge_max_depth: the maximum depth to consider when tables are merged
+    """
     if len(node.attrib) == 0 and len(node) == 0:
         # empty table
         return None
@@ -186,7 +193,6 @@ def _build_tables(node, table_name, type_info_dict, tables):
     in_seq = False
     # tag of the sequence
     last_tag = None
-    print("Table", table_name)
     for child in node:
         child_ti = type_info_dict[child]
         child_td = child_ti.type_info().typeDefinition()
@@ -200,7 +206,6 @@ def _build_tables(node, table_name, type_info_dict, tables):
             if not in_seq:
                 # simple type, 1:1 cardinality => column
                 if not table.has_field(n_child_tag):
-                    print("simple 1:1")
                     table.add_field(Column(n_child_tag,
                                            ref_type = simple_type_to_sql_type(child_td),
                                            optional = is_optional))
@@ -238,13 +243,13 @@ def _build_tables(node, table_name, type_info_dict, tables):
             if not in_seq:
                 # 1:1 cardinality
                 r = _simple_cardinality_size(child, type_info_dict)
-                if r is not None and r[0] > 0:
+                if r is not None and r[0] > 0 and r[1] < merge_max_depth:
                     child_columns = _merged_columns(child, "", type_info_dict)
                     for c in child_columns:
                         if not table.has_field(c.name()):
                             table.add_field(c)
                 else:
-                    _build_tables(child, child_table_name, type_info_dict, tables)
+                    _build_tables(child, child_table_name, type_info_dict, tables, merge_max_depth)
             else:
                 for f in table.columns():
                     if f.xpath().startswith(n_child_tag):
@@ -252,7 +257,7 @@ def _build_tables(node, table_name, type_info_dict, tables):
                         # a link will be created
                         table.remove_field(f.name())
                 # 1:N cardinality
-                _build_tables(child, child_table_name, type_info_dict, tables)
+                _build_tables(child, child_table_name, type_info_dict, tables, merge_max_depth)
 
             child_table = tables.get(child_table_name)
             if child_table is not None: # may be None if the child_table is empty
@@ -379,18 +384,19 @@ def _populate(node, table, parent_id, tables_rows):
 
     return current_id
     
-def build_tables(root_node, type_info_dict, tables = None):
+def build_tables(root_node, type_info_dict, tables, merge_max_depth):
     """Creates or updates table definitions from a document and its TypeInfo dict
     :param root_node: the root node
     :param type_info_dict: the TypeInfo dict
     :param tables: the existing table dict to update
+    :param merge_max_depth: the maximum depth to consider when merging tables
     :returns: {table_name : Table}
     """
     if tables is None:
         tables = {}
         
     table_name = no_prefix(root_node.tag)
-    _build_tables(root_node, table_name, type_info_dict, tables)
+    _build_tables(root_node, table_name, type_info_dict, tables, merge_max_depth)
 
     # create backlinks
     for name, table in tables.iteritems():
@@ -482,7 +488,7 @@ def extract_features(doc):
     return nodes
 
 
-def load_gml_model(xml_file, archive_dir, xsd_files = []):
+def load_gml_model(xml_file, archive_dir, xsd_files = [], merge_max_depth = 6):
     cachefile = os.path.join(archive_dir, xml_file + ".model")
 
     if os.path.exists(cachefile):
@@ -516,7 +522,7 @@ def load_gml_model(xml_file, archive_dir, xsd_files = []):
     for idx, node in enumerate(features):
         print("+ Feature #{}/{}".format(idx+1, len(features)))
         type_info_dict = resolve_types(node, ns_map)
-        tables = build_tables(node, type_info_dict, tables)
+        tables = build_tables(node, type_info_dict, tables, merge_max_depth)
     for idx, node in enumerate(features):
         print("+ Feature #{}/{}".format(idx+1, len(features)))
         type_info_dict = resolve_types(node, ns_map)
