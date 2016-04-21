@@ -1,20 +1,18 @@
 from __future__ import print_function
 import pyspatialite.dbapi2 as db
 
-from relational_model_builder import xpath_to_column_name
-
 def stream_sql_schema(tables):
     """Creates SQL(ite) table creation statements from a dict of Table
     :returns: a generator that yield a new SQL line
     """
     for name, table in tables.iteritems():
-        stmt = u"CREATE TABLE " + name + u"(";
+        stmt = u"CREATE TABLE " + name + u"(\n";
         columns = []
         for c in table.columns():
             if c.ref_type():
-                l = xpath_to_column_name(c.name()) + u" " + c.ref_type()
+                l = c.name() + u" " + c.ref_type()
             else:
-                l = xpath_to_column_name(c.name()) + u" INT PRIMARY KEY"
+                l = c.name() + u" INT PRIMARY KEY"
             if not c.optional():
                 l += u" NOT NULL"
             columns.append("  " + l)
@@ -88,7 +86,7 @@ def stream_sql_rows(tables_rows):
     yield(u"PRAGMA foreign_keys = OFF;")
     for table_name, rows in tables_rows.iteritems():
         for row in rows:
-            columns = [xpath_to_column_name(n) for n,v in row if v is not None]
+            columns = [n for n,v in row if v is not None]
             values = [escape_value(v) for _,v in row if v is not None]
             yield(u"INSERT INTO {} ({}) VALUES ({});".format(table_name, ",".join(columns), ",".join(values)))
     yield(u"PRAGMA foreign_keys = ON;")

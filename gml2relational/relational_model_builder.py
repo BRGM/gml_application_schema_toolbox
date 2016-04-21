@@ -82,9 +82,6 @@ def _simple_cardinality_size(node, type_info_dict):
     and depth is the maximum depth of these columns (number of child levels)
     """
     ti = type_info_dict[node]
-    if ti.max_occurs() is None:
-        # not simple cardinality
-        return None
     if is_derived_from(ti.type_info().typeDefinition(), "AbstractGeometryType"):
         # geometry, cannot merge
         return None
@@ -111,9 +108,6 @@ def _simple_cardinality_size(node, type_info_dict):
 
 def _merged_columns(node, prefix, type_info_dict):
     ti = type_info_dict[node]
-    if ti.max_occurs() is None:
-        # not simple cardinality
-        return None
     if is_derived_from(ti.type_info().typeDefinition(), "AbstractGeometryType"):
         # geometry, cannot merge
         return None
@@ -170,7 +164,7 @@ def _build_tables(node, table_name, type_info_dict, tables):
             continue
 
         au = ti.attribute_type_info_map()[attr_name]
-        if not table.has_field("@" + n_attr_name):
+        if not table.has_field(n_attr_name):
             c = Column("@" + n_attr_name,
                        ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition()),
                        optional = not au.required())
@@ -191,30 +185,34 @@ def _build_tables(node, table_name, type_info_dict, tables):
     # in a sequence ?
     in_seq = False
     # tag of the sequence
-    seq_tag = None
+    last_tag = None
+    print("Table", table_name)
     for child in node:
         child_ti = type_info_dict[child]
         child_td = child_ti.type_info().typeDefinition()
         n_child_tag = no_prefix(child.tag)
-        
-        if child_ti.max_occurs() is None: # "*" cardinality
-            if not (in_seq and seq_tag == child.tag):
-                in_seq = True
-                seq_tag = child.tag
-        else:
-            in_seq = False
+
+        in_seq = n_child_tag == last_tag
+        last_tag = n_child_tag
 
         is_optional = child_ti.min_occurs() == 0 or child_ti.type_info().nillable()
         if is_simple(child_td):
             if not in_seq:
                 # simple type, 1:1 cardinality => column
                 if not table.has_field(n_child_tag):
+                    print("simple 1:1")
                     table.add_field(Column(n_child_tag,
                                            ref_type = simple_type_to_sql_type(child_td),
                                            optional = is_optional))
             else:
                 # simple type, 1:N cardinality => table
                 child_table_name = no_prefix(node.tag) + "_" + no_prefix(child.tag)
+                for f in table.columns():
+                    if f.xpath().startswith(n_child_tag):
+                        # this column is now part of a sequence, remove the column
+                        # a link will be created
+                        table.remove_field(f.name())
+
                 if not table.has_field(n_child_tag):
                     child_table = Table(child_table_name, [Column("text()", ref_type = simple_type_to_sql_type(child_td))])
                     tables[child_table_name] = child_table
@@ -248,6 +246,11 @@ def _build_tables(node, table_name, type_info_dict, tables):
                 else:
                     _build_tables(child, child_table_name, type_info_dict, tables)
             else:
+                for f in table.columns():
+                    if f.xpath().startswith(n_child_tag):
+                        # this (potentially merged) column is now part of a sequence, remove the column
+                        # a link will be created
+                        table.remove_field(f.name())
                 # 1:N cardinality
                 _build_tables(child, child_table_name, type_info_dict, tables)
 
@@ -267,11 +270,6 @@ def _build_tables(node, table_name, type_info_dict, tables):
                                          substitution_group = sgroup))
 
 
-
-def xpath_to_column_name(xpath):
-    if xpath == "text()":
-        return "v"
-    return xpath.replace('/', '_').replace('@', '')
 
 def resolve_xpath(node, xpath, trace = False):
     if trace:
@@ -308,6 +306,9 @@ def resolve_xpath(node, xpath, trace = False):
     return None
 
 def _populate(node, table, parent_id, tables_rows):
+    if len(node.attrib) == 0 and len(node) == 0:
+        # empty table
+        return None
     if not isinstance(node, ET.Element):
         raise RuntimeError("Invalid type for node")
     table_name = table.name()
@@ -320,11 +321,11 @@ def _populate(node, table, parent_id, tables_rows):
 
     # attributes
     current_id = None
-    attr_cols = [c for c in table.columns() if c.name().startswith('@')]
+    attr_cols = [c for c in table.columns() if c.xpath().startswith('@')]
     for attr_name, attr_value in node.attrib.iteritems():
         ns, n_attr_name = split_tag(attr_name)
-        if '@' + n_attr_name in [c.name() for c in attr_cols]:
-            row.append(('@' + n_attr_name, attr_value))
+        if n_attr_name in [c.name() for c in attr_cols]:
+            row.append((n_attr_name, attr_value))
             if n_attr_name == "id":
                 current_id = attr_value
     if current_id is None:
@@ -333,9 +334,9 @@ def _populate(node, table, parent_id, tables_rows):
             row.append(("id", current_id))
 
    # columns
-    cols = [c for c in table.columns() if not c.name().startswith('@')]
+    cols = [c for c in table.columns() if not c.xpath().startswith('@')]
     for c in cols:
-        child = resolve_xpath(node, c.name())
+        child = resolve_xpath(node, c.xpath())
         if child is None:
             continue
         if isinstance(child, (str, unicode)):
@@ -344,18 +345,20 @@ def _populate(node, table, parent_id, tables_rows):
             v = child[0].text
         if v is None:
             v = ''
-        row.append((xpath_to_column_name(c.name()), v))
+        row.append((c.name(), v))
 
     # links
     for link in table.links():
         if link.max_occurs() is not None:
-            child = resolve_xpath(node, link.name())
+            child = resolve_xpath(node, link.xpath())
+            #if link.xpath() == "OperationalActivityPeriod":
+            #    import ipdb; ipdb.set_trace()
             if child is None:
                 continue
             child_id = _populate(child[0], link.ref_table(), current_id, tables_rows)
             row.append((link.name() + "_id", child_id))
         else:
-            children = resolve_xpath(node, link.name())
+            children = resolve_xpath(node, link.xpath())
             if children is None:
                 continue
             for child in children:
@@ -369,7 +372,7 @@ def _populate(node, table, parent_id, tables_rows):
     geometries = table.geometries()
     if len(geometries) > 0:
         geom = geometries[0]
-        g_nodes = resolve_xpath(node, geom.name())
+        g_nodes = resolve_xpath(node, geom.xpath())
         if g_nodes is not None:
             g = ogr.CreateGeometryFromGML(ET.tostring(g_nodes[0]))
             row.append((geom.name(), ("GeomFromText('%s', %d)", g.ExportToWkt(), geom.srid())))
@@ -486,12 +489,12 @@ def load_gml_model(xml_file, archive_dir, xsd_files = []):
         print("Model loaded from " + cachefile)
         return load_model_from(cachefile)
 
-    uri_resolver = URIResolver(archive_dir)
-
     doc = ET.parse(xml_file)
     features = extract_features(doc)
     root = features[0]
     root_ns, root_name = split_tag(root.tag)
+
+    uri_resolver = URIResolver(archive_dir)
 
     if len(xsd_files) == 0:
         # try to download schemas
@@ -504,6 +507,7 @@ def load_gml_model(xml_file, archive_dir, xsd_files = []):
         raise RuntimeError("No schema found")
 
     ns_map = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
+
     ns = ns_map[root_ns]
     root_type = ns.elementDeclarations()[root_name].typeDefinition()
 

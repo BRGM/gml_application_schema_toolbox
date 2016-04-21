@@ -30,17 +30,21 @@ def to_pretty_xml(node, level = 0):
         yield "  " * level + "</{}>".format(node.tag)
         
 
-def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file):
+def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file, qgis_version = "2.14"):
     tables = model.tables()
     tables_rows = model.tables_rows()
     root_name = model.root_name()
+
+    # QGIS layers must have an ID that is at least 17 letters wide
+    import datetime
+    id_suffix = datetime.datetime.now().strftime("%Y%m%d%H%M%S") + "001"
 
     layers_xml = {}
     main_group_xml = XMLNode('layer-tree-group', {'checked' : 'Qt::Checked', 'expanded' : '1'})
     group_xml = ET.SubElement(main_group_xml, 'layer-tree-group', {'name': root_name, 'expanded' : '1'})
     child_group_xml = ET.SubElement(group_xml, 'layer-tree-group', {'name': u'linked tables', 'expanded' : '0'})
     geom_group_xml = ET.SubElement(group_xml, 'layer-tree-group', {'name': u"geometries", 'expanded' : '1', 'checked' : 'Qt::Checked'})
-    project_xml = XMLNode('qgis', {'version' : '2.15' })
+    project_xml = XMLNode('qgis', {'version' : qgis_version })
     relations_xml = XMLNode('relations')
     project_xml.extend([main_group_xml, relations_xml])
 
@@ -48,14 +52,13 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file):
     srs_cur = srs_conn.cursor()
 
     # load a layer for each table
-    layers = {}
     for table_name, table in tables.iteritems():
         geometry = table.geometries()[0].name() if len(table.geometries()) > 0 else None
         geometry_type = table.geometries()[0].type() if len(table.geometries()) > 0 else None
         src = "dbname='{}' table=\"{}\"{} sql=".format(sqlite_file, table.name(), " (" + geometry + ")" if geometry is not None else "")
 
         layer_xml = XMLNode('maplayer', {'geometry' : 'No geometry' if geometry_type is None else geometry_type, 'type' : 'vector'})
-        layer_xml.extend([XMLNode('id', text = table_name), 
+        layer_xml.extend([XMLNode('id', text = table_name + id_suffix), 
                           XMLNode('datasource', text = src),
                           XMLNode('shortname', text = table_name),
                           XMLNode('layername', text = table_name),
@@ -66,19 +69,23 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file):
             x = ET.SubElement(srs_xml, "spatialrefsys")
             cur = srs_conn.execute("SELECT srs_id, description, projection_acronym, ellipsoid_acronym, parameters, srid, auth_name, auth_id, is_geo " +
                                    "FROM tbl_srs WHERE srid=?", (table.geometries()[0].srid(),))
-            srs_id, description, project_acronym, ellipsoid_acronym, parameters, srid, auth_name, auth_id, is_geo = cur.fetchone()
-            x.append(XMLNode("proj4", text = parameters))
-            x.append(XMLNode("srsid", text = str(srs_id)))
-            x.append(XMLNode("authid", text = "{}:{}".format(auth_name,auth_id)))
-            x.append(XMLNode("description", text = description))
-            x.append(XMLNode("projectionacronym", text = project_acronym))
-            x.append(XMLNode("ellispoidacronym", text = ellipsoid_acronym))
-            x.append(XMLNode("geographicflag", text = "1" if is_geo else "0"))
-            layer_xml.append(srs_xml)
+            r = cur.fetchone()
+            if r is not None:
+                srs_id, description, project_acronym, ellipsoid_acronym, parameters, srid, auth_name, auth_id, is_geo = r
+                x.append(XMLNode("proj4", text = parameters))
+                x.append(XMLNode("srsid", text = str(srs_id)))
+                x.append(XMLNode("authid", text = "{}:{}".format(auth_name,auth_id)))
+                x.append(XMLNode("description", text = description))
+                x.append(XMLNode("projectionacronym", text = project_acronym))
+                x.append(XMLNode("ellispoidacronym", text = ellipsoid_acronym))
+                x.append(XMLNode("geographicflag", text = "1" if is_geo else "0"))
+                layer_xml.append(srs_xml)
+            else:
+                print("Warning: SRID {} not found !".format(table.geometries()[0].srid()))
         
         layers_xml[table_name] = layer_xml
         
-        l_xml = XMLNode('layer-tree-layer', {'checked' : 'Qt::Checked', 'expanded' : '1', 'name' : table_name, 'id' : table_name})
+        l_xml = XMLNode('layer-tree-layer', {'checked' : 'Qt::Checked', 'expanded' : '1', 'name' : table_name, 'id' : table_name + id_suffix})
         if table_name == root_name:
             group_xml.insert(0, l_xml)
         elif geometry is not None:
@@ -96,8 +103,8 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file):
             referencedField = "id"
             rel_xml = XMLNode("relation", {'id' : table.name() + '_' + link.name(),
                                               'name' : table.name() +'_' + link.name(),
-                                              'referencedLayer' : link.ref_table().name(),
-                                              'referencingLayer' : table.name() })
+                                              'referencedLayer' : link.ref_table().name() + id_suffix,
+                                              'referencingLayer' : table.name() + id_suffix})
             field_xml = ET.SubElement(rel_xml, "fieldRef", {'referencedField' : referencedField, 'referencingField' : referencingField})
             relations_xml.append(rel_xml)
 
@@ -107,8 +114,8 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file):
             referencedField = "id"
             rel_xml = XMLNode("relation", {'id' : table.name(),
                                               'name' : table.name(),
-                                              'referencedLayer' : bl.ref_table().name(),
-                                              'referencingLayer' : table.name() })
+                                              'referencedLayer' : bl.ref_table().name() + id_suffix,
+                                              'referencingLayer' : table.name() + id_suffix})
             field_xml = ET.SubElement(rel_xml, "fieldRef", {'referencedField' : referencedField, 'referencingField' : referencingField})
             relations_xml.append(rel_xml)
 

@@ -1,10 +1,15 @@
 import pickle
 
+def xpath_to_column_name(xpath):
+    if xpath == "text()":
+        return "v"
+    return xpath.replace('/', '_').replace('@', '')
+
 class Link:
     """A Link represents a link to another type/table"""
 
-    def __init__(self, name, optional, min_occurs, max_occurs, ref_type, ref_table = None, substitution_group = None):
-        self.__name = name
+    def __init__(self, xpath, optional, min_occurs, max_occurs, ref_type, ref_table = None, substitution_group = None):
+        self.__xpath = xpath
         self.__optional = optional
         self.__min_occurs = min_occurs
         self.__max_occurs = max_occurs
@@ -12,8 +17,10 @@ class Link:
         self.__ref_table = ref_table # Table
         self.__substitution_group = substitution_group # for element that derives from a common element
 
+    def xpath(self):
+        return self.__xpath
     def name(self):
-        return self.__name
+        return xpath_to_column_name(self.xpath())
     def ref_type(self):
         return self.__ref_type
     def ref_table(self):
@@ -37,12 +44,14 @@ class Link:
 class BackLink:
     """A BackLink represents a foreign key relationship"""
 
-    def __init__(self, name, ref_table):
-        self.__name = name
+    def __init__(self, xpath, ref_table):
+        self.__xpath = xpath
         self.__ref_table = ref_table
 
+    def xpath(self):
+        return self.__xpath
     def name(self):
-        return self.__name
+        return xpath_to_column_name(self.xpath())
     def ref_table(self):
         return self.__ref_table
 
@@ -52,14 +61,16 @@ class BackLink:
 class Column:
     """A Column is a (simple type) column"""
 
-    def __init__(self, name, optional = False, ref_type = None, auto_incremented = False):
-        self.__name = name
+    def __init__(self, xpath, optional = False, ref_type = None, auto_incremented = False):
+        self.__xpath = xpath
         self.__optional = optional
         self.__ref_type = ref_type
         self.__auto_incremented = auto_incremented
 
+    def xpath(self):
+        return self.__xpath
     def name(self):
-        return self.__name
+        return xpath_to_column_name(self.xpath())
     def ref_type(self):
         return self.__ref_type
     def optional(self):
@@ -73,7 +84,7 @@ class Column:
 class Geometry:
     """A geometry column"""
 
-    def __init__(self, name, type, dim, srid, optional = False):
+    def __init__(self, xpath, type, dim, srid, optional = False):
         """
         :param name: Name of the geometry column
         :param type: Geometry type in ['Point', 'LineString', 'Polygon', 'MultiPoint', 'MultiLineString', 'MultiPolygon']
@@ -81,14 +92,16 @@ class Geometry:
         :param srid: epsg code
         :param optional: is it optional
         """
-        self.__name = name
+        self.__xpath = xpath
         self.__type = type
         self.__dim = dim
         self.__srid = srid
         self.__optional = optional
 
+    def xpath(self):
+        return self.__xpath
     def name(self):
-        return self.__name
+        return xpath_to_column_name(self.xpath())
     def type(self):
         return self.__type
     def dimension(self):
@@ -128,6 +141,9 @@ class Table:
     def add_fields(self, fields):
         for f in fields:
             self.add_field(f)
+    def remove_field(self, field_name):
+        if self.__fields.has_key(field_name):
+            del self.__fields[field_name]
     def has_field(self, field_name):
         return self.__fields.has_key(field_name)
     def field(self, field_name):
