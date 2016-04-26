@@ -53,13 +53,22 @@ def simple_type_to_sql_type(td):
     }
     return type_map.get(type_name) or type_name
 
-def gml_geometry_type(node):
+def gml_geometry_type(node, td):
     import re
     srid = None
     dim = 2
     type = no_prefix(node.tag)
     if type not in ['Point', 'LineString', 'Polygon', 'MultiPoint', 'MultiLineString', 'MultiPolygon']:
-        type = 'GeometryCollection'
+        tmap = {'PointType' : 'Point',
+                'LineStringType' : 'LineString',
+                'PolygonType' : 'Polygon',
+                'MultiPointType': 'MultiPoint',
+                'MultiLineStringType': 'MultiLineString',
+                'MultiPolygonType': 'MultiPolygon'}
+        if tmap.get(td.name()) is not None:
+            type = tmap[td.name()]
+        else:
+            type = 'GeometryCollection'
     for k, v in node.attrib.iteritems():
         if no_prefix(k) == 'srsDimension':
             dim = int(v)
@@ -119,11 +128,11 @@ def _merged_columns(node, prefix, type_info_dict):
     p = prefix + "/" if prefix != "" else ""
 
     for an, av in node.attrib.iteritems():
-        n_an = no_prefix(an)
+        ns, n_an = split_tag(an)
         if n_an == "id":
             # shared table, cannot be merged
             return None
-        if n_an == "nil":
+        if ns == "http://www.w3.org/2001/XMLSchema-instance":
             continue
         cname = p + n_tag + "/@" + n_an
         au = ti.attribute_type_info_map()[an]
@@ -143,7 +152,7 @@ def _merged_columns(node, prefix, type_info_dict):
 
     return columns
 
-def _build_tables(node, table_name, type_info_dict, tables, merge_max_depth):
+def _build_tables2(node, table_name, type_info_dict, tables, merge_max_depth):
     """
     :param node: the DOM node
     :param table_name: the table name corresponding to this node
@@ -198,6 +207,7 @@ def _build_tables(node, table_name, type_info_dict, tables, merge_max_depth):
         child_ti = type_info_dict[child]
         child_td = child_ti.type_info().typeDefinition()
         n_child_tag = no_prefix(child.tag)
+        #print(n_child_tag, child_td.name())
 
         in_seq = n_child_tag == last_tag
         last_tag = n_child_tag
@@ -275,7 +285,152 @@ def _build_tables(node, table_name, type_info_dict, tables, merge_max_depth):
                                          child_table,
                                          substitution_group = sgroup))
 
+def merge_tables(table1, table2):
+    merged = Table(table1.name())
+    table1_fields = set(table1.fields().values())
+    table2_fields = set(table2.fields().values())
+    merged_fields = table1_fields | table2_fields # union
+    merged.add_fields(merged_fields)
+    return merged
+    
+    
+def _build_tables(node, table_name, type_info_dict, tables, merge_max_depth, do_merge_sequences = False):
+    """
+    :returns: a dict {table_name: Table}
+    """
+    
+    table = Table(table_name)
 
+    if len(node.attrib) == 0 and len(node) == 0 and (node.text is None or len(node.text) == 0):
+        # empty table
+        return table
+
+    ti = type_info_dict[node]
+    node_td = ti.type_info().typeDefinition()
+
+    if is_derived_from(node_td, "AbstractGeometryType"):
+        #
+        # special case for the geometry
+        #
+        is_optional = ti.min_occurs() == 0 or ti.type_info().nillable()
+        gtype, gdim, gsrid = gml_geometry_type(node, node_td)
+        table.add_field(Geometry("geometry", gtype, gdim, gsrid, optional = is_optional))
+        # look for an id
+        for attr_name, attr_value in node.attrib.iteritems():
+            ns, n_attr_name = split_tag(attr_name)
+            if n_attr_name == "id":
+                au = ti.attribute_type_info_map()[attr_name]
+                c = Column("@id",
+                           ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition()),
+                           optional = not au.required())
+                table.add_field(c)
+                table.set_uid_column(c)
+        if table.uid_column() is None:
+            table.set_autoincrement_id()
+                
+        return table
+    
+    uid_column = None
+    current_id = None
+    #--------------------------------------------------
+    # attributes
+    #--------------------------------------------------
+    for attr_name, attr_value in node.attrib.iteritems():
+        ns, n_attr_name = split_tag(attr_name)
+        if ns == "http://www.w3.org/2001/XMLSchema-instance":
+            continue
+
+        au = ti.attribute_type_info_map()[attr_name]
+        c = Column("@" + n_attr_name,
+                   ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition()),
+                   optional = not au.required())
+        table.add_field(c)
+        if n_attr_name == "id":
+            uid_column = c
+
+    # id column
+    if table.uid_column() is None:
+        if uid_column is None:
+            table.set_autoincrement_id()
+        else:
+            table.set_uid_column(uid_column)
+
+    if is_simple(node_td):
+        if node.text is not None and len(node.text.strip()) > 0:
+            is_optional = ti.min_occurs() == 0 or ti.type_info().nillable()
+            table.add_field(Column("text()",
+                                   ref_type = simple_type_to_sql_type(ti.type_info().typeDefinition()),
+                                   optional = is_optional))
+
+    #--------------------------------------------------
+    # child elements
+    #--------------------------------------------------
+    # are we in a sequence with more than one element ?
+    in_seq = False
+    # tag of the sequence
+    last_tag = None
+    child_table = None
+    last_child_table = None
+    for child in node:
+        child_ti = type_info_dict[child]
+        child_td = child_ti.type_info().typeDefinition()
+        n_child_tag = no_prefix(child.tag)
+        #print(n_child_tag, child_td.name())
+
+        in_seq = n_child_tag == last_tag
+        last_tag = n_child_tag
+        is_seq = child_ti.max_occurs() is None
+
+        simple_child_type = None
+        if is_simple(child_td):
+            simple_child_type = simple_type_to_sql_type(child_td)
+
+        is_optional = child_ti.min_occurs() == 0 or child_ti.type_info().nillable()
+
+        has_id = any([1 for n in child.attrib.keys() if no_prefix(n) == "id"])
+        if has_id:
+            # shared table
+            child_table_name = child_td.name() or table_name + "_" + n_child_tag + "_t"
+        else:
+            child_table_name = table_name + "_"  + n_child_tag
+        if in_seq or (is_seq and not do_merge_sequences):
+            if child_table is not None:
+                last_child_table = child_table
+            child_table = _build_tables(child, child_table_name, type_info_dict, tables, merge_max_depth, do_merge_sequences)
+            if last_child_table is not None:
+                child_table = merge_tables(last_child_table, child_table)
+            table.add_field(Link(n_child_tag,
+                                 is_optional,
+                                 child_ti.min_occurs(),
+                                 child_ti.max_occurs(),
+                                 ref_type = simple_child_type,
+                                 ref_table = child_table))
+            for c in table.columns() + table.geometries():
+                if c.xpath().startswith(n_child_tag+"[0]"):
+                    # it was a merged column, now a link is created, remove it
+                    table.remove_field(c.name())
+        else:
+            child_table = _build_tables(child, child_table_name, type_info_dict, tables, merge_max_depth, do_merge_sequences)
+            if child_table.is_mergeable() and child_table.max_field_depth() + 1 < merge_max_depth:
+                suffix = "/"
+                if is_seq: # defined as a sequence, but potentially merged
+                    suffix = "[0]/"
+                for field in child_table.fields().values():
+                    if field.name() == "id":
+                        continue
+                    f = field.clone()
+                    f.set_xpath(n_child_tag + suffix + field.xpath())
+                    table.add_field(f)
+            else:
+                # FIXME substitution group
+                table.add_field(Link(n_child_tag,
+                                     is_optional,
+                                     child_ti.min_occurs(),
+                                     child_ti.max_occurs(),
+                                     ref_type = simple_child_type,
+                                     ref_table = child_table))
+
+    return table
 
 def resolve_xpath(node, xpath):
     if xpath == "":
@@ -383,7 +538,7 @@ def _populate(node, table, parent_id, tables_rows):
 
     return current_id
     
-def build_tables(root_node, type_info_dict, tables, merge_max_depth):
+def build_tables(root_node, type_info_dict, tables, merge_max_depth, do_merge_sequences):
     """Creates or updates table definitions from a document and its TypeInfo dict
     :param root_node: the root node
     :param type_info_dict: the TypeInfo dict
@@ -395,7 +550,16 @@ def build_tables(root_node, type_info_dict, tables, merge_max_depth):
         tables = {}
         
     table_name = no_prefix(root_node.tag)
-    _build_tables(root_node, table_name, type_info_dict, tables, merge_max_depth)
+    if False:
+        _build_tables(root_node, table_name, type_info_dict, tables, merge_max_depth)
+    else:
+        table = _build_tables(root_node, table_name, type_info_dict, tables, merge_max_depth, do_merge_sequences)
+        def get_tables(table):
+            r = {table.name() : table}
+            for link in table.links():
+                r.update(get_tables(link.ref_table()))
+            return r
+        tables = get_tables(table)
 
     # create backlinks
     for name, table in tables.iteritems():
@@ -407,12 +571,24 @@ def build_tables(root_node, type_info_dict, tables, merge_max_depth):
 
     return tables
 
+def uri_is_absolute(uri):
+    return uri.startswith('http://') or os.path.isabs(uri)
+
+def uri_dirname(uri):
+    if uri.startswith('http://'):
+        return "http://" + os.path.dirname(uri[7:])
+    return os.path.dirname(uri)
+
+def uri_join(uri, path):
+    return os.path.join(uri, path)
+
 class URIResolver(object):
     def __init__(self, cachedir, urlopener = urllib2.urlopen):
         self.__cachedir = cachedir
         self.__urlopener = urlopener
 
     def cache_uri(self, uri, parent_uri = '', lvl = 0):
+        print("cache_uri", uri, parent_uri)
         def mkdir_p(path):
             """Recursively create all subdirectories of a given path"""
             dirs = path.split('/')
@@ -432,8 +608,12 @@ class URIResolver(object):
             if uri.startswith('/'):
                 # absolute file name
                 return uri
-            uri = parent_uri + uri
-        base_uri = 'http://' + '/'.join(uri[7:].split('/')[:-1]) + "/"
+            else:
+                # relative file name
+                uri = os.path.join(parent_uri, uri)
+                return uri
+
+        base_uri = uri_dirname(uri)
 
         out_file_name = uri
         if uri.startswith('http://'):
@@ -487,10 +667,10 @@ def extract_features(doc):
     return nodes
 
 
-def load_gml_model(xml_file, archive_dir, xsd_files = [], merge_max_depth = 6):
-    cachefile = os.path.join(archive_dir, xml_file + ".model")
+def load_gml_model(xml_file, archive_dir, xsd_files = [], merge_max_depth = 6, do_merge_sequences = False, urlopener = urllib2.urlopen, use_cache_file = False):
+    cachefile = os.path.join(archive_dir, os.path.basename(xml_file) + ".model")
 
-    if os.path.exists(cachefile):
+    if use_cache_file and os.path.exists(cachefile):
         logging.info("Model loaded from " + cachefile)
         return load_model_from(cachefile)
 
@@ -499,14 +679,16 @@ def load_gml_model(xml_file, archive_dir, xsd_files = [], merge_max_depth = 6):
     root = features[0]
     root_ns, root_name = split_tag(root.tag)
 
-    uri_resolver = URIResolver(archive_dir)
+    uri_resolver = URIResolver(archive_dir, urlopener)
+
+    parent_uri = os.path.dirname(xml_file)
 
     if len(xsd_files) == 0:
         # try to download schemas
         root = doc.getroot()
         for an, av in root.attrib.iteritems():
             if no_prefix(an) == "schemaLocation":
-                xsd_files = [uri_resolver.cache_uri(x) for x in av.split()[1::2]]
+                xsd_files = [uri_resolver.cache_uri(x, parent_uri) for x in av.split()[1::2]]
 
     if len(xsd_files) == 0:
         raise RuntimeError("No schema found")
@@ -522,7 +704,7 @@ def load_gml_model(xml_file, archive_dir, xsd_files = [], merge_max_depth = 6):
     for idx, node in enumerate(features):
         logging.info("+ Feature #{}/{}".format(idx+1, len(features)))
         type_info_dict = resolve_types(node, ns_map)
-        tables = build_tables(node, type_info_dict, tables, merge_max_depth)
+        tables = build_tables(node, type_info_dict, tables, merge_max_depth, do_merge_sequences)
     logging.info("Tables population ...")
     for idx, node in enumerate(features):
         logging.info("+ Feature #{}/{}".format(idx+1, len(features)))
@@ -531,6 +713,7 @@ def load_gml_model(xml_file, archive_dir, xsd_files = [], merge_max_depth = 6):
         
 
     model = Model(tables, tables_rows, root_name)
-    save_model_to(model, cachefile)
+    if use_cache_file:
+        save_model_to(model, cachefile)
     
     return model

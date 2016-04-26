@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://myxsd" xmlns="http://myxsd">
+  <xs:complexType name="MyHType">
+    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:sequence>
+      <xs:element name="name" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+<xs:element name="a">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element name="b" type="xs:string"/>
+      <xs:element name="c">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="cdetails">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="name" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="prefix" minOccurs="0" type="xs:string"/>
+                        <xs:element name="suffix" minOccurs="0" type="xs:string"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="type" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="d" type="xs:string"/>
+      <xs:element name="e" type="xs:integer"/>
+      <xs:element name="f" minOccurs="0">
+        <xs:complexType>
+          <xs:attribute name="attr1" type="xs:string"/>
+          <xs:attribute name="attr2" type="xs:integer" use="required"/>
+        </xs:complexType>
+      </xs:element>
+
+      <!-- an element with an id -->
+      <xs:element name="g" minOccurs="0">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:integer" use="required"/>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <!-- an element with an id and a named type -->
+      <xs:element name="h" minOccurs="0" type="MyHType">
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:element> 
+</xs:schema>

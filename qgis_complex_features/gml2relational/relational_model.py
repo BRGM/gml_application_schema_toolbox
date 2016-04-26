@@ -5,11 +5,25 @@ def xpath_to_column_name(xpath):
         return "v"
     return xpath.replace('/', '_').replace('@', '')
 
-class Link:
+class Field:
+    def __init__(self, xpath):
+        self._xpath = xpath
+
+    def xpath(self):
+        return self._xpath
+    def set_xpath(self, xpath):
+        self._xpath = xpath
+    def name(self):
+        return xpath_to_column_name(self.xpath())
+
+    def __hash__(self):
+        return self._xpath.__hash__()
+
+class Link(Field):
     """A Link represents a link to another type/table"""
 
     def __init__(self, xpath, optional, min_occurs, max_occurs, ref_type, ref_table = None, substitution_group = None):
-        self.__xpath = xpath
+        Field.__init__(self, xpath)
         self.__optional = optional
         self.__min_occurs = min_occurs
         self.__max_occurs = max_occurs
@@ -17,10 +31,9 @@ class Link:
         self.__ref_table = ref_table # Table
         self.__substitution_group = substitution_group # for element that derives from a common element
 
-    def xpath(self):
-        return self.__xpath
-    def name(self):
-        return xpath_to_column_name(self.xpath())
+    def clone(self):
+        return Link(self.xpath(), self.optional(), self.min_occurs(), self.max_occurs(), self.ref_type(), self.ref_table())
+
     def ref_type(self):
         return self.__ref_type
     def ref_table(self):
@@ -37,40 +50,36 @@ class Link:
         return self.__substitution_group
 
     def __repr__(self):
-        return "Link<{}({}-{}){}>".format(self.name(), self.min_occurs(),
+        return "Link<{}({}-{}){}>".format(self.xpath(), self.min_occurs(),
                                           "*" if self.max_occurs() is None else self.max_occurs(),
-                                          "" if self.ref_table() is None else " " + self.ref_table().name())
+                                          "" if self.ref_table() is None else "," + self.ref_table().name())
 
-class BackLink:
+class BackLink(Field):
     """A BackLink represents a foreign key relationship"""
 
     def __init__(self, xpath, ref_table):
-        self.__xpath = xpath
+        Field.__init__(self, xpath)
         self.__ref_table = ref_table
+    def clone(self):
+        return BackLink(self.xpath(), self.ref_table())
 
-    def xpath(self):
-        return self.__xpath
-    def name(self):
-        return xpath_to_column_name(self.xpath())
     def ref_table(self):
         return self.__ref_table
 
     def __repr__(self):
-        return "BackLink<{}({})>".format(self.name(), self.ref_table().name())
+        return "BackLink<{}({})>".format(self.xpath(), self.ref_table().name())
 
-class Column:
+class Column(Field):
     """A Column is a (simple type) column"""
 
     def __init__(self, xpath, optional = False, ref_type = None, auto_incremented = False):
-        self.__xpath = xpath
+        Field.__init__(self, xpath)
         self.__optional = optional
         self.__ref_type = ref_type
         self.__auto_incremented = auto_incremented
+    def clone(self):
+        return Column(self.xpath(), self.optional(), self.ref_type(), self.auto_incremented())
 
-    def xpath(self):
-        return self.__xpath
-    def name(self):
-        return xpath_to_column_name(self.xpath())
     def ref_type(self):
         return self.__ref_type
     def optional(self):
@@ -79,9 +88,9 @@ class Column:
         return self.__auto_incremented
 
     def __repr__(self):
-        return "Column<{}{}>".format(self.__name, " optional" if self.__optional else "")
+        return "Column<{},{}{}{}>".format(self.xpath(), self.ref_type(), ",optional" if self.optional() else "", ",autoincremented" if self.auto_incremented() else "")
 
-class Geometry:
+class Geometry(Field):
     """A geometry column"""
 
     def __init__(self, xpath, type, dim, srid, optional = False):
@@ -92,16 +101,14 @@ class Geometry:
         :param srid: epsg code
         :param optional: is it optional
         """
-        self.__xpath = xpath
+        Field.__init__(self, xpath)
         self.__type = type
         self.__dim = dim
         self.__srid = srid
         self.__optional = optional
+    def clone(self):
+        return Geometry(self.xpath(), self.type(), self.dimension(), self.srid(), self.optional())
 
-    def xpath(self):
-        return self.__xpath
-    def name(self):
-        return xpath_to_column_name(self.xpath())
     def type(self):
         return self.__type
     def dimension(self):
@@ -111,7 +118,7 @@ class Geometry:
     def optional(self):
         return self.__optional
     def __repr__(self):
-        return "Geometry<{} {}{}({}){}>".format(self.name(), self.type(), "Z" if self.dimension() == 3 else "", self.srid(), " optional" if self.__optional else "")
+        return "Geometry<{},{}{}({}){}>".format(self.xpath(), self.type(), "Z" if self.dimension() == 3 else "", self.srid(), ",optional" if self.__optional else "")
 
 class Table:
     """A Table is a list of Columns or Links to other tables, a list of geometry columns and an id"""
@@ -128,6 +135,11 @@ class Table:
         # but not both
         self.__last_uid = None
 
+        # whether this table can be merged with its parent
+        # a table cannot be merged if it can be refered by other tables
+        # i.e. if it has an id
+        self.__mergeable = True
+
     def name(self):
         return self.__name
     def set_name(self, name):
@@ -135,8 +147,8 @@ class Table:
     def fields(self):
         return self.__fields
     def add_field(self, field):
-        if self.__fields.has_key(field.name()):
-            raise RuntimeError("add_field {} already existing".format(field.name()))
+        #if self.__fields.has_key(field.name()):
+        #    raise RuntimeError("add_field {} already existing".format(field.name()))
         self.__fields[field.name()] = field
     def add_fields(self, fields):
         for f in fields:
@@ -162,6 +174,7 @@ class Table:
         return self.__uid_column
     def set_uid_column(self, uid_column):
         self.__uid_column = uid_column
+        self.__mergeable = False
 
     def has_autoincrement_id(self):
         return self.__last_uid is not None
@@ -169,6 +182,7 @@ class Table:
         self.__uid_column = Column("id", auto_incremented = True)
         self.__fields['id'] = self.__uid_column
         self.__last_uid = 0
+        self.__mergeable = True
     def increment_id(self):
         self.__last_uid += 1
         return self.__last_uid
@@ -177,6 +191,18 @@ class Table:
         f = [x for x in table.back_links() if x.name() == name and x.table() == table]
         if len(f) == 0:
             self.__fields[name] = BackLink(name, table)
+
+    def max_field_depth(self):
+        ff = [len(f.xpath().split('/')) for f in self.__fields.values()]
+        if len(ff) == 0:
+            return 0
+        return max(ff)
+
+    def is_mergeable(self):
+        return self.__mergeable
+
+    def __repr__(self):
+        return "Table<{};{}>".format(self.name(), ";".join([f.__repr__() for f in self.__fields.values()]))
 
 class Model:
     def __init__(self, tables, tables_rows, root_name):

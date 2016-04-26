@@ -9,25 +9,27 @@ from qgis.gui import *
 
 import os
 
-try:
-    from lxml import etree
-except ImportError:
-    import platform
-    if platform.architecture() == ('64bit', 'WindowsPE'):
-        package_path = os.path.join(os.path.dirname(__file__), "whl", "win64")
-    elif platform.architecture() == ('32bit', 'WindowsPE'):
-        package_path = os.path.join(os.path.dirname(__file__), "whl", "win32")
-    else:
-        raise
-    import sys
-    sys.path.append(package_path)
-    # try again
-    from lxml import etree
+import platform
+package_path = ["whl/all"]
+if platform.architecture() == ('64bit', 'WindowsPE'):
+    package_path.append(os.path.join(os.path.dirname(__file__), "whl", "win64"))
+elif platform.architecture() == ('32bit', 'WindowsPE'):
+    package_path.append(os.path.join(os.path.dirname(__file__), "whl", "win32"))
+import sys
+sys.path.extend(package_path)
 
+from lxml import etree
+
+from qgis_urlopener import remote_open_from_qgis
 from complex_features import ComplexFeatureSource, noPrefix, load_complex_gml, properties_from_layer, is_layer_complex
 from identify_dialog import IdentifyDialog
 from creation_dialog import CreationDialog
 from table_dialog import TableDialog
+
+import gml2relational
+from gml2relational.relational_model_builder import load_gml_model
+from gml2relational.sqlite_writer import create_sqlite_from_model
+from gml2relational.qgis_project_writer import create_qgis_project_from_model
 
 class IdentifyGeometry(QgsMapToolIdentify):
     geomIdentified = pyqtSignal(QgsVectorLayer, QgsFeature)
@@ -66,6 +68,17 @@ def replace_layer(old_layer, new_layer):
     parent.insertLayer(idx, new_layer)
     QgsMapLayerRegistry.instance().removeMapLayer(old_layer)
 
+class DownloadProgress(QDialog):
+    def __init__(self):
+        QDialog.__init__(self, None)
+        self.__label = QLabel(self)
+        self.__layout = QVBoxLayout()
+        self.__layout.addWidget(self.__label)
+        self.setLayout(self.__layout)
+        self.resize(600, 70)
+
+    def setText(self, text):
+        self.__label.setText(text)
 
 class MyResolver(etree.Resolver):
     def resolve(self, url, id, context):
@@ -117,7 +130,10 @@ class MainPlugin:
         else:
             creation_dlg = CreationDialog()
         r = creation_dlg.exec_()
-        if r:
+        if not r:
+            return
+
+        if creation_dlg.import_type() == 0:
             is_remote, url = creation_dlg.source()
             mapping = creation_dlg.attribute_mapping()
             geom_mapping = creation_dlg.geometry_mapping()
@@ -135,6 +151,36 @@ class MainPlugin:
             else:
                 # a new layer
                 QgsMapLayerRegistry.instance().addMapLayer(new_layer)
+        else: # import type == 2
+            is_remote, url = creation_dlg.source()
+            output_filename = creation_dlg.output_filename()
+            archive_dir = creation_dlg.archive_directory()
+            merge_depth = creation_dlg.merge_depth()
+
+            # temporary sqlite file
+            tfile = QTemporaryFile()
+            tfile.open()
+            project_file = tfile.fileName() + ".qgs"
+            tfile.close()
+
+            if os.path.exists(output_filename):
+                os.unlink(output_filename)
+
+            self.p_widget = DownloadProgress()
+            self.p_widget.show()
+            def opener(uri):
+                self.p_widget.setText("Downloading {} ...".format(uri))
+                return remote_open_from_qgis(uri)
+            model = load_gml_model(url, archive_dir, [], merge_depth, opener)
+
+            self.p_widget.setText("Creating the Spatialite file ...")
+            create_sqlite_from_model(model, output_filename)
+
+            self.p_widget.setText("Creating the QGIS project ...")
+            create_qgis_project_from_model(model, output_filename, project_file, QgsApplication.srsDbFilePath(), QGis.QGIS_VERSION)
+            QgsProject.instance().setFileName(project_file)
+            QgsProject.instance().read()
+            self.p_widget.hide()
 
     def onIdentify(self):
         self.mapTool = IdentifyGeometry(self.iface.mapCanvas())

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<a xmlns="http://myxsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://myxsd t1.xsd">
+<b>bb</b>
+<c>
+  <cdetails>
+    <name><prefix>cc</prefix></name>
+    <name><suffix>cc2</suffix></name>
+  </cdetails>
+  <type>int</type>
+</c>
+<d>dd</d>
+<e>14</e>
+</a>

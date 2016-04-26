@@ -102,16 +102,28 @@ def _resolve_types(etree_node, ns_map, declaration, abstract_declaration, min_oc
             else:
                 raise RuntimeError("Can't find declaration for attribute {}".format(n_attr_name))
 
-    child_declarations = _find_element_declarations(declaration.typeDefinition(), ns_map)
-    for child in etree_node:
-        c_name = no_prefix(child.tag)
-        child_decl = [(ed, abs_ed, min_o, max_o) for ed, abs_ed, min_o, max_o in child_declarations if ed.name() == c_name]
-        if len(child_decl) > 0:
-            ed, abs_ed, min_o, max_o = child_decl[0]
-            _resolve_types(child, ns_map, ed, abs_ed if abs_ed.abstract() else None, min_o, max_o, type_info_dict)
-        else:
-            import ipdb; ipdb.set_trace()
-            raise RuntimeError("Can't find declaration for element {}".format(c_name))
+    if declaration.typeDefinition().name() == "anyType":
+        # generic type
+        for child in etree_node:
+            ns, c_name = split_tag(child.tag)
+            ed = ns_map[ns].elementDeclarations()[c_name]
+            _resolve_types(child, ns_map, ed, None, 0, 1, type_info_dict)
+    else:
+        child_declarations = _find_element_declarations(declaration.typeDefinition(), ns_map)
+        for child in etree_node:
+            ns, c_name = split_tag(child.tag)
+            possible_names = [c_name]
+            child_ed = ns_map[ns].elementDeclarations().get(c_name)
+            # llok for substitution group
+            if child_ed is not None and child_ed.substitutionGroupAffiliation() is not None and child_ed.substitutionGroupAffiliation().name() in [c[0].name() for c in child_declarations]:
+                child_decl = [(child_ed, child_ed, 0, 1)]
+            else:
+                child_decl = [(ed, abs_ed, min_o, max_o) for ed, abs_ed, min_o, max_o in child_declarations if ed.name() == c_name]
+            if len(child_decl) > 0:
+                ed, abs_ed, min_o, max_o = child_decl[0]
+                _resolve_types(child, ns_map, ed, abs_ed if abs_ed.abstract() else None, min_o, max_o, type_info_dict)
+            else:
+                raise RuntimeError("Unexpected element {} for node {}".format(c_name, node_tag))
 
 def resolve_types(root_node, ns_map):
     """

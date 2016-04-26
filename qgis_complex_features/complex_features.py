@@ -9,25 +9,9 @@ from qgis.core import QGis, QgsGeometry, QgsVectorLayer, QgsField, QgsFeature, Q
 
 from pyspatialite import dbapi2 as sqlite3
 
-import re
+from qgis_urlopener import remote_open_from_qgis
 
-def remote_open_from_qgis(uri):
-    """Opens a remote URL using QGIS proxy preferences"""
-    from PyQt4.QtCore import QUrl, QEventLoop
-    from PyQt4.QtNetwork import QNetworkRequest
-    from StringIO import StringIO
-    from qgis.core import QgsNetworkAccessManager
-    nm = QgsNetworkAccessManager.instance()
-    pause = QEventLoop()
-    req = QNetworkRequest(QUrl.fromEncoded(uri))
-    req.setRawHeader("Accept", "application/xml")
-    req.setRawHeader("Accept-Language", "fr")
-    reply = nm.get(req)
-    reply.finished.connect(pause.quit)
-    pause.exec_()
-    r = str(reply.readAll())
-    reply.close()
-    return StringIO(r)
+import re
 
 def noPrefix(tag):
     if tag.startswith('{'):
