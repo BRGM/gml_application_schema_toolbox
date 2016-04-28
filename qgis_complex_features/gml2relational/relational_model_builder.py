@@ -149,7 +149,7 @@ def _merged_columns(node, prefix, type_info_dict):
         cname = p + n_tag + "/@" + n_an
         if ns == "http://www.w3.org/2001/XMLSchema-instance":
             continue
-        if ns == 'http://www.w3.org/1999/xlink':
+        if ns == 'http://www.w3.org/1999/xlink' or ns == '':
             columns.append(Column(cname, ref_type = "TEXT", optional = True))
             continue
         
@@ -360,7 +360,7 @@ def _build_table(node, table_name, type_info_dict, merge_max_depth, merge_sequen
         ns, n_attr_name = split_tag(attr_name)
         if ns == "http://www.w3.org/2001/XMLSchema-instance":
             continue
-        if ns == 'http://www.w3.org/1999/xlink':
+        if ns == 'http://www.w3.org/1999/xlink' or ns == '':
             table.add_field(Column("@" + n_attr_name, ref_type = "TEXT", optional = True))
             continue
 

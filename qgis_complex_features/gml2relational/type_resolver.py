@@ -98,6 +98,9 @@ def _resolve_types(etree_node, ns_map, declaration, abstract_declaration, min_oc
             ns_attr, n_attr_name = split_tag(attr_name)
             if ns_attr in ["http://www.w3.org/2001/XMLSchema-instance", 'http://www.w3.org/1999/xlink']:
                 continue
+            if ns_attr == "" and n_attr_name in ['nil', 'nilReason']:
+                # special case where xsi namespace is not there (should be an error)
+                continue
             attr_use = [au for au in attrs_uses if au.attributeDeclaration().name() == n_attr_name]
             if attr_use:
                 type_info_dict[etree_node].attribute_type_info_map()[attr_name] = attr_use[0]
