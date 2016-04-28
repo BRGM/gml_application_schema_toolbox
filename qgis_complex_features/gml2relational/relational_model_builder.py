@@ -654,12 +654,11 @@ class URIResolver(object):
         logging.info(" "*lvl + "Resolving schema {} ({})... ".format(uri, parent_uri))
 
         if not uri.startswith('http://'):
-            if uri.startswith('/'):
-                # absolute file name
-                return uri
-            else:
+            if not uri.startswith('/'):
                 # relative file name
                 uri = os.path.join(parent_uri, uri)
+            if os.path.exists(uri):
+                return uri
 
         base_uri = uri_dirname(uri)
 
@@ -715,7 +714,10 @@ def extract_features(doc):
     return nodes
 
 
-def load_gml_model(xml_file, archive_dir, xsd_files = [], merge_max_depth = 6, merge_sequences = False, share_geometries = False, split_multi_geometries = True, urlopener = urllib2.urlopen, use_cache_file = False):
+def load_gml_model(xml_file, archive_dir, xsd_files = None, merge_max_depth = 6, merge_sequences = False, share_geometries = False, split_multi_geometries = True, urlopener = urllib2.urlopen, use_cache_file = False):
+    if xsd_files is None:
+        xsd_files = []
+
     cachefile = os.path.join(archive_dir, os.path.basename(xml_file) + ".model")
 
     if use_cache_file and os.path.exists(cachefile):

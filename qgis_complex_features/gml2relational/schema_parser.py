@@ -24,7 +24,6 @@ def parse_schemas(schema_files, urlopen = urllib2.urlopen):
         generator.applyOptionValues(options, schema_files)
         # call to moduleRecords and ignore the returned value
         # we only need to make sure the namespace is validated and "resolved"
-        print(schema_files)
         generator.moduleRecords()
     except pyxb.SchemaValidationError as e:
         raise RuntimeError("When parsing {} - {}".format(schema_files, e.args))

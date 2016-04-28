@@ -22,7 +22,7 @@ class TestModelBuilder(unittest.TestCase):
         new_fields = trepr - torig_repr
         self.assertTrue(new_fields == set(), "New fields : {} got {} expected {}".format(new_fields, trepr, torig_repr))
     
-    def test1a(self):
+    def test_1a(self):
         model = load_gml_model(os.path.join(testdata_path, "t1.xml"), tempfile.gettempdir())
         self.assertEqual(len(model.tables()), 2)
         ta = set(["Column<d/text(),TEXT>",
@@ -38,7 +38,7 @@ class TestModelBuilder(unittest.TestCase):
                   "Column<@id,None,autoincremented>"])
         self.assertTableEqualRepr(model.tables()['a_c_cdetails_name'], tb)
 
-    def test1b(self):
+    def test_1b(self):
         # with sequence merging
         model = load_gml_model(os.path.join(testdata_path, "t1.xml"), tempfile.gettempdir(), merge_sequences = True)
         self.assertEqual(len(model.tables()), 1)
@@ -50,7 +50,7 @@ class TestModelBuilder(unittest.TestCase):
                  "Column<@id,None,autoincremented>"])
         self.assertTableEqualRepr(model.tables()['a'], t)
 
-    def test1c(self):
+    def test_1c(self):
         # with 0 max merge depth
         model = load_gml_model(os.path.join(testdata_path, "t1.xml"), tempfile.gettempdir(), merge_max_depth = 0)
         t1 = set(["Link<c(1-1),a_c>","Link<b(1-1),a_b>","Link<e(1-1),a_e>","Column<@id,None,autoincremented>","Link<d(1-1),a_d>"])
@@ -72,7 +72,7 @@ class TestModelBuilder(unittest.TestCase):
         t9 = set(["Column<@id,None,autoincremented>","Column<text(),INT>"])
         self.assertTableEqualRepr(model.tables()['a_e'], t9)
 
-    def test2(self):
+    def test_2(self):
         model = load_gml_model(os.path.join(testdata_path, "t2.xml"), tempfile.gettempdir(), merge_max_depth = 6, merge_sequences = False)
         self.assertEqual(len(model.tables()), 2)
         ta = set(["Column<d/text(),TEXT>",
@@ -94,7 +94,7 @@ class TestModelBuilder(unittest.TestCase):
         self.assertTableEqualRepr(model.tables()['a'], ta)
         self.assertTableEqualRepr(model.tables()['a_c_cdetails_name'], tb)        
 
-    def test3(self):
+    def test_3(self):
         model = load_gml_model(os.path.join(testdata_path, "t3.xml"), tempfile.gettempdir(), merge_sequences = True)
         t = set(["Column<d/text(),TEXT>",
                  "Column<c/cdetails/name[0]/prefix/text(),TEXT,optional>",
@@ -106,7 +106,7 @@ class TestModelBuilder(unittest.TestCase):
                  "Column<@id,None,autoincremented>"])
         self.assertTableEqualRepr(model.tables()['a'], t)
         
-    def test4(self):
+    def test_4(self):
         # tables with ID => unmergeable
         model = load_gml_model(os.path.join(testdata_path, "t4.xml"), tempfile.gettempdir(), merge_sequences = True)
         ta = set(["Link<g(0-1),a_g_t>",
