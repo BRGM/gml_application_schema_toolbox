@@ -7,6 +7,7 @@ def stream_sql_schema(tables):
     :returns: a generator that yield a new SQL line
     """
     for name, table in tables.iteritems():
+        assert name == table.name()
         stmt = u"CREATE TABLE " + name + u"(\n";
         columns = []
         for c in table.columns():
@@ -51,10 +52,10 @@ def stream_sql_schema(tables):
             else:
                 fk_constraints.append((bl.ref_table().name(), bl.ref_table(), u"INT"))
 
-        for n, table, type_str in fk_constraints:
+        for n, t, type_str in fk_constraints:
             columns.append("  " + n + u"_id " + type_str)
-        for n, table, type_str in fk_constraints:
-            columns.append(u"  FOREIGN KEY({}_id) REFERENCES {}(id)".format(n, table.name()))
+        for n, t, type_str in fk_constraints:
+            columns.append(u"  FOREIGN KEY({}_id) REFERENCES {}(id)".format(n, t.name()))
 
         # substitution group checks
         for sg, links in sub_groups.iteritems():

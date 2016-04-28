@@ -55,20 +55,34 @@ def simple_type_to_sql_type(td):
 
 def gml_geometry_type(node, td):
     import re
-    srid = None
+    srid = 4326
     dim = 2
     type = no_prefix(node.tag)
-    if type not in ['Point', 'LineString', 'Polygon', 'MultiPoint', 'MultiLineString', 'MultiPolygon']:
+    tmap = {'Point' : 'Point',
+            'LineString' : 'LineString',
+            'Polygon' : 'Polygon',
+            'MultiPoint' : 'MultiPoint',
+            'MultiLineString' : 'MultiLineString',
+            'MultiPolygon' : 'MultiPolygon',
+            'MultiCurve' : 'MultiLineString',
+            'MultiSurface' : 'MultiPolygon'}
+    if tmap.get(type) is None:
+        # test node type
         tmap = {'PointType' : 'Point',
                 'LineStringType' : 'LineString',
                 'PolygonType' : 'Polygon',
                 'MultiPointType': 'MultiPoint',
                 'MultiLineStringType': 'MultiLineString',
-                'MultiPolygonType': 'MultiPolygon'}
+                'MultiPolygonType': 'MultiPolygon',
+                'MultiCurveType' : 'MultiLineString',
+                'MultiSurfaceType' : 'MultiPolygon'}
         if tmap.get(td.name()) is not None:
             type = tmap[td.name()]
         else:
             type = 'GeometryCollection'
+    else:
+        type = tmap[type]
+
     for k, v in node.attrib.iteritems():
         if no_prefix(k) == 'srsDimension':
             dim = int(v)
@@ -132,9 +146,13 @@ def _merged_columns(node, prefix, type_info_dict):
         if n_an == "id":
             # shared table, cannot be merged
             return None
+        cname = p + n_tag + "/@" + n_an
         if ns == "http://www.w3.org/2001/XMLSchema-instance":
             continue
-        cname = p + n_tag + "/@" + n_an
+        if ns == 'http://www.w3.org/1999/xlink':
+            columns.append(Column(cname, ref_type = "TEXT", optional = True))
+            continue
+        
         au = ti.attribute_type_info_map()[an]
         columns.append(Column(cname,
                               ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition()),
@@ -342,6 +360,9 @@ def _build_table(node, table_name, type_info_dict, merge_max_depth, merge_sequen
         ns, n_attr_name = split_tag(attr_name)
         if ns == "http://www.w3.org/2001/XMLSchema-instance":
             continue
+        if ns == 'http://www.w3.org/1999/xlink':
+            table.add_field(Column("@" + n_attr_name, ref_type = "TEXT", optional = True))
+            continue
 
         au = ti.attribute_type_info_map()[attr_name]
         c = Column("@" + n_attr_name,
@@ -484,7 +505,7 @@ def resolve_xpath(node, xpath):
         return nodes
 
 def _populate(node, table, parent_id, tables_rows):
-    if len(node.attrib) == 0 and len(node) == 0:
+    if len(node.attrib) == 0 and len(node) == 0 and node.text is None:
         # empty table
         return None
     if not isinstance(node, ET.Element):
@@ -543,6 +564,8 @@ def _populate(node, table, parent_id, tables_rows):
                 if not link.optional():
                     raise ValueError("Required children {} for element {} not found".format(link.xpath(), node.tag))
                 continue
+            if not isinstance(children, list):
+                children = [children]
             for child in children:
                 _populate(child, link.ref_table(), current_id, tables_rows)
 
@@ -628,7 +651,7 @@ class URIResolver(object):
                 if not os.path.exists(p):
                     os.mkdir(p)
 
-        logging.info(" "*lvl + "Resolving schema {} ... ".format(uri))
+        logging.info(" "*lvl + "Resolving schema {} ({})... ".format(uri, parent_uri))
 
         if not uri.startswith('http://'):
             if uri.startswith('/'):
@@ -637,7 +660,6 @@ class URIResolver(object):
             else:
                 # relative file name
                 uri = os.path.join(parent_uri, uri)
-                return uri
 
         base_uri = uri_dirname(uri)
 
@@ -647,7 +669,7 @@ class URIResolver(object):
         out_file_name = os.path.join(self.__cachedir, out_file_name)
         if os.path.exists(out_file_name):
             return out_file_name
-        
+
         f = self.__urlopener(uri)
         mkdir_p(os.path.dirname(out_file_name))
         fo = open(out_file_name, "w")
@@ -714,7 +736,10 @@ def load_gml_model(xml_file, archive_dir, xsd_files = [], merge_max_depth = 6, m
         root = doc.getroot()
         for an, av in root.attrib.iteritems():
             if no_prefix(an) == "schemaLocation":
-                xsd_files = [uri_resolver.cache_uri(x, parent_uri) for x in av.split()[1::2]]
+                avs = av.split()
+                for ns_name, ns_uri in zip(avs[0::2], avs[1::2]):
+                    if ns_name not in ['http://www.opengis.net/wfs']:
+                        xsd_files.append(uri_resolver.cache_uri(ns_uri, parent_uri))
 
     if len(xsd_files) == 0:
         raise RuntimeError("No schema found")

@@ -17,7 +17,7 @@ def _find_element_declarations(obj, ns_map, min_occurs = 1, max_occurs = 1):
             # look for concrete types that derives from this abstract type
             for ns in ns_map.values():
                 if not hasattr(ns,"elementDeclarations"):
-                    raise RuntimeError("Invalid namespace {}", ns.uri())
+                    continue
                 for ed in ns.elementDeclarations().values():
                     if _xsd_isinstance(ed.typeDefinition(), obj.typeDefinition()):
                         types.append((ed, obj, min_occurs, max_occurs))
@@ -95,14 +95,14 @@ def _resolve_types(etree_node, ns_map, declaration, abstract_declaration, min_oc
     if len(etree_node.attrib) > 0:
         attrs_uses = declaration.typeDefinition().attributeUses()
         for attr_name in etree_node.attrib.keys():
-            if prefix(attr_name) == "http://www.w3.org/2001/XMLSchema-instance":
+            ns_attr, n_attr_name = split_tag(attr_name)
+            if ns_attr in ["http://www.w3.org/2001/XMLSchema-instance", 'http://www.w3.org/1999/xlink']:
                 continue
-            n_attr_name = no_prefix(attr_name)
             attr_use = [au for au in attrs_uses if au.attributeDeclaration().name() == n_attr_name]
             if attr_use:
                 type_info_dict[etree_node].attribute_type_info_map()[attr_name] = attr_use[0]
             else:
-                raise RuntimeError("Can't find declaration for attribute {}".format(n_attr_name))
+                raise RuntimeError("Can't find declaration for attribute {} in node {}".format(n_attr_name, etree_node.tag))
 
     if declaration.typeDefinition().name() == "anyType":
         # generic type

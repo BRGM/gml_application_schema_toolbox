@@ -69,20 +69,21 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file, q
             srs_xml = XMLNode("srs")
             x = ET.SubElement(srs_xml, "spatialrefsys")
             cur = srs_conn.execute("SELECT srs_id, description, projection_acronym, ellipsoid_acronym, parameters, srid, auth_name, auth_id, is_geo " +
-                                   "FROM tbl_srs WHERE srid=?", (table.geometries()[0].srid(),))
+                                   "FROM tbl_srs WHERE auth_id=?", (table.geometries()[0].srid(),))
             r = cur.fetchone()
-            if r is not None:
-                srs_id, description, project_acronym, ellipsoid_acronym, parameters, srid, auth_name, auth_id, is_geo = r
-                x.append(XMLNode("proj4", text = parameters))
-                x.append(XMLNode("srsid", text = str(srs_id)))
-                x.append(XMLNode("authid", text = "{}:{}".format(auth_name,auth_id)))
-                x.append(XMLNode("description", text = description))
-                x.append(XMLNode("projectionacronym", text = project_acronym))
-                x.append(XMLNode("ellispoidacronym", text = ellipsoid_acronym))
-                x.append(XMLNode("geographicflag", text = "1" if is_geo else "0"))
-                layer_xml.append(srs_xml)
-            else:
-                logging.warning("SRID {} not found !".format(table.geometries()[0].srid()))
+            if r is None:
+                logging.warning("SRID {} not found ! Defaulting to 4326".format(table.geometries()[0].srid()))
+                r = (3452, 'WGS 84', 'longlat', 'WGS84', '+proj=longlat +datum=WGS84 +no_defs', 4326, 'EPSG', 4326, True)
+                
+            srs_id, description, project_acronym, ellipsoid_acronym, parameters, srid, auth_name, auth_id, is_geo = r
+            x.append(XMLNode("proj4", text = parameters))
+            x.append(XMLNode("srsid", text = str(srs_id)))
+            x.append(XMLNode("authid", text = "{}:{}".format(auth_name,auth_id)))
+            x.append(XMLNode("description", text = description))
+            x.append(XMLNode("projectionacronym", text = project_acronym))
+            x.append(XMLNode("ellispoidacronym", text = ellipsoid_acronym))
+            x.append(XMLNode("geographicflag", text = "1" if is_geo else "0"))
+            layer_xml.append(srs_xml)
         
         layers_xml[table_name] = layer_xml
         
