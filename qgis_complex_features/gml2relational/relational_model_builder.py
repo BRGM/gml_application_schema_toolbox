@@ -207,7 +207,6 @@ def _build_tables2(node, table_name, type_info_dict, tables, merge_max_depth):
         child_ti = type_info_dict[child]
         child_td = child_ti.type_info().typeDefinition()
         n_child_tag = no_prefix(child.tag)
-        #print(n_child_tag, child_td.name())
 
         in_seq = n_child_tag == last_tag
         last_tag = n_child_tag
@@ -286,16 +285,19 @@ def _build_tables2(node, table_name, type_info_dict, tables, merge_max_depth):
                                          substitution_group = sgroup))
 
 def merge_tables(table1, table2):
-    merged = Table(table1.name())
     table1_fields = set(table1.fields().values())
     table2_fields = set(table2.fields().values())
     merged_fields = table1_fields | table2_fields # union
-    merged.add_fields(merged_fields)
+    merged = table1.clone()
+    merged.set_fields(merged_fields)
     return merged
     
     
-def _build_tables(node, table_name, type_info_dict, tables, merge_max_depth, do_merge_sequences = False):
+def _build_table(node, table_name, type_info_dict, merge_max_depth, merge_sequences = False, share_geometries = False):
     """
+    :param merge_max_depth: Maximum acceptable merging depth
+    :param merge_sequences: Whether to merge unitary sequences or not
+    :param share_geometries: Whether to regroup geometries of the same type in a common layer
     :returns: a dict {table_name: Table}
     """
     
@@ -314,7 +316,7 @@ def _build_tables(node, table_name, type_info_dict, tables, merge_max_depth, do_
         #
         is_optional = ti.min_occurs() == 0 or ti.type_info().nillable()
         gtype, gdim, gsrid = gml_geometry_type(node, node_td)
-        table.add_field(Geometry("geometry", gtype, gdim, gsrid, optional = is_optional))
+        table.add_field(Geometry("geometry()", gtype, gdim, gsrid, optional = is_optional))
         # look for an id
         for attr_name, attr_value in node.attrib.iteritems():
             ns, n_attr_name = split_tag(attr_name)
@@ -324,7 +326,8 @@ def _build_tables(node, table_name, type_info_dict, tables, merge_max_depth, do_
                            ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition()),
                            optional = not au.required())
                 table.add_field(c)
-                table.set_uid_column(c)
+                if share_geometries:
+                    table.set_uid_column(c)
         if table.uid_column() is None:
             table.set_autoincrement_id()
                 
@@ -375,7 +378,6 @@ def _build_tables(node, table_name, type_info_dict, tables, merge_max_depth, do_
         child_ti = type_info_dict[child]
         child_td = child_ti.type_info().typeDefinition()
         n_child_tag = no_prefix(child.tag)
-        #print(n_child_tag, child_td.name())
 
         in_seq = n_child_tag == last_tag
         last_tag = n_child_tag
@@ -393,11 +395,12 @@ def _build_tables(node, table_name, type_info_dict, tables, merge_max_depth, do_
             child_table_name = child_td.name() or table_name + "_" + n_child_tag + "_t"
         else:
             child_table_name = table_name + "_"  + n_child_tag
-        if in_seq or (is_seq and not do_merge_sequences):
-            if child_table is not None:
+
+        if in_seq or (is_seq and not merge_sequences):
+            if in_seq and child_table is not None:
                 last_child_table = child_table
-            child_table = _build_tables(child, child_table_name, type_info_dict, tables, merge_max_depth, do_merge_sequences)
-            if last_child_table is not None:
+            child_table = _build_table(child, child_table_name, type_info_dict, merge_max_depth, merge_sequences, share_geometries)
+            if in_seq and last_child_table is not None:
                 child_table = merge_tables(last_child_table, child_table)
             table.add_field(Link(n_child_tag,
                                  is_optional,
@@ -410,7 +413,7 @@ def _build_tables(node, table_name, type_info_dict, tables, merge_max_depth, do_
                     # it was a merged column, now a link is created, remove it
                     table.remove_field(c.name())
         else:
-            child_table = _build_tables(child, child_table_name, type_info_dict, tables, merge_max_depth, do_merge_sequences)
+            child_table = _build_table(child, child_table_name, type_info_dict, merge_max_depth, merge_sequences, share_geometries)
             if child_table.is_mergeable() and child_table.max_field_depth() + 1 < merge_max_depth:
                 suffix = "/"
                 if is_seq: # defined as a sequence, but potentially merged
@@ -440,7 +443,12 @@ def resolve_xpath(node, xpath):
     leaf = path[0]
 
     if leaf == "text()":
+        if node.text is None:
+            return ""
         return node.text
+
+    if leaf == "geometry()":
+        return node
 
     if no_prefix(node.tag) == leaf:
         return node
@@ -491,34 +499,38 @@ def _populate(node, table, parent_id, tables_rows):
         if table.has_autoincrement_id():
             current_id = table.increment_id()
             row.append(("id", current_id))
+        else:
+            raise RuntimeError("No id for node {} in table {} {}".format(node.tag, table.name(), table))
 
-   # columns
+    # columns
     cols = [c for c in table.columns() if not c.xpath().startswith('@')]
     for c in cols:
         child = resolve_xpath(node, c.xpath())
         if child is None:
+            if not c.optional():
+                raise ValueError("Required value {} for element {} not found".format(c.xpath(), node.tag))
             continue
         if isinstance(child, (str, unicode)):
             v = child
         else:
             v = child[0].text
-        if v is None:
-            v = ''
         row.append((c.name(), v))
 
     # links
     for link in table.links():
         if link.max_occurs() is not None:
             child = resolve_xpath(node, link.xpath())
-            #if link.xpath() == "OperationalActivityPeriod":
-            #    import ipdb; ipdb.set_trace()
             if child is None:
+                if not link.optional():
+                    raise ValueError("Required child {} for element {} not found".format(link.xpath(), node.tag))
                 continue
             child_id = _populate(child[0], link.ref_table(), current_id, tables_rows)
             row.append((link.name() + "_id", child_id))
         else:
             children = resolve_xpath(node, link.xpath())
             if children is None:
+                if not link.optional():
+                    raise ValueError("Required children {} for element {} not found".format(link.xpath(), node.tag))
                 continue
             for child in children:
                 _populate(child, link.ref_table(), current_id, tables_rows)
@@ -533,12 +545,12 @@ def _populate(node, table, parent_id, tables_rows):
         geom = geometries[0]
         g_nodes = resolve_xpath(node, geom.xpath())
         if g_nodes is not None:
-            g = ogr.CreateGeometryFromGML(ET.tostring(g_nodes[0]))
+            g = ogr.CreateGeometryFromGML(ET.tostring(g_nodes))
             row.append((geom.name(), ("GeomFromText('%s', %d)", g.ExportToWkt(), geom.srid())))
 
     return current_id
     
-def build_tables(root_node, type_info_dict, tables, merge_max_depth, do_merge_sequences):
+def build_tables(root_node, type_info_dict, tables, merge_max_depth, merge_sequences, share_geometries):
     """Creates or updates table definitions from a document and its TypeInfo dict
     :param root_node: the root node
     :param type_info_dict: the TypeInfo dict
@@ -546,20 +558,25 @@ def build_tables(root_node, type_info_dict, tables, merge_max_depth, do_merge_se
     :param merge_max_depth: the maximum depth to consider when merging tables
     :returns: {table_name : Table}
     """
+        
     if tables is None:
         tables = {}
-        
     table_name = no_prefix(root_node.tag)
     if False:
         _build_tables(root_node, table_name, type_info_dict, tables, merge_max_depth)
     else:
-        table = _build_tables(root_node, table_name, type_info_dict, tables, merge_max_depth, do_merge_sequences)
-        def get_tables(table):
-            r = {table.name() : table}
+        table = _build_table(root_node, table_name, type_info_dict, merge_max_depth, merge_sequences, share_geometries)
+        def collect_tables(table, tables):
+            t = [table]
+            tables[table.name()] = table
             for link in table.links():
-                r.update(get_tables(link.ref_table()))
-            return r
-        tables = get_tables(table)
+                etable = tables.get(link.ref_table().name())
+                if etable is not None:
+                    ntable = merge_tables(etable, link.ref_table())
+                    link.set_ref_table(ntable)
+                t.extend(collect_tables(link.ref_table(), tables))
+            return t
+        collect_tables(table, tables)
 
     # create backlinks
     for name, table in tables.iteritems():
@@ -588,7 +605,6 @@ class URIResolver(object):
         self.__urlopener = urlopener
 
     def cache_uri(self, uri, parent_uri = '', lvl = 0):
-        print("cache_uri", uri, parent_uri)
         def mkdir_p(path):
             """Recursively create all subdirectories of a given path"""
             dirs = path.split('/')
@@ -667,7 +683,7 @@ def extract_features(doc):
     return nodes
 
 
-def load_gml_model(xml_file, archive_dir, xsd_files = [], merge_max_depth = 6, do_merge_sequences = False, urlopener = urllib2.urlopen, use_cache_file = False):
+def load_gml_model(xml_file, archive_dir, xsd_files = [], merge_max_depth = 6, merge_sequences = False, share_geometries = False, split_multi_geometries = True, urlopener = urllib2.urlopen, use_cache_file = False):
     cachefile = os.path.join(archive_dir, os.path.basename(xml_file) + ".model")
 
     if use_cache_file and os.path.exists(cachefile):
@@ -704,7 +720,26 @@ def load_gml_model(xml_file, archive_dir, xsd_files = [], merge_max_depth = 6, d
     for idx, node in enumerate(features):
         logging.info("+ Feature #{}/{}".format(idx+1, len(features)))
         type_info_dict = resolve_types(node, ns_map)
-        tables = build_tables(node, type_info_dict, tables, merge_max_depth, do_merge_sequences)
+        tables = build_tables(node, type_info_dict, tables, merge_max_depth, merge_sequences, share_geometries)
+
+    # split multi geometry tables if asked to
+    if split_multi_geometries:
+        new_tables = []
+        for table_name, table in tables.iteritems():
+            if len(table.geometries()) > 1:
+                for geometry in table.geometries():
+                    xpath1 = '/'.join(geometry.xpath().split('/')[0:-1])
+                    xpath2 = geometry.xpath().split('/')[-1]
+                    new_geometry = Geometry(xpath2, geometry.type(), geometry.dimension(), geometry.srid(), optional = False)
+                    new_table = Table(table_name + "_" + xpath_to_column_name(xpath1), [new_geometry])
+                    new_table.set_autoincrement_id()
+                    new_link = Link(xpath1, geometry.optional(), 1, 1, 'INT', ref_table = new_table)
+                    table.remove_field(geometry.name())
+                    table.add_field(new_link)
+                    new_tables.append(new_table)
+        for table in new_tables:
+            tables[table.name()] = table
+                    
     logging.info("Tables population ...")
     for idx, node in enumerate(features):
         logging.info("+ Feature #{}/{}".format(idx+1, len(features)))

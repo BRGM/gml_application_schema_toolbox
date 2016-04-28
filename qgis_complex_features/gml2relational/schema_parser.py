@@ -38,11 +38,8 @@ def parse_schemas(schema_files, urlopen = urllib2.urlopen):
         ns.resolveDefinitions()
         ns_map[ns.uri()] = ns
 
-        for ns in schema.referencedNamespaces():
-            ns_map[ns.uri()] = ns
+        for sub_ns in ns.AvailableNamespaces():
+            if not any([sub_ns.uri().startswith(u) for u in ('http://www.w3.org/2000/xmlns/', 'http://www.w3.org/2001/XMLSchema', 'http://www.w3.org/XML', 'http://www.w3.org/1999/xhtml')]):
+                ns_map[sub_ns.uri()] = sub_ns
 
-    # remove special namespaces
-    for uri in ['http://www.w3.org/2000/xmlns/', 'http://www.w3.org/2001/XMLSchema', 'http://www.w3.org/XML/1998/namespace']:
-        if ns_map.has_key(uri):
-            del ns_map[uri]
     return ns_map

@@ -3,7 +3,15 @@ import pickle
 def xpath_to_column_name(xpath):
     if xpath == "text()":
         return "v"
-    return xpath.replace('/', '_').replace('@', '')
+    if xpath == "geometry()":
+        return "geometry"
+    t = []
+    for e in xpath.split('/'):
+        if e == "text()" or e == "geometry()":
+            continue
+        else:
+            t.append(e.replace('@',''))
+    return "_".join(t)
 
 class Field:
     def __init__(self, xpath):
@@ -139,6 +147,11 @@ class Table:
         # a table cannot be merged if it can be refered by other tables
         # i.e. if it has an id
         self.__mergeable = True
+    def clone(self):
+        t = Table(self.name(), self.fields().values(), self.uid_column())
+        t.__last_uid = self.__last_uid
+        t.__mergeable = self.__mergeable
+        return t
 
     def name(self):
         return self.__name
@@ -153,6 +166,10 @@ class Table:
     def add_fields(self, fields):
         for f in fields:
             self.add_field(f)
+    def set_fields(self, fields):
+        self.__fields = {}
+        self.add_fields(fields)
+        
     def remove_field(self, field_name):
         if self.__fields.has_key(field_name):
             del self.__fields[field_name]
@@ -179,7 +196,7 @@ class Table:
     def has_autoincrement_id(self):
         return self.__last_uid is not None
     def set_autoincrement_id(self):
-        self.__uid_column = Column("id", auto_incremented = True)
+        self.__uid_column = Column("@id", auto_incremented = True)
         self.__fields['id'] = self.__uid_column
         self.__last_uid = 0
         self.__mergeable = True

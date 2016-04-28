@@ -16,6 +16,8 @@ def _find_element_declarations(obj, ns_map, min_occurs = 1, max_occurs = 1):
             types = []
             # look for concrete types that derives from this abstract type
             for ns in ns_map.values():
+                if not hasattr(ns,"elementDeclarations"):
+                    raise RuntimeError("Invalid namespace {}", ns.uri())
                 for ed in ns.elementDeclarations().values():
                     if _xsd_isinstance(ed.typeDefinition(), obj.typeDefinition()):
                         types.append((ed, obj, min_occurs, max_occurs))
@@ -111,9 +113,12 @@ def _resolve_types(etree_node, ns_map, declaration, abstract_declaration, min_oc
     else:
         child_declarations = _find_element_declarations(declaration.typeDefinition(), ns_map)
         for child in etree_node:
-            ns, c_name = split_tag(child.tag)
+            ns_name, c_name = split_tag(child.tag)
             possible_names = [c_name]
-            child_ed = ns_map[ns].elementDeclarations().get(c_name)
+            ns = ns_map.get(ns_name)
+            if ns is None:
+                raise RuntimeError("Can't find namespace {}".format(ns_name))
+            child_ed = ns.elementDeclarations().get(c_name)
             # llok for substitution group
             if child_ed is not None and child_ed.substitutionGroupAffiliation() is not None and child_ed.substitutionGroupAffiliation().name() in [c[0].name() for c in child_declarations]:
                 child_decl = [(child_ed, child_ed, 0, 1)]
