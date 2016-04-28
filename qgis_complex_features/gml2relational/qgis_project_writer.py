@@ -44,7 +44,7 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file, q
     main_group_xml = XMLNode('layer-tree-group', {'checked' : 'Qt::Checked', 'expanded' : '1'})
     group_xml = ET.SubElement(main_group_xml, 'layer-tree-group', {'name': root_name, 'expanded' : '1'})
     child_group_xml = ET.SubElement(group_xml, 'layer-tree-group', {'name': u'linked tables', 'expanded' : '0'})
-    geom_group_xml = ET.SubElement(group_xml, 'layer-tree-group', {'name': u"geometries", 'expanded' : '1', 'checked' : 'Qt::Checked'})
+    geom_group_xml = XMLNode('layer-tree-group', {'name': u"geometries", 'expanded' : '1', 'checked' : 'Qt::Checked'})
     project_xml = XMLNode('qgis', {'version' : qgis_version })
     relations_xml = XMLNode('relations')
     project_xml.extend([main_group_xml, relations_xml])
@@ -121,6 +121,8 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file, q
             relations_xml.append(rel_xml)
 
     project_xml.extend(layers_xml.values())
+    if len(geom_group_xml) > 0:
+        group_xml.append(geom_group_xml)
 
     simple_back_links = {}
     for table_name, table in tables.iteritems():

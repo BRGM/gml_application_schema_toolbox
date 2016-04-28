@@ -454,6 +454,9 @@ def resolve_xpath(node, xpath):
         for an, av in node.attrib.iteritems():
             if no_prefix(an) == part[1:]:
                 return av
+
+    if part == no_prefix(node.tag):
+        return resolve_xpath(node, '/'.join(path[1:]))
     
     found = []
     for child in node:
@@ -518,8 +521,8 @@ def _populate(node, table, parent_id, tables_rows):
             if not c.optional():
                 raise ValueError("Required value {} for element {} not found".format(c.xpath(), node.tag))
             continue
-        if isinstance(child[0], (str, unicode)):
-            v = child[0]
+        if isinstance(child, (str, unicode)):
+            v = child
         else:
             v = child[0].text
         row.append((c.name(), v))
