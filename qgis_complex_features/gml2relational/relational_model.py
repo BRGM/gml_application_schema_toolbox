@@ -10,7 +10,7 @@ def xpath_to_column_name(xpath):
         if e == "text()" or e == "geometry()":
             continue
         else:
-            t.append(e.replace('@',''))
+            t.append(e.replace('@','').replace('[','').replace(']',''))
     return "_".join(t)
 
 class Field:

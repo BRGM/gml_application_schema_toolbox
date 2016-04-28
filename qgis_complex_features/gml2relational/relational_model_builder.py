@@ -436,41 +436,49 @@ def _build_table(node, table_name, type_info_dict, merge_max_depth, merge_sequen
     return table
 
 def resolve_xpath(node, xpath):
-    if xpath == "":
-        return node.text
-
     path = xpath.split('/')
-    leaf = path[0]
+    part = path[0]
 
-    if leaf == "text()":
+    if part == '':
+        return node
+
+    if part == "text()":
         if node.text is None:
             return ""
         return node.text
 
-    if leaf == "geometry()":
+    if part == "geometry()":
         return node
 
-    if no_prefix(node.tag) == leaf:
-        return node
-    
-    if leaf.startswith("@"):
+    if part.startswith("@"):
         for an, av in node.attrib.iteritems():
-            if no_prefix(an) == leaf[1:]:
+            if no_prefix(an) == part[1:]:
                 return av
     
-    nodes = []
+    found = []
     for child in node:
-        if no_prefix(child.tag) == leaf:
-            if len(path) == 1:
-                nodes.append(child)
+        n_child_tag = no_prefix(child.tag)
+        if n_child_tag == part:
+            found.append(child)
+        elif part.endswith("[0]") and n_child_tag == part[0:-3]:
+            found.append(child)
+            # only retain the first child
+            break
+    nodes = []
+    for child in found:
+        p = resolve_xpath(child, '/'.join(path[1:]))
+        if p is not None:
+            if isinstance(p, list):
+                nodes.extend(p)
             else:
-                return resolve_xpath(child, '/'.join(path[1:]))
+                nodes.append(p)
 
-    if len(nodes) >= 1:
+    if len(nodes) == 0:
+        return None
+    elif len(nodes) == 1:
+        return nodes[0]
+    else:
         return nodes
-
-    # not found
-    return None
 
 def _populate(node, table, parent_id, tables_rows):
     if len(node.attrib) == 0 and len(node) == 0:
@@ -510,8 +518,8 @@ def _populate(node, table, parent_id, tables_rows):
             if not c.optional():
                 raise ValueError("Required value {} for element {} not found".format(c.xpath(), node.tag))
             continue
-        if isinstance(child, (str, unicode)):
-            v = child
+        if isinstance(child[0], (str, unicode)):
+            v = child[0]
         else:
             v = child[0].text
         row.append((c.name(), v))
@@ -524,7 +532,7 @@ def _populate(node, table, parent_id, tables_rows):
                 if not link.optional():
                     raise ValueError("Required child {} for element {} not found".format(link.xpath(), node.tag))
                 continue
-            child_id = _populate(child[0], link.ref_table(), current_id, tables_rows)
+            child_id = _populate(child, link.ref_table(), current_id, tables_rows)
             row.append((link.name() + "_id", child_id))
         else:
             children = resolve_xpath(node, link.xpath())
@@ -540,13 +548,12 @@ def _populate(node, table, parent_id, tables_rows):
         row.append((bl.ref_table().name() + "_id", parent_id))
 
     # geometry
-    geometries = table.geometries()
-    if len(geometries) > 0:
-        geom = geometries[0]
+    for geom in table.geometries():
         g_nodes = resolve_xpath(node, geom.xpath())
         if g_nodes is not None:
             g = ogr.CreateGeometryFromGML(ET.tostring(g_nodes))
-            row.append((geom.name(), ("GeomFromText('%s', %d)", g.ExportToWkt(), geom.srid())))
+            if g is not None:
+                row.append((geom.name(), ("GeomFromText('%s', %d)", g.ExportToWkt(), geom.srid())))
 
     return current_id
     

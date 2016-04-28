@@ -122,12 +122,38 @@ class TestModelBuilder(unittest.TestCase):
         tc = set(["Column<name/text(),TEXT>","Column<@id,TEXT>"])
         self.assertTableEqualRepr(model.tables()['MyHType'], tc)
 
-    def xtest_geom1(self):
+    def test_geom1(self):
         # schema with a geometry
-        model = load_gml_model(os.path.join(testdata_path, "t5.xml"), tempfile.gettempdir(), merge_sequences = True)
-        for table in model.tables().values():
-            print(table)
-        t = set(["Column<name/text(),TEXT>","Geometry<location/Point,Point(4326)>","Column<@id,None,autoincremented>"])
+        model = load_gml_model(os.path.join(testdata_path, "t5.xml"), tempfile.gettempdir(), merge_sequences = True, split_multi_geometries = False, share_geometries = False)
+        treprs = {'mma' : set(["Column<name/text(),TEXT>","Geometry<location_alt2/Point/geometry(),Point(4326)>","Link<location_alt(0-*),mma_location_alt>","Geometry<location[0]/Point/geometry(),Point(4326)>","Column<@id,None,autoincremented>"]),
+                 'mma_location_alt' : set(["BackLink<location_alt(mma)>","Column<@id,None,autoincremented>","Geometry<Point/geometry(),Point(4326)>"])}
+        for table_name, trepr in treprs.iteritems():
+            self.assertTableEqualRepr(model.tables()[table_name], trepr)
+            
+        # split multiple geometries
+        model = load_gml_model(os.path.join(testdata_path, "t5.xml"), tempfile.gettempdir(), merge_sequences = True, split_multi_geometries = True, share_geometries = False)
+        treprs = {'mma_location_alt2_Point' : set(["Geometry<geometry(),Point(4326)>","Column<@id,None,autoincremented>"]),
+                  'mma' : set(["Column<name/text(),TEXT>",
+                               "Link<location_alt(0-*),mma_location_alt>",
+                               "Link<location_alt2/Point(1-1),mma_location_alt2_Point>",
+                               "Link<location[0]/Point(1-1),mma_location0_Point>",
+                               "Column<@id,None,autoincremented>"]),
+                  'mma_location_alt' : set(["BackLink<location_alt(mma)>","Column<@id,None,autoincremented>","Geometry<Point/geometry(),Point(4326)>"])}
+        for table_name, trepr in treprs.iteritems():
+            self.assertTableEqualRepr(model.tables()[table_name], trepr)
+
+        # collect all geometries in a common table
+        model = load_gml_model(os.path.join(testdata_path, "t5.xml"), tempfile.gettempdir(), merge_sequences = True, share_geometries = True)
+        treprs = {'PointType' : set(["Geometry<geometry(),Point(4326)>","Column<@id,TEXT>"]),
+                  'mma' : set(["Column<name/text(),TEXT>",
+                               "Link<location_alt2/Point(1-1),PointType>",
+                               "Link<location_alt(0-*),mma_location_alt>",
+                               "Link<location_alt[0]/Point(1-1),PointType>",
+                               "Link<location[0]/Point(1-1),PointType>",
+                               "Column<@id,None,autoincremented>"]),
+                  'mma_location_alt' : set(["BackLink<location_alt(mma)>","Column<@id,None,autoincremented>","Link<Point(1-1),PointType>"])}
+        for table_name, trepr in treprs.iteritems():
+            self.assertTableEqualRepr(model.tables()[table_name], trepr)
 
 if __name__ == '__main__':
     unittest.main()

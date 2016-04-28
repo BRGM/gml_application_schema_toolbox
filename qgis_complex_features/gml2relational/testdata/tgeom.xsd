@@ -7,7 +7,8 @@
       <xs:sequence>
         <xs:element name="name" type="xs:string"/>
         <xs:element name="location" type="gml:PointPropertyType" maxOccurs="unbounded"/>
-        <xs:element name="location_alt" type="gml:PointType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="location_alt2" type="gml:PointPropertyType" minOccurs="0"/>
+        <xs:element name="location_alt" type="gml:PointPropertyType" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

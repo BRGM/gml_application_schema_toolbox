@@ -2,16 +2,23 @@
 <mma xmlns="http://myxsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml/3.2" xsi:schemaLocation="http://myxsd tgeom.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
   <name>Truc</name>
   <location>
-    <gml:Point srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+    <gml:Point id="1" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
       <gml:pos>50.796816076535 1.77303517272897</gml:pos>
     </gml:Point>
   </location>
-  <location>
-    <gml:Point srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+  <location_alt2>
+    <gml:Point id="2" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
       <gml:pos>50.796816076535 1.77303517272897</gml:pos>
     </gml:Point>
-  </location>
-  <location_alt srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
-    <gml:pos>50.796816076535 1.77303517272897</gml:pos>
+  </location_alt2>
+  <location_alt>
+    <gml:Point id="3" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+      <gml:pos>50.796816076535 1.77303517272897</gml:pos>
+    </gml:Point>
+  </location_alt>
+  <location_alt>
+    <gml:Point id="4" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+      <gml:pos>50.796816076535 1.77303517272897</gml:pos>
+    </gml:Point>
   </location_alt>
 </mma>
