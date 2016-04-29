@@ -109,7 +109,8 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
 
     def accept(self):
         is_remote, src = self.source()
-        QSettings("complex_features").setValue("is_remote", "false" if is_remote else "true")
+        print(is_remote, src)
+        QSettings("complex_features").setValue("is_remote", "true" if is_remote else "false")
         QSettings("complex_features").setValue("source_url", src)
         QSettings("complex_features").setValue("import_type", str(self.mImportTypeCombo.currentIndex()))
 
