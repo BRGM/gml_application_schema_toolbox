@@ -654,11 +654,9 @@ class URIResolver(object):
     def cache_uri(self, uri, parent_uri = '', lvl = 0):
         def mkdir_p(path):
             """Recursively create all subdirectories of a given path"""
-            print(path)
             drive, fullpath = os.path.splitdrive(path)
             drive += os.sep
             dirs = fullpath.split(os.sep)
-            print(dirs)
             if dirs[0] == '':
                 p = drive
                 dirs = dirs[1:]
@@ -666,9 +664,7 @@ class URIResolver(object):
                 p = ''
             for d in dirs:
                 p = os.path.join(p, d)
-                print(p)
                 if not os.path.exists(p):
-                    print("does not exist")
                     os.mkdir(p)
 
         self.__logger((lvl,"Resolving schema {} ({})... ".format(uri, parent_uri)))
