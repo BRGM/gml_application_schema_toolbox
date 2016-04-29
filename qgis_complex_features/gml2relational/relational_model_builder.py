@@ -446,13 +446,17 @@ def _build_table(node, table_name, type_info_dict, merge_max_depth, merge_sequen
                     f.set_xpath(n_child_tag + suffix + field.xpath())
                     table.add_field(f)
             else:
-                # FIXME substitution group
+                sgroup = None
+                if child_ti.abstract_type_info() is not None:
+                    sgroup = child_ti.abstract_type_info().name()
+                    print("substitution group", sgroup)
                 table.add_field(Link(n_child_tag,
                                      is_optional,
                                      child_ti.min_occurs(),
                                      child_ti.max_occurs(),
                                      ref_type = simple_child_type,
-                                     ref_table = child_table))
+                                     ref_table = child_table,
+                                     substitution_group = sgroup))
 
     return table
 
@@ -556,6 +560,9 @@ def _populate(node, table, parent_id, tables_rows):
                 if not link.optional():
                     raise ValueError("Required child {} for element {} not found".format(link.xpath(), node.tag))
                 continue
+            if isinstance(child, list):
+                if len(child) > link.max_occurs():
+                    raise ValueError("Element {} : {} children found for max {} expected".format(node.tag, len(child), link.max_occurs()))
             child_id = _populate(child, link.ref_table(), current_id, tables_rows)
             row.append((link.name() + "_id", child_id))
         else:

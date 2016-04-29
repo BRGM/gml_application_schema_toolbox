@@ -122,9 +122,9 @@ def _resolve_types(etree_node, ns_map, declaration, abstract_declaration, min_oc
             if ns is None:
                 raise RuntimeError("Can't find namespace {}".format(ns_name))
             child_ed = ns.elementDeclarations().get(c_name)
-            # llok for substitution group
+            # look for substitution group
             if child_ed is not None and child_ed.substitutionGroupAffiliation() is not None and child_ed.substitutionGroupAffiliation().name() in [c[0].name() for c in child_declarations]:
-                child_decl = [(child_ed, child_ed, 0, 1)]
+                child_decl = [(child_ed, child_ed.substitutionGroupAffiliation(), 0, 1)]
             else:
                 child_decl = [(ed, abs_ed, min_o, max_o) for ed, abs_ed, min_o, max_o in child_declarations if ed.name() == c_name]
             if len(child_decl) > 0:

@@ -62,7 +62,7 @@ def stream_sql_schema(tables):
             # XOR constraint
             c = [[l2.name() + u"_id IS " + ("NOT NULL" if l == l2 else "NULL") for l2 in links] for l in links]
             txt = u"(" + u") OR (".join([u" AND ".join(e) for e in c]) + u")"
-            columns.append(u"  CHECK (" + txt +u")")
+            columns.append(u"  CONSTRAINT {}_substitution CHECK (".format(sg) + txt +u")")
 
         stmt += u",\n".join(columns) + u");"
         yield(stmt)

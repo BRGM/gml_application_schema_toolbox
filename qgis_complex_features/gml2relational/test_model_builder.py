@@ -155,5 +155,11 @@ class TestModelBuilder(unittest.TestCase):
         for table_name, trepr in treprs.iteritems():
             self.assertTableEqualRepr(model.tables()[table_name], trepr)
 
+    def xtest_sg(self):
+        # schema with a substitution group
+        model = load_gml_model(os.path.join(testdata_path, "substitution_group.xml"), tempfile.gettempdir())
+        for tn, table in model.tables().iteritems():
+            print(table)
+
 if __name__ == '__main__':
     unittest.main()
