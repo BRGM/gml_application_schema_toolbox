@@ -18,9 +18,9 @@ class TestModelBuilder(unittest.TestCase):
         # trepr = set of Field's repr
         torig_repr = set([repr(f) for f in table.fields().values()])
         missing_fields = torig_repr - trepr
-        self.assertTrue(missing_fields == set(), "Missing fields : {} got {} expected {}".format(missing_fields, trepr, torig_repr))
+        self.assertTrue(missing_fields == set(), "Missing fields : {} got {} expected {}".format(missing_fields, torig_repr, trepr))
         new_fields = trepr - torig_repr
-        self.assertTrue(new_fields == set(), "New fields : {} got {} expected {}".format(new_fields, trepr, torig_repr))
+        self.assertTrue(new_fields == set(), "New fields : {} got {} expected {}".format(new_fields, torig_repr, trepr))
     
     def test_1a(self):
         model = load_gml_model(os.path.join(testdata_path, "t1.xml"), tempfile.gettempdir())
@@ -100,7 +100,7 @@ class TestModelBuilder(unittest.TestCase):
                  "Column<c/cdetails/name[0]/prefix/text(),TEXT,optional>",
                  "Column<c/type/text(),TEXT>",
                  "Column<b/text(),TEXT>",
-                 "Column<f/@attr2,INT>",
+                 "Column<f/@attr2,INT,optional>",
                  "Column<f/@attr1,TEXT,optional>",
                  "Column<e/text(),INT>",
                  "Column<@id,None,autoincremented>"])
@@ -109,10 +109,10 @@ class TestModelBuilder(unittest.TestCase):
     def test_4(self):
         # tables with ID => unmergeable
         model = load_gml_model(os.path.join(testdata_path, "t4.xml"), tempfile.gettempdir(), merge_sequences = True)
-        ta = set(["Link<g(0-1),a_g_t>",
-                  "Column<d/text(),TEXT>",
-                  "Link<h(0-1),MyHType>",
+        ta = set(["Column<d/text(),TEXT>",
                   "Column<c/cdetails/name[0]/prefix/text(),TEXT,optional>",
+                  'Link<g(0-1),a_g_t>',
+                  'Link<h(0-1),MyHType>',
                   "Column<c/type/text(),TEXT>","Column<b/text(),TEXT>",
                   "Column<e/text(),INT>",
                   "Column<@id,None,autoincremented>"])
@@ -125,7 +125,11 @@ class TestModelBuilder(unittest.TestCase):
     def test_geom1(self):
         # schema with a geometry
         model = load_gml_model(os.path.join(testdata_path, "t5.xml"), tempfile.gettempdir(), merge_sequences = True, split_multi_geometries = False, share_geometries = False)
-        treprs = {'mma' : set(["Column<name/text(),TEXT>","Geometry<location_alt2/Point/geometry(),Point(4326)>","Link<location_alt(0-*),mma_location_alt>","Geometry<location[0]/Point/geometry(),Point(4326)>","Column<@id,None,autoincremented>"]),
+        treprs = {'mma' : set(["Column<name/text(),TEXT>",
+                               "Geometry<location_alt2/Point/geometry(),Point(4326),optional>",
+                               "Link<location_alt(0-*),mma_location_alt>",
+                               "Geometry<location[0]/Point/geometry(),Point(4326)>",
+                               "Column<@id,None,autoincremented>"]),
                  'mma_location_alt' : set(["BackLink<location_alt(mma)>","Column<@id,None,autoincremented>","Geometry<Point/geometry(),Point(4326)>"])}
         for table_name, trepr in treprs.iteritems():
             self.assertTableEqualRepr(model.tables()[table_name], trepr)

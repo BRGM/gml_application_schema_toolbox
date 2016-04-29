@@ -14,8 +14,9 @@ def xpath_to_column_name(xpath):
     return "_".join(t)
 
 class Field:
-    def __init__(self, xpath):
+    def __init__(self, xpath, optional = False):
         self._xpath = xpath
+        self._optional = optional
 
     def xpath(self):
         return self._xpath
@@ -23,6 +24,10 @@ class Field:
         self._xpath = xpath
     def name(self):
         return xpath_to_column_name(self.xpath())
+    def optional(self):
+        return self._optional
+    def set_optional(self, optional):
+        self._optional = optional
 
     def __hash__(self):
         return self._xpath.__hash__()
@@ -31,8 +36,7 @@ class Link(Field):
     """A Link represents a link to another type/table"""
 
     def __init__(self, xpath, optional, min_occurs, max_occurs, ref_type, ref_table = None, substitution_group = None):
-        Field.__init__(self, xpath)
-        self.__optional = optional
+        Field.__init__(self, xpath, optional)
         self.__min_occurs = min_occurs
         self.__max_occurs = max_occurs
         self.__ref_type = ref_type # SQL type (str)
@@ -48,8 +52,6 @@ class Link(Field):
         return self.__ref_table
     def set_ref_table(self, ref_table):
         self.__ref_table = ref_table
-    def optional(self):
-        return self.__optional
     def min_occurs(self):
         return self.__min_occurs
     def max_occurs(self):
@@ -81,8 +83,7 @@ class Column(Field):
     """A Column is a (simple type) column"""
 
     def __init__(self, xpath, optional = False, ref_type = None, auto_incremented = False):
-        Field.__init__(self, xpath)
-        self.__optional = optional
+        Field.__init__(self, xpath, optional)
         self.__ref_type = ref_type
         self.__auto_incremented = auto_incremented
     def clone(self):
@@ -90,8 +91,6 @@ class Column(Field):
 
     def ref_type(self):
         return self.__ref_type
-    def optional(self):
-        return self.__optional
     def auto_incremented(self):
         return self.__auto_incremented
 
@@ -109,11 +108,10 @@ class Geometry(Field):
         :param srid: epsg code
         :param optional: is it optional
         """
-        Field.__init__(self, xpath)
+        Field.__init__(self, xpath, optional)
         self.__type = type
         self.__dim = dim
         self.__srid = srid
-        self.__optional = optional
     def clone(self):
         return Geometry(self.xpath(), self.type(), self.dimension(), self.srid(), self.optional())
 
@@ -123,10 +121,8 @@ class Geometry(Field):
         return self.__dim
     def srid(self):
         return self.__srid
-    def optional(self):
-        return self.__optional
     def __repr__(self):
-        return "Geometry<{},{}{}({}){}>".format(self.xpath(), self.type(), "Z" if self.dimension() == 3 else "", self.srid(), ",optional" if self.__optional else "")
+        return "Geometry<{},{}{}({}){}>".format(self.xpath(), self.type(), "Z" if self.dimension() == 3 else "", self.srid(), ",optional" if self.optional() else "")
 
 class Table:
     """A Table is a list of Columns or Links to other tables, a list of geometry columns and an id"""
