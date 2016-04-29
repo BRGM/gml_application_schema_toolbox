@@ -316,22 +316,25 @@ class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
         u = QgsDataSourceURI(layer.source())
         conn = sqlite3.connect(u.database())
         cur = conn.cursor()
-        cur.execute("SELECT * FROM meta")
-        ret = list(nil)
-        for r in cur:
-            if r[0] == 'complex_features':
-                ret[0] = r[1] == '1'
-            elif r[0] == 'xml_uri':
-                ret[1] = r[1]
-            elif r[0] == 'is_remote':
-                ret[2] = r[1] == '1'
-            elif r[0] == 'attributes':
-                ret[3] = json.loads(r[1])
-            elif r[0] == 'geom_mapping':
-                ret[4] = json.loads(r[1])
-            elif r[0] == 'output_filename':
-                ret[5] = r[1]
-        return ret
+        try:
+            cur.execute("SELECT * FROM meta")
+            ret = list(nil)
+            for r in cur:
+                if r[0] == 'complex_features':
+                    ret[0] = r[1] == '1'
+                elif r[0] == 'xml_uri':
+                    ret[1] = r[1]
+                elif r[0] == 'is_remote':
+                    ret[2] = r[1] == '1'
+                elif r[0] == 'attributes':
+                    ret[3] = json.loads(r[1])
+                elif r[0] == 'geom_mapping':
+                    ret[4] = json.loads(r[1])
+                elif r[0] == 'output_filename':
+                    ret[5] = r[1]
+            return ret
+        except sqlite3.OperationalError:
+            return False, None, None, None, None, None
 
     @staticmethod
     def is_layer_complex(layer):

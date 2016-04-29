@@ -68,7 +68,7 @@ def replace_layer(old_layer, new_layer):
     parent.insertLayer(idx, new_layer)
     QgsMapLayerRegistry.instance().removeMapLayer(old_layer)
 
-class DownloadProgress(QDialog):
+class ProgressDialog(QDialog):
     def __init__(self):
         QDialog.__init__(self, None)
         self.__label = QLabel(self)
@@ -156,6 +156,7 @@ class MainPlugin:
             output_filename = creation_dlg.output_filename()
             archive_dir = creation_dlg.archive_directory()
             merge_depth = creation_dlg.merge_depth()
+            merge_sequences = creation_dlg.merge_sequences()
 
             # temporary sqlite file
             tfile = QTemporaryFile()
@@ -166,17 +167,30 @@ class MainPlugin:
             if os.path.exists(output_filename):
                 os.unlink(output_filename)
 
-            self.p_widget = DownloadProgress()
+            self.p_widget = ProgressDialog()
             self.p_widget.show()
             def opener(uri):
                 self.p_widget.setText("Downloading {} ...".format(uri))
                 return remote_open_from_qgis(uri)
-            model = load_gml_model(url, archive_dir, [], merge_depth, opener)
+            def mylogger(t):
+                if isinstance(t, tuple):
+                    lvl, msg = t
+                else:
+                    msg = t
+                self.p_widget.setText(msg)
+                QCoreApplication.processEvents()
+            model = load_gml_model(url, archive_dir,
+                                   merge_max_depth = merge_depth,
+                                   merge_sequences = merge_sequences,
+                                   urlopener = opener,
+                                   logger = mylogger)
 
             self.p_widget.setText("Creating the Spatialite file ...")
+            QCoreApplication.processEvents()
             create_sqlite_from_model(model, output_filename)
 
             self.p_widget.setText("Creating the QGIS project ...")
+            QCoreApplication.processEvents()
             create_qgis_project_from_model(model, output_filename, project_file, QgsApplication.srsDbFilePath(), QGis.QGIS_VERSION)
             QgsProject.instance().setFileName(project_file)
             QgsProject.instance().read()

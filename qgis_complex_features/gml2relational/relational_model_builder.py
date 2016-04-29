@@ -449,7 +449,6 @@ def _build_table(node, table_name, type_info_dict, merge_max_depth, merge_sequen
                 sgroup = None
                 if child_ti.abstract_type_info() is not None:
                     sgroup = child_ti.abstract_type_info().name()
-                    print("substitution group", sgroup)
                 table.add_field(Link(n_child_tag,
                                      is_optional,
                                      child_ti.min_occurs(),
@@ -639,10 +638,18 @@ def uri_dirname(uri):
 def uri_join(uri, path):
     return os.path.join(uri, path)
 
+def default_logger(t):
+    if isinstance(t, tuple):
+        lvl, msg = t
+        logging.info(" "*lvl + msg)
+    else:
+        logging.info(t)
+
 class URIResolver(object):
-    def __init__(self, cachedir, urlopener = urllib2.urlopen):
+    def __init__(self, cachedir, logger = default_logger, urlopener = urllib2.urlopen):
         self.__cachedir = cachedir
         self.__urlopener = urlopener
+        self.__logger = logger
 
     def cache_uri(self, uri, parent_uri = '', lvl = 0):
         def mkdir_p(path):
@@ -658,7 +665,7 @@ class URIResolver(object):
                 if not os.path.exists(p):
                     os.mkdir(p)
 
-        logging.info(" "*lvl + "Resolving schema {} ({})... ".format(uri, parent_uri))
+        self.__logger((lvl,"Resolving schema {} ({})... ".format(uri, parent_uri)))
 
         if not uri.startswith('http://'):
             if not uri.startswith('/'):
@@ -721,7 +728,7 @@ def extract_features(doc):
     return nodes
 
 
-def load_gml_model(xml_file, archive_dir, xsd_files = None, merge_max_depth = 6, merge_sequences = False, share_geometries = False, split_multi_geometries = True, urlopener = urllib2.urlopen, use_cache_file = False):
+def load_gml_model(xml_file, archive_dir, xsd_files = None, merge_max_depth = 6, merge_sequences = False, share_geometries = False, split_multi_geometries = True, urlopener = urllib2.urlopen, use_cache_file = False, logger = default_logger):
     if xsd_files is None:
         xsd_files = []
 
@@ -736,7 +743,7 @@ def load_gml_model(xml_file, archive_dir, xsd_files = None, merge_max_depth = 6,
     root = features[0]
     root_ns, root_name = split_tag(root.tag)
 
-    uri_resolver = URIResolver(archive_dir, urlopener)
+    uri_resolver = URIResolver(archive_dir, logger, urlopener)
 
     parent_uri = os.path.dirname(xml_file)
 
@@ -760,9 +767,9 @@ def load_gml_model(xml_file, archive_dir, xsd_files = None, merge_max_depth = 6,
 
     tables = None
     tables_rows = {}
-    logging.info("Tables construction ...")
+    logger("Tables construction ...")
     for idx, node in enumerate(features):
-        logging.info("+ Feature #{}/{}".format(idx+1, len(features)))
+        logger("+ Feature #{}/{}".format(idx+1, len(features)))
         type_info_dict = resolve_types(node, ns_map)
         tables = build_tables(node, type_info_dict, tables, merge_max_depth, merge_sequences, share_geometries)
 
@@ -784,9 +791,9 @@ def load_gml_model(xml_file, archive_dir, xsd_files = None, merge_max_depth = 6,
         for table in new_tables:
             tables[table.name()] = table
                     
-    logging.info("Tables population ...")
+    logger("Tables population ...")
     for idx, node in enumerate(features):
-        logging.info("+ Feature #{}/{}".format(idx+1, len(features)))
+        logger("+ Feature #{}/{}".format(idx+1, len(features)))
         type_info_dict = resolve_types(node, ns_map)
         _populate(node, tables[root_name], None, tables_rows)
         

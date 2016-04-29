@@ -154,3 +154,6 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
 
     def merge_depth(self):
         return self.mMergeDepthSpin.value()
+
+    def merge_sequences(self):
+        return self.mergeSequencesChk.isChecked()
