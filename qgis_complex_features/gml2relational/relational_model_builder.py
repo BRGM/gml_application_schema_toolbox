@@ -370,12 +370,13 @@ def _build_table(node, table_name, type_info_dict, merge_max_depth, merge_sequen
 
         au = ti.attribute_type_info_map().get(attr_name)
         if au is not None:
-            ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition())
+            c = Column("@" + n_attr_name,
+                       ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition()),
+                       optional = not au.required())
         else:
-            ref_type = "TEXT"
-        c = Column("@" + n_attr_name,
-                   ref_type = ref_type,
-                   optional = not au.required())
+            c = Column("@" + n_attr_name,
+                       ref_type = "TEXT",
+                       optional = True)
         table.add_field(c)
         if n_attr_name == "id":
             uid_column = c
