@@ -654,23 +654,32 @@ class URIResolver(object):
     def cache_uri(self, uri, parent_uri = '', lvl = 0):
         def mkdir_p(path):
             """Recursively create all subdirectories of a given path"""
-            dirs = path.split('/')
+            print(path)
+            drive, fullpath = os.path.splitdrive(path)
+            drive += os.sep
+            dirs = fullpath.split(os.sep)
+            print(dirs)
             if dirs[0] == '':
-                p = '/'
+                p = drive
                 dirs = dirs[1:]
             else:
                 p = ''
             for d in dirs:
                 p = os.path.join(p, d)
+                print(p)
                 if not os.path.exists(p):
+                    print("does not exist")
                     os.mkdir(p)
 
         self.__logger((lvl,"Resolving schema {} ({})... ".format(uri, parent_uri)))
 
         if not uri.startswith('http://'):
-            if not uri.startswith('/'):
+            if not os.path.isabs(uri):
                 # relative file name
-                uri = os.path.join(parent_uri, uri)
+                if not parent_uri.startswith('http://'):
+                    uri = os.path.join(parent_uri, uri)
+                else:
+                    uri = parent_uri + "/" + uri.replace(os.sep, "/")
             if os.path.exists(uri):
                 return uri
 
@@ -678,7 +687,7 @@ class URIResolver(object):
 
         out_file_name = uri
         if uri.startswith('http://'):
-            out_file_name = uri[7:]
+            out_file_name = uri[7:].replace('/', os.sep)
         out_file_name = os.path.join(self.__cachedir, out_file_name)
         if os.path.exists(out_file_name):
             return out_file_name

@@ -22,9 +22,9 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
         self.replaceLayerChck.setEnabled(xml_uri is not None)
         if xml_uri is not None:
             if is_remote:
-                self.urlText.setText(xml_uri)
+                self.urlText.setText(QDir.fromNativeSeparators(xml_uri))
             else:
-                self.filenameText.setText(xml_uri)
+                self.filenameText.setText(QDir.fromNativeSeparators(xml_uri))
             self.replaceLayerChck.setCheckState(Qt.Checked)
 
             for aname, v in attributes.iteritems():
@@ -38,21 +38,21 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
             self.geometryColumnCheck.setChecked(True)
             self.geometryColumnEdit.setText(geometry_mapping)
 
-            self.outFilenameText.setText(output_filename)
+            self.outFilenameText.setText(QDir.fromNativeSeparators(output_filename))
 
         else:
             # new dialog
             is_remote = QSettings("complex_features").value("is_remote", "false") == "true"
             source_url = QSettings("complex_features").value("source_url", "")
             if is_remote:
-                self.urlText.setText(source_url)
+                self.urlText.setText(QDir.fromNativeSeparators(source_url))
             else:
-                self.filenameText.setText(source_url)
+                self.filenameText.setText(QDir.fromNativeSeparators(source_url))
             
             # output file name
             import tempfile
             f = tempfile.NamedTemporaryFile()
-            self.outFilenameText.setText(f.name)
+            self.outFilenameText.setText(QDir.fromNativeSeparators(f.name))
             f.close()
 
             import_type = int(QSettings("complex_features").value("import_type", "0"))
@@ -108,8 +108,9 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
         self.attributeTable.removeRow(idx.row())
 
     def accept(self):
-        QSettings("complex_features").setValue("is_remote", "false" if self.filenameRadio.isChecked() else "true")
-        QSettings("complex_features").setValue("source_url", self.filenameText.text() if self.filenameRadio.isChecked() else self.urlText.text())
+        is_remote, src = self.source()
+        QSettings("complex_features").setValue("is_remote", "false" if is_remote else "true")
+        QSettings("complex_features").setValue("source_url", src)
         QSettings("complex_features").setValue("import_type", str(self.mImportTypeCombo.currentIndex()))
 
         QDialog.accept(self)
@@ -139,18 +140,18 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
     def source(self):
         """Returns a pair (isRemote:bool, url:str)"""
         if self.filenameRadio.isChecked():
-            return (False, self.filenameText.text())
+            return (False, QDir.toNativeSeparators(self.filenameText.text()))
         #else
-        return (True, self.urlText.text())
+        return (True, QDir.toNativeSeparators(self.urlText.text()))
 
     def replace_current_layer(self):
         return self.replaceLayerChck.isChecked()
 
     def output_filename(self):
-        return self.outFilenameText.text()
+        return QDir.toNativeSeparators(self.outFilenameText.text())
 
     def archive_directory(self):
-        return self.mArchiveDirEdit.text()
+        return QDir.toNativeSeparators(self.mArchiveDirEdit.text())
 
     def merge_depth(self):
         return self.mMergeDepthSpin.value()

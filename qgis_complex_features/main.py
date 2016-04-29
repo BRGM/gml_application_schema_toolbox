@@ -10,13 +10,14 @@ from qgis.gui import *
 import os
 
 import platform
-package_path = ["whl/all"]
+package_path = [os.path.join(os.path.dirname(__file__), "whl", "all")]
 if platform.architecture() == ('64bit', 'WindowsPE'):
     package_path.append(os.path.join(os.path.dirname(__file__), "whl", "win64"))
 elif platform.architecture() == ('32bit', 'WindowsPE'):
     package_path.append(os.path.join(os.path.dirname(__file__), "whl", "win32"))
 import sys
-sys.path.extend(package_path)
+if not set(package_path).issubset(set(sys.path)):
+    sys.path = package_path + sys.path
 
 from lxml import etree
 
