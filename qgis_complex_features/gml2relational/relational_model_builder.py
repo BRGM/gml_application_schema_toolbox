@@ -538,15 +538,18 @@ def _populate(node, table, parent_id, tables_rows):
     for attr_name, attr_value in node.attrib.iteritems():
         ns, n_attr_name = split_tag(attr_name)
         if n_attr_name in [c.name() for c in attr_cols]:
-            row.append((n_attr_name, attr_value))
             if n_attr_name == "id":
                 current_id = attr_value
-    if current_id is None:
-        if table.has_autoincrement_id():
-            current_id = table.increment_id()
-            row.append(("id", current_id))
-        else:
-            raise RuntimeError("No id for node {} in table {} {}".format(node.tag, table.name(), table))
+                if not table.has_autoincrement_id():
+                    row.append(("id", attr_value))
+            else:
+                row.append((n_attr_name, attr_value))
+
+    if table.has_autoincrement_id():
+        current_id = table.increment_id()
+        row.append(("id", current_id))
+    elif current_id is None:
+        raise RuntimeError("No id for node {} in table {} {}".format(node.tag, table.name(), table))
 
     # columns
     cols = [c for c in table.columns() if not c.xpath().startswith('@')]
