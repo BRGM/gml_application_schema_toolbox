@@ -173,138 +173,6 @@ def _merged_columns(node, prefix, type_info_dict):
 
     return columns
 
-def _build_tables2(node, table_name, type_info_dict, tables, merge_max_depth):
-    """
-    :param node: the DOM node
-    :param table_name: the table name corresponding to this node
-    :param type_info_dict: dict that gives type information on a node
-    :param tables: the input/output dict {table_name: Table}
-    :param merge_max_depth: the maximum depth to consider when tables are merged
-    """
-    if len(node.attrib) == 0 and len(node) == 0:
-        # empty table
-        return None
-
-    table = tables.get(table_name)
-    if table is None:
-        table = Table(table_name)
-        tables[table_name] = table
-
-    uid_column = None
-    ti = type_info_dict[node]
-    current_id = None
-    #--------------------------------------------------
-    # attributes
-    #--------------------------------------------------
-    for attr_name, attr_value in node.attrib.iteritems():
-        ns, n_attr_name = split_tag(attr_name)
-        if ns == "http://www.w3.org/2001/XMLSchema-instance":
-            continue
-
-        au = ti.attribute_type_info_map()[attr_name]
-        if not table.has_field(n_attr_name):
-            c = Column("@" + n_attr_name,
-                       ref_type = simple_type_to_sql_type(au.attributeDeclaration().typeDefinition()),
-                       optional = not au.required())
-            table.add_field(c)
-            if n_attr_name == "id":
-                uid_column = c
-
-    # id column
-    if table.uid_column() is None:
-        if uid_column is None:
-            table.set_autoincrement_id()
-        else:
-            table.set_uid_column(uid_column)
-
-    #--------------------------------------------------
-    # child elements
-    #--------------------------------------------------
-    # in a sequence ?
-    in_seq = False
-    # tag of the sequence
-    last_tag = None
-    for child in node:
-        child_ti = type_info_dict[child]
-        child_td = child_ti.type_info().typeDefinition()
-        n_child_tag = no_prefix(child.tag)
-
-        in_seq = n_child_tag == last_tag
-        last_tag = n_child_tag
-
-        is_optional = child_ti.min_occurs() == 0 or child_ti.type_info().nillable()
-        if is_simple(child_td):
-            if not in_seq:
-                # simple type, 1:1 cardinality => column
-                if not table.has_field(n_child_tag):
-                    table.add_field(Column(n_child_tag,
-                                           ref_type = simple_type_to_sql_type(child_td),
-                                           optional = is_optional))
-            else:
-                # simple type, 1:N cardinality => table
-                child_table_name = no_prefix(node.tag) + "_" + no_prefix(child.tag)
-                for f in table.columns():
-                    if f.xpath().startswith(n_child_tag):
-                        # this column is now part of a sequence, remove the column
-                        # a link will be created
-                        table.remove_field(f.name())
-
-                if not table.has_field(n_child_tag):
-                    child_table = Table(child_table_name, [Column("text()", ref_type = simple_type_to_sql_type(child_td))])
-                    tables[child_table_name] = child_table
-                    table.add_field(Link(n_child_tag,
-                                         is_optional,
-                                         child_ti.min_occurs(),
-                                         child_ti.max_occurs(),
-                                         simple_type_to_sql_type(child_td), child_table))
-
-        elif is_derived_from(child_td, "AbstractGeometryType"):
-            # add geometry
-            if not table.has_field(n_child_tag):
-                gtype, gdim, gsrid = gml_geometry_type(child)
-                table.add_field(Geometry(n_child_tag, gtype, gdim, gsrid))
-
-        else:
-            has_id = any([1 for n in child.attrib.keys() if no_prefix(n) == "id"])
-            if has_id:
-                # shared table
-                child_table_name = child_td.name() or no_prefix(node.tag) + "_t"
-            else:
-                child_table_name = table_name + "_"  + no_prefix(child.tag)
-            if not in_seq:
-                # 1:1 cardinality
-                r = _simple_cardinality_size(child, type_info_dict)
-                if r is not None and r[0] > 0 and r[1] < merge_max_depth:
-                    child_columns = _merged_columns(child, "", type_info_dict)
-                    for c in child_columns:
-                        if not table.has_field(c.name()):
-                            table.add_field(c)
-                else:
-                    _build_tables(child, child_table_name, type_info_dict, tables, merge_max_depth)
-            else:
-                for f in table.columns():
-                    if f.xpath().startswith(n_child_tag):
-                        # this (potentially merged) column is now part of a sequence, remove the column
-                        # a link will be created
-                        table.remove_field(f.name())
-                # 1:N cardinality
-                _build_tables(child, child_table_name, type_info_dict, tables, merge_max_depth)
-
-            child_table = tables.get(child_table_name)
-            if child_table is not None: # may be None if the child_table is empty
-                # create link
-                if not table.has_field(n_child_tag):
-                    sgroup = None
-                    if child_ti.abstract_type_info() is not None:
-                        sgroup = child_ti.abstract_type_info().name()
-                    table.add_field(Link(n_child_tag,
-                                         is_optional,
-                                         child_ti.min_occurs(),
-                                         child_ti.max_occurs(),
-                                         None,
-                                         child_table,
-                                         substitution_group = sgroup))
-
 def merge_tables(table1, table2):
     table1_fields = set(table1.fields().values())
     table2_fields = set(table2.fields().values())
@@ -566,21 +434,18 @@ def build_tables(root_node, type_info_dict, tables, merge_max_depth, merge_seque
     if tables is None:
         tables = {}
     table_name = no_prefix(root_node.tag)
-    if False:
-        _build_tables(root_node, table_name, type_info_dict, tables, merge_max_depth)
-    else:
-        table = _build_table(root_node, table_name, type_info_dict, merge_max_depth, merge_sequences, share_geometries)
-        def collect_tables(table, tables):
-            t = [table]
-            tables[table.name()] = table
-            for link in table.links():
-                etable = tables.get(link.ref_table().name())
-                if etable is not None:
-                    ntable = merge_tables(etable, link.ref_table())
-                    link.set_ref_table(ntable)
-                t.extend(collect_tables(link.ref_table(), tables))
-            return t
-        collect_tables(table, tables)
+    table = _build_table(root_node, table_name, type_info_dict, merge_max_depth, merge_sequences, share_geometries)
+    def collect_tables(table, tables):
+        t = [table]
+        tables[table.name()] = table
+        for link in table.links():
+            etable = tables.get(link.ref_table().name())
+            if etable is not None:
+                ntable = merge_tables(etable, link.ref_table())
+                link.set_ref_table(ntable)
+            t.extend(collect_tables(link.ref_table(), tables))
+        return t
+    collect_tables(table, tables)
 
     # create backlinks
     for name, table in tables.iteritems():
