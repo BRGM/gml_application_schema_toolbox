@@ -1,5 +1,13 @@
+import logging
+
 from xml_utils import no_prefix, split_tag, prefix
+from gml_utils import extract_features
 from pyxb.xmlschema.structures import Schema, ElementDeclaration, ComplexTypeDefinition, Particle, ModelGroup, SimpleTypeDefinition, Wildcard, AttributeUse, AttributeDeclaration
+from schema_parser import parse_schemas
+
+import urllib2
+import os
+import xml.etree.ElementTree as ET
 
 def _xsd_isinstance(type, base_type):
     """Returns True if the type (ComplexTypeDefinition) derives from the base_type"""
@@ -147,3 +155,113 @@ def resolve_types(root_node, ns_map):
     _resolve_types(root_node, ns_map, decl, None, 1, 1, type_info_dict)
     return type_info_dict
 
+def uri_dirname(uri):
+    if uri.startswith('http://'):
+        return "http://" + os.path.dirname(uri[7:])
+    return os.path.dirname(uri)
+
+class URIResolver(object):
+    def __init__(self, cachedir, logger, urlopener):
+        self.__cachedir = cachedir
+        self.__urlopener = urlopener
+        self.__logger = logger
+
+    def cache_uri(self, uri, parent_uri = '', lvl = 0):
+        def mkdir_p(path):
+            """Recursively create all subdirectories of a given path"""
+            drive, fullpath = os.path.splitdrive(path)
+            drive += os.sep
+            dirs = fullpath.split(os.sep)
+            if dirs[0] == '':
+                p = drive
+                dirs = dirs[1:]
+            else:
+                p = ''
+            for d in dirs:
+                p = os.path.join(p, d)
+                if not os.path.exists(p):
+                    os.mkdir(p)
+
+        self.__logger((lvl,"Resolving schema {} ({})... ".format(uri, parent_uri)))
+
+        if not uri.startswith('http://'):
+            if not os.path.isabs(uri):
+                # relative file name
+                if not parent_uri.startswith('http://'):
+                    uri = os.path.join(parent_uri, uri)
+                else:
+                    uri = parent_uri + "/" + uri.replace(os.sep, "/")
+            if os.path.exists(uri):
+                return uri
+
+        base_uri = uri_dirname(uri)
+
+        out_file_name = uri
+        if uri.startswith('http://'):
+            out_file_name = uri[7:].replace('/', os.sep)
+        out_file_name = os.path.join(self.__cachedir, out_file_name)
+        if os.path.exists(out_file_name):
+            return out_file_name
+
+        f = self.__urlopener(uri)
+        mkdir_p(os.path.dirname(out_file_name))
+        fo = open(out_file_name, "w")
+        fo.write(f.read())
+        fo.close()
+        f.close()
+
+        # process imports
+        doc = ET.parse(out_file_name)
+        root = doc.getroot()
+
+        for child in root:
+            n_child_tag = no_prefix(child.tag)
+            if n_child_tag == "import" or n_child_tag == "include":
+                for an, av in child.attrib.iteritems():
+                    if no_prefix(an) == "schemaLocation":
+                        self.cache_uri(av, base_uri, lvl+2)
+        return out_file_name
+    
+    def data_from_uri(self, uri):
+        out_file_name = self.cache_uri(uri)
+        f = open(out_file_name)
+        return f.read()
+
+
+def load_schemas_and_resolve_types(xml_file, archive_dir, xsd_files = None, urlopener = None, logger = None):
+    if xsd_files is None:
+        xsd_files = []
+    if urlopener is None:
+        urlopener = urllib2.urlopen
+    if logger is None:
+        logger = default_logger
+
+    doc = ET.parse(xml_file)
+    features = extract_features(doc)
+    root = features[0]
+    root_ns, root_name = split_tag(root.tag)
+
+    uri_resolver = URIResolver(archive_dir, logger, urlopener)
+
+    parent_uri = os.path.dirname(xml_file)
+
+    if len(xsd_files) == 0:
+        # try to download schemas
+        root = doc.getroot()
+        for an, av in root.attrib.iteritems():
+            if no_prefix(an) == "schemaLocation":
+                avs = av.split()
+                for ns_name, ns_uri in zip(avs[0::2], avs[1::2]):
+                    if ns_name not in ['http://www.opengis.net/wfs']:
+                        xsd_files.append(uri_resolver.cache_uri(ns_uri, parent_uri))
+
+    if len(xsd_files) == 0:
+        raise RuntimeError("No schema found")
+
+    ns_map = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
+
+    ns = ns_map[root_ns]
+
+    return [(node, resolve_types(node, ns_map)) for node in features]
+
+    

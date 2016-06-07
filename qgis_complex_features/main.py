@@ -9,20 +9,13 @@ from qgis.gui import *
 
 import os
 
-import platform
 package_path = [os.path.join(os.path.dirname(__file__), "whl", "all")]
-if platform.architecture() == ('64bit', 'WindowsPE'):
-    package_path.append(os.path.join(os.path.dirname(__file__), "whl", "win64"))
-elif platform.architecture() == ('32bit', 'WindowsPE'):
-    package_path.append(os.path.join(os.path.dirname(__file__), "whl", "win32"))
 import sys
 if not set(package_path).issubset(set(sys.path)):
     sys.path = package_path + sys.path
 
-from lxml import etree
-
 from qgis_urlopener import remote_open_from_qgis
-from complex_features import ComplexFeatureSource, noPrefix, load_complex_gml, properties_from_layer, is_layer_complex
+from complex_features import ComplexFeatureSource, load_complex_gml, properties_from_layer, is_layer_complex
 from identify_dialog import IdentifyDialog
 from creation_dialog import CreationDialog
 from table_dialog import TableDialog
@@ -80,11 +73,6 @@ class ProgressDialog(QDialog):
 
     def setText(self, text):
         self.__label.setText(text)
-
-class MyResolver(etree.Resolver):
-    def resolve(self, url, id, context):
-        print url
-        return etree.Resolver.resolve( self, url, id, context )
 
 class MainPlugin:
 

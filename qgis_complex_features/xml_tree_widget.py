@@ -4,18 +4,26 @@ from PyQt4 import QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-from lxml import etree
+import xml.etree.ElementTree as ET
 
-from complex_features import noPrefix, load_complex_gml, is_layer_complex, remote_open_from_qgis
+from complex_features import load_complex_gml, is_layer_complex, remote_open_from_qgis
+from gml2relational.xml_utils import no_prefix, split_tag, xml_parse, xml_parse_from_string
 
 from qgis.core import QgsMapLayerRegistry
 
-def fill_tree_with_element(widget, treeItem, elt):
+def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}):
+    """
+    :param widget: the QTreeWidget
+    :param treeItem: a QTreeWidgetItem to fill
+    :param elt: the XML node
+    :param ns_imap: an "inverse" namespace map { uri : prefix }
+    """
     # tag
-    if elt.prefix:
-        treeItem.setText(0, elt.prefix + ':' + noPrefix(elt.tag))
+    ns, tag = split_tag(elt.tag)
+    if ns and ns_imap.get(ns):
+        treeItem.setText(0, ns_imap[ns] + ":" + tag)
     else:
-        treeItem.setText(0, noPrefix(elt.tag))
+        treeItem.setText(0, tag)
     f = treeItem.font(0)
     f.setBold(True)
     treeItem.setFont(0,f)
@@ -28,12 +36,13 @@ def fill_tree_with_element(widget, treeItem, elt):
             i = k.index('}')
             ns = k[1:i]
             # get ns prefix from ns uri
-            if ns in elt.nsmap.values():
-                n = elt.nsmap.keys()[elt.nsmap.values().index(ns)] + ":" + k[i+1:]
+            p = ns_imap.get(ns)
+            if p is not None:
+                n = p + ":" + k[i+1:]
             else:
                 n = k[i+1:]
         else:
-            n = noPrefix(k)
+            n = no_prefix(k)
         child.setText(0, "@" + n)
         if n == 'xlink:href' and v.startswith('http'):
             html = QLabel(widget)
@@ -51,11 +60,9 @@ def fill_tree_with_element(widget, treeItem, elt):
         
     # children
     for xmlChild in elt:
-        if isinstance(xmlChild, etree._Comment):
-            continue
         child = QTreeWidgetItem()
         treeItem.addChild(child)
-        fill_tree_with_element(widget, child, xmlChild)
+        fill_tree_with_element(widget, child, xmlChild, ns_imap)
 
 def recurse_expand(treeItem):
     treeItem.setExpanded(True)
@@ -68,10 +75,13 @@ def fill_tree_with_xml(treeWidget, xml):
     :param treeWidget: a QTreeWidget
     :param xml: the XML content, as string
     """
-    tree = etree.XML(xml)
+    doc, ns_map = xml_parse_from_string(xml)
     treeWidget.clear()
     treeWidget.setColumnCount(2)
-    fill_tree_with_element(treeWidget, treeWidget.invisibleRootItem(), tree)
+    ns_imap = {}
+    for k, v in ns_map.iteritems():
+        ns_imap[v] = k
+    fill_tree_with_element(treeWidget, treeWidget.invisibleRootItem(), doc.getroot(), ns_imap)
     recurse_expand(treeWidget.invisibleRootItem())
     treeWidget.resizeColumnToContents(0)
     treeWidget.resizeColumnToContents(1)
@@ -165,14 +175,17 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         try:
             f = remote_open_from_qgis(uri)
             try:
-                xml = etree.parse(f)
-            except etree.XMLSyntaxError:
+                doc, ns_map = xml_parse(f)
+            except ParseError:
                 # probably not an XML
                 QApplication.restoreOverrideCursor()
                 QMessageBox.warning(self, "XML parsing error", "The external resource is not a well formed XML")
                 return
 
-            fill_tree_with_element(self, item.parent(), xml.getroot())
+            ns_imap = {}
+            for k, v in ns_map.iteritems():
+                ns_imap[v] = k
+            fill_tree_with_element(self, item.parent(), doc.getroot(), ns_imap)
         finally:
             QApplication.restoreOverrideCursor()
 

@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from lxml import etree
+import xml.etree.ElementTree as ET
+
 from osgeo import ogr
 from PyQt4.QtCore import QVariant
 
@@ -11,18 +12,16 @@ from pyspatialite import dbapi2 as sqlite3
 
 from qgis_urlopener import remote_open_from_qgis
 
-import re
+from gml2relational.xml_utils import no_prefix, split_tag, resolve_xpath, xml_parse
+from gml2relational.gml_utils import extract_features
 
-def noPrefix(tag):
-    if tag.startswith('{'):
-        return tag[tag.rfind('}')+1:]
-    return tag
+import re
 
 def wkbFromGml(tree):
     # extract the srid
     srid = None
     for k, v in tree.attrib.iteritems():
-        if noPrefix(k) == 'srsName':
+        if no_prefix(k) == 'srsName':
             # EPSG:4326
 		  	# urn:EPSG:geographicCRS:4326
 		  	# urn:ogc:def:crs:EPSG:4326
@@ -37,16 +36,17 @@ def wkbFromGml(tree):
             break
             
     # call ogr for GML parsing
-    s = etree.tostring(tree)
+    s = ET.tostring(tree)
     g = ogr.CreateGeometryFromGML(s)
     return (g.ExportToWkb(), srid)
 
 def extractGmlGeometry(tree):
-    if tree.prefix == "gml":
-        if noPrefix(tree.tag) in ["Point", "LineString", "Polygon",
-                                  "MultiPoint", "MultiCurve", "MultiSurface",
-                                  "Curve", "OrientableCurve", "Surface", 
-                                  "CompositeCurve", "CompositeSurface", "MultiGeometry"]:
+    ns, tag = split_tag(tree.tag)
+    if ns.startswith('http://www.opengis.net/gml'):
+        if tag in ["Point", "LineString", "Polygon",
+                   "MultiPoint", "MultiCurve", "MultiSurface",
+                   "Curve", "OrientableCurve", "Surface", 
+                   "CompositeCurve", "CompositeSurface", "MultiGeometry"]:
             return wkbFromGml(tree)
         
     for child in tree:
@@ -56,7 +56,8 @@ def extractGmlGeometry(tree):
     return None
 
 def extractGmlFromXPath(tree, xpath):
-    r = tree.xpath("./" + xpath, namespaces = tree.nsmap)
+    #r = tree.xpath("./" + xpath, namespaces = tree.nsmap)
+    r = resolve_xpath(tree, xpath)
     if len(r) > 0:
         return wkbFromGml(r[0])
     return None
@@ -70,20 +71,9 @@ class ComplexFeatureSource:
         :param xpath_mapping: A mapping of XPath expressions to attributes. Example: { 'attribute' : ('//xpath/expression', QVariant.Int) }
         :param geometry_mapping: An XPath expression used to extract the geometry
         """
-        doc = etree.parse(xml)
-        root = doc.getroot()
-        if noPrefix(root.tag) != 'FeatureCollection':
-            # this seems to be an isolated feature
-            self.features = [root]
-            self.title = noPrefix(root.tag)
-        else:
-            self.features = root.xpath("/wfs:FeatureCollection/wfs:member/*", namespaces = root.nsmap)
-            if len(self.features) == 0:
-                self.features = root.xpath("/wfs:FeatureCollection/gml:featureMembers/*", namespaces = root.nsmap)
-                if len(self.features) == 0:
-                    raise RuntimeError("Unrecognized XML file")
-
-            self.title = noPrefix(self.features[0].tag)
+        doc, _ = xml_parse(xml)
+        self.features = extract_features(doc)
+        self.title = no_prefix(self.features[0].tag)
 
         self.xpath_mapping = xpath_mapping
         self.geometry_mapping = geometry_mapping
@@ -97,10 +87,9 @@ class ComplexFeatureSource:
         for feature in self.features:
             # get the id from gml:identifier
             fid = unicode(i)
-            if feature.nsmap.has_key('gml'):
-                x = feature.xpath(".//gml:identifier/text()", namespaces = feature.nsmap)
-                if len(x) > 0:
-                    fid = unicode(x[0])
+            f_ns, f_tag = split_tag(feature.tag)
+            if f_ns.startswith('http://www.opengis.net/gml') and f_tag == 'identifier':
+                fid = feature.text
 
             # get the geometry
             if self.geometry_mapping:
@@ -113,7 +102,8 @@ class ComplexFeatureSource:
             for attr, xpath_t in self.xpath_mapping.iteritems():
                 xpath, type = xpath_t
                 # resolve xpath
-                r = feature.xpath("./" + xpath, namespaces = feature.nsmap)
+                #r = feature.xpath("./" + xpath, namespaces = feature.nsmap)
+                r = resolve_xpath(feature, xpath)
                 v = None
                 value = None
                 if len(r) > 0:
@@ -121,7 +111,7 @@ class ComplexFeatureSource:
                         v = r[0]
                     if isinstance(r[0], str):
                         v = unicode(r[0])
-                    elif isinstance(r[0], etree._Element):
+                    elif isinstance(r[0], ET.Element):
                         v = r[0].text
                     else:
                         v = None
@@ -204,7 +194,7 @@ class ComplexFeatureLoader:
                 if qgsgeom:
                     f.setGeometry(qgsgeom)
                 f.setAttribute("id", fid)
-                f.setAttribute("_xml_", etree.tostring(xml))
+                f.setAttribute("_xml_", ET.tostring(xml))
                 for k, v in attrs.iteritems():
                     r = f.setAttribute(k, v)
                 pr.addFeatures([f])

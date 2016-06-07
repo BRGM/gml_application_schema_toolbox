@@ -1,10 +1,9 @@
 from __future__ import print_function
 import logging
-from xml_utils import split_tag, no_prefix
+from xml_utils import split_tag, no_prefix, resolve_xpath
 from pyxb.xmlschema.structures import Schema, ElementDeclaration, ComplexTypeDefinition, Particle, ModelGroup, SimpleTypeDefinition, Wildcard, AttributeUse, AttributeDeclaration
-from schema_parser import parse_schemas
-from type_resolver import resolve_types
 from relational_model import *
+from type_resolver import load_schemas_and_resolve_types
 
 import urllib2
 import os
@@ -470,54 +469,6 @@ def _build_table(node, table_name, type_info_dict, merge_max_depth, merge_sequen
 
     return table
 
-def resolve_xpath(node, xpath):
-    path = xpath.split('/')
-    part = path[0]
-
-    if part == '':
-        return node
-
-    if part == "text()":
-        if node.text is None:
-            return ""
-        return node.text
-
-    if part == "geometry()":
-        return node
-
-    if part.startswith("@"):
-        for an, av in node.attrib.iteritems():
-            if no_prefix(an) == part[1:]:
-                return av
-
-    if part == no_prefix(node.tag):
-        return resolve_xpath(node, '/'.join(path[1:]))
-    
-    found = []
-    for child in node:
-        n_child_tag = no_prefix(child.tag)
-        if n_child_tag == part:
-            found.append(child)
-        elif part.endswith("[0]") and n_child_tag == part[0:-3]:
-            found.append(child)
-            # only retain the first child
-            break
-    nodes = []
-    for child in found:
-        p = resolve_xpath(child, '/'.join(path[1:]))
-        if p is not None:
-            if isinstance(p, list):
-                nodes.extend(p)
-            else:
-                nodes.append(p)
-
-    if len(nodes) == 0:
-        return None
-    elif len(nodes) == 1:
-        return nodes[0]
-    else:
-        return nodes
-
 def _populate(node, table, parent_id, tables_rows):
     if len(node.attrib) == 0 and len(node) == 0 and node.text is None:
         # empty table
@@ -644,11 +595,6 @@ def build_tables(root_node, type_info_dict, tables, merge_max_depth, merge_seque
 def uri_is_absolute(uri):
     return uri.startswith('http://') or os.path.isabs(uri)
 
-def uri_dirname(uri):
-    if uri.startswith('http://'):
-        return "http://" + os.path.dirname(uri[7:])
-    return os.path.dirname(uri)
-
 def uri_join(uri, path):
     return os.path.join(uri, path)
 
@@ -659,137 +605,30 @@ def default_logger(t):
     else:
         logging.info(t)
 
-class URIResolver(object):
-    def __init__(self, cachedir, logger = default_logger, urlopener = urllib2.urlopen):
-        self.__cachedir = cachedir
-        self.__urlopener = urlopener
-        self.__logger = logger
 
-    def cache_uri(self, uri, parent_uri = '', lvl = 0):
-        def mkdir_p(path):
-            """Recursively create all subdirectories of a given path"""
-            drive, fullpath = os.path.splitdrive(path)
-            drive += os.sep
-            dirs = fullpath.split(os.sep)
-            if dirs[0] == '':
-                p = drive
-                dirs = dirs[1:]
-            else:
-                p = ''
-            for d in dirs:
-                p = os.path.join(p, d)
-                if not os.path.exists(p):
-                    os.mkdir(p)
-
-        self.__logger((lvl,"Resolving schema {} ({})... ".format(uri, parent_uri)))
-
-        if not uri.startswith('http://'):
-            if not os.path.isabs(uri):
-                # relative file name
-                if not parent_uri.startswith('http://'):
-                    uri = os.path.join(parent_uri, uri)
-                else:
-                    uri = parent_uri + "/" + uri.replace(os.sep, "/")
-            if os.path.exists(uri):
-                return uri
-
-        base_uri = uri_dirname(uri)
-
-        out_file_name = uri
-        if uri.startswith('http://'):
-            out_file_name = uri[7:].replace('/', os.sep)
-        out_file_name = os.path.join(self.__cachedir, out_file_name)
-        if os.path.exists(out_file_name):
-            return out_file_name
-
-        f = self.__urlopener(uri)
-        mkdir_p(os.path.dirname(out_file_name))
-        fo = open(out_file_name, "w")
-        fo.write(f.read())
-        fo.close()
-        f.close()
-
-        # process imports
-        doc = ET.parse(out_file_name)
-        root = doc.getroot()
-
-        for child in root:
-            n_child_tag = no_prefix(child.tag)
-            if n_child_tag == "import" or n_child_tag == "include":
-                for an, av in child.attrib.iteritems():
-                    if no_prefix(an) == "schemaLocation":
-                        self.cache_uri(av, base_uri, lvl+2)
-        return out_file_name
-    
-    def data_from_uri(self, uri):
-        out_file_name = self.cache_uri(uri)
-        f = open(out_file_name)
-        return f.read()
-
-def extract_features(doc):
-    """Extract (Complex) features from a XML doc
-    :param doc: a DOM document
-    :returns: a list of nodes for each feature
-    """
-    nodes = []
-    root = doc.getroot()
-    if root.tag.startswith(u'{http://www.opengis.net/wfs') and root.tag.endswith('FeatureCollection'):
-        # WFS features
-        for child in root:
-            if no_prefix(child.tag) == 'member':
-                nodes.append(child[0])
-            elif no_prefix(child.tag) == 'featureMembers':
-                for cchild in child:
-                    nodes.append(cchild)
-    else:
-        # it seems to be an isolated feature
-        nodes.append(root)
-    return nodes
-
-
-def load_gml_model(xml_file, archive_dir, xsd_files = None, merge_max_depth = 6, merge_sequences = False, share_geometries = False, split_multi_geometries = True, urlopener = urllib2.urlopen, use_cache_file = False, logger = default_logger):
-    if xsd_files is None:
-        xsd_files = []
+def load_gml_model(xml_file, archive_dir, xsd_files = None, merge_max_depth = 6, merge_sequences = False, share_geometries = False, split_multi_geometries = True, urlopener = None, use_cache_file = False, logger = None):
 
     cachefile = os.path.join(archive_dir, os.path.basename(xml_file) + ".model")
+    if logger is None:
+        logger = default_logger
+    if urlopener is None:
+        urlopener = urllib2.urlopen
 
     if use_cache_file and os.path.exists(cachefile):
         logging.info("Model loaded from " + cachefile)
         return load_model_from(cachefile)
 
-    doc = ET.parse(xml_file)
-    features = extract_features(doc)
-    root = features[0]
-    root_ns, root_name = split_tag(root.tag)
+    # download and parse schemas and resolve node types
+    typed_nodes = load_schemas_and_resolve_types(xml_file, archive_dir, xsd_files, urlopener, logger)
 
-    uri_resolver = URIResolver(archive_dir, logger, urlopener)
-
-    parent_uri = os.path.dirname(xml_file)
-
-    if len(xsd_files) == 0:
-        # try to download schemas
-        root = doc.getroot()
-        for an, av in root.attrib.iteritems():
-            if no_prefix(an) == "schemaLocation":
-                avs = av.split()
-                for ns_name, ns_uri in zip(avs[0::2], avs[1::2]):
-                    if ns_name not in ['http://www.opengis.net/wfs']:
-                        xsd_files.append(uri_resolver.cache_uri(ns_uri, parent_uri))
-
-    if len(xsd_files) == 0:
-        raise RuntimeError("No schema found")
-
-    ns_map = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
-
-    ns = ns_map[root_ns]
-    root_type = ns.elementDeclarations()[root_name].typeDefinition()
+    root = typed_nodes[0][0]
+    root_name = no_prefix(root.tag)
 
     tables = None
     tables_rows = {}
     logger("Tables construction ...")
-    for idx, node in enumerate(features):
-        logger("+ Feature #{}/{}".format(idx+1, len(features)))
-        type_info_dict = resolve_types(node, ns_map)
+    for idx, (node, type_info_dict) in enumerate(typed_nodes):
+        logger("+ Feature #{}/{}".format(idx+1, len(typed_nodes)))
         tables = build_tables(node, type_info_dict, tables, merge_max_depth, merge_sequences, share_geometries)
 
     # split multi geometry tables if asked to
@@ -811,9 +650,8 @@ def load_gml_model(xml_file, archive_dir, xsd_files = None, merge_max_depth = 6,
             tables[table.name()] = table
                     
     logger("Tables population ...")
-    for idx, node in enumerate(features):
-        logger("+ Feature #{}/{}".format(idx+1, len(features)))
-        type_info_dict = resolve_types(node, ns_map)
+    for idx, (node, type_info_dict) in enumerate(typed_nodes):
+        logger("+ Feature #{}/{}".format(idx+1, len(typed_nodes)))
         _populate(node, tables[root_name], None, tables_rows)
         
 
