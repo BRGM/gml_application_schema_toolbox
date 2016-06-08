@@ -8,15 +8,17 @@ import xml.etree.ElementTree as ET
 
 from complex_features import load_complex_gml, is_layer_complex, remote_open_from_qgis
 from gml2relational.xml_utils import no_prefix, split_tag, xml_parse, xml_parse_from_string
+from custom_viewers import get_custom_viewers
 
 from qgis.core import QgsMapLayerRegistry
 
-def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}):
+def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers = {}):
     """
     :param widget: the QTreeWidget
     :param treeItem: a QTreeWidgetItem to fill
     :param elt: the XML node
     :param ns_imap: an "inverse" namespace map { uri : prefix }
+    :param custom_viewers: a dict giving a custom viewer plugin (QWidget) for some elements {tag : constructor}
     """
     # tag
     ns, tag = split_tag(elt.tag)
@@ -27,6 +29,25 @@ def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}):
     f = treeItem.font(0)
     f.setBold(True)
     treeItem.setFont(0,f)
+
+    # custom viewer
+    if custom_viewers.has_key(elt.tag):
+        custom_viewer_widget = custom_viewers[elt.tag]
+        btn = QToolButton(widget)
+        btn.setIcon(custom_viewer_widget.icon())
+        btn.setIconSize(QSize(32,32))
+        def show_viewer(btn):
+            widget.w = custom_viewer_widget(elt)
+            widget.w.setWindowModality(Qt.WindowModal)
+            widget.w.show()
+        btn.clicked.connect(show_viewer)
+
+        w = QWidget(widget)
+        l = QHBoxLayout()
+        l.addWidget(btn)
+        l.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
+        w.setLayout(l)
+        widget.setItemWidget(treeItem, 1, w)
 
     # attributes
     for k, v in elt.attrib.iteritems():
@@ -62,7 +83,7 @@ def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}):
     for xmlChild in elt:
         child = QTreeWidgetItem()
         treeItem.addChild(child)
-        fill_tree_with_element(widget, child, xmlChild, ns_imap)
+        fill_tree_with_element(widget, child, xmlChild, ns_imap, custom_viewers)
 
 def recurse_expand(treeItem):
     treeItem.setExpanded(True)
@@ -78,10 +99,11 @@ def fill_tree_with_xml(treeWidget, xml):
     doc, ns_map = xml_parse_from_string(xml)
     treeWidget.clear()
     treeWidget.setColumnCount(2)
+
     ns_imap = {}
     for k, v in ns_map.iteritems():
         ns_imap[v] = k
-    fill_tree_with_element(treeWidget, treeWidget.invisibleRootItem(), doc.getroot(), ns_imap)
+    fill_tree_with_element(treeWidget, treeWidget.invisibleRootItem(), doc.getroot(), ns_imap, get_custom_viewers())
     recurse_expand(treeWidget.invisibleRootItem())
     treeWidget.resizeColumnToContents(0)
     treeWidget.resizeColumnToContents(1)
