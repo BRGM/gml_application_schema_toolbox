@@ -68,7 +68,6 @@ class PlotScene(QGraphicsScene):
 
     def setSceneRect( self, rect ):
         QGraphicsScene.setSceneRect( self, rect )
-        print rect.width(), 'x', rect.height()
         w = rect.width() - self.barWidth
         if self.xMax != self.xMin:
             self.xRatio = w / (self.xMax - self.xMin)
@@ -79,8 +78,6 @@ class PlotScene(QGraphicsScene):
             self.yRatio = h / (self.yMax-self.yMin)
         else:
             self.yRatio = 1.0
-        print "xOffset", self.xOffset, "xRatio", self.xRatio
-        print "yOffset", self.yOffset, "yRatio", self.yRatio
 
     # convert distance to scene coordinate
     def xToScene( self, x ):
@@ -164,7 +161,7 @@ class PlotScene(QGraphicsScene):
         if i == -1:
             return
         
-        self.marker.setText( "x = %s\ny = %.1f" % (xValue, y) )
+        self.marker.setText( "x = %s\ny = %.2f" % (xValue, y) )
         self.marker.moveTo( ax, self.yToScene(y) )
 
 # graphics items that are displayed on mouse move on the altitude curve
@@ -226,6 +223,8 @@ class WML2TimeSeriesViewer(QWidget):
     def __init__(self, xml_tree, parent = None):
         QWidget.__init__(self, parent)
 
+        self.setWindowTitle("TimeSeries viewer")
+
         # parse data
         data = []
         yTitle = 'value'
@@ -245,15 +244,49 @@ class WML2TimeSeriesViewer(QWidget):
                     if c.tag == '{http://www.opengis.net/waterml/2.0}uom':
                         yTitle = c.attrib['code']
 
-        self.layout = QVBoxLayout()
-        self.label = QLabel(title, self)
+        # sort data by x
+        data.sort(key = lambda x: x[0])
+
+        formLayout = QFormLayout()
+        # id
+        titleW = QLineEdit(title, self)
+        titleW.setReadOnly(True)
+        formLayout.addRow("ID", titleW)
+
+        # start and end time
+        sdt = QDateTime.fromString(data[0][2], "yyyy-MM-ddTHH:mm:ss.zZ")
+        edt = QDateTime.fromString(data[-1][2], "yyyy-MM-ddTHH:mm:ss.zZ")
+        startTimeW = QDateTimeEdit(sdt)
+        startTimeW.setReadOnly(True)
+        endTimeW = QDateTimeEdit(edt)
+        endTimeW.setReadOnly(True)
+        formLayout.addRow("Start time", startTimeW)
+        formLayout.addRow("End time", endTimeW)
+
+        # unit of measure
+        unitW = QLineEdit(yTitle)
+        unitW.setReadOnly(True)
+        formLayout.addRow("Unit", unitW)
+
+        # min / max value
+        minValue = min([x[1] for x in data])
+        maxValue = max([x[1] for x in data])
+        minValueW = QLineEdit(str(minValue))
+        minValueW.setReadOnly(True)
+        maxValueW = QLineEdit(str(maxValue))
+        maxValueW.setReadOnly(True)
+        formLayout.addRow("Min value", minValueW)
+        formLayout.addRow("Max value", maxValueW)
+
+        # the plot
+        layout = QVBoxLayout()
         self.plot = PlotView(yTitle, self)
-        self.layout.addWidget(self.label)
-        self.layout.addWidget(self.plot)
-        self.setLayout(self.layout)
+        layout.addLayout(formLayout)
+        layout.addWidget(self.plot)
+        self.setLayout(layout)
 
         self.plot.setData(data)
-        self.resize(600,400)
+        self.resize(800,600)
 
     @classmethod
     def icon(self):
