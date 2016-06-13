@@ -85,11 +85,21 @@ class ComplexFeatureSource:
         """
         i = 1
         for feature in self.features:
-            # get the id from gml:identifier
-            fid = unicode(i)
-            f_ns, f_tag = split_tag(feature.tag)
-            if f_ns.startswith('http://www.opengis.net/gml') and f_tag == 'identifier':
-                fid = feature.text
+            # get the id from gml:identifier, then from the "id" attribute
+            fid = None
+            for child in feature:
+                f_ns, f_tag = split_tag(child.tag)
+                if f_tag == 'identifier':
+                    fid = child.text
+                    break
+            if fid is None:
+                for k, v in feature.attrib.iteritems():
+                    f_ns, f_tag = split_tag(k)                    
+                    if f_tag == "id":
+                        fid = v
+                        break
+            if fid is None:
+                fid = unicode(i)
 
             # get the geometry
             if self.geometry_mapping:
