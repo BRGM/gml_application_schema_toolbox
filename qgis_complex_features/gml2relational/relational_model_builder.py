@@ -463,13 +463,15 @@ def uri_is_absolute(uri):
 def uri_join(uri, path):
     return os.path.join(uri, path)
 
-def default_logger(t):
-    if isinstance(t, tuple):
-        lvl, msg = t
-        logging.info(" "*lvl + msg)
-    else:
-        logging.info(t)
-
+class MyLogger:
+    def text(self, t):
+        if isinstance(t, tuple):
+            lvl, msg = t
+            logging.info(" "*lvl + msg)
+        else:
+            logging.info(t)
+    def progression(self, i, n):
+        logging.info("[{0:.2f}%]".format(float(i)/n*100.0))
 
 def load_gml_model(xml_file, archive_dir, xsd_files = None, merge_max_depth = 6, merge_sequences = False, share_geometries = False, split_multi_geometries = True, urlopener = None, use_cache_file = False, logger = None):
 
@@ -491,9 +493,10 @@ def load_gml_model(xml_file, archive_dir, xsd_files = None, merge_max_depth = 6,
 
     tables = None
     tables_rows = {}
-    logger("Tables construction ...")
+    logger.text("Tables construction ...")
     for idx, (node, type_info_dict) in enumerate(typed_nodes):
-        logger("+ Feature #{}/{}".format(idx+1, len(typed_nodes)))
+        logger.text("+ Feature #{}/{}".format(idx+1, len(typed_nodes)))
+        logger.progression(idx+1, len(typed_nodes))
         tables = build_tables(node, type_info_dict, tables, merge_max_depth, merge_sequences, share_geometries)
 
     # split multi geometry tables if asked to
@@ -514,9 +517,10 @@ def load_gml_model(xml_file, archive_dir, xsd_files = None, merge_max_depth = 6,
         for table in new_tables:
             tables[table.name()] = table
                     
-    logger("Tables population ...")
+    logger.text("Tables population ...")
     for idx, (node, type_info_dict) in enumerate(typed_nodes):
-        logger("+ Feature #{}/{}".format(idx+1, len(typed_nodes)))
+        logger.text("+ Feature #{}/{}".format(idx+1, len(typed_nodes)))
+        logger.progression(idx+1, len(typed_nodes))
         _populate(node, tables[root_name], None, tables_rows)
         
 

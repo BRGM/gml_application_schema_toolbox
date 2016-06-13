@@ -68,11 +68,20 @@ class ProgressDialog(QDialog):
         self.__label = QLabel(self)
         self.__layout = QVBoxLayout()
         self.__layout.addWidget(self.__label)
+        self.__progress = QProgressBar(self)
+        self.__layout.addWidget(self.__progress)
         self.setLayout(self.__layout)
         self.resize(600, 70)
+        self.__progress.hide()
 
     def setText(self, text):
         self.__label.setText(text)
+
+    def setProgress(self, i, n):
+        self.__progress.show()
+        self.__progress.setMinimum(0)
+        self.__progress.setMaximum(n)
+        self.__progress.setValue(i)
 
 class MainPlugin:
 
@@ -122,12 +131,29 @@ class MainPlugin:
         if not r:
             return
 
+        self.p_widget = ProgressDialog()
+        self.p_widget.show()
+
+        class MyLogger:
+            def __init__(self, widget):
+                self.p_widget = widget
+            def text(self, t):
+                if isinstance(t, tuple):
+                    lvl, msg = t
+                else:
+                    msg = t
+                self.p_widget.setText(msg)
+                QCoreApplication.processEvents()
+            def progression(self, i, n):
+                self.p_widget.setProgress(i, n)
+                QCoreApplication.processEvents()
+
         if creation_dlg.import_type() == 0:
             is_remote, url = creation_dlg.source()
             mapping = creation_dlg.attribute_mapping()
             geom_mapping = creation_dlg.geometry_mapping()
             output_filename = creation_dlg.output_filename()
-            new_layer = load_complex_gml(url, is_remote, mapping, geom_mapping, output_filename)
+            new_layer = load_complex_gml(url, is_remote, mapping, geom_mapping, output_filename, logger = MyLogger(self.p_widget))
 
             do_replace = False
             if creation_dlg.replace_current_layer():
@@ -156,23 +182,15 @@ class MainPlugin:
             if os.path.exists(output_filename):
                 os.unlink(output_filename)
 
-            self.p_widget = ProgressDialog()
-            self.p_widget.show()
             def opener(uri):
                 self.p_widget.setText("Downloading {} ...".format(uri))
                 return remote_open_from_qgis(uri)
-            def mylogger(t):
-                if isinstance(t, tuple):
-                    lvl, msg = t
-                else:
-                    msg = t
-                self.p_widget.setText(msg)
-                QCoreApplication.processEvents()
             model = load_gml_model(url, archive_dir,
                                    merge_max_depth = merge_depth,
                                    merge_sequences = merge_sequences,
                                    urlopener = opener,
-                                   logger = mylogger)
+                                   logger = MyLogger(self.p_widget))
+            self.model_dlg = ModelDialog(model)
 
             self.p_widget.setText("Creating the Spatialite file ...")
             QCoreApplication.processEvents()
@@ -183,7 +201,7 @@ class MainPlugin:
             create_qgis_project_from_model(model, output_filename, project_file, QgsApplication.srsDbFilePath(), QGis.QGIS_VERSION)
             QgsProject.instance().setFileName(project_file)
             QgsProject.instance().read()
-            self.p_widget.hide()
+        self.p_widget.hide()
 
     def onIdentify(self):
         self.mapTool = IdentifyGeometry(self.iface.mapCanvas())

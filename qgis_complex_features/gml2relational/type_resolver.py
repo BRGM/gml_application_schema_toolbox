@@ -182,7 +182,7 @@ class URIResolver(object):
                 if not os.path.exists(p):
                     os.mkdir(p)
 
-        self.__logger((lvl,"Resolving schema {} ({})... ".format(uri, parent_uri)))
+        self.__logger.text((lvl,"Resolving schema {} ({})... ".format(uri, parent_uri)))
 
         if not uri.startswith('http://'):
             if not os.path.isabs(uri):

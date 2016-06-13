@@ -63,13 +63,14 @@ def extractGmlFromXPath(tree, xpath):
     return None
 
 class ComplexFeatureSource:
-    def __init__(self, xml, xpath_mapping = {}, geometry_mapping = None):
+    def __init__(self, xml, xpath_mapping = {}, geometry_mapping = None, logger = None):
         """
         Construct a ComplexFeatureSource
 
         :param xml: The input XML, as file io
         :param xpath_mapping: A mapping of XPath expressions to attributes. Example: { 'attribute' : ('//xpath/expression', QVariant.Int) }
         :param geometry_mapping: An XPath expression used to extract the geometry
+        :param logger: a logger function
         """
         doc, _ = xml_parse(xml)
         self.features = extract_features(doc)
@@ -77,6 +78,7 @@ class ComplexFeatureSource:
 
         self.xpath_mapping = xpath_mapping
         self.geometry_mapping = geometry_mapping
+        self.logger = logger
 
     def getFeatures(self):
         """
@@ -85,6 +87,10 @@ class ComplexFeatureSource:
         """
         i = 1
         for feature in self.features:
+            if self.logger is not None:
+                self.logger.text("Feature {}/{}".format(i, len(self.features)))
+                self.logger.progression(i, len(self.features))
+                
             # get the id from gml:identifier, then from the "id" attribute
             fid = None
             for child in feature:
@@ -161,7 +167,7 @@ class ComplexFeatureLoader:
     def is_layer_complex(layer):
         raise RuntimeError("No default implementation, use a derived class")
 
-    def load_complex_gml(self, xml_uri, is_remote, attributes = {}, geometry_mapping = None):
+    def load_complex_gml(self, xml_uri, is_remote, attributes = {}, geometry_mapping = None, logger = None):
         """
         :param xml_uri: the XML URI
         :param is_remote: True if it has to be fetched by http
@@ -173,7 +179,7 @@ class ComplexFeatureLoader:
             xml = remote_open_from_qgis(xml_uri)
         else:
             xml = open(xml_uri)
-        src = ComplexFeatureSource(xml, attributes, geometry_mapping)
+        src = ComplexFeatureSource(xml, attributes, geometry_mapping, logger)
 
         layer = None
         attr_list = [ (k, v[1]) for k, v in attributes.iteritems() ]
@@ -350,7 +356,7 @@ class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
             return r[0] == '1'
         return False
 
-def load_complex_gml(xml_uri, is_remote, attributes = {}, geometry_mapping = None, output_local_file = None):
+def load_complex_gml(xml_uri, is_remote, attributes = {}, geometry_mapping = None, output_local_file = None, logger = None):
     if not output_local_file:
         import tempfile
         f = tempfile.NamedTemporaryFile()
@@ -358,7 +364,7 @@ def load_complex_gml(xml_uri, is_remote, attributes = {}, geometry_mapping = Non
         f.close()
 
     s = ComplexFeatureLoaderInSpatialite(output_local_file)
-    return s.load_complex_gml(xml_uri, is_remote, attributes, geometry_mapping)
+    return s.load_complex_gml(xml_uri, is_remote, attributes, geometry_mapping, logger)
 
 def properties_from_layer(layer):
     return ComplexFeatureLoaderInSpatialite.properties_from_layer(layer)
