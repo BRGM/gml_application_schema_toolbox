@@ -283,7 +283,7 @@ class MainPlugin:
         if layer is None or not is_layer_complex(layer):
             return
 
-        self.table = TableDialog(layer, onTableSelected)
+        self.table = TableDialog(layer)
         self.table.show()
 
     def onShowSchema(self):
