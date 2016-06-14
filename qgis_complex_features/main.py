@@ -23,7 +23,7 @@ from model_dialog import ModelDialog
 
 import gml2relational
 from gml2relational.relational_model_builder import load_gml_model
-from gml2relational.relational_model import load_model_from
+from gml2relational.relational_model import load_model_from, save_model_to
 from gml2relational.sqlite_writer import create_sqlite_from_model
 from gml2relational.qgis_project_writer import create_qgis_project_from_model
 
@@ -114,7 +114,10 @@ class MainPlugin:
         self.iface.addToolBarIcon(self.schemaAction)
         self.iface.addPluginToMenu(u"Complex Features", self.schemaAction)
 
+        QgsProject.instance().writeProject.connect(self.onProjectWrite)
+
         self.model_dlg = None
+        self.model = None
     
     def unload(self):
         # Remove the plugin menu item and icon
@@ -190,6 +193,7 @@ class MainPlugin:
                 tfile = QTemporaryFile()
                 tfile.open()
                 project_file = tfile.fileName() + ".qgs"
+                model_file = project_file + ".model"
                 tfile.close()
 
                 if os.path.exists(output_filename):
@@ -201,9 +205,9 @@ class MainPlugin:
                 model = load_gml_model(url, archive_dir,
                                        merge_max_depth = merge_depth,
                                        merge_sequences = merge_sequences,
-                                       use_cache_file = True, # save the model file
                                        urlopener = opener,
                                        logger = MyLogger(self.p_widget))
+                save_model_to(model, model_file)
 
                 self.p_widget.setText("Creating the Spatialite file ...")
                 QCoreApplication.processEvents()
@@ -214,8 +218,6 @@ class MainPlugin:
                 create_qgis_project_from_model(model, output_filename, project_file, QgsApplication.srsDbFilePath(), QGis.QGIS_VERSION)
                 QgsProject.instance().setFileName(project_file)
                 QgsProject.instance().read()
-                QgsProject.instance().writeEntry("ComplexFeaturesPlugin", "ArchiveDir", archive_dir)
-                QgsProject.instance().writeEntry("ComplexFeaturesPlugin", "InputFile", url)
         finally:
             self.p_widget.hide()
 
@@ -242,11 +244,8 @@ class MainPlugin:
 
     def onShowSchema(self):
         # load the model
-        archive_dir, ok = QgsProject.instance().readEntry("ComplexFeaturesPlugin", "ArchiveDir")
-        input_file, ok = QgsProject.instance().readEntry("ComplexFeaturesPlugin", "InputFile")
-        print archive_dir
-        cachefile = os.path.join(archive_dir, os.path.basename(input_file) + ".model")
-        if not os.path.exists(cachefile):
+        model_file = QgsProject.instance().fileName() + ".model"
+        if not os.path.exists(model_file):
             QMessageBox.error(None, "File not found", "Cannot find the model file")
             return
 
@@ -260,9 +259,15 @@ class MainPlugin:
                 self.iface.setActiveLayer(layer)
                 attribute_table_action.trigger()
                         
-        model = load_model_from(cachefile)
-        self.model_dlg = ModelDialog(model)
+        self.model = load_model_from(model_file)
+        self.model_dlg = ModelDialog(self.model)
         self.model_dlg.tableSelected.connect(onTableSelected)
         self.model_dlg.show()
-        
+
+    def onProjectWrite(self, dom):
+        # make sure the model is saved with the project
+        if self.model is not None:
+            project_file = QgsProject.instance().fileName()
+            model_file = project_file + ".model"
+            save_model_to(self.model, model_file)
         
