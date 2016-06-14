@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 def name():
-    return "Complex Features for QGIS"
+    return u"QGIS GML Application Schema Toolbox"
 def description():
-    return "Complex Features for QGIS"
+    return u"QGIS GML Application Schema Toolbox"
 def version():
-    return "Version 1.0"
+    return u"0.7"
 def icon():
     return "icon.png"
 def qgisMinimumVersion():
-    return "1.8"
+    return u"2.14"
 def qgisMaximumVersion():
-    return "2.99"
+    return u"2.99"
 def classFactory(iface):
     from main import MainPlugin
     return MainPlugin(iface)

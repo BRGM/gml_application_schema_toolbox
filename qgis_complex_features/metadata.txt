@@ -9,7 +9,7 @@
 
 
 [general]
-name=Complex Features in QGIS
+name=QGIS GML Application Schema Toolbox
 qgisMinimumVersion=2.14
 qgisMaximumVersion=2.99
 description=Prototype to load OGC Complex Features in QGIS
