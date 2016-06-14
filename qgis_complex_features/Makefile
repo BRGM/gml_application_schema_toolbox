@@ -2,7 +2,7 @@
 
 PLUGINNAME = qgis_complex_features
 
-PY_FILES = main.py __init__.py complex_features.py identify_dialog.py creation_dialog.py xml_tree_widget.py table_dialog.py qgis_urlopener.py custom_viewers.py
+PY_FILES = main.py __init__.py complex_features.py identify_dialog.py creation_dialog.py xml_tree_widget.py table_dialog.py qgis_urlopener.py custom_viewers.py model_dialog.py
 
 EXTRAS = *.svg metadata.txt whl gml2relational/*.py gml2relational/testdata/* viewers/*.py viewers/*.svg
 

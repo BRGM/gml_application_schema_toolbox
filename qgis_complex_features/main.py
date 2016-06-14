@@ -19,6 +19,7 @@ from complex_features import ComplexFeatureSource, load_complex_gml, properties_
 from identify_dialog import IdentifyDialog
 from creation_dialog import CreationDialog
 from table_dialog import TableDialog
+from model_dialog import ModelDialog
 
 import gml2relational
 from gml2relational.relational_model_builder import load_gml_model
@@ -99,12 +100,20 @@ class MainPlugin:
                               u"Open feature list", self.iface.mainWindow())
         self.tableAction.triggered.connect(self.onOpenTable)
 
+        self.schemaAction = QAction(QIcon(os.path.dirname(__file__) + "/mActionShowSchema.svg"), \
+                              u"Show schema", self.iface.mainWindow())
+        self.schemaAction.triggered.connect(self.onShowSchema)
+
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu(u"Complex Features", self.action)
         self.iface.addToolBarIcon(self.identifyAction)
         self.iface.addPluginToMenu(u"Complex Features", self.identifyAction)
         self.iface.addToolBarIcon(self.tableAction)
         self.iface.addPluginToMenu(u"Complex Features", self.tableAction)
+        self.iface.addToolBarIcon(self.schemaAction)
+        self.iface.addPluginToMenu(u"Complex Features", self.schemaAction)
+
+        self.model_dlg = None
     
     def unload(self):
         # Remove the plugin menu item and icon
@@ -114,6 +123,8 @@ class MainPlugin:
         self.iface.removePluginMenu(u"Complex Features",self.identifyAction)
         self.iface.removeToolBarIcon(self.tableAction)
         self.iface.removePluginMenu(u"Complex Features",self.tableAction)
+        self.iface.removeToolBarIcon(self.schemaAction)
+        self.iface.removePluginMenu(u"Complex Features",self.schemaAction)
 
     def onAddLayer(self):
         layer_edited = False
@@ -131,9 +142,6 @@ class MainPlugin:
         if not r:
             return
 
-        self.p_widget = ProgressDialog()
-        self.p_widget.show()
-
         class MyLogger:
             def __init__(self, widget):
                 self.p_widget = widget
@@ -148,60 +156,77 @@ class MainPlugin:
                 self.p_widget.setProgress(i, n)
                 QCoreApplication.processEvents()
 
-        if creation_dlg.import_type() == 0:
-            is_remote, url = creation_dlg.source()
-            mapping = creation_dlg.attribute_mapping()
-            geom_mapping = creation_dlg.geometry_mapping()
-            output_filename = creation_dlg.output_filename()
-            new_layer = load_complex_gml(url, is_remote, mapping, geom_mapping, output_filename, logger = MyLogger(self.p_widget))
+        self.p_widget = ProgressDialog()
+        self.p_widget.show()
+        try:
 
-            do_replace = False
-            if creation_dlg.replace_current_layer():
-                r = QMessageBox.question(None, "Replace layer ?", "You are about to replace the active layer. Are you sure ?", QMessageBox.Yes | QMessageBox.No)
-                if r == QMessageBox.Yes:
-                    do_replace = True
+            if creation_dlg.import_type() == 0:
+                is_remote, url = creation_dlg.source()
+                mapping = creation_dlg.attribute_mapping()
+                geom_mapping = creation_dlg.geometry_mapping()
+                output_filename = creation_dlg.output_filename()
+                new_layer = load_complex_gml(url, is_remote, mapping, geom_mapping, output_filename, logger = MyLogger(self.p_widget))
 
-            if do_replace:
-                replace_layer(sel_layer, new_layer)
-            else:
-                # a new layer
-                QgsMapLayerRegistry.instance().addMapLayer(new_layer)
-        else: # import type == 2
-            is_remote, url = creation_dlg.source()
-            output_filename = creation_dlg.output_filename()
-            archive_dir = creation_dlg.archive_directory()
-            merge_depth = creation_dlg.merge_depth()
-            merge_sequences = creation_dlg.merge_sequences()
+                do_replace = False
+                if creation_dlg.replace_current_layer():
+                    r = QMessageBox.question(None, "Replace layer ?", "You are about to replace the active layer. Are you sure ?", QMessageBox.Yes | QMessageBox.No)
+                    if r == QMessageBox.Yes:
+                        do_replace = True
 
-            # temporary sqlite file
-            tfile = QTemporaryFile()
-            tfile.open()
-            project_file = tfile.fileName() + ".qgs"
-            tfile.close()
+                if do_replace:
+                    replace_layer(sel_layer, new_layer)
+                else:
+                    # a new layer
+                    QgsMapLayerRegistry.instance().addMapLayer(new_layer)
+            else: # import type == 2
+                is_remote, url = creation_dlg.source()
+                output_filename = creation_dlg.output_filename()
+                archive_dir = creation_dlg.archive_directory()
+                merge_depth = creation_dlg.merge_depth()
+                merge_sequences = creation_dlg.merge_sequences()
 
-            if os.path.exists(output_filename):
-                os.unlink(output_filename)
+                # temporary sqlite file
+                tfile = QTemporaryFile()
+                tfile.open()
+                project_file = tfile.fileName() + ".qgs"
+                tfile.close()
 
-            def opener(uri):
-                self.p_widget.setText("Downloading {} ...".format(uri))
-                return remote_open_from_qgis(uri)
-            model = load_gml_model(url, archive_dir,
-                                   merge_max_depth = merge_depth,
-                                   merge_sequences = merge_sequences,
-                                   urlopener = opener,
-                                   logger = MyLogger(self.p_widget))
-            self.model_dlg = ModelDialog(model)
+                if os.path.exists(output_filename):
+                    os.unlink(output_filename)
 
-            self.p_widget.setText("Creating the Spatialite file ...")
-            QCoreApplication.processEvents()
-            create_sqlite_from_model(model, output_filename)
+                def opener(uri):
+                    self.p_widget.setText("Downloading {} ...".format(uri))
+                    return remote_open_from_qgis(uri)
+                model = load_gml_model(url, archive_dir,
+                                       merge_max_depth = merge_depth,
+                                       merge_sequences = merge_sequences,
+                                       urlopener = opener,
+                                       logger = MyLogger(self.p_widget))
 
-            self.p_widget.setText("Creating the QGIS project ...")
-            QCoreApplication.processEvents()
-            create_qgis_project_from_model(model, output_filename, project_file, QgsApplication.srsDbFilePath(), QGis.QGIS_VERSION)
-            QgsProject.instance().setFileName(project_file)
-            QgsProject.instance().read()
-        self.p_widget.hide()
+                attribute_table_action = self.iface.mainWindow().findChild((QAction,), "mActionOpenTable")
+                def onTableSelected(table_name):
+                    # make the selected layer the active one
+                    # and open the attribute table dialog
+                    layers = QgsMapLayerRegistry.instance().mapLayersByName(table_name)
+                    if len(layers) == 1:
+                        layer = layers[0]
+                        self.iface.setActiveLayer(layer)
+                        attribute_table_action.trigger()
+                        
+                self.model_dlg = ModelDialog(model)
+                self.model_dlg.tableSelected.connect(onTableSelected)
+
+                self.p_widget.setText("Creating the Spatialite file ...")
+                QCoreApplication.processEvents()
+                create_sqlite_from_model(model, output_filename)
+
+                self.p_widget.setText("Creating the QGIS project ...")
+                QCoreApplication.processEvents()
+                create_qgis_project_from_model(model, output_filename, project_file, QgsApplication.srsDbFilePath(), QGis.QGIS_VERSION)
+                QgsProject.instance().setFileName(project_file)
+                QgsProject.instance().read()
+        finally:
+            self.p_widget.hide()
 
     def onIdentify(self):
         self.mapTool = IdentifyGeometry(self.iface.mapCanvas())
@@ -220,6 +245,11 @@ class MainPlugin:
         layer = self.iface.activeLayer()
         if not is_layer_complex(layer):
             return
-        
-        self.table = TableDialog(layer)
+
+        self.table = TableDialog(layer, onTableSelected)
         self.table.show()
+
+    def onShowSchema(self):
+        if self.model_dlg is not None:
+            self.model_dlg.show()
+        
