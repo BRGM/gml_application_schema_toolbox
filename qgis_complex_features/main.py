@@ -23,6 +23,7 @@ from model_dialog import ModelDialog
 
 import gml2relational
 from gml2relational.relational_model_builder import load_gml_model
+from gml2relational.relational_model import load_model_from
 from gml2relational.sqlite_writer import create_sqlite_from_model
 from gml2relational.qgis_project_writer import create_qgis_project_from_model
 
@@ -200,21 +201,9 @@ class MainPlugin:
                 model = load_gml_model(url, archive_dir,
                                        merge_max_depth = merge_depth,
                                        merge_sequences = merge_sequences,
+                                       use_cache_file = True, # save the model file
                                        urlopener = opener,
                                        logger = MyLogger(self.p_widget))
-
-                attribute_table_action = self.iface.mainWindow().findChild((QAction,), "mActionOpenTable")
-                def onTableSelected(table_name):
-                    # make the selected layer the active one
-                    # and open the attribute table dialog
-                    layers = QgsMapLayerRegistry.instance().mapLayersByName(table_name)
-                    if len(layers) == 1:
-                        layer = layers[0]
-                        self.iface.setActiveLayer(layer)
-                        attribute_table_action.trigger()
-                        
-                self.model_dlg = ModelDialog(model)
-                self.model_dlg.tableSelected.connect(onTableSelected)
 
                 self.p_widget.setText("Creating the Spatialite file ...")
                 QCoreApplication.processEvents()
@@ -225,6 +214,8 @@ class MainPlugin:
                 create_qgis_project_from_model(model, output_filename, project_file, QgsApplication.srsDbFilePath(), QGis.QGIS_VERSION)
                 QgsProject.instance().setFileName(project_file)
                 QgsProject.instance().read()
+                QgsProject.instance().writeEntry("ComplexFeaturesPlugin", "ArchiveDir", archive_dir)
+                QgsProject.instance().writeEntry("ComplexFeaturesPlugin", "InputFile", url)
         finally:
             self.p_widget.hide()
 
@@ -250,6 +241,28 @@ class MainPlugin:
         self.table.show()
 
     def onShowSchema(self):
-        if self.model_dlg is not None:
-            self.model_dlg.show()
+        # load the model
+        archive_dir, ok = QgsProject.instance().readEntry("ComplexFeaturesPlugin", "ArchiveDir")
+        input_file, ok = QgsProject.instance().readEntry("ComplexFeaturesPlugin", "InputFile")
+        print archive_dir
+        cachefile = os.path.join(archive_dir, os.path.basename(input_file) + ".model")
+        if not os.path.exists(cachefile):
+            QMessageBox.error(None, "File not found", "Cannot find the model file")
+            return
+
+        attribute_table_action = self.iface.mainWindow().findChild((QAction,), "mActionOpenTable")
+        def onTableSelected(table_name):
+            # make the selected layer the active one
+            # and open the attribute table dialog
+            layers = QgsMapLayerRegistry.instance().mapLayersByName(table_name)
+            if len(layers) == 1:
+                layer = layers[0]
+                self.iface.setActiveLayer(layer)
+                attribute_table_action.trigger()
+                        
+        model = load_model_from(cachefile)
+        self.model_dlg = ModelDialog(model)
+        self.model_dlg.tableSelected.connect(onTableSelected)
+        self.model_dlg.show()
+        
         
