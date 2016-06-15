@@ -1,0 +1,5 @@
+0.7.1 - 15/06/2016
+	* Fix remote URI resolving
+	* Fix XPath handling
+	* Fix default SRID
+	* Add support for a Date/Time type in xpath mappings
