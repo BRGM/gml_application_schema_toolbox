@@ -1,5 +1,6 @@
 from PyQt4 import QtGui
-from PyQt4.QtGui import QWidget, QVBoxLayout, QFormLayout, QLineEdit
+from PyQt4.QtCore import QVariant, QDateTime
+from PyQt4.QtGui import QWidget, QVBoxLayout, QFormLayout, QLineEdit, QDateTimeEdit
 from xml_tree_widget import XMLTreeWidget
 
 class IdentifyDialog(QtGui.QWidget):
@@ -25,13 +26,18 @@ class IdentifyDialog(QtGui.QWidget):
         self.setWindowTitle("Feature Identification")
         self.resize(996, 652)
 
+        self.layer = layer
+
         for i in range(layer.pendingFields().count()):
             field = layer.pendingFields().at(i)
             if field.name() == "_xml_":
                 continue
-            lineEdit = QLineEdit()
-            lineEdit.setReadOnly(True)
-            self.formLayout.addRow(field.name(), lineEdit)
+            if field.typeName() == "qdatetime":
+                widget = QDateTimeEdit()
+            else:
+                widget = QLineEdit()
+            widget.setReadOnly(True)
+            self.formLayout.addRow(field.name(), widget)
 
         if feature is not None:
             self.updateFeature(feature)
@@ -40,8 +46,13 @@ class IdentifyDialog(QtGui.QWidget):
         self.treeWidget.updateFeature(feature)
 
         for i in range(self.formLayout.rowCount()):
-            line_edit = self.formLayout.itemAt(i, QFormLayout.FieldRole).widget()
             field_name = self.formLayout.itemAt(i, QFormLayout.LabelRole).widget().text()
-            line_edit.setText(unicode(feature.attribute(field_name) or ""))
+            v = feature.attribute(field_name)
+            widget = self.formLayout.itemAt(i, QFormLayout.FieldRole).widget()
+            if self.layer.pendingFields().field(field_name).typeName() == "qdatetime":
+                dt = QDateTime.fromString(v, "yyyy-MM-ddTHH:mm:ss.zZ")
+                widget.setDateTime(dt)
+            else:
+                widget.setText(unicode(v) or "")
         
         

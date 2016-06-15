@@ -4,7 +4,7 @@
 import xml.etree.ElementTree as ET
 
 from osgeo import ogr
-from PyQt4.QtCore import QVariant
+from PyQt4.QtCore import QVariant, QDateTime
 
 from qgis.core import QGis, QgsGeometry, QgsVectorLayer, QgsField, QgsFeature, QgsMapLayer, QgsDataSourceURI
 
@@ -139,6 +139,8 @@ class ComplexFeatureSource:
                             value = v
                         elif type == QVariant.Double:
                             value = float(v)
+                        elif type == QVariant.DateTime:
+                            value = v
                         else:
                             value = None
                     except ValueError:
@@ -272,7 +274,7 @@ class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
         Creates an empty spatialite layer
         :param type: 'Point', 'LineString', 'Polygon', etc.
         :param srid: CRS ID of the layer
-        :param attributes: list of (attribute_name, attribute_type)
+        :param attributes: list of (attribute_name, attribute_type, attribute_typename)
         :param title: title of the layer
         """
         conn = sqlite3.connect(self.output_local_file)
@@ -294,7 +296,8 @@ class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
         pr = layer.dataProvider()
         pr.addAttributes([QgsField("_xml_", QVariant.String)])
         for aname, atype in attributes:
-            pr.addAttributes([QgsField(aname, atype)])
+            atype_name = QVariant.typeToName(atype)
+            pr.addAttributes([QgsField(aname, atype, atype_name)])
         layer.updateFields()
         return layer
 

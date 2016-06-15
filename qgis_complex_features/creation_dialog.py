@@ -32,7 +32,7 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
                 self.onAddMapping() # add a row
                 last = self.attributeTable.rowCount() - 1
                 self.attributeTable.item(last, 0).setText(aname)
-                self.attributeTable.cellWidget(last, 1).setCurrentIndex([QVariant.String, QVariant.Int, QVariant.Double].index(type))
+                self.attributeTable.cellWidget(last, 1).setCurrentIndex([QVariant.String, QVariant.Int, QVariant.Double, QVariant.DateTime].index(type))
                 self.attributeTable.item(last, 2).setText(xpath)
 
             self.geometryColumnCheck.setChecked(True)
@@ -101,6 +101,7 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
         combo.addItem("String", QVariant.String)
         combo.addItem("Integer", QVariant.Int)
         combo.addItem("Real", QVariant.Double)
+        combo.addItem("Date/Time", QVariant.DateTime)
         self.attributeTable.setCellWidget(lastRow, 1, combo)
         self.attributeTable.setItem(lastRow, 0, QTableWidgetItem())
         self.attributeTable.setItem(lastRow, 2, QTableWidgetItem())
