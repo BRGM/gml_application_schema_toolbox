@@ -19,7 +19,7 @@ import re
 
 def wkbFromGml(tree):
     # extract the srid
-    srid = None
+    srid = 4326
     for k, v in tree.attrib.iteritems():
         if no_prefix(k) == 'srsName':
             # EPSG:4326
