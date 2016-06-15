@@ -78,6 +78,7 @@ class ProgressDialog(QDialog):
         self.__layout.addWidget(self.__progress)
         self.setLayout(self.__layout)
         self.resize(600, 70)
+        self.setFixedSize(600, 70)
         self.__progress.hide()
 
     def setText(self, text):
