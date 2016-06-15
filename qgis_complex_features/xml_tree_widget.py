@@ -179,7 +179,16 @@ class XMLTreeWidget(QtGui.QTreeWidget):
             s = ''
             if item.parent():
                 s = get_xpath(item.parent())
-            return s + "/" + item.text(0)
+            t = item.text(0)
+            if ':' in t:
+                tt = t.split(':')[1]
+            else:
+                tt = t
+            if t[0] == '@':
+                tt = '@' + tt
+            if s == '':
+                return tt
+            return s + "/" + tt
 
         xpath = get_xpath(self.currentItem())
         QApplication.clipboard().setText(xpath)

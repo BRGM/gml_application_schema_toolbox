@@ -122,16 +122,15 @@ class ComplexFeatureSource:
                 r = resolve_xpath(feature, xpath)
                 v = None
                 value = None
-                if len(r) > 0:
-                    if isinstance(r[0], unicode):
-                        v = r[0]
-                    if isinstance(r[0], str):
-                        v = unicode(r[0])
-                    elif isinstance(r[0], ET.Element):
-                        v = r[0].text
-                    else:
-                        v = None
-                        value = None
+                if isinstance(r, unicode):
+                    v = r
+                if isinstance(r, str):
+                    v = unicode(r)
+                elif isinstance(r, ET.Element):
+                    v = r.text
+                else:
+                    v = None
+                    value = None
                 if v is not None:
                     try:
                         if type == QVariant.Int:
