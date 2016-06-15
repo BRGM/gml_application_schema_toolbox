@@ -26,6 +26,7 @@ from gml2relational.relational_model_builder import load_gml_model
 from gml2relational.relational_model import load_model_from, save_model_to
 from gml2relational.sqlite_writer import create_sqlite_from_model
 from gml2relational.qgis_project_writer import create_qgis_project_from_model
+from gml2relational.uri import URI
 
 from . import name as plugin_name
 from . import version as plugin_version
@@ -246,7 +247,9 @@ class MainPlugin:
                 def opener(uri):
                     self.p_widget.setText("Downloading {} ...".format(uri))
                     return remote_open_from_qgis(uri)
-                model = load_gml_model(url, archive_dir,
+
+                uri = URI(url, opener)
+                model = load_gml_model(uri, archive_dir,
                                        merge_max_depth = merge_depth,
                                        merge_sequences = merge_sequences,
                                        urlopener = opener,

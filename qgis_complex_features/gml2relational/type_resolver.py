@@ -4,6 +4,7 @@ from xml_utils import no_prefix, split_tag, prefix
 from gml_utils import extract_features
 from pyxb.xmlschema.structures import Schema, ElementDeclaration, ComplexTypeDefinition, Particle, ModelGroup, SimpleTypeDefinition, Wildcard, AttributeUse, AttributeDeclaration
 from schema_parser import parse_schemas
+from uri import URI
 
 import urllib2
 import os
@@ -160,7 +161,7 @@ def uri_dirname(uri):
         return "http://" + os.path.dirname(uri[7:])
     return os.path.dirname(uri)
 
-class URIResolver(object):
+class SchemaCacher(object):
     def __init__(self, cachedir, logger, urlopener):
         self.__cachedir = cachedir
         self.__urlopener = urlopener
@@ -184,31 +185,42 @@ class URIResolver(object):
 
         self.__logger.text((lvl,"Resolving schema {} ({})... ".format(uri, parent_uri)))
 
-        if not uri.startswith('http://'):
+        if not uri.startswith('http://') and not uri.startswith('https://'):
             if not os.path.isabs(uri):
                 # relative file name
-                if not parent_uri.startswith('http://'):
+                if not parent_uri.startswith('http://') and not parent_uri.startswith('https://'):
                     uri = os.path.join(parent_uri, uri)
                 else:
                     uri = parent_uri + "/" + uri.replace(os.sep, "/")
             if os.path.exists(uri):
                 return uri
 
-        base_uri = uri_dirname(uri)
-
-        out_file_name = uri
-        if uri.startswith('http://'):
-            out_file_name = uri[7:].replace('/', os.sep)
-        out_file_name = os.path.join(self.__cachedir, out_file_name)
-        if os.path.exists(out_file_name):
-            return out_file_name
-
-        f = self.__urlopener(uri)
+        uri = URI(uri, self.__urlopener)
+        out_file_name = os.path.join(self.__cachedir, uri.path())
         mkdir_p(os.path.dirname(out_file_name))
-        fo = open(out_file_name, "w")
-        fo.write(f.read())
-        fo.close()
-        f.close()
+        if os.path.exists(out_file_name):
+            # already cached
+            return out_file_name
+        out_file_name = uri.resolve(out_file_name)
+        base_uri = uri.parent_uri()
+        if False:
+            base_uri = uri_dirname(uri)
+
+            out_file_name = uri
+            if uri.startswith('http://'):
+                out_file_name = uri[7:].replace('/', os.sep)
+            elif uri.startswith('https://'):
+                out_file_name = uri[8:].replace('/', os.sep)
+            out_file_name = os.path.join(self.__cachedir, out_file_name)
+            if os.path.exists(out_file_name):
+                return out_file_name
+
+            f = self.__urlopener(uri)
+            mkdir_p(os.path.dirname(out_file_name))
+            fo = open(out_file_name, "w")
+            fo.write(f.read())
+            fo.close()
+            f.close()
 
         # process imports
         doc = ET.parse(out_file_name)
@@ -228,7 +240,7 @@ class URIResolver(object):
         return f.read()
 
 
-def load_schemas_and_resolve_types(xml_file, archive_dir, xsd_files = None, urlopener = None, logger = None):
+def load_schemas_and_resolve_types(xml_uri, archive_dir, xsd_files = None, urlopener = None, logger = None):
     if xsd_files is None:
         xsd_files = []
     if urlopener is None:
@@ -236,14 +248,14 @@ def load_schemas_and_resolve_types(xml_file, archive_dir, xsd_files = None, urlo
     if logger is None:
         logger = default_logger
 
+    xml_file = xml_uri.resolve()
     doc = ET.parse(xml_file)
     features = extract_features(doc)
     root = features[0]
     root_ns, root_name = split_tag(root.tag)
 
-    uri_resolver = URIResolver(archive_dir, logger, urlopener)
+    schema_cacher = SchemaCacher(archive_dir, logger, urlopener)
 
-    parent_uri = os.path.dirname(xml_file)
 
     if len(xsd_files) == 0:
         # try to download schemas
@@ -253,12 +265,12 @@ def load_schemas_and_resolve_types(xml_file, archive_dir, xsd_files = None, urlo
                 avs = av.split()
                 for ns_name, ns_uri in zip(avs[0::2], avs[1::2]):
                     if ns_name not in ['http://www.opengis.net/wfs']:
-                        xsd_files.append(uri_resolver.cache_uri(ns_uri, parent_uri))
+                        xsd_files.append(schema_cacher.cache_uri(ns_uri, xml_uri.parent_uri()))
 
     if len(xsd_files) == 0:
         raise RuntimeError("No schema found")
 
-    ns_map = parse_schemas(xsd_files, urlopen = lambda uri : uri_resolver.data_from_uri(uri))
+    ns_map = parse_schemas(xsd_files, urlopen = lambda uri : schema_cacher.data_from_uri(uri))
 
     ns = ns_map[root_ns]
 

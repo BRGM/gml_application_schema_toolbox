@@ -473,9 +473,12 @@ class MyLogger:
     def progression(self, i, n):
         logging.info("[{0:.2f}%]".format(float(i)/n*100.0))
 
-def load_gml_model(xml_file, archive_dir, xsd_files = None, merge_max_depth = 6, merge_sequences = False, share_geometries = False, split_multi_geometries = True, urlopener = None, use_cache_file = False, logger = None):
+def load_gml_model(xml_uri, archive_dir, xsd_files = None, merge_max_depth = 6, merge_sequences = False, share_geometries = False, split_multi_geometries = True, urlopener = None, use_cache_file = False, logger = None):
 
-    cachefile = os.path.join(archive_dir, os.path.basename(xml_file) + ".model")
+    if not xml_uri.is_remote():
+        cachefile = os.path.join(archive_dir, os.path.basename(xml_uri.uri()) + ".model")
+    else:
+        cachefile = None
     if logger is None:
         logger = default_logger
     if urlopener is None:
@@ -486,7 +489,7 @@ def load_gml_model(xml_file, archive_dir, xsd_files = None, merge_max_depth = 6,
         return load_model_from(cachefile)
 
     # download and parse schemas and resolve node types
-    typed_nodes = load_schemas_and_resolve_types(xml_file, archive_dir, xsd_files, urlopener, logger)
+    typed_nodes = load_schemas_and_resolve_types(xml_uri, archive_dir, xsd_files, urlopener, logger)
 
     root = typed_nodes[0][0]
     root_name = no_prefix(root.tag)
