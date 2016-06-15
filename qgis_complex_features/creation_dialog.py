@@ -45,8 +45,10 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
             is_remote = QSettings("complex_features").value("is_remote", "false") == "true"
             source_url = QSettings("complex_features").value("source_url", "")
             if is_remote:
+                self.urlRadio.setChecked(True)
                 self.urlText.setText(QDir.fromNativeSeparators(source_url))
             else:
+                self.filenameRadio.setChecked(True)
                 self.filenameText.setText(QDir.fromNativeSeparators(source_url))
             
             # output file name
