@@ -293,7 +293,7 @@ class MainPlugin:
         # load the model
         model_file = QgsProject.instance().fileName() + ".model"
         if not os.path.exists(model_file):
-            QMessageBox.error(None, "File not found", "Cannot find the model file")
+            QMessageBox.critical(None, "File not found", "Cannot find the model file")
             return
 
         attribute_table_action = self.iface.mainWindow().findChild((QAction,), "mActionOpenTable")
