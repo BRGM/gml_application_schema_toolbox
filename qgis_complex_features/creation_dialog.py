@@ -67,7 +67,7 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
         self.attributeTable.selectionModel().selectionChanged.connect(self.onSelectMapping)
         self.browseOutButton.clicked.connect(self.onBrowseOut)
 
-        self.mArchiveDirEdit.setText(QDir.tempPath())
+        self.mArchiveDirEdit.setText(os.path.join(QDir.tempPath(), "cache"))
         self.mArchiveDirBrowseBtn.clicked.connect(self.onArchiveDirBrowse)
 
     def onBrowse(self):
