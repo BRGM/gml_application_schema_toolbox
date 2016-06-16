@@ -25,14 +25,13 @@ def parse_schemas(schema_files, urlopen = urllib2.urlopen):
     import pyxb.binding.generate
     import pyxb.utils.utility
 
-
-
     try:
         # monkey patch DataFromURI to use our own function
         # so that we can easily manage cache, proxies, and so on
         old_DataFromURI = pyxb.utils.utility.DataFromURI
         pyxb.utils.utility.DataFromURI = lambda uri, archive_directory = None : urlopen(uri)
         
+        global oldNormalizeLocation
         oldNormalizeLocation = pyxb.utils.utility.NormalizeLocation
         pyxb.utils.utility.NormalizeLocation = myNormalizeLocation
         
