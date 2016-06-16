@@ -1,5 +1,19 @@
 import urllib2
 
+# This is getting hacky ...
+# The uri normalization function has problems with Windows path
+# (it probably should not be called with plain path, but with file:// url ...)
+# So we monkey patch it ...
+oldNormalizeLocation = None
+def myNormalizeLocation (uri, parent_uri=None, prefix_map=None):
+    if uri is not None and parent_uri is not None and len(parent_uri) > 1 and parent_uri[1] == ':':
+        # may be a Windows drive letter
+        abs_uri = oldNormalizeLocation(uri, "file://" + parent_uri.replace("\\", "/"), prefix_map)
+        if abs_uri.startswith('file://'):
+            return abs_uri[7:]
+        return abs_uri
+    return oldNormalizeLocation(uri, parent_uri, prefix_map)
+        
 def parse_schemas(schema_files, urlopen = urllib2.urlopen):
     """
     Returns a pyxb Namespace for the given schemas.
@@ -11,11 +25,16 @@ def parse_schemas(schema_files, urlopen = urllib2.urlopen):
     import pyxb.binding.generate
     import pyxb.utils.utility
 
+
+
     try:
         # monkey patch DataFromURI to use our own function
         # so that we can easily manage cache, proxies, and so on
         old_DataFromURI = pyxb.utils.utility.DataFromURI
         pyxb.utils.utility.DataFromURI = lambda uri, archive_directory = None : urlopen(uri)
+        
+        oldNormalizeLocation = pyxb.utils.utility.NormalizeLocation
+        pyxb.utils.utility.NormalizeLocation = myNormalizeLocation
         
         generator = pyxb.binding.generate.Generator()
         # default options
@@ -30,6 +49,7 @@ def parse_schemas(schema_files, urlopen = urllib2.urlopen):
     finally:
         # restore the initial DataFromURI
         pyxb.utils.utility.DataFromURI = old_DataFromURI
+        pyxb.utils.utility.NormalizeLocation = oldNormalizeLocation
 
     schemas = generator.schemas()
     ns_map = {}
