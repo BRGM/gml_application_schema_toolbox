@@ -2,7 +2,7 @@ from __future__ import print_function
 import logging
 import pyspatialite.dbapi2 as db
 
-def stream_sql_schema(tables):
+def stream_sql_schema(tables, enforce_not_null = True):
     """Creates SQL(ite) table creation statements from a dict of Table
     :returns: a generator that yield a new SQL line
     """
@@ -15,7 +15,7 @@ def stream_sql_schema(tables):
                 l = c.name() + u" " + c.ref_type()
             else:
                 l = c.name() + u" INT PRIMARY KEY"
-            if not c.optional():
+            if enforce_not_null and not c.optional():
                 l += u" NOT NULL"
             columns.append("  " + l)
 
@@ -24,7 +24,7 @@ def stream_sql_schema(tables):
         for link in table.links():
             if link.ref_table() is None or link.max_occurs() is None:
                 continue
-            if not link.optional() and not link.substitution_group():
+            if enforce_not_null and not link.optional() and not link.substitution_group():
                 nullity = u" NOT NULL"
             else:
                 nullity = u""
@@ -94,12 +94,12 @@ def stream_sql_rows(tables_rows):
     yield(u"PRAGMA foreign_keys = ON;")
 
 
-def create_sqlite_from_model(model, sqlite_file):
+def create_sqlite_from_model(model, sqlite_file, enforce_not_null = True):
     conn = db.connect(sqlite_file)
     cur = conn.cursor()
     cur.execute("SELECT InitSpatialMetadata(1);")
     conn.commit()
-    for line in stream_sql_schema(model.tables()):
+    for line in stream_sql_schema(model.tables(), enforce_not_null):
         logging.debug(line)
         cur.execute(line)
     conn.commit()

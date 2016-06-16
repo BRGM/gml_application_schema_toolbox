@@ -8,6 +8,7 @@ from qgis.core import *
 from qgis.gui import *
 
 import os
+import pyspatialite.dbapi2 as db
 
 package_path = [os.path.join(os.path.dirname(__file__), "whl", "all")]
 import sys
@@ -234,6 +235,7 @@ class MainPlugin:
                 archive_dir = creation_dlg.archive_directory()
                 merge_depth = creation_dlg.merge_depth()
                 merge_sequences = creation_dlg.merge_sequences()
+                enforce_not_null = creation_dlg.enforce_not_null()
 
                 # temporary sqlite file
                 tfile = QTemporaryFile()
@@ -259,13 +261,16 @@ class MainPlugin:
 
                 self.p_widget.setText("Creating the Spatialite file ...")
                 QCoreApplication.processEvents()
-                create_sqlite_from_model(model, output_filename)
+                create_sqlite_from_model(model, output_filename, enforce_not_null)
 
                 self.p_widget.setText("Creating the QGIS project ...")
                 QCoreApplication.processEvents()
                 create_qgis_project_from_model(model, output_filename, project_file, QgsApplication.srsDbFilePath(), QGis.QGIS_VERSION)
                 QgsProject.instance().setFileName(project_file)
                 QgsProject.instance().read()
+        except db.IntegrityError as e:
+            if "NOT NULL constraint" in str(e):
+                QMessageBox.critical(None, "Integrity error", unicode(e) + "\nTry reloading the file without NOT NULL constraints")
         finally:
             self.p_widget.hide()
 

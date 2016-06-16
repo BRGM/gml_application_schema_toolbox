@@ -164,3 +164,6 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
 
     def merge_sequences(self):
         return self.mergeSequencesChk.isChecked()
+
+    def enforce_not_null(self):
+        return self.mEnforceNotNullChk.isChecked()
