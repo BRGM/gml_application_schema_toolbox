@@ -175,7 +175,7 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file, q
             if link.max_occurs() is None:
                 relation = XMLNode("attributeEditorRelation")
                 relation.attrib["relation"] = link.ref_table().name()
-                relation.attrib["name"] = link.name()
+                relation.attrib["name"] = link.ref_table().name()
                 relations_container.append(relation)
                 continue
             edittype = XMLNode("edittype")
