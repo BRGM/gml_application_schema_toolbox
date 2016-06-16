@@ -270,6 +270,9 @@ class MainPlugin:
             self.p_widget.hide()
 
     def onIdentify(self):
+        layer = self.iface.activeLayer()
+        if layer is None or not is_layer_complex(layer):
+            return
         self.mapTool = IdentifyGeometry(self.iface.mapCanvas())
         self.mapTool.geomIdentified.connect(self.onGeometryIdentified)
         self.iface.mapCanvas().setMapTool(self.mapTool)

@@ -351,11 +351,16 @@ class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
         if layer.providerType() != "spatialite":
             return False
         u = QgsDataSourceURI(layer.source())
-        conn = sqlite3.connect(u.database())
-        cur = conn.cursor()
-        cur.execute("SELECT value FROM meta WHERE key='complex_features'")
-        for r in cur:
-            return r[0] == '1'
+        try:
+            conn = sqlite3.connect(u.database())
+            cur = conn.cursor()
+            cur.execute("SELECT value FROM meta WHERE key='complex_features'")
+            for r in cur:
+                return r[0] == '1'
+        except sqlite3.OperationalError as e:
+            if "no such table" in str(e):
+                return False
+            raise
         return False
 
 def load_complex_gml(xml_uri, is_remote, attributes = {}, geometry_mapping = None, output_local_file = None, logger = None):
