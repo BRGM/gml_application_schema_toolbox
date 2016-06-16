@@ -216,6 +216,9 @@
        </item>
        <item row="1" column="1">
         <widget class="QSpinBox" name="mMergeDepthSpin">
+         <property name="minimum">
+          <number>1</number>
+         </property>
          <property name="value">
           <number>6</number>
          </property>
