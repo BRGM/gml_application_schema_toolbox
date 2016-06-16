@@ -13,7 +13,7 @@ def get_custom_viewers():
 
     # introspect the viewers module
     #print(sys.modules.keys())
-    module = sys.modules['qgis_complex_features.viewers']
+    module = sys.modules['gml_application_schema_toolbox.viewers']
     for klass in dir(module):
         if klass.startswith('__'):
             continue
