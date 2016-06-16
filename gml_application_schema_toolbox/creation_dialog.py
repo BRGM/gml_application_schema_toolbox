@@ -22,9 +22,11 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
         self.replaceLayerChck.setEnabled(xml_uri is not None)
         if xml_uri is not None:
             if is_remote:
-                self.urlText.setText(QDir.fromNativeSeparators(xml_uri))
+                self.urlText.setText(xml_uri)
+                self.urlRadio.setChecked(True)
             else:
                 self.filenameText.setText(QDir.fromNativeSeparators(xml_uri))
+                self.filenameRadio.setChecked(True)
             self.replaceLayerChck.setCheckState(Qt.Checked)
 
             for aname, v in attributes.iteritems():
@@ -46,7 +48,7 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
             source_url = QSettings("complex_features").value("source_url", "")
             if is_remote:
                 self.urlRadio.setChecked(True)
-                self.urlText.setText(QDir.fromNativeSeparators(source_url))
+                self.urlText.setText(source_url)
             else:
                 self.filenameRadio.setChecked(True)
                 self.filenameText.setText(QDir.fromNativeSeparators(source_url))
@@ -146,7 +148,7 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
         if self.filenameRadio.isChecked():
             return (False, QDir.toNativeSeparators(self.filenameText.text()))
         #else
-        return (True, QDir.toNativeSeparators(self.urlText.text()))
+        return (True, self.urlText.text())
 
     def replace_current_layer(self):
         return self.replaceLayerChck.isChecked()
