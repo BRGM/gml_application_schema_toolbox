@@ -216,7 +216,7 @@ class XMLTreeWidget(QtGui.QTreeWidget):
             ns_imap = {}
             for k, v in ns_map.iteritems():
                 ns_imap[v] = k
-            fill_tree_with_element(self, item.parent(), doc.getroot(), ns_imap)
+            fill_tree_with_element(self, item.parent(), doc.getroot(), ns_imap, get_custom_viewers())
         finally:
             QApplication.restoreOverrideCursor()
 
