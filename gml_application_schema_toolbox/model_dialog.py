@@ -78,7 +78,7 @@ class TableWidget(QWidget):
 
         self.attribute_label = QLabel()
         names = [f.name() for f in table.columns()]
-        names += [l.ref_table().name() + "_id" for l in table.links() if l.max_occurs() == 1]
+        names += [l.name() + "_id" for l in table.links() if l.max_occurs() == 1]
         names += [l.ref_table().name() + "_id" for l in table.back_links()]
 
         self.attribute_label.setText("\n".join(names))
