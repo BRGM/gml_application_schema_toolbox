@@ -2,6 +2,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from ..gml2relational.xml_utils import no_prefix, split_tag
 
+import viewers_utils
+
 from datetime import datetime
 import time
 import os
@@ -214,17 +216,23 @@ class PointMarker:
                 self.rect.setRect(x, y, rw, rh)
                 self.text.setPos(x, y)
 
-
-
 class WML2TimeSeriesViewer(QWidget):
-    # the XML tag (with namespace) this widget is meant for
-    XML_TAG = "{http://www.opengis.net/waterml/2.0}MeasurementTimeseries"
+    @classmethod
+    def name(cls):
+        return "WML2 Time series"
     
-    def __init__(self, xml_tree, parent = None):
-        QWidget.__init__(self, parent)
+    @classmethod
+    def table_name(cls):
+        # the table name for the relational model
+        return "MeasurementTimeseriesType"
 
-        self.setWindowTitle("TimeSeries viewer")
+    @classmethod
+    def xml_tag(cls):
+        # the XML tag (with namespace) this widget is meant for
+        return "{http://www.opengis.net/waterml/2.0}MeasurementTimeseries"
 
+    @classmethod
+    def init_from_xml(cls, xml_tree):
         # parse data
         data = []
         yTitle = 'value'
@@ -243,6 +251,28 @@ class WML2TimeSeriesViewer(QWidget):
                 for c in child[0]:
                     if c.tag == '{http://www.opengis.net/waterml/2.0}uom':
                         yTitle = c.attrib['code']
+        return cls(title, yTitle, data)
+
+    @classmethod
+    def init_from_model(cls, model, sqlite3_conn, id, parent_widget = None):
+        title = id
+        table = model.tables()[cls.table_name()]
+        ytitle = viewers_utils.xpath_on_db(model, table, "defaultPointMetadata/DefaultTVPMeasurementMetadata/uom/@code", id, sqlite3_conn)[0]
+        times = viewers_utils.xpath_on_db(model, table, "point/MeasurementTVP/time/text()", id, sqlite3_conn)
+        y = viewers_utils.xpath_on_db(model, table, "point/MeasurementTVP/value/text()", id, sqlite3_conn)
+
+        data = []
+        for i in xrange(len(times)):
+            tm = time.mktime(datetime.strptime(times[i], "%Y-%m-%dT%H:%M:%S.000Z").timetuple())
+            value = float(y[i])
+            data.append((tm, value, times[i]))
+        return cls(title, ytitle, data, parent_widget)
+        
+    
+    def __init__(self, title, yTitle, data, parent = None):
+        QWidget.__init__(self, parent)
+
+        self.setWindowTitle("TimeSeries viewer")
 
         # sort data by x
         data.sort(key = lambda x: x[0])
@@ -289,6 +319,6 @@ class WML2TimeSeriesViewer(QWidget):
         self.resize(800,600)
 
     @classmethod
-    def icon(self):
+    def icon(cls):
         """Must return a QIcon"""
         return QIcon(os.path.join(os.path.dirname(__file__), "plot.svg"))

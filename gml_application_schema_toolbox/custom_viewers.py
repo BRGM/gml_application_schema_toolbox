@@ -18,9 +18,9 @@ def get_custom_viewers():
         if klass.startswith('__'):
             continue
         k = getattr(module, klass)
-        if hasattr(k, 'XML_TAG'):
-            tag = getattr(k, 'XML_TAG')
-            __custom_viewers[tag] = k
+        if hasattr(k, 'xml_tag'):
+            __custom_viewers[k.xml_tag()] = k
 
     return __custom_viewers
-    
+
+

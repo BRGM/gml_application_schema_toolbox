@@ -37,7 +37,7 @@ def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers =
         btn.setIcon(custom_viewer_widget.icon())
         btn.setIconSize(QSize(32,32))
         def show_viewer(btn):
-            widget.w = custom_viewer_widget(elt)
+            widget.w = custom_viewer_widget.init_from_xml(elt)
             widget.w.setWindowModality(Qt.WindowModal)
             widget.w.show()
         btn.clicked.connect(show_viewer)

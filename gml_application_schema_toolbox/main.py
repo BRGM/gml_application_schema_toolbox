@@ -29,8 +29,62 @@ from gml2relational.sqlite_writer import create_sqlite_from_model
 from gml2relational.qgis_project_writer import create_qgis_project_from_model
 from gml2relational.uri import URI
 
+import custom_viewers
+
 from . import name as plugin_name
 from . import version as plugin_version
+
+# ==============================
+def show_viewer(layer, feature, parent, viewer):
+    # load the model
+    model_file = QgsProject.instance().fileName() + ".model"
+    if not os.path.exists(model_file):
+        QMessageBox.critical(None, "File not found", "Cannot find the model file")
+        return
+    model = load_model_from(model_file)
+    ds = QgsDataSourceURI(layer.source())
+    import sqlite3
+    conn = sqlite3.connect(ds.database())
+    dlg = QDialog(parent)
+    w = viewer.init_from_model(model, conn, feature.attribute("id"), dlg)
+    layout = QVBoxLayout()
+    layout.addWidget(w)
+    dlg.setWindowTitle(w.windowTitle())
+    dlg.setLayout(layout)
+    dlg.resize(800, 600)
+    dlg.show()
+    
+def add_viewer_to_form(dialog, layer, feature):
+
+    def find_tab_widget(w):
+        if isinstance(w, QTabWidget) and w.tabText(0) == "Columns":
+            return w
+        for child in w.children():
+            tw = find_tab_widget(child)
+            if tw is not None:
+                return tw
+        return None
+
+    tw = find_tab_widget(dialog)
+    if tw is None:
+        return
+    l = tw.parent().layout()
+    if l.rowCount() < 4:
+        viewers = custom_viewers.get_custom_viewers()
+        viewer = [viewer for viewer in viewers.values() if viewer.table_name() == layer.name()][0]
+        btn = QPushButton(viewer.icon(), viewer.name() + " plugin", tw)
+        btn.clicked.connect(lambda obj, checked = False: show_viewer(layer, feature, tw, viewer))
+        l.addWidget(btn, 3, 0)
+
+def show_viewer_init_code():
+    return """
+def my_form_open(dialog, layer, feature):
+    from gml_application_schema_toolbox import main as mmain
+    mmain.add_viewer_to_form(dialog, layer, feature)
+"""
+    
+# ===============
+
 
 class IdentifyGeometry(QgsMapToolIdentify):
     geomIdentified = pyqtSignal(QgsVectorLayer, QgsFeature)
@@ -268,6 +322,18 @@ class MainPlugin:
                 create_qgis_project_from_model(model, output_filename, project_file, QgsApplication.srsDbFilePath(), QGis.QGIS_VERSION)
                 QgsProject.instance().setFileName(project_file)
                 QgsProject.instance().read()
+
+                # custom viewers initialization
+                viewers = custom_viewers.get_custom_viewers()
+                table_names = model.tables().keys()
+                for viewer in viewers.values():
+                    if viewer.table_name() in table_names:
+                        print "Init {} viewer on {}".format(viewer.name(), viewer.table_name())
+                        layer = QgsMapLayerRegistry.instance().mapLayersByName(viewer.table_name())[0]
+                        layer.editFormConfig().setInitCode(show_viewer_init_code())
+                        layer.editFormConfig().setInitFunction("my_form_open")
+                        layer.editFormConfig().setInitCodeSource(QgsEditFormConfig.CodeSourceDialog)
+                    
         except db.IntegrityError as e:
             if "NOT NULL constraint" in str(e):
                 QMessageBox.critical(None, "Integrity error", unicode(e) + "\nTry reloading the file without NOT NULL constraints")
