@@ -15,6 +15,11 @@ def extract_features(doc):
             elif no_prefix(child.tag) == 'featureMembers':
                 for cchild in child:
                     nodes.append(cchild)
+    elif root.tag.startswith(u'{http://www.opengis.net/sos/2') and root.tag.endswith('GetObservationResponse'):
+        # SOS features
+        for child in root:
+            if no_prefix(child.tag) == "observationData":
+                nodes.append(child[0])
     else:
         # it seems to be an isolated feature
         nodes.append(root)
