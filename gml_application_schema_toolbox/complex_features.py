@@ -147,7 +147,7 @@ class ComplexFeatureSource:
                         value = None
                 attrvalues[attr] = value
 
-            yield fid, wkb, feature, attrvalues
+            yield i, fid, wkb, feature, attrvalues
             i += 1
 
 
@@ -184,7 +184,7 @@ class ComplexFeatureLoader:
 
         layer = None
         attr_list = [ (k, v[1]) for k, v in attributes.iteritems() ]
-        for fid, g, xml, attrs in src.getFeatures():
+        for id, fid, g, xml, attrs in src.getFeatures():
             qgsgeom = None
             if g is None:
                 if layer is None:
@@ -207,10 +207,11 @@ class ComplexFeatureLoader:
                 self._add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)
 
                 pr = layer.dataProvider()
-                f = QgsFeature(pr.fields())
+                f = QgsFeature(pr.fields(), id)
                 if qgsgeom:
                     f.setGeometry(qgsgeom)
-                f.setAttribute("id", fid)
+                f.setAttribute("id", unicode(id))
+                f.setAttribute("fid", fid)
                 f.setAttribute("_xml_", ET.tostring(xml))
                 for k, v in attrs.iteritems():
                     r = f.setAttribute(k, v)
@@ -283,7 +284,7 @@ class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
         cur.execute("DROP TABLE IF EXISTS meta")
         cur.execute("DROP TABLE IF EXISTS data")
         cur.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
-        cur.execute("CREATE TABLE data (id TEXT NOT NULL PRIMARY KEY)")
+        cur.execute("CREATE TABLE data (id INT NOT NULL PRIMARY KEY, fid TEXT NOT NULL)")
         if srid:
             cur.execute("SELECT AddGeometryColumn('data', 'geometry', {}, '{}', 'XY')".format(srid, type))
         conn.close()
@@ -294,6 +295,7 @@ class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
             layer = QgsVectorLayer("dbname='{}' table=\"data\" sql=".format(self.output_local_file), title, "spatialite")
 
         pr = layer.dataProvider()
+        pr.addAttributes([QgsField("fid", QVariant.String)])
         pr.addAttributes([QgsField("_xml_", QVariant.String)])
         for aname, atype in attributes:
             atype_name = QVariant.typeToName(atype)
