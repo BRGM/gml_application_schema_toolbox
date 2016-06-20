@@ -66,15 +66,27 @@ def add_viewer_to_form(dialog, layer, feature):
         return None
 
     tw = find_tab_widget(dialog)
-    if tw is None:
+    child = dialog.findChild(QPushButton, "_viewer_button")
+    # button already there ?
+    if child is not None:
         return
-    l = tw.parent().layout()
-    if l.rowCount() < 4:
-        viewers = custom_viewers.get_custom_viewers()
-        viewer = [viewer for viewer in viewers.values() if viewer.table_name() == layer.name()][0]
-        btn = QPushButton(viewer.icon(), viewer.name() + " plugin", tw)
-        btn.clicked.connect(lambda obj, checked = False: show_viewer(layer, feature, tw, viewer))
-        l.addWidget(btn, 3, 0)
+
+    tw = find_tab_widget(dialog)
+    l = tw.widget(0).layout()
+    scrollarea = l.itemAtPosition(0,0).widget()
+    l2 = scrollarea.widget().layout()
+    it = l2.itemAt(l2.count()-1)
+    w = it.widget() # the last widget of the gridlayout
+    viewers = custom_viewers.get_custom_viewers()
+    viewer = [viewer for viewer in viewers.values() if viewer.table_name() == layer.name()][0]
+    btn = QPushButton(viewer.icon(), viewer.name() + " plugin", tw)
+    btn.setObjectName("_viewer_button")
+    btn.clicked.connect(lambda obj, checked = False: show_viewer(layer, feature, tw, viewer))
+
+    c = l2.count()
+    l2.removeItem(it) # move the last widget
+    l2.addWidget(btn, c-2, 0, Qt.AlignTop) # insert the button before the last widget
+    l2.addWidget(w, c-1, 0, Qt.AlignTop) # move the last widget
 
 def show_viewer_init_code():
     return """
