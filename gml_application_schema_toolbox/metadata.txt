@@ -13,7 +13,7 @@ name=QGIS GML Application Schema Toolbox
 qgisMinimumVersion=2.14
 qgisMaximumVersion=2.99
 description=Prototype to load OGC Complex Features in QGIS
-version=0.7.3
+version=0.8.0
 changelog=
 
 # tags are comma separated with spaces allowed

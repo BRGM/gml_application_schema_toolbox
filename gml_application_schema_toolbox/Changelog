@@ -1,3 +1,9 @@
+0.8.0 - 20/06/2016
+	* Add an 'enforce not null constraints' option
+	* Treat SOS:observationData as features
+	* Enable custom widgets for embedded href
+	* Add viewer plugins to the relational mode
+	* Embed the XML tree widget in the attribute form (and remove custom identify / attribute table buttons)
 0.7.3 - 16/06/2016
 	* Fix URI resolution under Windows
 0.7.1 - 15/06/2016
