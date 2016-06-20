@@ -17,9 +17,7 @@ if not set(package_path).issubset(set(sys.path)):
 
 from qgis_urlopener import remote_open_from_qgis
 from complex_features import ComplexFeatureSource, load_complex_gml, properties_from_layer, is_layer_complex
-from identify_dialog import IdentifyDialog
 from creation_dialog import CreationDialog
-from table_dialog import TableDialog
 from model_dialog import ModelDialog
 from xml_tree_widget import XMLTreeWidget
 
@@ -180,12 +178,6 @@ class MainPlugin:
         self.action = QAction(QIcon(os.path.dirname(__file__) + "/mActionAddGMLLayer.svg"), \
                               u"Add/Edit Complex Features Layer", self.iface.mainWindow())
         self.action.triggered.connect(self.onAddLayer)
-        self.identifyAction = QAction(QIcon(os.path.dirname(__file__) + "/mActionIdentifyGML.svg"), \
-                              u"Identify GML feature", self.iface.mainWindow())
-        self.identifyAction.triggered.connect(self.onIdentify)
-        self.tableAction = QAction(QIcon(os.path.dirname(__file__) + "/mActionOpenTableGML.svg"), \
-                              u"Open feature list", self.iface.mainWindow())
-        self.tableAction.triggered.connect(self.onOpenTable)
 
         self.schemaAction = QAction(QIcon(os.path.dirname(__file__) + "/mActionShowSchema.svg"), \
                               u"Show schema", self.iface.mainWindow())
@@ -196,10 +188,6 @@ class MainPlugin:
 
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu(plugin_name(), self.action)
-        self.iface.addToolBarIcon(self.identifyAction)
-        self.iface.addPluginToMenu(plugin_name(), self.identifyAction)
-        self.iface.addToolBarIcon(self.tableAction)
-        self.iface.addPluginToMenu(plugin_name(), self.tableAction)
         self.iface.addToolBarIcon(self.schemaAction)
         self.iface.addPluginToMenu(plugin_name(), self.schemaAction)
         self.iface.addPluginToMenu(plugin_name(), self.aboutAction)
@@ -213,10 +201,6 @@ class MainPlugin:
         # Remove the plugin menu item and icon
         self.iface.removeToolBarIcon(self.action)
         self.iface.removePluginMenu(plugin_name(),self.action)
-        self.iface.removeToolBarIcon(self.identifyAction)
-        self.iface.removePluginMenu(plugin_name(),self.identifyAction)
-        self.iface.removeToolBarIcon(self.tableAction)
-        self.iface.removePluginMenu(plugin_name(),self.tableAction)
         self.iface.removeToolBarIcon(self.schemaAction)
         self.iface.removePluginMenu(plugin_name(),self.schemaAction)
         self.iface.removePluginMenu(plugin_name(), self.aboutAction)
@@ -374,30 +358,6 @@ class MainPlugin:
                 QMessageBox.critical(None, "Integrity error", unicode(e) + "\nTry reloading the file without NOT NULL constraints")
         finally:
             self.p_widget.hide()
-
-    def onIdentify(self):
-        layer = self.iface.activeLayer()
-        if layer is None or not is_layer_complex(layer):
-            return
-        self.mapTool = IdentifyGeometry(self.iface.mapCanvas())
-        self.mapTool.geomIdentified.connect(self.onGeometryIdentified)
-        self.iface.mapCanvas().setMapTool(self.mapTool)
-
-    def onGeometryIdentified(self, layer, feature):
-        # disable map tool
-        self.iface.mapCanvas().setMapTool(None)
-
-        self.dlg = IdentifyDialog(layer, feature)
-        self.dlg.setWindowModality(Qt.ApplicationModal)
-        self.dlg.show()
-
-    def onOpenTable(self):
-        layer = self.iface.activeLayer()
-        if layer is None or not is_layer_complex(layer):
-            return
-
-        self.table = TableDialog(layer)
-        self.table.show()
 
     def onShowSchema(self):
         # load the model
