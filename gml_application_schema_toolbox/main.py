@@ -55,102 +55,45 @@ def show_viewer(layer, feature, parent, viewer):
     dlg.resize(800, 600)
     dlg.show()
     
+def find_label_layout(dialog, lbl_text):
+    # find the parent layout of a QLabel
+    ll = dialog.findChildren(QWidget)
+    ll = [l.layout() for l in ll if l.layout() is not None and isinstance(l.layout(), QGridLayout)]
+    for l in ll:
+        for i in range(l.count()):
+            it = l.itemAt(i)
+            if isinstance(it, QWidgetItem) and isinstance(it.widget(), QLabel) and it.widget().text() == lbl_text:
+                return l
+    return None
+
 def add_viewer_to_form(dialog, layer, feature):
-
-    def find_tab_widget(w):
-        if isinstance(w, QTabWidget) and w.tabText(0) == "Columns":
-            return w
-        for child in w.children():
-            tw = find_tab_widget(child)
-            if tw is not None:
-                return tw
-        return None
-
-    tw = find_tab_widget(dialog)
-    child = dialog.findChild(QPushButton, "_viewer_button")
-    # button already there ?
-    if child is not None:
+    if dialog.findChild(QPushButton,"_viewer_button") is not None:
         return
+    tw = [tw for tw in dialog.findChildren(QTabWidget) if tw.tabText(0) == "Columns"][0]
+    l = find_label_layout(tw, "id")
 
-    tw = find_tab_widget(dialog)
-    l = tw.widget(0).layout()
-    scrollarea = l.itemAtPosition(0,0).widget()
-    l2 = scrollarea.widget().layout()
-    it = l2.itemAt(l2.count()-1)
-    w = it.widget() # the last widget of the gridlayout
     viewers = custom_viewers.get_custom_viewers()
     viewer = [viewer for viewer in viewers.values() if viewer.table_name() == layer.name()][0]
     btn = QPushButton(viewer.icon(), viewer.name() + " plugin", tw)
     btn.setObjectName("_viewer_button")
     btn.clicked.connect(lambda obj, checked = False: show_viewer(layer, feature, tw, viewer))
-
-    c = l2.count()
-    l2.removeItem(it) # move the last widget
-    l2.addWidget(btn, c-2, 0, Qt.AlignTop) # insert the button before the last widget
-    l2.addWidget(w, c-1, 0, Qt.AlignTop) # move the last widget
-
-def add_viewer_to_form(dialog, layer, feature):
-
-    def find_tab_widget(w):
-        if isinstance(w, QTabWidget) and w.tabText(0) == "Columns":
-            return w
-        for child in w.children():
-            tw = find_tab_widget(child)
-            if tw is not None:
-                return tw
-        return None
-
-    tw = find_tab_widget(dialog)
-    child = dialog.findChild(QPushButton, "_viewer_button")
-    # button already there ?
-    if child is not None:
-        return
-
-    tw = find_tab_widget(dialog)
-    l = tw.widget(0).layout()
-    scrollarea = l.itemAtPosition(0,0).widget()
-    l2 = scrollarea.widget().layout()
-    it = l2.itemAt(l2.count()-1)
-    w = it.widget() # the last widget of the gridlayout
-    viewers = custom_viewers.get_custom_viewers()
-    viewer = [viewer for viewer in viewers.values() if viewer.table_name() == layer.name()][0]
-    btn = QPushButton(viewer.icon(), viewer.name() + " plugin", tw)
-    btn.setObjectName("_viewer_button")
-    btn.clicked.connect(lambda obj, checked = False: show_viewer(layer, feature, tw, viewer))
-
-    c = l2.count()
-    l2.removeItem(it) # move the last widget
-    l2.addWidget(btn, c-2, 0, Qt.AlignTop) # insert the button before the last widget
-    l2.addWidget(w, c-1, 0, Qt.AlignTop) # move the last widget
+    l.addWidget(btn, l.rowCount(), 0, Qt.AlignTop)
 
 def add_xml_tree_to_form(dialog, layer, feature):
-    def find_layout(dialog):
-        # find the parent layout of a QLabel named "fid"
-        ll = dialog.findChildren(QWidget)
-        ll = [l.layout() for l in ll if l.layout() is not None and isinstance(l.layout(), QGridLayout)]
-        for l in ll:
-            for i in range(l.count()):
-                it = l.itemAt(i)
-                if isinstance(it, QWidgetItem) and isinstance(it.widget(), QLabel) and it.widget().text() == "fid":
-                    return l
-        return None
-
     w = dialog.findChild(QPushButton, "_xml_widget_")
     if w is not None:
         return
-    l = find_layout(dialog)
+    l = find_label_layout(dialog, "fid")
     if l is None:
         return
 
     w = XMLTreeWidget(dialog)
     w.setObjectName("_xml_widget_")
     w.updateFeature(feature)
-    w.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding))
     lbl = QLabel("XML", dialog)
     l.addWidget(lbl, l.rowCount()-1, 0)
     l.addWidget(w, l.rowCount()-1, 1)
     l.setRowStretch(l.rowCount()-1, 2)
-    print l.rowCount()
 
 def show_viewer_init_code():
     return """
