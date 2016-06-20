@@ -21,6 +21,7 @@ from identify_dialog import IdentifyDialog
 from creation_dialog import CreationDialog
 from table_dialog import TableDialog
 from model_dialog import ModelDialog
+from xml_tree_widget import XMLTreeWidget
 
 import gml2relational
 from gml2relational.relational_model_builder import load_gml_model
@@ -88,13 +89,83 @@ def add_viewer_to_form(dialog, layer, feature):
     l2.addWidget(btn, c-2, 0, Qt.AlignTop) # insert the button before the last widget
     l2.addWidget(w, c-1, 0, Qt.AlignTop) # move the last widget
 
+def add_viewer_to_form(dialog, layer, feature):
+
+    def find_tab_widget(w):
+        if isinstance(w, QTabWidget) and w.tabText(0) == "Columns":
+            return w
+        for child in w.children():
+            tw = find_tab_widget(child)
+            if tw is not None:
+                return tw
+        return None
+
+    tw = find_tab_widget(dialog)
+    child = dialog.findChild(QPushButton, "_viewer_button")
+    # button already there ?
+    if child is not None:
+        return
+
+    tw = find_tab_widget(dialog)
+    l = tw.widget(0).layout()
+    scrollarea = l.itemAtPosition(0,0).widget()
+    l2 = scrollarea.widget().layout()
+    it = l2.itemAt(l2.count()-1)
+    w = it.widget() # the last widget of the gridlayout
+    viewers = custom_viewers.get_custom_viewers()
+    viewer = [viewer for viewer in viewers.values() if viewer.table_name() == layer.name()][0]
+    btn = QPushButton(viewer.icon(), viewer.name() + " plugin", tw)
+    btn.setObjectName("_viewer_button")
+    btn.clicked.connect(lambda obj, checked = False: show_viewer(layer, feature, tw, viewer))
+
+    c = l2.count()
+    l2.removeItem(it) # move the last widget
+    l2.addWidget(btn, c-2, 0, Qt.AlignTop) # insert the button before the last widget
+    l2.addWidget(w, c-1, 0, Qt.AlignTop) # move the last widget
+
+def add_xml_tree_to_form(dialog, layer, feature):
+    def find_layout(dialog):
+        # find the parent layout of a QLabel named "fid"
+        ll = dialog.findChildren(QWidget)
+        ll = [l.layout() for l in ll if l.layout() is not None and isinstance(l.layout(), QGridLayout)]
+        for l in ll:
+            for i in range(l.count()):
+                it = l.itemAt(i)
+                if isinstance(it, QWidgetItem) and isinstance(it.widget(), QLabel) and it.widget().text() == "fid":
+                    return l
+        return None
+
+    w = dialog.findChild(QPushButton, "_xml_widget_")
+    if w is not None:
+        return
+    l = find_layout(dialog)
+    if l is None:
+        return
+
+    w = XMLTreeWidget(dialog)
+    w.setObjectName("_xml_widget_")
+    w.updateFeature(feature)
+    w.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding))
+    lbl = QLabel("XML", dialog)
+    l.addWidget(lbl, l.rowCount()-1, 0)
+    l.addWidget(w, l.rowCount()-1, 1)
+    l.setRowStretch(l.rowCount()-1, 2)
+    print l.rowCount()
+
 def show_viewer_init_code():
     return """
 def my_form_open(dialog, layer, feature):
     from gml_application_schema_toolbox import main as mmain
     mmain.add_viewer_to_form(dialog, layer, feature)
 """
-    
+
+def show_xml_init_code():
+    return """
+def my_form_open(dialog, layer, feature):
+    from gml_application_schema_toolbox import main as mmain
+    mmain.add_xml_tree_to_form(dialog, layer, feature)
+"""
+
 # ===============
 
 
@@ -295,6 +366,15 @@ class MainPlugin:
                 else:
                     # a new layer
                     QgsMapLayerRegistry.instance().addMapLayer(new_layer)
+
+                # custom form widget for XML
+                new_layer.editFormConfig().setInitCode(show_xml_init_code())
+                new_layer.editFormConfig().setInitFunction("my_form_open")
+                new_layer.editFormConfig().setInitCodeSource(QgsEditFormConfig.CodeSourceDialog)
+                new_layer.editFormConfig().setWidgetType(0, "Hidden") # id
+                new_layer.editFormConfig().setWidgetType(2, "Hidden") # _xml_
+                new_layer.setDisplayExpression("fid")
+
             else: # import type == 2
                 is_remote, url = creation_dlg.source()
                 output_filename = creation_dlg.output_filename()
