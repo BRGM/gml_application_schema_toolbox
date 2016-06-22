@@ -5,7 +5,7 @@ import unittest
 import os
 import sys
 import tempfile
-sys.path = [os.path.join(os.path.dirname(__file__), "../whl/all")] + sys.path
+sys.path = [os.path.join(os.path.dirname(__file__), "../extlibs")] + sys.path
 
 from relational_model_builder import load_gml_model
 

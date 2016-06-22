@@ -10,7 +10,7 @@ from qgis.gui import *
 import os
 import pyspatialite.dbapi2 as db
 
-package_path = [os.path.join(os.path.dirname(__file__), "whl", "all")]
+package_path = [os.path.join(os.path.dirname(__file__), "extlibs")]
 import sys
 if not set(package_path).issubset(set(sys.path)):
     sys.path = package_path + sys.path

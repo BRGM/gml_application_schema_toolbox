@@ -7,7 +7,7 @@ from optparse import OptionParser
 
 import os
 import sys
-sys.path = [os.path.join(os.path.dirname(__file__), "../whl/all")] + sys.path
+sys.path = [os.path.join(os.path.dirname(__file__), "../extlibs")] + sys.path
 
 from schema_parser import parse_schemas
 from type_resolver import resolve_types, type_definition_name
