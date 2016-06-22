@@ -1,8 +1,0 @@
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://test.com/Y">
-  <xs:simpleType name="percentage">
-    <xs:restriction base="xs:integer">
-      <xs:minInclusive value="0"/>
-      <xs:maxInclusive value="100"/>
-    </xs:restriction>    
-  </xs:simpleType>
-</xs:schema>
