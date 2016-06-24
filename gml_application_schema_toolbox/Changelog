@@ -1,3 +1,5 @@
+0.8.1 - 24/06/2016
+	* Fix an ownership bug only seen on Windows
 0.8.0 - 20/06/2016
 	* Add an 'enforce not null constraints' option
 	* Treat SOS:observationData as features
