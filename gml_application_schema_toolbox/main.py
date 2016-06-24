@@ -93,6 +93,12 @@ def add_xml_tree_to_form(dialog, layer, feature):
     l.addWidget(w, l.rowCount()-1, 1)
     l.setRowStretch(l.rowCount()-1, 2)
 
+    # the tree widget must not be garbage collected yet
+    # since we want its Python slots to be called on signals
+    # we then transfer its ownership to a C++ object that lives longer
+    import sip
+    sip.transferto(w, dialog)
+
 def show_viewer_init_code():
     return """
 def my_form_open(dialog, layer, feature):
