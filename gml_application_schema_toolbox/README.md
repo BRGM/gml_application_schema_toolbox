@@ -1,19 +1,15 @@
 GML application schema toolbox
 ==============================
 
-This is prototype implementation of a toolbox designed to manipulate Complex Features.
+This directory contains the QGIS plugin that demonstrates the manipulation of
+Complex Features in two modes (native XML or relational).
 
-It mainly consists of a QGIS plugin that allows to import Complex Features in two modes:
+It relies on a library called [gml2relational](gml2relational) that does the conversion
+from XML to a relational model and export the conversion both to a database (Sqlite) and to a QGIS project file.
 
-  * the native XML mode
-  * the relational mode where the XML is first converted into a database, thanks to the PyXB library
+The plugin will overload standard QGIS identify / attribute table tools so that XML data can be
+seen as an XML-tree widget (in XML mode) or as a bunch of related tables (in relational mode).
 
-Authors
--------
+Some complex types can have a custom viewer widget provided by the library. A description of such
+a feature can be found in the [viewer](viewers) direcotry.
 
-This plugin has been funded by BRGM and developed by Oslandia
-
-License
--------
-
-GPLv2+
