@@ -499,7 +499,7 @@ def load_gml_model(xml_uri, archive_dir, xsd_files = None, merge_max_depth = 6, 
     else:
         cachefile = None
     if logger is None:
-        logger = default_logger
+        logger = MyLogger()
     if urlopener is None:
         urlopener = urllib2.urlopen
 
