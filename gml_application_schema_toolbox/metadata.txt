@@ -22,7 +22,7 @@ changelog=
 tags=ogc, complex, features
 
 homepage=http://www.oslandia.com
-tracker=
+tracker=https://github.com/Oslandia/gml_application_schema_toolbox/issues
 repository=https://github.com/Oslandia/gml_application_schema_toolbox
 icon=
 # experimental flag
