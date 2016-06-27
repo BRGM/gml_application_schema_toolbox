@@ -38,6 +38,8 @@ def wkbFromGml(tree):
     # call ogr for GML parsing
     s = ET.tostring(tree)
     g = ogr.CreateGeometryFromGML(s)
+    if g is None:
+        return None
     return (g.ExportToWkb(), srid)
 
 def extractGmlGeometry(tree):
