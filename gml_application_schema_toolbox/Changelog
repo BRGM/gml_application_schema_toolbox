@@ -1,3 +1,6 @@
+0.8.3 - 27/06/2016
+	* Add licences
+	* Add doc / readme
 0.8.2 - 27/06/2016
 	* Fix custom viewer SQL queries to include order by
 0.8.1 - 24/06/2016
