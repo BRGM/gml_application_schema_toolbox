@@ -24,14 +24,13 @@ from qgis.core import QgsNetworkAccessManager
 
 __network_manager = None
 
-def remote_open_from_qgis(uri):
-    """Opens a remote URL using QGIS proxy preferences"""
+def _sync_get(url):
     global __network_manager
     if __network_manager is None:
         __network_manager = QNetworkAccessManager()
         __network_manager.setProxy(QgsNetworkAccessManager.instance().proxy())
     pause = QEventLoop()
-    req = QNetworkRequest(QUrl.fromEncoded(uri))
+    req = QNetworkRequest(url)
     req.setRawHeader("Accept", "application/xml")
     req.setRawHeader("Accept-Language", "fr")
     reply = __network_manager.get(req)
@@ -41,6 +40,16 @@ def remote_open_from_qgis(uri):
         raise RuntimeError("Network problem when downloading {}".format(uri))
     reply.error.connect(onError)
     pause.exec_()
+    return reply
+
+def remote_open_from_qgis(uri):
+    """Opens a remote URL using QGIS proxy preferences"""
+    reply = _sync_get(QUrl.fromEncoded(uri))
+    redirect = reply.attribute(QNetworkRequest.RedirectionTargetAttribute)
+    # Handle HTTP 302 redirections
+    while redirect is not None and not redirect.isEmpty():
+        reply = _sync_get(redirect)
+        redirect = reply.attribute(QNetworkRequest.RedirectionTargetAttribute)
     r = str(reply.readAll())
     reply.close()
     return StringIO(r)

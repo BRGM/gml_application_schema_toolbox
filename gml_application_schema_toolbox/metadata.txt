@@ -15,7 +15,7 @@ qgisMaximumVersion=2.99
 description=Prototype to load OGC Complex Features in QGIS
 about=This plugins allows to import Complex Features streams in QGIS either through a native XML mode or through a conversion to a relational database model
 
-version=0.8.3
+version=0.8.4
 changelog=
 
 # tags are comma separated with spaces allowed
