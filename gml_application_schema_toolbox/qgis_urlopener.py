@@ -37,7 +37,7 @@ def _sync_get(url):
     reply.finished.connect(pause.quit)
     def onError(self):
         pause.quit()
-        raise RuntimeError("Network problem when downloading {}".format(uri))
+        raise RuntimeError("Network problem when downloading {}".format(url))
     reply.error.connect(onError)
     pause.exec_()
     return reply
