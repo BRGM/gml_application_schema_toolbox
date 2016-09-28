@@ -1,0 +1,244 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<wfs:FeatureCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd http://inspire.ec.europa.eu/schemas/mr-m4eu/1.0 http://minerals4eu.brgm-rec.fr/deegree/services/m4eu?SERVICE=WFS&amp;VERSION=2.0.0&amp;REQUEST=DescribeFeatureType&amp;OUTPUTFORMAT=application%2Fgml%2Bxml%3B+version%3D3.2&amp;TYPENAME=mr-m4eu:MineralOccurrence_Extension&amp;NAMESPACES=xmlns(mr-m4eu,http%3A%2F%2Finspire.ec.europa.eu%2Fschemas%2Fmr-m4eu%2F1.0)" xmlns:wfs="http://www.opengis.net/wfs/2.0" timeStamp="2016-09-28T14:50:56Z" xmlns:gml="http://www.opengis.net/gml/3.2" numberMatched="unknown" numberReturned="0">
+  <!--NOTE: numberReturned attribute should be 'unknown' as well, but this would not validate against the current version of the WFS 2.0 schema (change upcoming). See change request (CR 144): https://portal.opengeospatial.org/files?artifact_id=43925.-->
+  <wfs:member>
+    <mr-m4eu:MineralOccurrence_Extension xmlns:mr-m4eu="http://inspire.ec.europa.eu/schemas/mr-m4eu/1.0" gml:id="M4EU.MO_124">
+      <ge:inspireId xmlns:ge="http://inspire.ec.europa.eu/schemas/ge-core/3.0">
+        <base:Identifier xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3">
+          <base:localId>PROM-FRA-00134-MO</base:localId>
+          <base:namespace>FR.BRGM.M4EU</base:namespace>
+          <base:versionId>1</base:versionId>
+        </base:Identifier>
+      </ge:inspireId>
+      <ge:name xmlns:ge="http://inspire.ec.europa.eu/schemas/ge-core/3.0">FRA-00134</ge:name>
+      <ge:geologicHistory xmlns:ge="http://inspire.ec.europa.eu/schemas/ge-core/3.0" xsi:nil="true"/>
+      <ge:themeClass xmlns:ge="http://inspire.ec.europa.eu/schemas/ge-core/3.0" xsi:nil="true" nilReason="unpopulated"/>
+      <mr-core:beginLifespanVersion xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0" xsi:nil="true" nilReason="unpopulated"/>
+      <mr-core:endLifespanversion xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0" xsi:nil="true" nilReason="unpopulated"/>
+      <mr-core:explorationHistory xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0" xsi:nil="true"/>
+      <mr-core:commodityDescription xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0">
+        <!--Inlined feature 'M4EU.CO_305'-->
+        <mr-m4eu:Commodity_Extension gml:id="M4EU.CO_305">
+          <mr-core:source xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#M4EU.MO_124"/>
+          <mr-core:commodity xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/CommodityCodeValue/coal"/>
+          <mr-core:commodityImportance xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/ImportanceValue/smallDeposit"/>
+          <mr-core:commodityRank xsi:nil="true" nilReason="unpopulated"/>
+          <mr-m4eu:source xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#M4EU.MO_124"/>
+          <mr-m4eu:source xsi:nil="true"/>
+        </mr-m4eu:Commodity_Extension>
+      </mr-core:commodityDescription>
+      <mr-core:resourceExtraction xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0">
+        <!--Inlined feature 'M4EU.MA_124'-->
+        <mr-m4eu:MiningActivity_Extension gml:id="M4EU.MA_124">
+          <mr-core:inspireId>
+            <base:Identifier xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3">
+              <base:localId>PROMFRA-00134-MA247</base:localId>
+              <base:namespace>FR.BRGM</base:namespace>
+              <base:versionId>1</base:versionId>
+            </base:Identifier>
+          </mr-core:inspireId>
+          <mr-core:processingType xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/ProcessingActivityTypeValue/unknownTreatment"/>
+          <mr-core:deposit xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#M4EU.MO_124"/>
+          <mr-core:associatedMine>
+            <!--Inlined feature 'M4EU.MI_124'-->
+            <mr-m4eu:Mine_Extension gml:id="M4EU.MI_124">
+              <mr-core:inspireId>
+                <base:Identifier xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3">
+                  <base:localId>PROMFRA-00134-MI248</base:localId>
+                  <base:namespace>FR.BRGM</base:namespace>
+                  <base:versionId>1</base:versionId>
+                </base:Identifier>
+              </mr-core:inspireId>
+              <mr-core:beginLifespanVersion xsi:nil="true" nilReason="unpopulated"/>
+              <mr-core:endLifespanVersion xsi:nil="true" nilReason="unpopulated"/>
+              <mr-core:relatedActivity xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#M4EU.MA_124"/>
+              <mr-core:startDate xsi:nil="true" nilReason="unpopulated"/>
+              <mr-core:mineName>
+                <mr-core:MineName>
+                  <mr-core:isPreferred>true</mr-core:isPreferred>
+                  <mr-core:mineName>FRA-00134</mr-core:mineName>
+                </mr-core:MineName>
+              </mr-core:mineName>
+              <mr-core:mineName>
+                <mr-core:MineName>
+                  <mr-core:isPreferred>false</mr-core:isPreferred>
+                  <mr-core:mineName>Hostens</mr-core:mineName>
+                </mr-core:MineName>
+              </mr-core:mineName>
+              <mr-core:status xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/MineStatusValue/closed"/>
+              <mr-core:relatedMine xsi:nil="true"/>
+              <mr-core:endDate xsi:nil="true" nilReason="unpopulated"/>
+              <mr-m4eu:country xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/CountryCode/FR"/>
+              <mr-m4eu:sourceReference xsi:nil="true"/>
+            </mr-m4eu:Mine_Extension>
+          </mr-core:associatedMine>
+          <mr-core:activityDuration>
+            <gml:TimePeriod gml:id="M4EU.MA.AD_124"/>
+          </mr-core:activityDuration>
+          <mr-core:activityType xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/MiningActivityTypeValue/openPitMining"/>
+          <mr-core:oreProcessed>
+            <swe:Quantity xmlns:swe="http://www.opengis.net/swe/2.0">
+              <swe:uom code="t"/>
+              <swe:value>1.5E+7</swe:value>
+            </swe:Quantity>
+          </mr-core:oreProcessed>
+          <mr-ext:producedWaste xmlns:mr-ext="http://inspire.ec.europa.eu/schemas/mr-ext/3.0" xsi:nil="true"/>
+          <mr-ext:rawMaterial xmlns:mr-ext="http://inspire.ec.europa.eu/schemas/mr-ext/3.0" xsi:nil="true" nilReason="unpopulated"/>
+          <mr-ext:producedMaterial xmlns:mr-ext="http://inspire.ec.europa.eu/schemas/mr-ext/3.0" xsi:nil="true"/>
+          <mr-m4eu:deposit xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#M4EU.MO_124"/>
+          <mr-m4eu:deposit xsi:nil="true"/>
+        </mr-m4eu:MiningActivity_Extension>
+      </mr-core:resourceExtraction>
+      <mr-core:dimension xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0" nilReason="unpopulated">
+        <mr-core:EarthResourceDimension>
+          <mr-core:area xsi:nil="true" nilReason="unpopulated"/>
+          <mr-core:depth>
+            <swe:QuantityRange xmlns:swe="http://www.opengis.net/swe/2.0">
+              <swe:uom code="m"/>
+              <swe:value>0 0</swe:value>
+            </swe:QuantityRange>
+          </mr-core:depth>
+          <mr-core:length>
+            <swe:QuantityRange xmlns:swe="http://www.opengis.net/swe/2.0">
+              <swe:uom code="m"/>
+              <swe:value>0 0</swe:value>
+            </swe:QuantityRange>
+          </mr-core:length>
+          <mr-core:width xsi:nil="true" nilReason="unpopulated"/>
+        </mr-core:EarthResourceDimension>
+      </mr-core:dimension>
+      <mr-core:expression xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0" xsi:nil="true" nilReason="unpopulated"/>
+      <mr-core:form xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0">
+        <swe:Category xmlns:swe="http://www.opengis.net/swe/2.0">
+          <swe:value>http://resource.geosciml.org/classifier/cgi/earth-resource-form/stratiform</swe:value>
+        </swe:Category>
+      </mr-core:form>
+      <mr-core:linearOrientation xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0" xsi:nil="true" nilReason="unpopulated"/>
+      <mr-core:planarOrientation xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0">
+        <cgu:CGI_PlanarOrientation xmlns:cgu="http://xmlns.geosciml.org/Utilities/3.0">
+          <cgu:determinationMethod xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://resource.geosciml.org/classifier/cgi/determinationmethodorientation/method_unknown "/>
+          <cgu:descriptiveOrientation xsi:nil="true" nilReason="unpopulated"/>
+          <cgu:convention xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://resource.geosciml.org/classifier/cgi/conventioncode/RHR"/>
+          <cgu:azimuth>
+            <swe:QuantityRange xmlns:swe="http://www.opengis.net/swe/2.0">
+              <swe:uom code="degree"/>
+              <swe:value>0 0</swe:value>
+            </swe:QuantityRange>
+          </cgu:azimuth>
+          <cgu:dip>
+            <swe:QuantityRange xmlns:swe="http://www.opengis.net/swe/2.0">
+              <swe:uom code="degree"/>
+              <swe:value>0 0</swe:value>
+            </swe:QuantityRange>
+          </cgu:dip>
+        </cgu:CGI_PlanarOrientation>
+      </mr-core:planarOrientation>
+      <mr-core:shape xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0">
+        <swe:Category xmlns:swe="http://www.opengis.net/swe/2.0">
+          <swe:value>http://resource.geosciml.org/classifier/cgi/earth-resource-shape/lensoidal</swe:value>
+        </swe:Category>
+      </mr-core:shape>
+      <mr-core:classification xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0">
+        <mr-core:MineralDepositModel gml:id="M4EU.MO.DM_124">
+          <mr-core:mineralDepositGroup xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/MineralDepositGroupValue/energy"/>
+          <mr-core:mineralDepositType xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/MineralDepositTypeValue/organic"/>
+        </mr-core:MineralDepositModel>
+      </mr-core:classification>
+      <mr-core:oreAmount xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0" nil="true"/>
+      <mr-core:oreAmount xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0">
+        <mr-m4eu:Resource_Extension>
+          <mr-core:classificationMethodUsed xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/ClassificationMethodUsedValue/nonCompliantResourceEstimate "/>
+          <mr-core:date>
+            <gml:TimeInstant gml:id="M4EU.OM.RC_124">
+              <gml:timePosition>1900-01-01T00:00:00</gml:timePosition>
+            </gml:TimeInstant>
+          </mr-core:date>
+          <mr-core:dimension xsi:nil="true" nilReason="unpopulated"/>
+          <mr-core:proposedExtractionMethod xsi:nil="true" nilReason="unpopulated"/>
+          <mr-core:ore>
+            <swe:QuantityRange xmlns:swe="http://www.opengis.net/swe/2.0">
+              <swe:uom code="t"/>
+              <swe:value>0 0</swe:value>
+            </swe:QuantityRange>
+          </mr-core:ore>
+          <mr-core:measureDetails>
+            <mr-core:CommodityMeasure>
+              <mr-core:commodityAmount>
+                <swe:QuantityRange xmlns:swe="http://www.opengis.net/swe/2.0">
+                  <swe:uom code="http://www.minerals4eu.eu/codeList/UomWeightType/t"/>
+                  <swe:value>0 0</swe:value>
+                </swe:QuantityRange>
+              </mr-core:commodityAmount>
+              <mr-core:cutOffGrade xsi:nil="true" nilReason="unpopulated"/>
+              <mr-core:grade xsi:nil="true" nilReason="unpopulated"/>
+              <mr-core:commodityOfInterest xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#M4EU.CO_305"/>
+            </mr-core:CommodityMeasure>
+          </mr-core:measureDetails>
+          <mr-core:category xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/ResourceCategoryValue/poorlyEstimatedMineralResource"/>
+          <mr-core:includesReserves>false</mr-core:includesReserves>
+        </mr-m4eu:Resource_Extension>
+      </mr-core:oreAmount>
+      <mr-core:oreAmount xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0">
+        <mr-m4eu:Reserve_Extension>
+          <mr-core:classificationMethodUsed xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/ClassificationMethodUsedValue/nonCompliantResourceEstimate "/>
+          <mr-core:date>
+            <gml:TimeInstant gml:id="M4EU.OM.RV_124">
+              <gml:timePosition>1900-01-01T00:00:00</gml:timePosition>
+            </gml:TimeInstant>
+          </mr-core:date>
+          <mr-core:dimension xsi:nil="true" nilReason="unpopulated"/>
+          <mr-core:proposedExtractionMethod xsi:nil="true" nilReason="unpopulated"/>
+          <mr-core:ore>
+            <swe:QuantityRange xmlns:swe="http://www.opengis.net/swe/2.0">
+              <swe:uom code="t"/>
+              <swe:value>0 0</swe:value>
+            </swe:QuantityRange>
+          </mr-core:ore>
+          <mr-core:measureDetails>
+            <mr-core:CommodityMeasure>
+              <mr-core:commodityAmount>
+                <swe:QuantityRange xmlns:swe="http://www.opengis.net/swe/2.0">
+                  <swe:uom code="http://www.minerals4eu.eu/codeList/UomWeightType/t"/>
+                  <swe:value>0 0</swe:value>
+                </swe:QuantityRange>
+              </mr-core:commodityAmount>
+              <mr-core:cutOffGrade xsi:nil="true" nilReason="unpopulated"/>
+              <mr-core:grade xsi:nil="true" nilReason="unpopulated"/>
+              <mr-core:commodityOfInterest xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#M4EU.CO_305"/>
+            </mr-core:CommodityMeasure>
+          </mr-core:measureDetails>
+          <mr-core:category xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/ReserveCategoryValue/inaccessibleDocumentation"/>
+        </mr-m4eu:Reserve_Extension>
+      </mr-core:oreAmount>
+      <mr-core:oreAmount xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0" nil="true"/>
+      <mr-core:type xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/MineralOccurrenceTypeValue/deposit"/>
+      <mr-core:endusePotential xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/3.0" xsi:nil="true"/>
+      <mr-ext:geneticDescription xmlns:mr-ext="http://inspire.ec.europa.eu/schemas/mr-ext/3.0" xsi:nil="true" nilReason="unpopulated"/>
+      <mr-ext:composition xmlns:mr-ext="http://inspire.ec.europa.eu/schemas/mr-ext/3.0" nilReason="unpopulated">
+        <mr-ext:EarthResourceMaterial>
+          <mr-ext:earthResourceMaterialRole xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://resource.geosciml.org/classifier/cgi/earth-resource-material-role/host-rock"/>
+          <mr-ext:material>
+            <!--Inlined feature 'M4EU.RM_5520'-->
+            <mr-ext:RockMaterial gml:id="M4EU.RM_5520">
+              <mr-ext:color xsi:nil="true" nilReason="unpopulated"/>
+              <mr-ext:physicalProperty xsi:nil="true" nilReason="unpopulated"/>
+              <mr-ext:compositionCategory xsi:nil="true" nilReason="unpopulated"/>
+              <mr-ext:geneticCategory xsi:nil="true" nilReason="unpopulated"/>
+              <mr-ext:constituent xsi:nil="true" nilReason="unpopulated"/>
+              <mr-ext:consolidationDegree xsi:nil="true" nilReason="unpopulated"/>
+              <mr-ext:lithology xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/LithologyValue/lignite"/>
+              <mr-ext:alterationProperties xsi:nil="true" nilReason="unpopulated"/>
+            </mr-ext:RockMaterial>
+          </mr-ext:material>
+          <mr-ext:proportion xsi:nil="true" nilReason="unpopulated"/>
+        </mr-ext:EarthResourceMaterial>
+      </mr-ext:composition>
+      <mr-m4eu:occurrenceName>Hostens</mr-m4eu:occurrenceName>
+      <mr-m4eu:country xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/codelist/CountryCode/FR"/>
+      <mr-m4eu:remark>ID PROMINES: FRA-00134 ; Company: null ; Province: Aquitaine; dept 33 ; Geology: null ; Economy: null ;(Coal) ; CP : 15 Mt Lign. . Res-ress : . Enct : .  ;  / , feuille 1/50000 Hostens</mr-m4eu:remark>
+      <mr-m4eu:remark>Other ID, from null : null</mr-m4eu:remark>
+      <mr-m4eu:sourceReference xsi:nil="true"/>
+      <mr-m4eu:propertyValueProvider xsi:nil="true"/>
+    </mr-m4eu:MineralOccurrence_Extension>
+  </wfs:member>
+</wfs:FeatureCollection>
