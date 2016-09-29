@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ef="http://inspire.ec.europa.eu/schemas/ef/4.0" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:base2="http://inspire.ec.europa.eu/schemas/base2/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" numberMatched="unknown" numberReturned="1" timeStamp="2016-09-26T14:27:23.700Z" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://inspire.ec.europa.eu/schemas/ef/4.0 http://inspire.ec.europa.eu/schemas/ef/4.0/EnvironmentalMonitoringFacilities.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+	<wfs:member>
+		<ef:EnvironmentalMonitoringFacility gml:id="Piezometre.00463X0036.H1.2">
+			<gml:description>Water well from national BSS (Banque du Sous-Sol) Data database. Piezometer monitoring ground water level</gml:description>
+			<gml:identifier codeSpace="http://www.ietf.org/rfc/rfc2616">http://ressource.brgm-rec.fr/data/Piezometre/00463X0036/H1.2</gml:identifier>
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>Piezometre/00463X0036/H1.2</base:localId>
+					<base:namespace>http://ressource.brgm-rec.fr/data/Piezometre/</base:namespace>
+					<base:versionId/>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>PIEZOMETRE DE CARDONNETTE - 80</ef:name>
+			<ef:additionalDescription/>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/water" xlink:title="water"/>
+			<ef:legalBackground/>
+			<ef:geometry>
+				<gml:Point gml:id="Piezometre.geom.2.00463X0036-H1" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>49.9506859240222 2.3597603712661</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:onlineResource>http://fichebsseau.brgm.fr/bss_eau/fiche.jsf?code=00463X0036/H1</ef:onlineResource>
+			<ef:purpose xlink:href="http://www.sandre.eaufrance.fr/?urn=urn:sandre:donnees:148::CdElement:2:::referentiel:3.1:xml" xlink:title="Ground water level measurement"/>
+			<ef:broader/>
+			<ef:supersedes/>
+			<ef:supersededBy/>
+			<ef:reportedTo xsi:nil="true" nilReason="unpopulated"/>
+			<ef:hasObservation xlink:href="http://ressource.brgm-rec.fr/obs/RawOfferingPiezo/00463X0036/H1.2&amp;responseFormat=http://www.opengis.net/waterml/2.0&amp;temporalFilter=om%3AphenomenonTime%2Clatest" xlink:title="Latest value (WaterML 2.0 format): Raw groundwater level measurement from piezometer 00463X0036/H1.2"/>
+			<ef:hasObservation xlink:href="http://ressource.brgm-rec.fr/obs/RawOfferingPiezo/00463X0036/H1.2&amp;responseFormat=application/json&amp;temporalFilter=om%3AphenomenonTime%2Clatest" xlink:title="Latest value (JSON format): Raw groundwater level measurement from piezometer 00463X0036/H1.2"/>
+			<ef:hasObservation xlink:href="http://ressource.brgm-rec.fr/obs/RawOfferingPiezo/00463X0036/H1.2&amp;responseFormat=http://www.opengis.net/waterml/2.0" xlink:title="All observations (WaterML 2.0 format): Raw groundwater level measurement from piezometer 00463X0036/H1.2"/>
+			<ef:hasObservation xlink:href="http://ressource.brgm-rec.fr/obs/RawOfferingPiezo/00463X0036/H1.2&amp;MergeObservationsIntoDataArray=true" xlink:title="SWEArrayObservation: Raw groundwater level measurement from piezometer 00463X0036/H1.2"/>
+			<ef:involvedIn/>
+			<ef:representativePoint>
+				<gml:Point gml:id="Piezometre.reppoint.2.00463X0036-H1" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>49.9506859240222 2.3597603712661</gml:pos>
+				</gml:Point>
+			</ef:representativePoint>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection/" xlink:title="continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:resultAcquisitionSource xlink:href="http://inspire.ec.europa.eu/codelist/ResultAcquisitionSourceValue/inSitu/" xlink:title="in-situ"/>
+			<ef:specialisedEMFType xlink:href="http://www.sandre.eaufrance.fr/urn.php?urn=urn:sandre:dictionnaire:PTE::entite:Piezometre:ressource:2.1:::html" xlink:title="Piezometre"/>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="Piezometre.OperationalActivityPeriod.2.00463X0036-H1">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TimePeriod.2.284805">
+							<gml:beginPosition>1966-01-12T23:00:00Z</gml:beginPosition>
+							<gml:endPosition>2014-10-19T22:00:00Z</gml:endPosition>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:relatedTo/>
+			<ef:belongsTo>
+				<ef:NetworkFacility gml:id="ef_networkfacility_2.fid-1f483d36_15751d0cf37_-7da7">
+					<ef:linkingTime>
+						<gml:TimePeriod gml:id="TimePeriod.0000000029.00463X0036-H1">
+							<gml:beginPosition>1977-01-05T23:00:00Z</gml:beginPosition>
+							<gml:endPosition/>
+						</gml:TimePeriod>
+					</ef:linkingTime>
+					<ef:belongsTo xlink:href="http://ressource.brgm-rec.fr/data/DispositifCollecte/0000000029" xlink:title="Réseau patrimonial national de suivi quantitatif des eaux souterraines(RNESP)"/>
+					<ef:contains/>
+				</ef:NetworkFacility>
+			</ef:belongsTo>
+			<ef:belongsTo>
+				<ef:NetworkFacility gml:id="ef_networkfacility_2.fid-1f483d36_15751d0cf37_-7da6">
+					<ef:linkingTime>
+						<gml:TimePeriod gml:id="TimePeriod.0100000003.00463X0036-H1">
+							<gml:beginPosition>1977-01-05T23:00:00Z</gml:beginPosition>
+							<gml:endPosition/>
+						</gml:TimePeriod>
+					</ef:linkingTime>
+					<ef:belongsTo xlink:href="http://ressource.brgm-rec.fr/data/DispositifCollecte/0100000003" xlink:title="Réseau de suivi quantitatif des eaux souterraines du bassin Artois-Picardie(RBESOUPAP)"/>
+					<ef:contains/>
+				</ef:NetworkFacility>
+			</ef:belongsTo>
+			<ef:belongsTo>
+				<ef:NetworkFacility gml:id="ef_networkfacility_2.fid-1f483d36_15751d0cf37_-7da5">
+					<ef:linkingTime>
+						<gml:TimePeriod gml:id="TimePeriod.0000000073.00463X0036-H1">
+							<gml:beginPosition>1977-01-05T23:00:00Z</gml:beginPosition>
+							<gml:endPosition/>
+						</gml:TimePeriod>
+					</ef:linkingTime>
+					<ef:belongsTo xlink:href="http://ressource.brgm-rec.fr/data/DispositifCollecte/0000000073" xlink:title="Réseau national de suivi quantitatif des eaux souterraines sous MO BRGM(RNESOUPMOBRGM)"/>
+					<ef:contains/>
+				</ef:NetworkFacility>
+			</ef:belongsTo>
+			<ef:belongsTo>
+				<ef:NetworkFacility gml:id="ef_networkfacility_2.fid-1f483d36_15751d0cf37_-7da4">
+					<ef:linkingTime>
+						<gml:TimePeriod gml:id="TimePeriod.CARTPZAEAP.00463X0036-H1">
+							<gml:beginPosition>2000-12-31T23:00:00Z</gml:beginPosition>
+							<gml:endPosition/>
+						</gml:TimePeriod>
+					</ef:linkingTime>
+					<ef:belongsTo xlink:href="http://ressource.brgm-rec.fr/data/DispositifCollecte/CARTPZAEAP" xlink:title="CARTES PIEZOMETRIQUES CRAIE AGENCE DE L'EAU ARTOIS-PICARDIE"/>
+					<ef:contains/>
+				</ef:NetworkFacility>
+			</ef:belongsTo>
+			<ef:belongsTo>
+				<ef:NetworkFacility gml:id="ef_networkfacility_2.fid-1f483d36_15751d0cf37_-7da3">
+					<ef:linkingTime>
+						<gml:TimePeriod gml:id="TimePeriod.0100000032.00463X0036-H1">
+							<gml:beginPosition>1899-12-31T23:00:00Z</gml:beginPosition>
+							<gml:endPosition/>
+						</gml:TimePeriod>
+					</ef:linkingTime>
+					<ef:belongsTo xlink:href="http://ressource.brgm-rec.fr/data/DispositifCollecte/0100000032" xlink:title="Réseau piézométrique sécheresse du bassin Artois Picardie(RBESSECHAP)"/>
+					<ef:contains/>
+				</ef:NetworkFacility>
+			</ef:belongsTo>
+			<ef:belongsTo>
+				<ef:NetworkFacility gml:id="ef_networkfacility_2.fid-1f483d36_15751d0cf37_-7da2">
+					<ef:linkingTime>
+						<gml:TimePeriod gml:id="TimePeriod.0100000021.00463X0036-H1">
+							<gml:beginPosition>1977-01-05T23:00:00Z</gml:beginPosition>
+							<gml:endPosition/>
+						</gml:TimePeriod>
+					</ef:linkingTime>
+					<ef:belongsTo xlink:href="http://ressource.brgm-rec.fr/data/DispositifCollecte/0100000021" xlink:title="Réseau de suivi quantitatif des eaux souterraines du BRGM Picardie(RESOUPBRGMPIC)"/>
+					<ef:contains/>
+				</ef:NetworkFacility>
+			</ef:belongsTo>
+			<ef:belongsTo>
+				<ef:NetworkFacility gml:id="ef_networkfacility_2.fid-1f483d36_15751d0cf37_-7da1">
+					<ef:linkingTime>
+						<gml:TimePeriod gml:id="TimePeriod.CARTPZPIC.00463X0036-H1">
+							<gml:beginPosition>2004-12-31T23:00:00Z</gml:beginPosition>
+							<gml:endPosition/>
+						</gml:TimePeriod>
+					</ef:linkingTime>
+					<ef:belongsTo xlink:href="http://ressource.brgm-rec.fr/data/DispositifCollecte/CARTPZPIC" xlink:title="BASSES EAUX 2005"/>
+					<ef:contains/>
+				</ef:NetworkFacility>
+			</ef:belongsTo>
+		</ef:EnvironmentalMonitoringFacility>
+	</wfs:member>
+</wfs:FeatureCollection>
