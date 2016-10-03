@@ -31,5 +31,5 @@ def qgisMinimumVersion():
 def qgisMaximumVersion():
     return u"2.99"
 def classFactory(iface):
-    from main import MainPlugin
+    from .main import MainPlugin
     return MainPlugin(iface)

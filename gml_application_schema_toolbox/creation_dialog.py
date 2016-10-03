@@ -16,17 +16,22 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+from __future__ import print_function
+from builtins import str
+from builtins import range
 # -*- coding: utf-8 -*-
 import os
 
-from PyQt4 import QtGui, uic
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtWidgets import *
+from qgis.PyQt import uic
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'creation_dialog.ui'))
 
-class CreationDialog(QtGui.QDialog, FORM_CLASS):
+
+class CreationDialog(QDialog, FORM_CLASS):
     def __init__(self, xml_uri=None, is_remote = False, attributes = {}, geometry_mapping = None, output_filename = None, parent=None):
         """Constructor."""
         super(CreationDialog, self).__init__(parent)
@@ -48,7 +53,7 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
                 self.filenameRadio.setChecked(True)
             self.replaceLayerChck.setCheckState(Qt.Checked)
 
-            for aname, v in attributes.iteritems():
+            for aname, v in attributes.items():
                 xpath, type = v
                 self.onAddMapping() # add a row
                 last = self.attributeTable.rowCount() - 1
@@ -93,7 +98,7 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
 
     def onBrowse(self):
         openDir = QSettings("complex_features").value("xml_file_location", "")
-        xml_file = QFileDialog.getOpenFileName (None, "Select XML File", openDir, "*.xml;;*.gml")
+        xml_file, __ = QFileDialog.getOpenFileName (None, "Select XML File", openDir, "*.xml;;*.gml")
         if xml_file:
             QSettings("complex_features").setValue("xml_file_location", os.path.dirname(xml_file))
             self.filenameText.setText(xml_file)
@@ -107,7 +112,7 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
 
     def onBrowseOut(self):
         openDir = QSettings("complex_features").value("out_file_location", "")
-        sqlite_file = QFileDialog.getSaveFileName (None, "Select Sqlite File", openDir, "*.sqlite")
+        sqlite_file, __ = QFileDialog.getSaveFileName (None, "Select Sqlite File", openDir, "*.sqlite")
         if sqlite_file:
             QSettings("complex_features").setValue("out_file_location", os.path.dirname(sqlite_file))
             self.outFilenameText.setText(sqlite_file)
@@ -133,7 +138,8 @@ class CreationDialog(QtGui.QDialog, FORM_CLASS):
 
     def accept(self):
         is_remote, src = self.source()
-        print(is_remote, src)
+        # fix_print_with_import
+        print((is_remote, src))
         QSettings("complex_features").setValue("is_remote", "true" if is_remote else "false")
         QSettings("complex_features").setValue("source_url", src)
         QSettings("complex_features").setValue("import_type", str(self.mImportTypeCombo.currentIndex()))

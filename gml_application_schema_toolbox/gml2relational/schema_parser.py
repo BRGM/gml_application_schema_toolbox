@@ -16,8 +16,10 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+from future import standard_library
+standard_library.install_aliases()
 # -*- coding: utf-8 -*-
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 # This is getting hacky ...
 # The uri normalization function has problems with Windows path
@@ -33,7 +35,7 @@ def myNormalizeLocation (uri, parent_uri=None, prefix_map=None):
         return abs_uri
     return oldNormalizeLocation(uri, parent_uri, prefix_map)
         
-def parse_schemas(schema_files, urlopen = urllib2.urlopen):
+def parse_schemas(schema_files, urlopen = urllib.request.urlopen):
     """
     Returns a pyxb Namespace for the given schemas.
     Every dependent schemas will be downloaded thanks to the urlopen function passed in argument.

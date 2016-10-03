@@ -16,6 +16,7 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+from builtins import object
 # -*- coding: utf-8 -*-
 import pickle
 
@@ -32,7 +33,7 @@ def xpath_to_column_name(xpath):
             t.append(e.replace('@','').replace('[','').replace(']',''))
     return "_".join(t)
 
-class Field:
+class Field(object):
     def __init__(self, xpath, optional = False):
         self._xpath = xpath
         self._optional = optional
@@ -143,7 +144,7 @@ class Geometry(Field):
     def __repr__(self):
         return "Geometry<{},{}{}({}){}>".format(self.xpath(), self.type(), "Z" if self.dimension() == 3 else "", self.srid(), ",optional" if self.optional() else "")
 
-class Table:
+class Table(object):
     """A Table is a list of Columns or Links to other tables, a list of geometry columns and an id"""
 
     def __init__(self, name = '', fields = [], uid = None):
@@ -163,7 +164,7 @@ class Table:
         # i.e. if it has an id
         self.__mergeable = True
     def clone(self):
-        t = Table(self.name(), self.fields().values(), self.uid_column())
+        t = Table(self.name(), list(self.fields().values()), self.uid_column())
         t.__last_uid = self.__last_uid
         t.__mergeable = self.__mergeable
         return t
@@ -186,21 +187,21 @@ class Table:
         self.add_fields(fields)
         
     def remove_field(self, field_name):
-        if self.__fields.has_key(field_name):
+        if field_name in self.__fields:
             del self.__fields[field_name]
     def has_field(self, field_name):
-        return self.__fields.has_key(field_name)
+        return field_name in self.__fields
     def field(self, field_name):
         return self.__fields.get(field_name)
     
     def links(self):
-        return [x for k, x in self.fields().iteritems() if isinstance(x, Link)]
+        return [x for k, x in self.fields().items() if isinstance(x, Link)]
     def columns(self):
-        return [x for k, x in self.fields().iteritems() if isinstance(x, Column)]
+        return [x for k, x in self.fields().items() if isinstance(x, Column)]
     def geometries(self):
-        return [x for k, x in self.fields().iteritems() if isinstance(x, Geometry)]
+        return [x for k, x in self.fields().items() if isinstance(x, Geometry)]
     def back_links(self):
-        return [x for k, x in self.fields().iteritems() if isinstance(x, BackLink)]
+        return [x for k, x in self.fields().items() if isinstance(x, BackLink)]
 
     def uid_column(self):
         return self.__uid_column
@@ -225,7 +226,7 @@ class Table:
             self.__fields[name] = BackLink(name, table)
 
     def max_field_depth(self):
-        ff = [len(f.xpath().split('/')) for f in self.__fields.values()]
+        ff = [len(f.xpath().split('/')) for f in list(self.__fields.values())]
         if len(ff) == 0:
             return 0
         return max(ff)
@@ -234,9 +235,9 @@ class Table:
         return self.__mergeable
 
     def __repr__(self):
-        return "Table<{};{}>".format(self.name(), ";".join([f.__repr__() for f in self.__fields.values()]))
+        return "Table<{};{}>".format(self.name(), ";".join([f.__repr__() for f in list(self.__fields.values())]))
 
-class Model:
+class Model(object):
     def __init__(self, tables, tables_rows, root_name):
         self.__tables = tables
         self.__tables_rows = tables_rows

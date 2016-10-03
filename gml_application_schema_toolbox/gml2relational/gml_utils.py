@@ -16,8 +16,9 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+from __future__ import absolute_import
 # -*- coding: utf-8 -*-
-from xml_utils import no_prefix
+from .xml_utils import no_prefix
 
 def extract_features(doc):
     """Extract (Complex) features from a XML doc

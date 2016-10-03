@@ -16,9 +16,11 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+from future import standard_library
+standard_library.install_aliases()
 # -*- coding: utf-8 -*-
 import xml.etree.ElementTree as ET
-import StringIO
+import io
 
 def no_prefix(tag):
     """Remove the namespace prefix from the given name"""
@@ -55,7 +57,7 @@ def resolve_xpath(node, xpath):
         return node
 
     if part.startswith("@"):
-        for an, av in node.attrib.iteritems():
+        for an, av in node.attrib.items():
             if no_prefix(an) == part[1:]:
                 return av
 
@@ -102,10 +104,10 @@ def xml_parse(xml_file):
         elif event == 'start':
             if root is None:
                 root = elem
-    for prefix, uri in ns_map.iteritems():
+    for prefix, uri in ns_map.items():
         ET.register_namespace(prefix, uri)
         
     return (ET.ElementTree(root), ns_map)
 
 def xml_parse_from_string(s):
-    return xml_parse(StringIO.StringIO(s))
+    return xml_parse(io.StringIO(s))

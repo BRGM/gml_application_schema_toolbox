@@ -18,12 +18,13 @@
 """
 # -*- coding: utf-8 -*-
 from __future__ import print_function
+from builtins import str
 import logging
 import sys
 
 import xml.etree.ElementTree as ET
 
-import pyspatialite.dbapi2 as db
+from qgis.utils import spatialite_connect
 
 app = None
 
@@ -35,7 +36,7 @@ def XMLNode(tag, attrib = {}, text = None):
 
 def to_pretty_xml(node, level = 0):
     e = [node.tag]
-    e += ['{}="{}"'.format(an, av) for an, av in node.attrib.iteritems()]
+    e += ['{}="{}"'.format(an, av) for an, av in node.attrib.items()]
     l = "  " * level + "<" + " ".join(e)
     if len(node) == 0:
         if node.text is None:
@@ -68,11 +69,11 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file, q
     relations_xml = XMLNode('relations')
     project_xml.extend([main_group_xml, relations_xml])
 
-    srs_conn = db.connect(srs_db_file)
+    srs_conn = spatialite_connect(srs_db_file)
     srs_cur = srs_conn.cursor()
 
     # load a layer for each table
-    for table_name, table in tables.iteritems():
+    for table_name, table in tables.items():
         geometry = table.geometries()[0].name() if len(table.geometries()) > 0 else None
         geometry_type = table.geometries()[0].type() if len(table.geometries()) > 0 else None
         src = "dbname='{}' table=\"{}\"{} sql=".format(sqlite_file, table.name(), " (" + geometry + ")" if geometry is not None else "")
@@ -115,7 +116,7 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file, q
             child_group_xml.append(l_xml)
         
     # declare relations
-    for table_name, table in tables.iteritems():
+    for table_name, table in tables.items():
         for link in table.links():
             if link.max_occurs() is None:
                 continue
@@ -140,18 +141,18 @@ def create_qgis_project_from_model(model, sqlite_file, qgis_file, srs_db_file, q
             field_xml = ET.SubElement(rel_xml, "fieldRef", {'referencedField' : referencedField, 'referencingField' : referencingField})
             relations_xml.append(rel_xml)
 
-    project_xml.extend(layers_xml.values())
+    project_xml.extend(list(layers_xml.values()))
     if len(geom_group_xml) > 0:
         group_xml.append(geom_group_xml)
 
     simple_back_links = {}
-    for table_name, table in tables.iteritems():
+    for table_name, table in tables.items():
         for link in table.links():
             if link.max_occurs() == 1:
                 dest_table = link.ref_table().name()
                 simple_back_links[dest_table] = (simple_back_links.get(dest_table) or []) + [(table_name, link)]
 
-    for table_name, table in tables.iteritems():
+    for table_name, table in tables.items():
         layer = layers_xml[table_name]
         #raw_input()
         edittypes = XMLNode("edittypes")

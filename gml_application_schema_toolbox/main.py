@@ -17,36 +17,43 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import str
+from builtins import range
+from builtins import object
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.QtXml import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtWidgets import *
+from qgis.PyQt.QtXml import *
 from qgis.core import *
 from qgis.gui import *
 
 import os
-import pyspatialite.dbapi2 as db
+import sqlite3
+
 
 package_path = [os.path.join(os.path.dirname(__file__), "extlibs")]
 import sys
 if not set(package_path).issubset(set(sys.path)):
     sys.path = package_path + sys.path
 
-from qgis_urlopener import remote_open_from_qgis
-from complex_features import ComplexFeatureSource, load_complex_gml, properties_from_layer, is_layer_complex
-from creation_dialog import CreationDialog
-from model_dialog import ModelDialog
-from xml_tree_widget import XMLTreeWidget
+from .qgis_urlopener import remote_open_from_qgis
+from .complex_features import ComplexFeatureSource, load_complex_gml, properties_from_layer, is_layer_complex
+from .creation_dialog import CreationDialog
+from .model_dialog import ModelDialog
+from .xml_tree_widget import XMLTreeWidget
 
-import gml2relational
-from gml2relational.relational_model_builder import load_gml_model
-from gml2relational.relational_model import load_model_from, save_model_to
-from gml2relational.sqlite_writer import create_sqlite_from_model
-from gml2relational.qgis_project_writer import create_qgis_project_from_model
-from gml2relational.uri import URI
+from . import gml2relational
+from .gml2relational.relational_model_builder import load_gml_model
+from .gml2relational.relational_model import load_model_from, save_model_to
+from .gml2relational.sqlite_writer import create_sqlite_from_model
+from .gml2relational.qgis_project_writer import create_qgis_project_from_model
+from .gml2relational.uri import URI
 
-import custom_viewers
+from . import custom_viewers
 
 from . import name as plugin_name
 from . import version as plugin_version
@@ -89,7 +96,7 @@ def add_viewer_to_form(dialog, layer, feature):
     l = find_label_layout(tw, "id")
 
     viewers = custom_viewers.get_custom_viewers()
-    viewer = [viewer for viewer in viewers.values() if viewer.table_name() == layer.name()][0]
+    viewer = [viewer for viewer in list(viewers.values()) if viewer.table_name() == layer.name()][0]
     btn = QPushButton(viewer.icon(), viewer.name() + " plugin", tw)
     btn.setObjectName("_viewer_button")
     btn.clicked.connect(lambda obj, checked = False: show_viewer(layer, feature, tw, viewer))
@@ -154,7 +161,7 @@ def replace_layer(old_layer, new_layer):
     dom = QDomImplementation()
     doc = QDomDocument(dom.createDocumentType("qgis", "http://mrcc.com/qgis.dtd", "SYSTEM"))
     root_node = doc.createElement("qgis")
-    root_node.setAttribute("version", "%s" % QGis.QGIS_VERSION)
+    root_node.setAttribute("version", "%s" % Qgis.QGIS_VERSION)
     doc.appendChild(root_node)
     error = ""
     old_layer.writeSymbology(root_node, doc, error)
@@ -193,7 +200,7 @@ class ProgressDialog(QDialog):
         self.__progress.setMaximum(n)
         self.__progress.setValue(i)
 
-class MainPlugin:
+class MainPlugin(object):
 
     def __init__(self, iface):
         self.iface = iface
@@ -281,7 +288,7 @@ class MainPlugin:
         if not r:
             return
 
-        class MyLogger:
+        class MyLogger(object):
             def __init__(self, widget):
                 self.p_widget = widget
             def text(self, t):
@@ -322,8 +329,8 @@ class MainPlugin:
                 new_layer.editFormConfig().setInitCode(show_xml_init_code())
                 new_layer.editFormConfig().setInitFunction("my_form_open")
                 new_layer.editFormConfig().setInitCodeSource(QgsEditFormConfig.CodeSourceDialog)
-                new_layer.editFormConfig().setWidgetType(0, "Hidden") # id
-                new_layer.editFormConfig().setWidgetType(2, "Hidden") # _xml_
+                new_layer.editFormConfig().setWidgetType('id', "Hidden")
+                new_layer.editFormConfig().setWidgetType('_xml_', "Hidden")
                 new_layer.setDisplayExpression("fid")
 
             else: # import type == 2
@@ -368,18 +375,19 @@ class MainPlugin:
 
                 # custom viewers initialization
                 viewers = custom_viewers.get_custom_viewers()
-                table_names = model.tables().keys()
-                for viewer in viewers.values():
+                table_names = list(model.tables().keys())
+                for viewer in list(viewers.values()):
                     if viewer.table_name() in table_names:
-                        print "Init {} viewer on {}".format(viewer.name(), viewer.table_name())
+                        # fix_print_with_import
+                        print("Init {} viewer on {}".format(viewer.name(), viewer.table_name()))
                         layer = QgsMapLayerRegistry.instance().mapLayersByName(viewer.table_name())[0]
                         layer.editFormConfig().setInitCode(show_viewer_init_code())
                         layer.editFormConfig().setInitFunction("my_form_open")
                         layer.editFormConfig().setInitCodeSource(QgsEditFormConfig.CodeSourceDialog)
-                    
-        except db.IntegrityError as e:
+
+        except sqlite3.dbapi2.IntegrityError as e:
             if "NOT NULL constraint" in str(e):
-                QMessageBox.critical(None, "Integrity error", unicode(e) + "\nTry reloading the file without NOT NULL constraints")
+                QMessageBox.critical(None, "Integrity error", str(e) + "\nTry reloading the file without NOT NULL constraints")
         finally:
             self.p_widget.hide()
 

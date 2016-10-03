@@ -16,10 +16,13 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 # -*- coding: utf-8 -*-
-from PyQt4.QtCore import QUrl, QEventLoop
-from PyQt4.QtNetwork import QNetworkRequest, QNetworkAccessManager
-from StringIO import StringIO
+from qgis.PyQt.QtCore import QUrl
+from qgis.PyQt.QtNetwork import QNetworkRequest
+from io import StringIO
 from qgis.core import QgsNetworkAccessManager
 
 __network_manager = None
