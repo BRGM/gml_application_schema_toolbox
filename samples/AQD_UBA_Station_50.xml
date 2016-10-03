@@ -1,0 +1,4034 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:ef="http://inspire.ec.europa.eu/schemas/ef/3.0" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0" xmlns:am="http://inspire.ec.europa.eu/schemas/am/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:base2="http://inspire.ec.europa.eu/schemas/base2/1.0" xmlns:ompr="http://inspire.ec.europa.eu/schemas/ompr/2.0" xmlns:aqd="http://dd.eionet.europa.eu/schemaset/id2011850eu-1.0" xmlns:sde="http://geoserver.sf.net" xmlns:cite="http://www.opengeospatial.net/cite" xmlns:om="http://www.opengis.net/om/2.0" xmlns:sam="http://www.opengis.net/sampling/2.0" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" numberMatched="unknown" numberReturned="50" timeStamp="2016-10-03T12:31:20.522Z" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://dd.eionet.europa.eu/schemaset/id2011850eu-1.0 http://dd.eionet.europa.eu/schemas/id2011850eu-1.0/AirQualityReporting.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.07.2822">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.07.2822</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Vomp An der Leiten</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.971F01779E8140408DBB139749840BF5" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.3499917 11.6945417</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.52BB79D0A5704753833697094BA4A1C2">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.52BB79D0A5704753833697094BA4A1C2">
+							<gml:beginPosition>2000-04-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.07"/>
+			<aqd:natlStationCode>072822</aqd:natlStationCode>
+			<aqd:municipality>6134 Vomp bei Schwaz</aqd:municipality>
+			<aqd:EUStationCode>AT72822</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:trafficVolume>53500</aqd:trafficVolume>
+					<aqd:heavy-dutyFraction>0.14</aqd:heavy-dutyFraction>
+					<aqd:trafficSpeed uom="http://dd.eionet.europa.eu/vocabulary/uom/velocity/km.h-1">120.0</aqd:trafficSpeed>
+					<aqd:streetWidth uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">29.0</aqd:streetWidth>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">543.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.179">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.179</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Hartberg Zentrum</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.01CDC43E492C464B999F961BBCD4C319" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.28286 15.971852</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.1C3F52096E7E4AC5AA5AC82008BDDD9E">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.1C3F52096E7E4AC5AA5AC82008BDDD9E">
+							<gml:beginPosition>2010-01-28</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06179</aqd:natlStationCode>
+			<aqd:municipality>8230 Hartberg</aqd:municipality>
+			<aqd:EUStationCode>AT60179</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/detached"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-hilly"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">349.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.03.0992">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.03.0992</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Stockerau Schulweg</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.2C9031F0088644D7A88975AF255D6283" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>48.38876 16.21221</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.BB5781B3CC9544D0AB1A41BBB2893053">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.BB5781B3CC9544D0AB1A41BBB2893053">
+							<gml:beginPosition>1985-09-01</gml:beginPosition>
+							<gml:endPosition>2005-10-14</gml:endPosition>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.03"/>
+			<aqd:natlStationCode>030992</aqd:natlStationCode>
+			<aqd:municipality>2000 Stockerau</aqd:municipality>
+			<aqd:EUStationCode>AT30992</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">170.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.07.2910">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.07.2910</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Lienz Amlacherkreuzung</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.0E43C918919D453282DFE13EF0B04540" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>46.827732 12.765622</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.FD629D9CF6D1485B84D502E65A206BD3">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.FD629D9CF6D1485B84D502E65A206BD3">
+							<gml:beginPosition>1998-01-08</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.07"/>
+			<aqd:natlStationCode>072910</aqd:natlStationCode>
+			<aqd:municipality>9900 Lienz</aqd:municipality>
+			<aqd:EUStationCode>AT72910</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/urban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/detached"/>
+					<aqd:distanceJunction uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">4.0</aqd:distanceJunction>
+					<aqd:trafficVolume>21500</aqd:trafficVolume>
+					<aqd:heavy-dutyFraction>0.05</aqd:heavy-dutyFraction>
+					<aqd:trafficSpeed uom="http://dd.eionet.europa.eu/vocabulary/uom/velocity/km.h-1">40.0</aqd:trafficSpeed>
+					<aqd:streetWidth uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">9.0</aqd:streetWidth>
+					<aqd:heightFacades uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">9.0</aqd:heightFacades>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">675.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.03.0599">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.03.0599</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Klosterneuburg Bahnhof Klosterneuburg-Kierling</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.418FD2298F4F4011994A92D04D22AF64" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>48.30822222 16.3279444</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.D0206C29543147668E3D229906D89578">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.D0206C29543147668E3D229906D89578">
+							<gml:beginPosition>2005-07-08</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.03"/>
+			<aqd:natlStationCode>030599</aqd:natlStationCode>
+			<aqd:municipality>3400 Klosterneuburg</aqd:municipality>
+			<aqd:EUStationCode>AT30599</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:trafficVolume>35000</aqd:trafficVolume>
+					<aqd:heavy-dutyFraction>0.05</aqd:heavy-dutyFraction>
+					<aqd:trafficSpeed uom="http://dd.eionet.europa.eu/vocabulary/uom/velocity/km.h-1">60.0</aqd:trafficSpeed>
+					<aqd:streetWidth uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">8.0</aqd:streetWidth>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/hilly"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">170.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.018">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.018</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Graz Schloßberg</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.BBF2DCB8742B416A8E5F362EF4C5471B" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.075833333333335 15.4375</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.5CB1330854F04887B0B20A49F15C6B50">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.5CB1330854F04887B0B20A49F15C6B50">
+							<gml:beginPosition>1990-03-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06018</aqd:natlStationCode>
+			<aqd:municipality>8010 Graz, KG Innenstadt</aqd:municipality>
+			<aqd:EUStationCode>AT60018</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/urban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/elevated"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/basin"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">450.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.104">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.104</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Voitsberg Krems</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.F2A701D2EA934B83B0E511A84070BAE4" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.038889 15.165556</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.20A936D6F345457883A140E7F78BFDD5">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.20A936D6F345457883A140E7F78BFDD5">
+							<gml:beginPosition>1983-02-01</gml:beginPosition>
+							<gml:endPosition>2006-05-25</gml:endPosition>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06104</aqd:natlStationCode>
+			<aqd:municipality>8570 Voitsberg</aqd:municipality>
+			<aqd:EUStationCode>AT60104</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">380.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.106">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.106</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Köflach</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.75021EA6FF814FD6B5B5D6CB3BF865E5" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.06333 15.086667</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.C4593D7E007A4683BC83211816AF4FEB">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.C4593D7E007A4683BC83211816AF4FEB">
+							<gml:beginPosition>1984-01-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06106</aqd:natlStationCode>
+			<aqd:municipality>8580 Köflach</aqd:municipality>
+			<aqd:EUStationCode>AT60106</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/urban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">445.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.107">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.107</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Voitsberg Mühlgasse</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.51ABD2534EF64FBCAEF7F3847C41BF47" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.04472222222222 15.152777777777779</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.F24BD507FBFB4E2CB2D319287BA79414">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.F24BD507FBFB4E2CB2D319287BA79414">
+							<gml:beginPosition>1999-03-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06107</aqd:natlStationCode>
+			<aqd:municipality>8570 Voitsberg</aqd:municipality>
+			<aqd:EUStationCode>AT60107</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/urban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">390.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.114">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.114</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Zeltweg Hauptschule</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.0B36A48B0B8B41F697792FA254E42CCF" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.1925 14.753333</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.204DDF7417EB4F1D905F0A8D0A7A84BD">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.204DDF7417EB4F1D905F0A8D0A7A84BD">
+							<gml:beginPosition>1982-12-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06114</aqd:natlStationCode>
+			<aqd:municipality>8740 Zeltweg, KG Farrach</aqd:municipality>
+			<aqd:EUStationCode>AT60114</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/detached"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/basin-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">675.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.115">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.115</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Knittelfeld Kindergarten</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.B0737D9AEB96457B88A63E7DBC52FC90" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.218333 14.83028</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.B8E296064A3C4F35AC2E7401AF592812">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.B8E296064A3C4F35AC2E7401AF592812">
+							<gml:beginPosition>1973-01-01</gml:beginPosition>
+							<gml:endPosition>2001-12-04</gml:endPosition>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06115</aqd:natlStationCode>
+			<aqd:municipality>8720 Knittelfeld</aqd:municipality>
+			<aqd:EUStationCode>AT60115</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">640.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.127">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.127</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Pöls Ost - Unterer Zechner</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.EBBD0A3EF1ED4EB0B16870B1E06A859B" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.21889 14.6141667</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.580E5559AC004B58809429C71BE0BECA">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.580E5559AC004B58809429C71BE0BECA">
+							<gml:beginPosition>1985-11-15</gml:beginPosition>
+							<gml:endPosition>2010-07-31</gml:endPosition>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06127</aqd:natlStationCode>
+			<aqd:municipality>8761 Pöls</aqd:municipality>
+			<aqd:EUStationCode>AT60127</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural-regional"/>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">785.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.135">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.135</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Straßengel Kirche</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.0793DE94A555429B955E9D36DD2B0605" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.113055555555555 15.339166666666667</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.6BE5A27519F04B028319060394583575">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.6BE5A27519F04B028319060394583575">
+							<gml:beginPosition>1978-01-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06135</aqd:natlStationCode>
+			<aqd:municipality>8111 Gratwein-Straßengel</aqd:municipality>
+			<aqd:EUStationCode>AT60135</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/urban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/elevated"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/basin-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">454.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.136">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.136</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Judendorf Süd</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.927831C973F44129A4E222B862850F88" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.12027777777778 15.351111111111111</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.618A23EFAC45464893213BBCC07FA569">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.618A23EFAC45464893213BBCC07FA569">
+							<gml:beginPosition>1980-01-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06136</aqd:natlStationCode>
+			<aqd:municipality>3111 Gratwein-Strassengel</aqd:municipality>
+			<aqd:EUStationCode>AT60136</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/basin-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">375.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.137">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.137</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Hochgössnitz</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.2B883CDEE9644F088CB9BAE35071F3A9" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.05917 15.016667</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.8F2C682E62DC4F3A9EBE973D66D9045F">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.8F2C682E62DC4F3A9EBE973D66D9045F">
+							<gml:beginPosition>1988-01-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06137</aqd:natlStationCode>
+			<aqd:municipality>8591 Maria Lankowitz</aqd:municipality>
+			<aqd:EUStationCode>AT60137</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural-regional"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/elevated"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/hilly"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">900.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.138">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.138</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Graz Nord Gösting</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.21C0247372FB46A781DC531E05BFFDEF" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.093613 15.414722</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.56FA5C3CA3074901B18383B3F7C15297">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.56FA5C3CA3074901B18383B3F7C15297">
+							<gml:beginPosition>1987-01-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06138</aqd:natlStationCode>
+			<aqd:municipality>8051 Graz Gösting</aqd:municipality>
+			<aqd:EUStationCode>AT60138</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/basin"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">360.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.139">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.139</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Graz West - Eggenberg</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.2078A635E042499D8D3C3B89F1E55A0D" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.069443 15.404388</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.EEA9BAF658D24A16B20CA4D7433427D9">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.EEA9BAF658D24A16B20CA4D7433427D9">
+							<gml:beginPosition>1987-02-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06139</aqd:natlStationCode>
+			<aqd:municipality>8020 Graz</aqd:municipality>
+			<aqd:EUStationCode>AT60139</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/detached"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/basin"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">370.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.141">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.141</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Leoben Göss</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.0F165AC66325420A983A317495FA4D92" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.35888888888889 15.10361111111111</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.3620F15B44944C93BA6EF90584FA84A6">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.3620F15B44944C93BA6EF90584FA84A6">
+							<gml:beginPosition>1985-01-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06141</aqd:natlStationCode>
+			<aqd:municipality>8700 Leoben, KG Göss</aqd:municipality>
+			<aqd:EUStationCode>AT60141</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:trafficVolume>15000</aqd:trafficVolume>
+					<aqd:heavy-dutyFraction>0.13</aqd:heavy-dutyFraction>
+					<aqd:trafficSpeed uom="http://dd.eionet.europa.eu/vocabulary/uom/velocity/km.h-1">130.0</aqd:trafficSpeed>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">554.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.171">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.171</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Graz Ost Petersgasse</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.3DFF29495CE14120AE579FBDE96A5A9E" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.059444 15.466666</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.F901D90407ED4B6E902134C2C69BAAC3">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.F901D90407ED4B6E902134C2C69BAAC3">
+							<gml:beginPosition>2006-01-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06171</aqd:natlStationCode>
+			<aqd:municipality>8010 Graz, KG Jakomini</aqd:municipality>
+			<aqd:EUStationCode>AT60171</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/detached"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/basin"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">366.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.195">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.195</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Deutschlandsberg Rathausgasse</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.93C8A7B02DC344D08E364B46DD1C4520" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>46.81388888888888 15.212777777777777</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.3B5CCE49280A47B383FC389B8142D11D">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.3B5CCE49280A47B383FC389B8142D11D">
+							<gml:beginPosition>2005-09-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06195</aqd:natlStationCode>
+			<aqd:municipality>8530 Deutschlandsberg</aqd:municipality>
+			<aqd:EUStationCode>AT60195</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/urban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/detached"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-hilly"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">365.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.03.1406">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.03.1406</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Biedermannsdorf Mühlengasse</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.BFB03934C1AD4D34BC6D6A96A4C553A4" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>48.083333333333336 16.33722222222222</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.CA87526769D24C2A8398BA25641C035F">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.CA87526769D24C2A8398BA25641C035F">
+							<gml:beginPosition>2007-02-15</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.03"/>
+			<aqd:natlStationCode>031406</aqd:natlStationCode>
+			<aqd:municipality>2362 Biedermannsdorf</aqd:municipality>
+			<aqd:EUStationCode>AT31406</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:trafficVolume>151000</aqd:trafficVolume>
+					<aqd:heavy-dutyFraction>0.07</aqd:heavy-dutyFraction>
+					<aqd:trafficSpeed uom="http://dd.eionet.europa.eu/vocabulary/uom/velocity/km.h-1">130.0</aqd:trafficSpeed>
+					<aqd:streetWidth uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">20.0</aqd:streetWidth>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/plane"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">188.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.03.2501">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.03.2501</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Krems</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.AD14649756264A8BA8282932350F883A" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>48.40861 15.619166</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.4AED3F1F41CA42C18EAAB89F496DAD9C">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.4AED3F1F41CA42C18EAAB89F496DAD9C">
+							<gml:beginPosition>1985-05-22</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.03"/>
+			<aqd:natlStationCode>032501</aqd:natlStationCode>
+			<aqd:municipality>3500 Krems</aqd:municipality>
+			<aqd:EUStationCode>AT32501</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-hilly"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">200.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.02.VK16">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.02.VK16</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Völkermarkt Umfahrungsstrasse</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.0CD65D57DBA342CC8B77F0855FFBC939" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>46.663889 14.633333</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.4A4A3BD5C824471AACB646980E584B1A">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.4A4A3BD5C824471AACB646980E584B1A">
+							<gml:beginPosition>1991-05-07</gml:beginPosition>
+							<gml:endPosition>2001-04-02</gml:endPosition>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.02"/>
+			<aqd:natlStationCode>02VK16</aqd:natlStationCode>
+			<aqd:municipality>9100 Völkermarkt</aqd:municipality>
+			<aqd:EUStationCode>AT2VK16</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">460.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.03.0302">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.03.0302</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Stixneusiedl</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.F4B104E071E44C1EA153308933369C73" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>48.050278 16.675278</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.7E855F33A5CC4CEFAC4B9503CB66A829">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.7E855F33A5CC4CEFAC4B9503CB66A829">
+							<gml:beginPosition>1989-04-10</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.03"/>
+			<aqd:natlStationCode>030302</aqd:natlStationCode>
+			<aqd:municipality>2463 Trauttmannsdorf an der Leitha</aqd:municipality>
+			<aqd:EUStationCode>AT30302</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/plane"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">235.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.02.KA21">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.02.KA21</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Klagenfurt Völkermarkter Straße</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.A971D6CAF4424CEF895E37713BAAF05F" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>46.62556 14.31806</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.D7BFEE91EA5846ECA285F5A7E4EDD33E">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.D7BFEE91EA5846ECA285F5A7E4EDD33E">
+							<gml:beginPosition>1993-12-22</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.02"/>
+			<aqd:natlStationCode>02KA21</aqd:natlStationCode>
+			<aqd:municipality>9020 Klagenfurt</aqd:municipality>
+			<aqd:EUStationCode>AT2KA21</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/urban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/detached"/>
+					<aqd:distanceJunction uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">20.0</aqd:distanceJunction>
+					<aqd:trafficVolume>20000</aqd:trafficVolume>
+					<aqd:heavy-dutyFraction>0.03</aqd:heavy-dutyFraction>
+					<aqd:trafficSpeed uom="http://dd.eionet.europa.eu/vocabulary/uom/velocity/km.h-1">40.0</aqd:trafficSpeed>
+					<aqd:streetWidth uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">10.0</aqd:streetWidth>
+					<aqd:heightFacades uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">15.0</aqd:heightFacades>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/basin-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">445.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.07.2908">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.07.2908</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Lienz Sportzentrum</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.67BD08D049B3452DB0B4BD4FB43091CC" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>46.82458909 12.76542223</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.33942550553142A8B2665A8E63401375">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.33942550553142A8B2665A8E63401375">
+							<gml:beginPosition>1996-04-01</gml:beginPosition>
+							<gml:endPosition>2010-09-30</gml:endPosition>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.07"/>
+			<aqd:natlStationCode>072908</aqd:natlStationCode>
+			<aqd:municipality>9900 Lienz</aqd:municipality>
+			<aqd:EUStationCode>AT72908</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">670.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.143">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.143</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Leoben Zentrum</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.4826C3AA522C40C286EB6A7DA6D6ADD9" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.3825 15.089166666666667</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.564B57D147E14325B51CC345405F9E4E">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.564B57D147E14325B51CC345405F9E4E">
+							<gml:beginPosition>1989-10-11</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06143</aqd:natlStationCode>
+			<aqd:municipality>8700 Leoben</aqd:municipality>
+			<aqd:EUStationCode>AT60143</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/urban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/detached"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">543.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.145">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.145</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Kapfenberg St. Martin</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.C3AF85B4637542ECB77349D23A3E603E" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.44583333333333 15.29032</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.24A7EF96C95C4CD99AFC0E93DB3F5096">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.24A7EF96C95C4CD99AFC0E93DB3F5096">
+							<gml:beginPosition>1989-11-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06145</aqd:natlStationCode>
+			<aqd:municipality>8605 Kapfenberg</aqd:municipality>
+			<aqd:EUStationCode>AT60145</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">517.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.147">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.147</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Deutschlandsberg Frauentalerstrasse</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.8C86C3742E584FB8960479D86CD4B527" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>46.81833 15.228333</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.9D765ED0005444F2B5EE4ECAA0104D7D">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.9D765ED0005444F2B5EE4ECAA0104D7D">
+							<gml:beginPosition>1988-11-01</gml:beginPosition>
+							<gml:endPosition>2005-08-29</gml:endPosition>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06147</aqd:natlStationCode>
+			<aqd:municipality>8530 Deutschlandsberg KG Hörbing</aqd:municipality>
+			<aqd:EUStationCode>AT0100A</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">365.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.150">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.150</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Rennfeld</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.83D4CD8B08964796A3C03F3E8C7CCC39" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.40555555555555 15.360833333333334</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.BF20A509AE0C456588AD9BDAA94F92DC">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.BF20A509AE0C456588AD9BDAA94F92DC">
+							<gml:beginPosition>1989-11-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06150</aqd:natlStationCode>
+			<aqd:municipality>8132 Pernegg an der Mur</aqd:municipality>
+			<aqd:EUStationCode>AT60150</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural-remote"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/elevated"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">1610.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.151">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.151</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Bockberg</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.7B715EA0623F4476B7DBC6A9E6C3431B" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>46.87138888888889 15.495833333333332</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.3417579CD19D45949E9C370004E54622">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.3417579CD19D45949E9C370004E54622">
+							<gml:beginPosition>1985-01-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06151</aqd:natlStationCode>
+			<aqd:municipality>8410 Wildon</aqd:municipality>
+			<aqd:EUStationCode>AT60151</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/elevated"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/hilly"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">449.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.156">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.156</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Masenberg</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.C4B9561C88EB4719B2E0EEEDD42FBD33" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.34806 15.882222</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.180D8BD00E61453C9A7338392E88FCAF">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.180D8BD00E61453C9A7338392E88FCAF">
+							<gml:beginPosition>1989-10-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06156</aqd:natlStationCode>
+			<aqd:municipality>8225 Pöllauberg, Staudach 25</aqd:municipality>
+			<aqd:EUStationCode>AT60156</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural-regional"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/elevated"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/mount-slope"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">1180.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.157">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.157</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Grundlsee Tressensattel</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.2AD60F90DBF8410DB2710F129E93BE45" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.63056 13.796667</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.EA6739E48EFF4369868AC757BCFF8B05">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.EA6739E48EFF4369868AC757BCFF8B05">
+							<gml:beginPosition>1990-01-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06157</aqd:natlStationCode>
+			<aqd:municipality>8993 Grundlsee</aqd:municipality>
+			<aqd:EUStationCode>AT60157</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural-regional"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/elevated"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/mount-slope"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">980.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.160">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.160</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Graz Mitte Landhausgasse</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.62C1B1366AB3480590CE7D5A37D334AF" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.068978 15.437397</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.32D44273F89E408ABF1EF6436EE9F20A">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.32D44273F89E408ABF1EF6436EE9F20A">
+							<gml:beginPosition>1989-11-01</gml:beginPosition>
+							<gml:endPosition>2009-12-20</gml:endPosition>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06160</aqd:natlStationCode>
+			<aqd:municipality>8020 Graz KG Innere Stadt</aqd:municipality>
+			<aqd:EUStationCode>AT60160</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/urban"/>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">350.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.161">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.161</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Graz Ost Eisteichgasse</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.9D623804827549DD81B97DD0DAB0FB26" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.0606 15.4711</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.986524088A4B45E3A19A03509506CC24">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.986524088A4B45E3A19A03509506CC24">
+							<gml:beginPosition>1991-01-01</gml:beginPosition>
+							<gml:endPosition>2004-12-15</gml:endPosition>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06161</aqd:natlStationCode>
+			<aqd:municipality>8020 Graz KG St. Peter</aqd:municipality>
+			<aqd:EUStationCode>AT0112A</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/urban"/>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">366.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.181">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.181</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Weiz Birkfelder Straße</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.3360FA535FE34271B921191E6B9B607D" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.217224 15.628333</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.863C5AA405EF4BB8A3B0CB9F5ACBFD67">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.863C5AA405EF4BB8A3B0CB9F5ACBFD67">
+							<gml:beginPosition>1992-11-01</gml:beginPosition>
+							<gml:endPosition>2015-06-30</gml:endPosition>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06181</aqd:natlStationCode>
+			<aqd:municipality>8160 Weiz</aqd:municipality>
+			<aqd:EUStationCode>AT60181</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/urban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-hilly"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">456.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.182">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.182</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Liezen Alte Gasse 8</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.C94D94695FA842679CED448033C8A9E4" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.56722222222223 14.243611111111111</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.F1EDBB9DF1CF4F0AB7A9DE82CFF2C207">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.F1EDBB9DF1CF4F0AB7A9DE82CFF2C207">
+							<gml:beginPosition>1993-05-01</gml:beginPosition>
+							<gml:endPosition>2015-09-09</gml:endPosition>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06182</aqd:natlStationCode>
+			<aqd:municipality>8940 Liezen</aqd:municipality>
+			<aqd:EUStationCode>AT60182</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">665.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.183">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.183</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Peggau</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.BF798F0FC5CD4E3180D9B86C1CEF6385" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.20638888888889 15.345833333333333</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.40FFDB7AA3F24B8B88B75BDA08650B9C">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.40FFDB7AA3F24B8B88B75BDA08650B9C">
+							<gml:beginPosition>1993-05-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06183</aqd:natlStationCode>
+			<aqd:municipality>8120 Peggau</aqd:municipality>
+			<aqd:EUStationCode>AT60183</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural-regional"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">410.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.184">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.184</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Kindberg-Wartberg</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.48EA278B85744845A4C59EF265FB276F" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.51444444444444 15.486388888888888</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.F0FD02F3AAA243A4805D25CC4EA8A5DF">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.F0FD02F3AAA243A4805D25CC4EA8A5DF">
+							<gml:beginPosition>1994-08-01</gml:beginPosition>
+							<gml:endPosition>2004-10-31</gml:endPosition>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06184</aqd:natlStationCode>
+			<aqd:municipality>8861 Wartberg im Mürztal</aqd:municipality>
+			<aqd:EUStationCode>AT0173A</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural-nearcity"/>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">660.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.185">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.185</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Klöch bei Bad Radkersburg</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.4A743818A3D54E2AA1B7F65E15F45DEE" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>46.7675 15.956111</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.61B23F2A058E464AAA8D9E083FA850E4">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.61B23F2A058E464AAA8D9E083FA850E4">
+							<gml:beginPosition>1995-08-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06185</aqd:natlStationCode>
+			<aqd:municipality>8493 Klöch</aqd:municipality>
+			<aqd:EUStationCode>AT60185</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural-regional"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/elevated"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/hilly"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">415.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.188">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.188</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Hartberg Wiesengasse</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.1EB199D17B0E47D68A0199C0692FD370" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.27861 15.975</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.21828A37655040C5A3CCC47257A1CADA">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.21828A37655040C5A3CCC47257A1CADA">
+							<gml:beginPosition>1996-07-11</gml:beginPosition>
+							<gml:endPosition>2010-01-24</gml:endPosition>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06188</aqd:natlStationCode>
+			<aqd:municipality>8230 Hartberg</aqd:municipality>
+			<aqd:EUStationCode>AT60188</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">330.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.189">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.189</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Hochwurzen</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.C504306EE8DE4953A748DE4B589E9219" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.36027777777778 13.639444444444443</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.7DD5BC475FE94C879BD68CC44A9CA8FC">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.7DD5BC475FE94C879BD68CC44A9CA8FC">
+							<gml:beginPosition>1996-09-05</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06189</aqd:natlStationCode>
+			<aqd:municipality>8970 Schladming</aqd:municipality>
+			<aqd:EUStationCode>AT60189</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural-remote"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/elevated"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/alpine"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">1844.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.190">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.190</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Arnfels - Remschnigg</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.18E5F42F934641F9A2606272C970F096" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>46.65195 15.36778</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.20D6ADACA21D4C0997811429E5E799DF">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.20D6ADACA21D4C0997811429E5E799DF">
+							<gml:beginPosition>1992-10-31</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06190</aqd:natlStationCode>
+			<aqd:municipality>8455 Oberhaag</aqd:municipality>
+			<aqd:EUStationCode>AT60190</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural-regional"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/elevated"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/hilly"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">785.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.06.191">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.06.191</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Gratwein</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.45733062DD924D9AA374193DBD834D6C" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.135555555555555 15.323611111111111</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.ABC11B2B3AC244B5A793EA88270764B6">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.ABC11B2B3AC244B5A793EA88270764B6">
+							<gml:beginPosition>1999-03-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.06"/>
+			<aqd:natlStationCode>06191</aqd:natlStationCode>
+			<aqd:municipality>8112 Gratwein-Straßengel</aqd:municipality>
+			<aqd:EUStationCode>AT60191</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/basin-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">382.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.07.2106">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.07.2106</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Innsbruck Reichenau - Andechsstraße</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.AF2E57CB58424D649A9160CD59258316" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.27129 11.4169445</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.63FCA9AE664446859A845FACE7B915D0">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.63FCA9AE664446859A845FACE7B915D0">
+							<gml:beginPosition>1987-12-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.07"/>
+			<aqd:natlStationCode>072106</aqd:natlStationCode>
+			<aqd:municipality>6020 Innsbruck</aqd:municipality>
+			<aqd:EUStationCode>AT72106</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/urban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/detached"/>
+					<aqd:distanceJunction uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">130.0</aqd:distanceJunction>
+					<aqd:trafficVolume>13500</aqd:trafficVolume>
+					<aqd:heavy-dutyFraction>0.08</aqd:heavy-dutyFraction>
+					<aqd:trafficSpeed uom="http://dd.eionet.europa.eu/vocabulary/uom/velocity/km.h-1">50.0</aqd:trafficSpeed>
+					<aqd:streetWidth uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">17.0</aqd:streetWidth>
+					<aqd:heightFacades uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">18.0</aqd:heightFacades>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">570.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.07.2110">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.07.2110</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Innsbruck Zentrum - Fallmerayerstraße</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.54B238BFFE5D4F80A75BF4E3976ADAFC" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.2626194 11.3923611</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.82BCBD15DBC14FD5AC6D2AB2326DA8F2">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.82BCBD15DBC14FD5AC6D2AB2326DA8F2">
+							<gml:beginPosition>1988-11-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.07"/>
+			<aqd:natlStationCode>072110</aqd:natlStationCode>
+			<aqd:municipality>6020 Innsbruck</aqd:municipality>
+			<aqd:EUStationCode>AT72110</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/urban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/detached"/>
+					<aqd:distanceJunction uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">12.0</aqd:distanceJunction>
+					<aqd:trafficVolume>4500</aqd:trafficVolume>
+					<aqd:heavy-dutyFraction>0.004</aqd:heavy-dutyFraction>
+					<aqd:trafficSpeed uom="http://dd.eionet.europa.eu/vocabulary/uom/velocity/km.h-1">40.0</aqd:trafficSpeed>
+					<aqd:streetWidth uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">8.0</aqd:streetWidth>
+					<aqd:heightFacades uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">24.0</aqd:heightFacades>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">577.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.07.2113">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.07.2113</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Innsbruck Sadrach</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.56E5DBFA14B94DD09E1E6557D4153D59" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.2699028 11.3746611</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.DD1E4F93038140C9A564D1536CABF519">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.DD1E4F93038140C9A564D1536CABF519">
+							<gml:beginPosition>1992-06-23</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.07"/>
+			<aqd:natlStationCode>072113</aqd:natlStationCode>
+			<aqd:municipality>6020 Innsbruck</aqd:municipality>
+			<aqd:EUStationCode>AT72113</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/suburban"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/elevated"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">678.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.07.2123">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.07.2123</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Innsbruck Nordkette (Seegrube)</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.7772A72D43274F60A11BFAFE7548EF04" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.3056222 11.3759972</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.5D18457A71384E08A6FA7521D04C5B0A">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.5D18457A71384E08A6FA7521D04C5B0A">
+							<gml:beginPosition>1985-03-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.07"/>
+			<aqd:natlStationCode>072123</aqd:natlStationCode>
+			<aqd:municipality>6020 Innsbruck</aqd:municipality>
+			<aqd:EUStationCode>AT72123</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural-nearcity"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/elevated"/>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/alpine"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">1958.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.03.0104">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.03.0104</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>St. Valentin, Westautobahn</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.41D045170C434923A02920A74CC400EC" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>48.17833333333333 14.54861111111111</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.DC577C9969AE4FA6AE7C97ECE031A913">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.DC577C9969AE4FA6AE7C97ECE031A913">
+							<gml:beginPosition>2003-01-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.03"/>
+			<aqd:natlStationCode>030104</aqd:natlStationCode>
+			<aqd:municipality>4300 St. Valentin</aqd:municipality>
+			<aqd:EUStationCode>AT30104</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:trafficVolume>52000</aqd:trafficVolume>
+					<aqd:heavy-dutyFraction>0.18</aqd:heavy-dutyFraction>
+					<aqd:trafficSpeed uom="http://dd.eionet.europa.eu/vocabulary/uom/velocity/km.h-1">130.0</aqd:trafficSpeed>
+					<aqd:streetWidth uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">20.0</aqd:streetWidth>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/hilly"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">295.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Station gml:id="STA.07.2710">
+			<ef:inspireId>
+				<base:Identifier>
+					<base:localId>STA.07.2710</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</ef:inspireId>
+			<ef:name>Heiterwang</ef:name>
+			<ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/air"/>
+			<ef:responsibleParty>
+				<base2:RelatedParty>
+					<base2:individualName>
+						<gmd:LocalisedCharacterString>Wolfgang Spangl</gmd:LocalisedCharacterString>
+					</base2:individualName>
+					<base2:organisationName>
+						<gmd:LocalisedCharacterString>Umweltbundesamt GmbH</gmd:LocalisedCharacterString>
+					</base2:organisationName>
+					<base2:contact>
+						<base2:Contact>
+							<base2:address>
+								<ad:AddressRepresentation>
+									<ad:adminUnit>
+										<gn:GeographicalName>
+											<gn:language>deu</gn:language>
+											<gn:nativeness xsi:nil="true" nilReason="missing"/>
+											<gn:nameStatus xsi:nil="true" nilReason="missing"/>
+											<gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+											<gn:pronunciation xsi:nil="true" nilReason="missing"/>
+											<gn:spelling>
+												<gn:SpellingOfName>
+													<gn:text>Wien</gn:text>
+													<gn:script xsi:nil="true" nilReason="missing"/>
+												</gn:SpellingOfName>
+											</gn:spelling>
+										</gn:GeographicalName>
+									</ad:adminUnit>
+									<ad:locatorDesignator>Spittelauer Laende 5</ad:locatorDesignator>
+									<ad:postCode>A-1090</ad:postCode>
+								</ad:AddressRepresentation>
+							</base2:address>
+							<base2:electronicMailAddress>wolfgang.spangl@umweltbundesamt.at</base2:electronicMailAddress>
+							<base2:telephoneVoice>+43 1 31304 5861</base2:telephoneVoice>
+							<base2:website>http://www.umweltbundesamt.at</base2:website>
+						</base2:Contact>
+					</base2:contact>
+				</base2:RelatedParty>
+			</ef:responsibleParty>
+			<ef:geometry>
+				<gml:Point gml:id="ST.PT.48FCED93380845578C7F85073A76C021" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>47.4475972 10.7441167</gml:pos>
+				</gml:Point>
+			</ef:geometry>
+			<ef:measurementRegime xlink:href="http://inspire.ec.europa.eu/codelist/MeasurementRegimeValue/continuousDataCollection"/>
+			<ef:mobile>false</ef:mobile>
+			<ef:operationalActivityPeriod>
+				<ef:OperationalActivityPeriod gml:id="ST.OP.TP.923AB319A6A84623A46F05DF240B720C">
+					<ef:activityTime>
+						<gml:TimePeriod gml:id="TP.ST.OP.TP.923AB319A6A84623A46F05DF240B720C">
+							<gml:beginPosition>2003-02-01</gml:beginPosition>
+							<gml:endPosition indeterminatePosition="unknown"/>
+						</gml:TimePeriod>
+					</ef:activityTime>
+				</ef:OperationalActivityPeriod>
+			</ef:operationalActivityPeriod>
+			<ef:belongsTo xlink:href="AT.0008.20.AQ/NET.07"/>
+			<aqd:natlStationCode>072710</aqd:natlStationCode>
+			<aqd:municipality>6611 Heiterwang</aqd:municipality>
+			<aqd:EUStationCode>AT72710</aqd:EUStationCode>
+			<aqd:stationInfo>http://www.umweltbundesamt.at</aqd:stationInfo>
+			<aqd:areaClassification xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/areaclassification/rural"/>
+			<aqd:dispersionSituation>
+				<aqd:DispersionSituation>
+					<aqd:dispersionLocal xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionlocal/open"/>
+					<aqd:trafficVolume>14000</aqd:trafficVolume>
+					<aqd:heavy-dutyFraction>0.07</aqd:heavy-dutyFraction>
+					<aqd:trafficSpeed uom="http://dd.eionet.europa.eu/vocabulary/uom/velocity/km.h-1">50.0</aqd:trafficSpeed>
+					<aqd:streetWidth uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">8.0</aqd:streetWidth>
+					<aqd:dispersionRegional xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/dispersionregional/valley-mount"/>
+				</aqd:DispersionSituation>
+			</aqd:dispersionSituation>
+			<aqd:altitude uom="http://dd.eionet.europa.eu/vocabularyconcept/uom/length/m/">985.0</aqd:altitude>
+		</aqd:AQD_Station>
+	</wfs:member>
+</wfs:FeatureCollection>

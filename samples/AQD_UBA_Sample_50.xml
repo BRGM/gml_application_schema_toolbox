@@ -1,0 +1,958 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:ef="http://inspire.ec.europa.eu/schemas/ef/3.0" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0" xmlns:am="http://inspire.ec.europa.eu/schemas/am/3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:base2="http://inspire.ec.europa.eu/schemas/base2/1.0" xmlns:ompr="http://inspire.ec.europa.eu/schemas/ompr/2.0" xmlns:aqd="http://dd.eionet.europa.eu/schemaset/id2011850eu-1.0" xmlns:sde="http://geoserver.sf.net" xmlns:cite="http://www.opengeospatial.net/cite" xmlns:om="http://www.opengis.net/om/2.0" xmlns:sam="http://www.opengis.net/sampling/2.0" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" numberMatched="unknown" numberReturned="50" timeStamp="2016-10-03T12:37:56.881Z" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://dd.eionet.europa.eu/schemaset/id2011850eu-1.0 http://dd.eionet.europa.eu/schemas/id2011850eu-1.0/AirQualityReporting.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.05.5018.4150.38.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.05.5018.4150.38.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.15407 13.50508</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.05.5018.4150.38.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">50.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.05.5018.4151.8.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.05.5018.4151.8.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.15407 13.50508</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.05.5018.4151.8.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">50.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.05.5018.4152.10.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.05.5018.4152.10.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.15407 13.50508</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.05.5018.4152.10.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">50.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.05.5018.4153.7.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.05.5018.4153.7.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.15407 13.50508</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.05.5018.4153.7.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S415.4467.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S415.4467.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.323333 14.2977778</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S415.4467.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">100.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">20.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.07.2822.4480.8.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.07.2822.4480.8.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.3499917 11.6945417</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.07.2822.4480.8.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">10.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">55.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.07.2822.4481.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.07.2822.4481.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.3499917 11.6945417</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.07.2822.4481.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">7.0</aqd:buildingDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S416.4548.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S416.4548.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.274444444 14.3147222</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S416.4548.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">20.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">40.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S406.4561.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S406.4561.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.165 14.035556</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S406.4561.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">20.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">40.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.05.2000.4562.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.05.2000.4562.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.6830556 13.1</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.05.2000.4562.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.05.2000.4563.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.05.2000.4563.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.6830556 13.1</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.05.2000.4563.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.05.1200.4564.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.05.1200.4564.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.81722222222223 13.030833333333334</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.05.1200.4564.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.05.1066.4565.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.05.1066.4565.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.8055556 13.043333</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.05.1066.4565.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">15.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">15.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.05.1000.4566.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.05.1000.4566.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.7975 13.053611111111111</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.05.1000.4566.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">15.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">5.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.05.5032.4567.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.05.5032.4567.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.12583333333333 13.808333333333334</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.05.5032.4567.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.05.5018.4568.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.05.5018.4568.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.15407 13.50508</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.05.5018.4568.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">50.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.05.5018.4569.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.05.5018.4569.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.15407 13.50508</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.05.5018.4569.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">50.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.07.2519.4571.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.07.2519.4571.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.4285528 11.8718028</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.07.2519.4571.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">10.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">1.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.07.2223.4574.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.07.2223.4574.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.2395528 11.390653</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.07.2223.4574.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">70.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">6.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.07.2209.4575.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.07.2209.4575.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.27638888888889 11.503333333333334</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.07.2209.4575.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.07.2106.4578.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.07.2106.4578.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.27129 11.4169445</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.07.2106.4578.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">14.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">8.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.07.2110.4579.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.07.2110.4579.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.2626194 11.3923611</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.07.2110.4579.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">11.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">1.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.07.2910.4589.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.07.2910.4589.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>46.827732 12.765622</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.07.2910.4589.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">25.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">5.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.07.2821.4599.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.07.2821.4599.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.348774 11.692028</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.07.2821.4599.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">5.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.07.2530.4600.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.07.2530.4600.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.4885583 12.066633</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.07.2530.4600.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">15.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S416.4614.20.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S416.4614.20.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.274444444 14.3147222</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S416.4614.20.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">1.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">20.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">40.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S403.4615.20.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S403.4615.20.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.3155556 14.28083333</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S403.4615.20.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">2.0</aqd:inletHeight>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">5.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S417.4616.20.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S417.4616.20.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.2902778 14.3527778</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S417.4616.20.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">2.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.06.151.4617.7.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.06.151.4617.7.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>46.87138888888889 15.495833333333332</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.06.151.4617.7.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">3.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.06.192.4618.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.06.192.4618.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.41152 15.25859</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.06.192.4618.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.06.164.4621.20.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.06.164.4621.20.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.055611 15.416603</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.06.164.4621.20.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">27.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">6.5</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.06.164.4623.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.06.164.4623.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.055611 15.416603</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.06.164.4623.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">27.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">6.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.06.160.4624.20.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.06.160.4624.20.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.068978 15.437397</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.06.160.4624.20.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.06.160.4626.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.06.160.4626.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.068978 15.437397</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.06.160.4626.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.06.138.4627.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.06.138.4627.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.093613 15.414722</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.06.138.4627.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.06.140.4629.10.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.06.140.4629.10.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.0431 15.4346</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.06.140.4629.10.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">14.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">7.5</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.BERN.55210.20.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.BERN.55210.20.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.31083333333333 14.281111111111112</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.BERN.55210.20.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">1.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">10.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">5.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.08.0709.55230.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.08.0709.55230.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.45968777777778 9.640553333333333</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.08.0709.55230.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">5.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.08.0710.55231.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.08.0710.55231.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.43249083333333 9.650482222222223</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.08.0710.55231.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">5.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.09.KE.55254.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.09.KE.55254.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.156708 16.476051</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.09.KE.55254.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">34.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">8.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S165.55268.20.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S165.55268.20.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.206944444444446 14.454166666666666</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S165.55268.20.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">2.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S406.55269.20.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S406.55269.20.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.165 14.035556</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S406.55269.20.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">1.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S407.55270.20.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S407.55270.20.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.00083333333333 13.667499999999999</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S407.55270.20.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">2.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">50.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">350.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S409.55271.20.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S409.55271.20.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.04944444444444 14.442777777777778</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S409.55271.20.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">2.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S125.55272.20.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S125.55272.20.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.71611111111111 13.632222222222223</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S125.55272.20.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">2.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S156.55273.20.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S156.55273.20.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.257777777777775 13.039722222222222</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S156.55273.20.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">2.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">10.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">20.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S131.55274.20.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S131.55274.20.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.294444444444444 14.3375</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S131.55274.20.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">1.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">50.0</aqd:buildingDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S409.55362.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S409.55362.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.04944444444444 14.442777777777778</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S409.55362.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.04.S431.55363.5.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.04.S431.55363.5.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>48.30277777777778 14.28277777777778</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.04.S431.55363.5.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">20.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">5.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+	<wfs:member>
+		<aqd:AQD_Sample gml:id="SAM.05.1000.55365.6001.1">
+			<sam:sampledFeature xlink:href="http://sweet.jpl.nasa.gov/2.2/realmAtmoBoundaryLayer.owl#PlanetaryBoundaryLayer"/>
+			<sams:shape>
+				<gml:Point gml:id="SAM.PT.05.1000.55365.6001.1" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>47.7975 13.053611111111111</gml:pos>
+				</gml:Point>
+			</sams:shape>
+			<aqd:inspireId>
+				<base:Identifier>
+					<base:localId>SAM.05.1000.55365.6001.1</base:localId>
+					<base:namespace>AT.0008.20.AQ</base:namespace>
+					<base:versionId>2015_2016-10-03T11:06:21+01:00</base:versionId>
+				</base:Identifier>
+			</aqd:inspireId>
+			<aqd:inletHeight uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">4.0</aqd:inletHeight>
+			<aqd:buildingDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">15.0</aqd:buildingDistance>
+			<aqd:kerbDistance uom="http://dd.eionet.europa.eu/vocabulary/uom/length/m">5.0</aqd:kerbDistance>
+		</aqd:AQD_Sample>
+	</wfs:member>
+</wfs:FeatureCollection>
