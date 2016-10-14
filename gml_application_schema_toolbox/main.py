@@ -58,6 +58,9 @@ from . import custom_viewers
 from . import name as plugin_name
 from . import version as plugin_version
 
+from .gui.gmlas_dockwidget import GmlasPluginDockWidget
+
+
 # ==============================
 def show_viewer(layer, feature, parent, viewer):
     # load the model
@@ -227,7 +230,10 @@ class MainPlugin(object):
 
         self.model_dlg = None
         self.model = None
-    
+
+        self.dockwidget = GmlasPluginDockWidget()
+        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dockwidget)
+
     def unload(self):
         # Remove the plugin menu item and icon
         self.iface.removeToolBarIcon(self.action)
@@ -235,6 +241,9 @@ class MainPlugin(object):
         self.iface.removeToolBarIcon(self.schemaAction)
         self.iface.removePluginMenu(plugin_name(),self.schemaAction)
         self.iface.removePluginMenu(plugin_name(), self.aboutAction)
+
+        self.dockwidget.setVisible(False)
+        self.iface.removeDockWidget(self.dockwidget)
 
     def onAbout(self):
         self.about_dlg = QWidget()
