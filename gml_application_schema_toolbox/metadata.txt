@@ -21,9 +21,9 @@ changelog=
 # tags are comma separated with spaces allowed
 tags=ogc, complex, features
 
-homepage=https://github.com/Oslandia/gml_application_schema_toolbox
-tracker=https://github.com/Oslandia/gml_application_schema_toolbox/issues
-repository=https://github.com/Oslandia/gml_application_schema_toolbox
+homepage=https://github.com/BRGM/gml_application_schema_toolbox
+tracker=https://github.com/BRGM/gml_application_schema_toolbox/issues
+repository=https://github.com/BRGM/gml_application_schema_toolbox
 icon=
 # experimental flag
 experimental=False
