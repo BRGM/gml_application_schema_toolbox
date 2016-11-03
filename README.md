@@ -8,9 +8,9 @@ It mainly consists of a QGIS plugin that allows to import Complex Features in tw
   * the native XML mode
   * the relational mode where the XML is first converted into a database, thanks to the PyXB library
  
-In native XML mode, the standard QGIS attribute form is extended with a widget that display an XML tree with interaction (like allowing the user to resolve a xlinnk:href elements)
+In native XML mode, the standard QGIS attribute form is extended with a widget that display an XML tree with interaction (like allowing the user to resolve a xlink:href elements)
 
-![](doc/xml_view.png)
+![](doc/Resolve_embedded_observation.png)
 
 In relational mode, the application schema is first translated into a set of linked tables in a spatialite database. Some options can be set by the user to parameter the way tables and columns are created out of the XSD schemas.
 
@@ -21,7 +21,7 @@ The whole relational model allows to configure QGIS and especially the different
 
 This QGIS plugin also explores a functionality that allows developers to provide custom viewer widgets for certain element types. For example, timeseries of a WaterML2 stream is better seen as a plot diagram rather that as a list of values.
 
-![](doc/custom_viewer.png)
+![](doc/custom_WaterML2_viewer.png)
 
 A prototype API allows to extend this mecanism to any kind of complex types.
 
