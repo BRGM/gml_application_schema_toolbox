@@ -27,7 +27,7 @@ from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem
 from qgis.PyQt.QtXml import QDomDocument, QDomNode
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), '..', 'ui', 'xml_dialog_base.ui'))
+    os.path.dirname(__file__), '..', 'ui', 'xml_dialog.ui'))
 
 
 class DomNodeItem(QStandardItem):

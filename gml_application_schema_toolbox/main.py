@@ -54,11 +54,10 @@ from .gml2relational.qgis_project_writer import create_qgis_project_from_model
 from .gml2relational.uri import URI
 
 from . import custom_viewers
-
 from . import name as plugin_name
 from . import version as plugin_version
 
-from .gui.gmlas_dockwidget import GmlasPluginDockWidget
+from .gui.dockwidget import DockWidget
 
 
 # ==============================
@@ -231,8 +230,8 @@ class MainPlugin(object):
         self.model_dlg = None
         self.model = None
 
-        self.dockwidget = GmlasPluginDockWidget()
-        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dockwidget)
+        self.dock_widget = DockWidget()
+        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock_widget)
 
     def unload(self):
         # Remove the plugin menu item and icon
@@ -242,8 +241,8 @@ class MainPlugin(object):
         self.iface.removePluginMenu(plugin_name(),self.schemaAction)
         self.iface.removePluginMenu(plugin_name(), self.aboutAction)
 
-        self.dockwidget.setVisible(False)
-        self.iface.removeDockWidget(self.dockwidget)
+        self.dock_widget.setVisible(False)
+        self.iface.removeDockWidget(self.dock_widget)
 
     def onAbout(self):
         self.about_dlg = QWidget()
