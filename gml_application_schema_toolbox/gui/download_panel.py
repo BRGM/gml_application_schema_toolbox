@@ -22,6 +22,7 @@
 """
 
 import os
+import owslib_hacks
 import owslib
 from owslib.wfs import WebFeatureService
 from owslib.feature.wfs200 import WFSCapabilitiesReader
@@ -32,7 +33,7 @@ from qgis.PyQt.QtCore import (
     QSettings,
     QUrl, QFile, QIODevice)
 # from qgis.PyQt.QtGui import QDesktopServices
-from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog
+from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
@@ -61,17 +62,30 @@ class DownloadPanel(BASE, WIDGET):
         self.uriComboBox.addItem('http://geoserverref.brgm-rec.fr/geoserver/ows')
         self.uriComboBox.addItem('http://minerals4eu.brgm-rec.fr/deegree/services/m4eu')
 
-    def uri(self):
-        return self.uriComboBox.currentText()
-
     def wfs(self):
-        return WebFeatureService(url=self.uri(), version='2.0.0')
+        uri = self.uriComboBox.currentText()
+        return WebFeatureService(url=uri, version='2.0.0')
 
     @pyqtSlot()
     def on_getCapabilitiesButton_clicked(self):
+        wfs = self.wfs()
+
+        self.featureTypesListWidget.clear()
+        for feature_type in list(wfs.contents):
+            item = QListWidgetItem(feature_type)
+            item.setData(Qt.UserRole, feature_type)
+            self.featureTypesListWidget.addItem(item)
+
+        self.storedQueriesListWidget.clear()
+        for stored_query in list(wfs.storedqueries):
+            self.storedQueriesListWidget.addItem(stored_query.id)
+
+    @pyqtSlot()
+    def on_showCapabilitiesButton_clicked(self):
         XmlDialog(self, self.wfs().getcapabilities().read()).exec_()
-        #url = WFSCapabilitiesReader().capabilities_url(self.uri())
-        #QDesktopServices.openUrl(QUrl(url))
+
+        # url = WFSCapabilitiesReader().capabilities_url(self.uri())
+        # QDesktopServices.openUrl(QUrl(url))
 
     @pyqtSlot()
     def on_downloadButton_clicked(self):
@@ -79,22 +93,31 @@ class DownloadPanel(BASE, WIDGET):
         self.downloadProgressBar.setVisible(True)
         self.setCursor(Qt.WaitCursor)
         try:
-            out = self.download()
+            if self.datasetsTabWidget.currentIndex() == 0:
+                out = self.download()
+            if self.datasetsTabWidget.currentIndex() == 1:
+                out = self.download_stored_query()
         finally:
             self.downloadProgressBar.setVisible(False)
             self.unsetCursor()
         if out is not None:
             self.file_downloaded.emit(out)
 
+    def selected_typenames(self):
+        typenames = []
+        for item in self.storedQueriesListWidget.selectedItems():
+            typenames.append(item.data(Qt.UserRole))
+        return typenames
+
     def download(self):
         wfs = self.wfs()
 
-        params = {}
-        #params['typename'] = ','.join(wfs.contents)
-        params['typename'] = sorted(wfs.contents.keys())[0]
+        params = {
+            'typename': ','.join(self.selected_typenames()),
+            'maxfeatures': self.featureLimitBox.value(),
+        }
         if self.bboxGroupBox.isChecked():
             params['bbox'] = '({})'.format(self.bboxLineEdit().text())
-        params['maxfeatures'] = self.featureLimitBox.value()
         '''
         srsname='urn:x-ogc:def:crs:EPSG:31468'
         '''
@@ -124,3 +147,6 @@ class DownloadPanel(BASE, WIDGET):
             path = out.name
 
         return path
+
+    def download_stored_query(self):
+        pass

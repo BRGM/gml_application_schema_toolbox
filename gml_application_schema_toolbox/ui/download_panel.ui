@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>397</width>
-    <height>586</height>
+    <height>814</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -65,13 +65,62 @@
        </layout>
       </item>
       <item>
-       <widget class="QPushButton" name="getCapabilitiesButton">
-        <property name="text">
-         <string>GetCapabilities</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QPushButton" name="getCapabilitiesButton">
+          <property name="text">
+           <string>GetCapabilities</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="showCapabilitiesButton">
+          <property name="text">
+           <string>Show capabitilies</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="datasetsTabWidget">
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Feature Types</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QListWidget" name="featureTypesListWidget">
+         <property name="selectionMode">
+          <enum>QAbstractItemView::ExtendedSelection</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>Stored Queries</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QListWidget" name="storedQueriesListWidget">
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QFormLayout" name="storedQueryFormLayout"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
