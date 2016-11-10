@@ -138,7 +138,7 @@ class DownloadPanel(BASE, WIDGET):
 
     def selected_typenames(self):
         typenames = []
-        for item in self.storedQueriesListWidget.selectedItems():
+        for item in self.featureTypesListWidget.selectedItems():
             typenames.append(item.data(Qt.UserRole))
         return typenames
 
