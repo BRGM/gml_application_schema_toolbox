@@ -2,21 +2,20 @@
 
 This QGIS plugin provide the capabilities to:
 
-* [Download GML from WFS 2 services](gml_application_schema_toolbox/doc/DOWNLOAD.md)
-* [Read GML App Schema files in XML mode](gml_application_schema_toolbox/doc/READ-XML-MODE.md)
-* [Convert GML App Schema files in PostGIS and SQLite format](gml_application_schema_toolbox/doc/READ-DB-MODE.md)
-* [Export PostGIS and SQLite format to GML App Schema files](gml_application_schema_toolbox/doc/WRITE-FROM-DB.md)
+* [Download GML from WFS 2 services](DOWNLOAD.md)
+* [Read GML App Schema files in XML mode](READ-XML-MODE.md)
+* [Convert GML App Schema files in PostGIS and SQLite format](READ-DB-MODE.md)
+* [Export PostGIS and SQLite format to GML App Schema files](WRITE-FROM-DB.md)
 
 This plugin works with QGIS3+.
+
 
 ![Overview](img/overview.png)
 
 
 ## Context
 
-BRGM is involved for a long time in the definition of interoperability standards especially linked to OGC and the European INSPIRE directive initiatives.
-
-Existing tools being limited for an easy exploitation of these standards, this project aims at developing a prototype around QGIS and open source software pieces.
+BRGM is involved for a long time in the definition of interoperability standards especially linked to OGC and the European INSPIRE directive initiatives. Existing tools being limited for an easy exploitation of these standards, this project aims at developing a prototype around QGIS and open source software pieces.
 
 In particular, the aim is to develop tools to **manipulate Complex Features streams in a GIS desktop application**.
 
@@ -31,13 +30,13 @@ Complex Features streams are natively represented by an XML content which allows
 
 ## Table of content
 
-* [Overview](gml_application_schema_toolbox/doc/OVERVIEW.md)
-* [Download](gml_application_schema_toolbox/doc/DOWNLOAD.md)
-* [Read](gml_application_schema_toolbox/doc/READ.md)
- * [Read in XML mode](gml_application_schema_toolbox/doc/READ-XML-MODE.md)
- * [Read in database (relational) mode](gml_application_schema_toolbox/doc/READ-DB-MODE.md)
- * [Browse custom elements](gml_application_schema_toolbox/doc/READ-CUSTOM.md)
-* [Write](gml_application_schema_toolbox/doc/WRITE-FROM-DB.md)
+* [Overview](OVERVIEW.md)
+* [Download](DOWNLOAD.md)
+* [Read](READ.md)
+ * [Read in XML mode](READ-XML-MODE.md)
+ * [Read in database (relational) mode](READ-DB-MODE.md)
+ * [Browse custom elements](READ-CUSTOM.md)
+* [Write](WRITE-FROM-DB.md)
 
 
 ## Example & samples
