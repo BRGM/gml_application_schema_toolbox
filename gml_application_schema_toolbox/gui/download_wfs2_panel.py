@@ -129,7 +129,7 @@ class DownloadWfs2Panel(BASE, WIDGET):
             'maxfeatures': self.featureLimitBox.value(),
         }
         if self.bboxGroupBox.isChecked():
-            params['bbox'] = '({})'.format(self.bboxLineEdit().text())
+            params['bbox'] = self.bboxWidget.value().split(',')
         '''
         srsname='urn:x-ogc:def:crs:EPSG:31468'
         '''

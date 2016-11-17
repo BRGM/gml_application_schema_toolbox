@@ -242,13 +242,7 @@ class ImportGmlasPanel(BASE, WIDGET):
         self.progressBar.setVisible(True)
         self.setCursor(Qt.WaitCursor)
         try:
-            self.do_import(
-                destNameOrDestDS=self.dst_datasource_name(),
-                srcDS=self.gmlas_datasource(),
-                format=self.format(),
-                accessMode=self.accessMode(),
-                datasetCreationOptions=self.dataset_creation_options(),
-                layerCreationOptions=self.layer_creation_options())
+            self.do_import()
         finally:
             self.progressBar.setVisible(False)
             self.unsetCursor()
@@ -259,7 +253,19 @@ class ImportGmlasPanel(BASE, WIDGET):
     def import_callback_data(self, **kwargs):
         print('convert_callback_data: {}'.format(kwargs))
 
-    def do_import(self, **kwargs):
-        QgsMessageLog.logMessage("gdal.VectorTranslate({})".format(str(kwargs)), 'GDAL')
-        res = gdal.VectorTranslate(**kwargs)
+    def do_import(self):
+        params = {
+            'destNameOrDestDS': self.dst_datasource_name(),
+            'srcDS': self.gmlas_datasource(),
+            'format': self.format(),
+            'accessMode': self.accessMode(),
+            'datasetCreationOptions': self.dataset_creation_options(),
+            'layerCreationOptions': self.layer_creation_options()
+        }
+        if self.bboxGroupBox.isChecked():
+            # TODO: reproject bbox in source SRS
+            params['spatFilter'] = self.bboxWidget.value()
+
+        QgsMessageLog.logMessage("gdal.VectorTranslate({})".format(str(params)), 'GDAL')
+        res = gdal.VectorTranslate(**params)
         QgsMessageLog.logMessage(str(res), 'GDAL')
