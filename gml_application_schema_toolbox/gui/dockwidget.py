@@ -24,7 +24,7 @@
 import os
 from qgis.PyQt import uic
 from gml_application_schema_toolbox.gui.download_panel import DownloadPanel
-from gml_application_schema_toolbox.gui.convert_panel import ConvertPanel
+from gml_application_schema_toolbox.gui.import_panel import ImportPanel
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'dockwidget.ui'))
@@ -39,11 +39,11 @@ class DockWidget(BASE, WIDGET):
         self.download_panel = DownloadPanel()
         self.tabWidget.addTab(self.download_panel, self.tr('Download'))
 
-        self.convert_panel = ConvertPanel()
-        self.tabWidget.addTab(self.convert_panel, self.tr('Convert'))
+        self.import_panel = ImportPanel()
+        self.tabWidget.addTab(self.import_panel, self.tr('Convert'))
 
         self.download_panel.file_downloaded.connect(self.on_fileDownloaded)
 
     def on_fileDownloaded(self, path):
-        self.convert_panel.gmlPathLineEdit.setText(path)
-        self.tabWidget.setCurrentIndex(self.tabWidget.indexOf(self.convert_panel))
+        self.import_panel.gmlPathLineEdit.setText(path)
+        self.tabWidget.setCurrentIndex(self.tabWidget.indexOf(self.import_panel))

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GMLASConvertPanel</class>
- <widget class="QWidget" name="GMLASConvertPanel">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>423</width>
-    <height>805</height>
+    <height>793</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,50 +26,23 @@
          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
         </property>
         <item row="0" column="0">
-         <widget class="QLabel" name="label_5">
+         <widget class="QLabel" name="label_11">
           <property name="text">
-           <string>Path</string>
+           <string>GMLAS config</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QLineEdit" name="gmlPathLineEdit"/>
+           <widget class="QLineEdit" name="gmlasConfigLineEdit"/>
           </item>
           <item>
-           <widget class="QToolButton" name="gmlPathButton">
+           <widget class="QToolButton" name="gmlasConfigButton">
             <property name="text">
              <string>...</string>
             </property>
            </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>XLink depth</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayout_7">
-          <item>
-           <widget class="QSpinBox" name="spinBox_2"/>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
           </item>
          </layout>
         </item>
@@ -108,7 +81,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_5">
+    <widget class="QGroupBox" name="bboxGroupBox">
      <property name="title">
       <string>Filter by extent</string>
      </property>
@@ -127,18 +100,7 @@
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_9">
-        <item>
-         <widget class="QLineEdit" name="lineEdit_9"/>
-        </item>
-        <item>
-         <widget class="QToolButton" name="toolButton_4">
-          <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <widget class="BboxWidget" name="bboxWidget" native="true"/>
       </item>
      </layout>
     </widget>
@@ -332,14 +294,14 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="convertButton">
+    <widget class="QPushButton" name="importButton">
      <property name="text">
-      <string>Convert</string>
+      <string>Import</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QProgressBar" name="convertProgressBar">
+    <widget class="QProgressBar" name="progressBar">
      <property name="value">
       <number>24</number>
      </property>
@@ -353,13 +315,21 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>40</height>
+       <height>23</height>
       </size>
      </property>
     </spacer>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>BboxWidget</class>
+   <extends>QWidget</extends>
+   <header>gml_application_schema_toolbox.gui.bbox_widget</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
