@@ -24,6 +24,8 @@
 import os
 from osgeo import gdal
 
+from qgis.core import QgsMessageLog
+
 from qgis.PyQt.QtCore import QSettings, Qt, QUrl, pyqtSlot, QFile, QIODevice, QAbstractItemModel, QModelIndex
 from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem
 from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog
@@ -38,7 +40,7 @@ gmlasconf = os.path.join(os.path.dirname(__file__),
                          '..', 'conf', 'gmlasconf.xml')
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), '..', 'ui', 'convert_panel.ui'))
+    os.path.dirname(__file__), '..', 'ui', 'import_gmlas_panel.ui'))
 
 
 data_folder = '/home/qgis/qgisgmlas/data'
@@ -46,6 +48,7 @@ data_folder = '/home/qgis/qgisgmlas/data'
 gdal.UseExceptions()
 
 
+'''
 class OgrLayersMetadataModel(QStandardItemModel):
 
     def __init__(self, datasource=None, parent=None):
@@ -72,6 +75,7 @@ class OgrLayersMetadataModel(QStandardItemModel):
         layer_name = feature.GetField("layer_name")
         item = QStandardItem(layer_name)
         item.setData(Qt.UserRole, layer_name)
+'''
 
 
 class PgsqlConnectionsModel(QAbstractItemModel):
@@ -101,29 +105,17 @@ class PgsqlConnectionsModel(QAbstractItemModel):
         return self._groups()[index.row()]
 
 
-class ConvertPanel(BASE, WIDGET):
+class ImportGmlasPanel(BASE, WIDGET):
 
     def __init__(self, parent=None):
-        super(ConvertPanel, self).__init__(parent)
+        super(ImportGmlasPanel, self).__init__(parent)
         self.setupUi(self)
 
         self.pgsqlFormWidget.setVisible(False)
-        self.convertProgressBar.setVisible(False)
+        self.progressBar.setVisible(False)
 
         self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
         self.pgsqlSchemaBox.setCurrentText('gmlas')
-
-        self.gmlPathLineEdit.setText('/home/qgis/qgisgmlas/data/geosciml/mappedfeature.gml')
-        self.sqlitePathLineEdit.setText('/home/qgis/qgisgmlas/data/test.sqlite')
-
-    @pyqtSlot()
-    def on_gmlPathButton_clicked(self):
-        path, filter = QFileDialog.getOpenFileName(self,
-            self.tr("Open GML file"),
-            data_folder,
-            self.tr("GML Files (*.gml *.xml)"))
-        if path:
-            self.gmlPathLineEdit.setText(path)
 
     @pyqtSlot()
     def on_getCapabilitiesButton_clicked(self):
@@ -131,14 +123,11 @@ class ConvertPanel(BASE, WIDGET):
         #url = WFSCapabilitiesReader().capabilities_url(self.uri())
         #QDesktopServices.openUrl(QUrl(url))
 
-    def gmlas_datasource_name(self):
-        return "GMLAS:{}".format(self.gmlPathLineEdit.text())
-
     def gmlas_datasource(self):
-        return gdal.OpenEx("GMLAS:{}".format(self.gmlPathLineEdit.text()),
+        return gdal.OpenEx("GMLAS:{}".format(self.parent().parent().gml_path()),
                            open_options=['CONFIG_FILE={}'.format(gmlasconf),
-                                         'EXPOSE_METADATA_LAYERS=YES',
-                                         'VALIDATE=YES'])
+                                         'EXPOSE_METADATA_LAYERS=YES'])
+                                         # 'VALIDATE=YES'])
 
     @pyqtSlot()
     def on_validateButton_clicked(self):
@@ -248,12 +237,12 @@ class ConvertPanel(BASE, WIDGET):
             return "overwrite"
 
     @pyqtSlot()
-    def on_convertButton_clicked(self):
-        self.convertProgressBar.setValue(0)
-        self.convertProgressBar.setVisible(True)
+    def on_importButton_clicked(self):
+        self.progressBar.setValue(0)
+        self.progressBar.setVisible(True)
         self.setCursor(Qt.WaitCursor)
         try:
-            self.convert(
+            self.do_import(
                 destNameOrDestDS=self.dst_datasource_name(),
                 srcDS=self.gmlas_datasource(),
                 format=self.format(),
@@ -261,16 +250,16 @@ class ConvertPanel(BASE, WIDGET):
                 datasetCreationOptions=self.dataset_creation_options(),
                 layerCreationOptions=self.layer_creation_options())
         finally:
-            self.convertProgressBar.setVisible(False)
+            self.progressBar.setVisible(False)
             self.unsetCursor()
 
-    def convert_callback(self, **kwargs):
+    def import_callback(self, **kwargs):
         print('convert_callback: {}'.format(kwargs))
 
-    def convert_callback_data(self, **kwargs):
+    def import_callback_data(self, **kwargs):
         print('convert_callback_data: {}'.format(kwargs))
 
-    def convert(self, **kwargs):
-        print(kwargs)
+    def do_import(self, **kwargs):
+        QgsMessageLog.logMessage("gdal.VectorTranslate({})".format(str(kwargs)), 'GDAL')
         res = gdal.VectorTranslate(**kwargs)
-        print(res)
+        QgsMessageLog.logMessage(str(res), 'GDAL')
