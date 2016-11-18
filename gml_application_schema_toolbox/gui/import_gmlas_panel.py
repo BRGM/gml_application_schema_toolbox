@@ -112,12 +112,13 @@ class ImportGmlasPanel(BASE, WIDGET):
         super(ImportGmlasPanel, self).__init__(parent)
         self.setupUi(self)
 
-        self.pgsqlFormWidget.setVisible(False)
-        self.progressBar.setVisible(False)
+        self.gmlasConfigLineEdit.setText(DEFAULT_GMLAS_CONF)
 
+        self.pgsqlFormWidget.setVisible(False)
         self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
         self.pgsqlSchemaBox.setCurrentText('gmlas')
-        self.gmlasConfigLineEdit.setText(DEFAULT_GMLAS_CONF)
+
+        self.progressBar.setVisible(False)
 
     def showEvent(self, event):
         # Cannot do that in the constructor. The project is not fully setup when
@@ -127,10 +128,14 @@ class ImportGmlasPanel(BASE, WIDGET):
         BASE.showEvent(self, event)
 
     @pyqtSlot()
-    def on_getCapabilitiesButton_clicked(self):
-        XmlDialog(self, self.wfs().getcapabilities().read()).exec_()
-        #url = WFSCapabilitiesReader().capabilities_url(self.uri())
-        #QDesktopServices.openUrl(QUrl(url))
+    def on_gmlasConfigButton_clicked(self):
+        cur_dir = os.path.dirname(self.gmlasConfigLineEdit.text())
+        path, filter = QFileDialog.getOpenFileName(self,
+            self.tr("Open GMLAS config file"),
+            cur_dir,
+            self.tr("XML Files (*.xml)"))
+        if path:
+            self.gmlasConfigLineEdit.setText(path)
 
     def gmlas_datasource(self):
         gmlasconf = self.gmlasConfigLineEdit.text()
@@ -262,16 +267,6 @@ class ImportGmlasPanel(BASE, WIDGET):
         finally:
             self.progressBar.setVisible(False)
             self.unsetCursor()
-
-    @pyqtSlot()
-    def on_gmlasConfigButton_clicked(self):
-        cur_dir = os.path.dirname(self.gmlasConfigLineEdit.text())
-        path, filter = QFileDialog.getOpenFileName(self,
-            self.tr("Open GMLAS config file"),
-            cur_dir,
-            self.tr("XML Files (*.xml)"))
-        if path:
-            self.gmlasConfigLineEdit.setText(path)
 
     def import_callback(self, **kwargs):
         print('convert_callback: {}'.format(kwargs))
