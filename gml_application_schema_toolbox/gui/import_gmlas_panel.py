@@ -36,8 +36,8 @@ from processing.tools.postgis import GeoDB
 
 from .xml_dialog import XmlDialog
 
-gmlasconf = os.path.join(os.path.dirname(__file__),
-                         '..', 'conf', 'gmlasconf.xml')
+DEFAULT_GMLAS_CONF = os.path.realpath(os.path.join(os.path.dirname(__file__),
+                                      '..', 'conf', 'gmlasconf.xml'))
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'import_gmlas_panel.ui'))
@@ -116,6 +116,7 @@ class ImportGmlasPanel(BASE, WIDGET):
 
         self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
         self.pgsqlSchemaBox.setCurrentText('gmlas')
+        self.gmlasConfigLineEdit.setText(DEFAULT_GMLAS_CONF)
 
     @pyqtSlot()
     def on_getCapabilitiesButton_clicked(self):
@@ -124,6 +125,7 @@ class ImportGmlasPanel(BASE, WIDGET):
         #QDesktopServices.openUrl(QUrl(url))
 
     def gmlas_datasource(self):
+        gmlasconf = self.gmlasConfigLineEdit.text()
         return gdal.OpenEx("GMLAS:{}".format(self.parent().parent().gml_path()),
                            open_options=['CONFIG_FILE={}'.format(gmlasconf),
                                          'EXPOSE_METADATA_LAYERS=YES'])
@@ -246,6 +248,16 @@ class ImportGmlasPanel(BASE, WIDGET):
         finally:
             self.progressBar.setVisible(False)
             self.unsetCursor()
+
+    @pyqtSlot()
+    def on_gmlasConfigButton_clicked(self):
+        cur_dir = os.path.dirname(self.gmlasConfigLineEdit.text())
+        path, filter = QFileDialog.getOpenFileName(self,
+            self.tr("Open GMLAS config file"),
+            cur_dir,
+            self.tr("XML Files (*.xml)"))
+        if path:
+            self.gmlasConfigLineEdit.setText(path)
 
     def import_callback(self, **kwargs):
         print('convert_callback: {}'.format(kwargs))
