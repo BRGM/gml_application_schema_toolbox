@@ -202,7 +202,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="outputGroupBox">
      <property name="title">
       <string>Output</string>
      </property>
@@ -210,7 +210,7 @@
       <item>
        <layout class="QFormLayout" name="formLayout_2">
         <item row="0" column="0">
-         <widget class="QLabel" name="label_4">
+         <widget class="QLabel" name="outputPathLabel">
           <property name="text">
            <string>Path</string>
           </property>
@@ -219,14 +219,14 @@
         <item row="0" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
-           <widget class="QLineEdit" name="lineEdit_7">
+           <widget class="QLineEdit" name="outputPathLineEdit">
             <property name="placeholderText">
              <string>Create temporary file</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="toolButton_3">
+           <widget class="QToolButton" name="outputPathButton">
             <property name="text">
              <string>...</string>
             </property>
