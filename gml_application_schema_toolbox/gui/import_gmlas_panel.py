@@ -22,9 +22,9 @@
 """
 
 import os
-from osgeo import gdal
+from osgeo import gdal, osr
 
-from qgis.core import QgsMessageLog
+from qgis.core import QgsMessageLog, QgsProject
 
 from qgis.PyQt.QtCore import QSettings, Qt, QUrl, pyqtSlot, QFile, QIODevice, QAbstractItemModel, QModelIndex
 from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem
@@ -117,6 +117,7 @@ class ImportGmlasPanel(BASE, WIDGET):
         self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
         self.pgsqlSchemaBox.setCurrentText('gmlas')
         self.gmlasConfigLineEdit.setText(DEFAULT_GMLAS_CONF)
+        self.srsSelectionWidget.setCrs(QgsProject.instance().crs())
 
     @pyqtSlot()
     def on_getCapabilitiesButton_clicked(self):
@@ -238,6 +239,12 @@ class ImportGmlasPanel(BASE, WIDGET):
         if self.overwriteRadioButton.isChecked():
             return "overwrite"
 
+    def dest_srs(self):
+        srs = osr.SpatialReference()
+        srs.ImportFromWkt(self.srsSelectionWidget.crs().toWkt())
+        assert srs.Validate() == 0
+        return srs
+
     @pyqtSlot()
     def on_importButton_clicked(self):
         self.progressBar.setValue(0)
@@ -272,7 +279,9 @@ class ImportGmlasPanel(BASE, WIDGET):
             'format': self.format(),
             'accessMode': self.accessMode(),
             'datasetCreationOptions': self.dataset_creation_options(),
-            'layerCreationOptions': self.layer_creation_options()
+            'layerCreationOptions': self.layer_creation_options(),
+            'dstSRS': self.dest_srs(),
+            'reproject': True
         }
         if self.bboxGroupBox.isChecked():
             # TODO: reproject bbox in source SRS
