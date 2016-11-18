@@ -207,11 +207,15 @@ class ImportGmlasPanel(BASE, WIDGET):
 
     @pyqtSlot()
     def on_sqlitePathButton_clicked(self):
-        path, filter = QFileDialog.getOpenFileName(self,
+        current_path = self.sqlitePathLineEdit.text()
+        cur_dir = os.path.dirname(current_path) if current_path else ''
+        path, filter = QFileDialog.getSaveFileName(self,
             self.tr("Save to sqlite database"),
-            data_folder,
+            cur_dir,
             self.tr("SQLite Files (*.sqlite)"))
         if path:
+            if os.path.splitext(path)[1] == '':
+                path = '{}.sqlite'.format(path)
             self.sqlitePathLineEdit.setText(path)
 
     @pyqtSlot(str)
