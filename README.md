@@ -9,7 +9,7 @@ This QGIS plugin provide the capabilities to:
 
 This plugin works with QGIS3+.
 
-![Overview](img/overview.png)
+![Overview](gml_application_schema_toolbox/doc/img/overview.png)
 
 
 ## Context
