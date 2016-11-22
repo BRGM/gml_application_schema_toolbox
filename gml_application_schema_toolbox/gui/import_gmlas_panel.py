@@ -117,7 +117,13 @@ class ImportGmlasPanel(BASE, WIDGET):
         self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
         self.pgsqlSchemaBox.setCurrentText('gmlas')
         self.gmlasConfigLineEdit.setText(DEFAULT_GMLAS_CONF)
-        self.srsSelectionWidget.setCrs(QgsProject.instance().crs())
+
+    def showEvent(self, event):
+        # Cannot do that in the constructor. The project is not fully setup when
+        # it is called
+        if not self.srsSelectionWidget.crs().isValid():
+            self.srsSelectionWidget.setCrs(QgsProject.instance().crs())
+        BASE.showEvent(self, event)
 
     @pyqtSlot()
     def on_getCapabilitiesButton_clicked(self):
