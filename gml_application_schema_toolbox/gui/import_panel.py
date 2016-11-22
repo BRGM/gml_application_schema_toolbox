@@ -50,7 +50,7 @@ class ImportPanel(BASE, WIDGET):
         path, filter = QFileDialog.getOpenFileName(self,
             self.tr("Open GML file"),
             data_folder,
-            self.tr("GML Files (*.gml *.xml)"))
+            self.tr("GML files or XSD (*.gml *.xml *.xsd)"))
         if path:
             self.gmlPathLineEdit.setText(path)
 
