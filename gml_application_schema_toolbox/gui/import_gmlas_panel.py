@@ -24,7 +24,8 @@
 import os
 from osgeo import gdal, osr
 
-from qgis.core import QgsMessageLog, QgsProject
+from qgis.core import QgsMessageLog
+from qgis.utils import iface
 
 from qgis.PyQt.QtCore import QSettings, Qt, QUrl, pyqtSlot, QFile, QIODevice, QAbstractItemModel, QModelIndex
 from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem
@@ -122,7 +123,7 @@ class ImportGmlasPanel(BASE, WIDGET):
         # Cannot do that in the constructor. The project is not fully setup when
         # it is called
         if not self.srsSelectionWidget.crs().isValid():
-            self.srsSelectionWidget.setCrs(QgsProject.instance().crs())
+            self.srsSelectionWidget.setCrs(iface.mapCanvas().mapSettings().destinationCrs())
         BASE.showEvent(self, event)
 
     @pyqtSlot()

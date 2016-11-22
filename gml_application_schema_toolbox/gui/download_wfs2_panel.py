@@ -8,7 +8,8 @@ from owslib.feature.wfs200 import WFSCapabilitiesReader
 from tempfile import NamedTemporaryFile
 import logging
 
-from qgis.core import QgsMessageLog
+from qgis.core import QgsMessageLog, QgsCoordinateTransform, QgsCoordinateReferenceSystem
+from qgis.utils import iface
 
 from qgis.PyQt.QtCore import (
     Qt, pyqtSignal, pyqtSlot,
@@ -121,18 +122,35 @@ class DownloadWfs2Panel(BASE, WIDGET):
             typenames.append(item.data(Qt.UserRole))
         return typenames
 
+    def _get_bbox(self, wfs):
+        """
+        Get the selected bbox in the default CRS of the first selected layer.
+        """
+        default_crs_name = wfs.contents[self.selected_typenames()[0]].crsOptions[0]
+        default_crs = QgsCoordinateReferenceSystem.fromOgcWmsCrs(str(default_crs_name))
+        assert default_crs.isValid()
+        bbox_crs = iface.mapCanvas().mapSettings().destinationCrs()
+        assert bbox_crs.isValid()
+        transform = QgsCoordinateTransform(bbox_crs, default_crs)
+        bbox = [float(x) for x in self.bboxWidget.value().split(',')]
+        point1 = transform.transform(bbox[0], bbox[1])
+        point2 = transform.transform(bbox[2], bbox[3])
+        return [point1.x(), point1.y(), point2.x(), point2.y(), default_crs_name]
+
     def download(self):
         wfs = self.wfs()
 
+        typenames = self.selected_typenames()
+        if len(typenames) == 0:
+            return
+
         params = {
-            'typename': ','.join(self.selected_typenames()),
+            'typename': ','.join(typenames),
             'maxfeatures': self.featureLimitBox.value(),
         }
+
         if self.bboxGroupBox.isChecked():
-            params['bbox'] = self.bboxWidget.value().split(',')
-        '''
-        srsname='urn:x-ogc:def:crs:EPSG:31468'
-        '''
+            params['bbox'] = self._get_bbox(wfs)
 
         try:
             response = wfs.getfeature(**params)
