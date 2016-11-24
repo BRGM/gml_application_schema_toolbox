@@ -96,9 +96,21 @@ class DownloadWfs2Panel(BASE, WIDGET):
     @pyqtSlot()
     def on_showCapabilitiesButton_clicked(self):
         XmlDialog(self, self.wfs().getcapabilities().read()).exec_()
-
         # url = WFSCapabilitiesReader().capabilities_url(self.uri())
         # QDesktopServices.openUrl(QUrl(url))
+
+    @pyqtSlot()
+    def on_outputPathButton_clicked(self):
+        current_path = self.outputPathLineEdit.text()
+        cur_dir = os.path.dirname(current_path) if current_path else ''
+        path, filter = QFileDialog.getSaveFileName(self,
+            self.tr("Select output file"),
+            cur_dir,
+            self.tr("GML Files (*.gml *.xml)"))
+        if path:
+            if os.path.splitext(path)[1] == '':
+                path = '{}.gml'.format(path)
+            self.outputPathLineEdit.setText(path)
 
     @pyqtSlot()
     def on_downloadButton_clicked(self):
@@ -172,9 +184,14 @@ class DownloadWfs2Panel(BASE, WIDGET):
                                  exception.text())
             return
 
-        with NamedTemporaryFile(suffix='.gml', delete=False) as out:
-            out.write(bytes(xml, 'UTF-8'))
-            path = out.name
+        path = self.outputPathLineEdit.text()
+        if path == '':
+            with NamedTemporaryFile(mode="w+t", suffix='.gml', delete=False) as out:
+                out.write(xml)
+                path = out.name
+        else:
+            with open(path, 'w') as out:
+                out.write(xml)
 
         return path
 
