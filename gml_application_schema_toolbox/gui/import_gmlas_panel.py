@@ -27,14 +27,18 @@ from osgeo import gdal, osr
 from qgis.core import QgsApplication
 from qgis.utils import iface
 
-from qgis.PyQt.QtCore import QSettings, Qt, QUrl, pyqtSlot, QFile, QIODevice, QAbstractItemModel, QModelIndex
+from qgis.PyQt.QtCore import (
+    QSettings, Qt, QUrl, pyqtSlot, QFile, QIODevice,
+    QAbstractItemModel, QModelIndex,
+    QEventLoop)
 from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem
-from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog
+from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QProgressDialog
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
 from processing.tools.postgis import GeoDB
 
+from gml_application_schema_toolbox import name as plugin_name
 from gml_application_schema_toolbox.core.logging import log, gdal_error_handler
 from .xml_dialog import XmlDialog
 
@@ -120,8 +124,6 @@ class ImportGmlasPanel(BASE, WIDGET):
         self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
         self.pgsqlConnectionsRefreshButton.setIcon(
             QgsApplication.getThemeIcon('/mActionRefresh.png'))
-
-        self.progressBar.setVisible(False)
 
     def showEvent(self, event):
         # Cannot do that in the constructor. The project is not fully setup when
@@ -258,7 +260,7 @@ class ImportGmlasPanel(BASE, WIDGET):
             schemas = [schema[1] for schema in self._pgsql_db.list_schemas()]
             if not schema in schemas:
                 res = QMessageBox.question(self,
-                                           self.windowTitle(),
+                                           plugin_name(),
                                            self.tr('Create schema "{}" ?').
                                            format(schema))
                 if res != QMessageBox.Ok:
@@ -295,7 +297,7 @@ class ImportGmlasPanel(BASE, WIDGET):
         dst_datasource_name = self.dst_datasource_name()
         if not dst_datasource_name:
             QMessageBox.warning(self,
-                                self.windowTitle(),
+                                plugin_name(),
                                 "You must select a PostgreSQL connection")
             return None
 
@@ -307,8 +309,8 @@ class ImportGmlasPanel(BASE, WIDGET):
             'datasetCreationOptions': self.dataset_creation_options(),
             'layerCreationOptions': self.layer_creation_options(),
             'dstSRS': self.dest_srs(),
-            'reproject': True
-            # 'callback': self.import_callback  # nothing translated with this
+            'reproject': True,
+            'callback': self.import_callback
         }
 
         layers = self.selected_layers()
@@ -318,12 +320,12 @@ class ImportGmlasPanel(BASE, WIDGET):
         if self.bboxGroupBox.isChecked():
             if self.bboxWidget.value() == '':
                 QMessageBox.warning(self,
-                                    self.windowTitle(),
+                                    plugin_name(),
                                     "Extent is empty")
                 return
             if not self.bboxWidget.isValid():
                 QMessageBox.warning(self,
-                                    self.windowTitle(),
+                                    plugin_name(),
                                     "Extent is invalid")
                 return
             bbox = self.bboxWidget.rectangle()
@@ -344,8 +346,14 @@ class ImportGmlasPanel(BASE, WIDGET):
         if params is None:
             return
 
-        self.progressBar.setValue(0)
-        self.progressBar.setVisible(True)
+        dlg = QProgressDialog(self)
+        dlg.setWindowTitle(plugin_name())
+        dlg.setLabelText('Operation in progress')
+        dlg.setMinimum(0)
+        dlg.setMaximum(100)
+        dlg.setWindowModality(Qt.WindowModal)
+        self.progress_dlg = dlg
+
         self.setCursor(Qt.WaitCursor)
         try:
             log("gdal.VectorTranslate({})".format(str(params)))
@@ -354,8 +362,13 @@ class ImportGmlasPanel(BASE, WIDGET):
             gdal.PopErrorHandler()
             log(str(res))
         finally:
-            self.progressBar.setVisible(False)
             self.unsetCursor()
+            self.progress_dlg.reset()
+            self.progress_dlg = None
 
-    def import_callback(self, **kwargs):
-        log('convert_callback: {}'.format(kwargs))
+    def import_callback(self, pct, msg, user_data):
+        self.progress_dlg.setValue(int(100*pct))
+        QgsApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
+        if self.progress_dlg.wasCanceled():
+            return 0
+        return 1
