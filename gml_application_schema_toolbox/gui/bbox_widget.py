@@ -8,7 +8,8 @@ Note that this depends on some processing plugin classes
 
 import os
 
-from qgis.core import QgsRasterLayer, QgsVectorLayer, QgsRectangle
+from qgis.core import QgsRasterLayer, QgsVectorLayer, QgsRectangle, \
+    QgsCoordinateReferenceSystem
 from qgis.gui import QgsMessageBar
 from qgis.utils import iface
 
@@ -30,12 +31,17 @@ class BboxWidget(BASE, WIDGET):
         super(BboxWidget, self).__init__(parent)
         self.setupUi(self)
 
+        self.dialog = None
+
         self.btnSelect.clicked.connect(self.selectExtent)
 
         canvas = iface.mapCanvas()
         self.prevMapTool = canvas.mapTool()
         self.tool = RectangleMapTool(canvas)
         self.tool.rectangleCreated.connect(self.updateExtent)
+
+    def setDialog(self):
+        self._dialog = Dialog
 
     def selectExtent(self):
         popupmenu = QMenu()
@@ -61,42 +67,33 @@ class BboxWidget(BASE, WIDGET):
         layers = dataobjects.getAllLayers()
         for layer in layers:
             authid = layer.crs().authid()
-            if ProcessingConfig.getSetting(ProcessingConfig.SHOW_CRS_DEF) \
-                    and authid is not None:
-                layerName = u'{} [{}]'.format(layer.name(), authid)
-            else:
-                layerName = layer.name()
+            layerName = layer.name()
             extents.append(layerName)
             extentsDict[layerName] = {"extent": layer.extent(), "authid": authid}
         (item, ok) = QInputDialog.getItem(self, self.tr('Select extent'),
                                           self.tr('Use extent from'), extents, False)
         if ok:
-            self.setValue(extentsDict[item]["extent"])
-            if extentsDict[item]["authid"] != iface.mapCanvas().mapSettings().destinationCrs().authid():
-                iface.messageBar().pushMessage(self.tr("Warning"),
-                                               self.tr("The projection of the chosen layer is not the same as canvas projection! The selected extent might not be what was intended."),
-                                               QgsMessageBar.WARNING, 8)
+            self.setValue(extentsDict[item]["extent"], extentsDict[item]['authid'])
 
     def selectOnCanvas(self):
         canvas = iface.mapCanvas()
         canvas.setMapTool(self.tool)
-        '''
-        self.dialog.showMinimized()
-        '''
+        if self.dialog:
+            self.dialog.showMinimized()
 
     def updateExtent(self):
-        self.setValue(self.tool.rectangle())
+        self.setValue(self.tool.rectangle(),
+                      iface.mapCanvas().mapSettings().destinationCrs().authid())
 
         self.tool.reset()
         canvas = iface.mapCanvas()
         canvas.setMapTool(self.prevMapTool)
-        '''
-        self.dialog.showNormal()
-        self.dialog.raise_()
-        self.dialog.activateWindow()
-        '''
+        if self.dialog:
+            self.dialog.showNormal()
+            self.dialog.raise_()
+            self.dialog.activateWindow()
 
-    def setValue(self, value):
+    def setValue(self, value, crs_authid):
         if isinstance(value, QgsRectangle):
             s = '{},{},{},{}'.format(value.xMinimum(),
                                          value.xMaximum(),
@@ -107,8 +104,30 @@ class BboxWidget(BASE, WIDGET):
         else:
             s = ",".join([str(v) for v in value])
 
+        s = '{},{}'.format(s, crs_authid)
+
         self.leText.setText(s)
         return True
 
     def value(self):
         return self.leText.text()
+
+    def rectangle(self):
+        if self.value() == '':
+            return None
+        xmin, ymin, xmax, ymax = [float(x) for x in self.value().split(',')[0:4]]
+        return QgsRectangle(xmin, ymin, xmax, ymax)
+
+    def crs(self):
+        if self.value() == '':
+            return None
+        return QgsCoordinateReferenceSystem(self.value().split(',')[4])
+
+    def isValid(self):
+        try:
+            rect = self.rectangle()
+            crs = self.crs()
+            assert crs.isValid()
+            return True
+        except:
+            return False
