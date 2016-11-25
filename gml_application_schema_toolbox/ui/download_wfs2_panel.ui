@@ -138,7 +138,7 @@
       <item>
        <widget class="QLabel" name="label_13">
         <property name="text">
-         <string>xmin,ymin,xmax,ymax</string>
+         <string>xmin,ymin,xmax,ymax,EPSG:srs_id</string>
         </property>
        </widget>
       </item>

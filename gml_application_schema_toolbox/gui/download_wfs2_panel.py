@@ -141,13 +141,13 @@ class DownloadWfs2Panel(BASE, WIDGET):
         default_crs_name = wfs.contents[self.selected_typenames()[0]].crsOptions[0]
         default_crs = QgsCoordinateReferenceSystem.fromOgcWmsCrs(str(default_crs_name))
         assert default_crs.isValid()
-        bbox_crs = iface.mapCanvas().mapSettings().destinationCrs()
-        assert bbox_crs.isValid()
-        transform = QgsCoordinateTransform(bbox_crs, default_crs)
-        bbox = [float(x) for x in self.bboxWidget.value().split(',')]
-        point1 = transform.transform(bbox[0], bbox[1])
-        point2 = transform.transform(bbox[2], bbox[3])
-        return [point1.x(), point1.y(), point2.x(), point2.y(), default_crs_name]
+        transform = QgsCoordinateTransform(self.bboxWidget.crs(), default_crs)
+        bbox = transform.transformBoundingBox(self.bboxWidget.rectangle())
+        return [bbox.xMinimum(),
+                bbox.yMinimum(),
+                bbox.xMaximum(),
+                bbox.yMaximum(),
+                default_crs_name]
 
     def download(self):
         wfs = self.wfs()
@@ -162,6 +162,16 @@ class DownloadWfs2Panel(BASE, WIDGET):
         }
 
         if self.bboxGroupBox.isChecked():
+            if self.bboxWidget.value() == '':
+                QMessageBox.warning(self,
+                                    self.windowTitle(),
+                                    "Extent is empty")
+                return
+            if not self.bboxWidget.isValid():
+                QMessageBox.warning(self,
+                                    self.windowTitle(),
+                                    "Extent is invalid")
+                return
             params['bbox'] = self._get_bbox(wfs)
 
         try:
