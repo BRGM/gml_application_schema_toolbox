@@ -24,7 +24,7 @@
 import os
 from osgeo import gdal, osr
 
-from qgis.core import QgsMessageLog
+from qgis.core import QgsApplication
 from qgis.utils import iface
 
 from qgis.PyQt.QtCore import QSettings, Qt, QUrl, pyqtSlot, QFile, QIODevice, QAbstractItemModel, QModelIndex
@@ -35,6 +35,7 @@ from qgis.PyQt import uic
 
 from processing.tools.postgis import GeoDB
 
+from gml_application_schema_toolbox.core.logging import log, gdal_error_handler
 from .xml_dialog import XmlDialog
 
 DEFAULT_GMLAS_CONF = os.path.realpath(os.path.join(os.path.dirname(__file__),
@@ -114,9 +115,11 @@ class ImportGmlasPanel(BASE, WIDGET):
 
         self.gmlasConfigLineEdit.setText(DEFAULT_GMLAS_CONF)
 
+        self._pgsql_db = None
         self.pgsqlFormWidget.setVisible(False)
         self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
-        self.pgsqlSchemaBox.setCurrentText('gmlas')
+        self.pgsqlConnectionsRefreshButton.setIcon(
+            QgsApplication.getThemeIcon('/mActionRefresh.png'))
 
         self.progressBar.setVisible(False)
 
@@ -182,18 +185,18 @@ class ImportGmlasPanel(BASE, WIDGET):
         for i in range(0, data_source.GetLayerCount()):
             layer = data_source.GetLayer(i)
             layer_name = layer.GetName()
-
             feature_count = layer.GetFeatureCount()
-            print("{} ({})".format(layer_name, feature_count))
 
-            self.datasetsListWidget.addItem(layer_name)
+            from qgis.PyQt.QtWidgets import QListWidgetItem
+            item = QListWidgetItem("{} ({})".format(layer_name, feature_count))
+            item.setData(Qt.UserRole, layer_name)
+            self.datasetsListWidget.addItem(item)
 
-    def layers(self):
+    def selected_layers(self):
         layers = []
         for item in self.datasetsListWidget.selectedItems():
-            layers.append(item.text())
+            layers.append(item.data(Qt.UserRole))
         return layers
-        return ','.join(layers)
 
     @pyqtSlot(bool)
     def on_sqliteRadioButton_toggled(self, checked):
@@ -225,10 +228,21 @@ class ImportGmlasPanel(BASE, WIDGET):
         else:
             self._pgsql_db = GeoDB.from_name(self.pgsqlConnectionsBox.currentText())
 
+        self.pgsqlSchemaBox.clear()
+        schemas = sorted([schema[1] for schema in self._pgsql_db.list_schemas()])
+        for schema in schemas:
+            self.pgsqlSchemaBox.addItem(schema)
+
+    @pyqtSlot()
+    def on_pgsqlConnectionsRefreshButton_clicked(self):
+        self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
+
     def dst_datasource_name(self):
         if self.sqliteRadioButton.isChecked():
             return self.sqlitePathLineEdit.text()
         if self.pgsqlRadioButton.isChecked():
+            if self._pgsql_db is None:
+                return None
             return 'PG:{}'.format(self._pgsql_db.uri.connectionInfo(True))
 
     def dataset_creation_options(self):
@@ -238,7 +252,21 @@ class ImportGmlasPanel(BASE, WIDGET):
     def layer_creation_options(self):
         options = []
         if self.pgsqlRadioButton.isChecked():
-            options.append('SCHEMA={}'.format(self.pgsqlSchemaBox.currentText() or 'public'))
+            schema = self.pgsqlSchemaBox.currentText()
+
+            #if self.pgsqlSchemaBox.currentIndex() == -1:
+            schemas = [schema[1] for schema in self._pgsql_db.list_schemas()]
+            if not schema in schemas:
+                res = QMessageBox.question(self,
+                                           self.windowTitle(),
+                                           self.tr('Create schema "{}" ?').
+                                           format(schema))
+                if res != QMessageBox.Ok:
+                    return False
+                self._pgsql_db.create_schema(schema)
+            options.append('SCHEMA={}'.format(schema or 'public'))
+            if self.accessMode() == 'overwrite':
+                options.append('OVERWRITE=YES')
         return options
 
     def format(self):
@@ -248,6 +276,8 @@ class ImportGmlasPanel(BASE, WIDGET):
             return "PostgreSQL"
 
     def accessMode(self):
+        if self.createRadioButton.isChecked():
+            return None
         if self.updateRadioButton.isChecked():
             return "update"
         if self.appendRadioButton.isChecked():
@@ -261,26 +291,16 @@ class ImportGmlasPanel(BASE, WIDGET):
         assert srs.Validate() == 0
         return srs
 
-    @pyqtSlot()
-    def on_importButton_clicked(self):
-        self.progressBar.setValue(0)
-        self.progressBar.setVisible(True)
-        self.setCursor(Qt.WaitCursor)
-        try:
-            self.do_import()
-        finally:
-            self.progressBar.setVisible(False)
-            self.unsetCursor()
+    def import_params(self):
+        dst_datasource_name = self.dst_datasource_name()
+        if not dst_datasource_name:
+            QMessageBox.warning(self,
+                                self.windowTitle(),
+                                "You must select a PostgreSQL connection")
+            return None
 
-    def import_callback(self, **kwargs):
-        print('convert_callback: {}'.format(kwargs))
-
-    def import_callback_data(self, **kwargs):
-        print('convert_callback_data: {}'.format(kwargs))
-
-    def do_import(self):
         params = {
-            'destNameOrDestDS': self.dst_datasource_name(),
+            'destNameOrDestDS': dst_datasource_name,
             'srcDS': self.gmlas_datasource(),
             'format': self.format(),
             'accessMode': self.accessMode(),
@@ -288,11 +308,54 @@ class ImportGmlasPanel(BASE, WIDGET):
             'layerCreationOptions': self.layer_creation_options(),
             'dstSRS': self.dest_srs(),
             'reproject': True
+            # 'callback': self.import_callback  # nothing translated with this
         }
-        if self.bboxGroupBox.isChecked():
-            # TODO: reproject bbox in source SRS
-            params['spatFilter'] = self.bboxWidget.value()
 
-        QgsMessageLog.logMessage("gdal.VectorTranslate({})".format(str(params)), 'GDAL')
-        res = gdal.VectorTranslate(**params)
-        QgsMessageLog.logMessage(str(res), 'GDAL')
+        layers = self.selected_layers()
+        if len(layers) > 0:
+            params['layers'] = self.selected_layers()
+
+        if self.bboxGroupBox.isChecked():
+            if self.bboxWidget.value() == '':
+                QMessageBox.warning(self,
+                                    self.windowTitle(),
+                                    "Extent is empty")
+                return
+            if not self.bboxWidget.isValid():
+                QMessageBox.warning(self,
+                                    self.windowTitle(),
+                                    "Extent is invalid")
+                return
+            bbox = self.bboxWidget.rectangle()
+            params['spatFilter'] = (bbox.xMinimum(),
+                                    bbox.yMinimum(),
+                                    bbox.xMaximum(),
+                                    bbox.yMaximum())
+            srs = osr.SpatialReference()
+            srs.ImportFromWkt(self.bboxWidget.crs().toWkt())
+            assert srs.Validate() == 0
+            params['spatSRS'] = srs
+
+        return params
+
+    @pyqtSlot()
+    def on_importButton_clicked(self):
+        params = self.import_params()
+        if params is None:
+            return
+
+        self.progressBar.setValue(0)
+        self.progressBar.setVisible(True)
+        self.setCursor(Qt.WaitCursor)
+        try:
+            log("gdal.VectorTranslate({})".format(str(params)))
+            gdal.PushErrorHandler(gdal_error_handler)
+            res = gdal.VectorTranslate(**params)
+            gdal.PopErrorHandler()
+            log(str(res))
+        finally:
+            self.progressBar.setVisible(False)
+            self.unsetCursor()
+
+    def import_callback(self, **kwargs):
+        log('convert_callback: {}'.format(kwargs))
