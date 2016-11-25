@@ -8,7 +8,7 @@ from owslib.feature.wfs200 import WFSCapabilitiesReader
 from tempfile import NamedTemporaryFile
 import logging
 
-from qgis.core import QgsMessageLog, QgsCoordinateTransform, QgsCoordinateReferenceSystem
+from qgis.core import QgsCoordinateTransform, QgsCoordinateReferenceSystem
 from qgis.utils import iface
 
 from qgis.PyQt.QtCore import (
@@ -20,43 +20,13 @@ from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
+from gml_application_schema_toolbox.core.logging import log
 from .xml_dialog import XmlDialog
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'download_wfs2_panel.ui'))
 
 data_folder = '/home/qgis/qgisgmlas/data'
-
-
-class QgsMessageLogHandler(logging.Handler):
-
-    def __init__(self, tag=None):
-        super(QgsMessageLogHandler, self).__init__()
-        self.tag = tag
-
-    def emit(self, record):
-        try:
-            msg = self.format(record)
-            QgsMessageLog.logMessage(msg, self.tag)
-            self.flush()
-        except (KeyboardInterrupt, SystemExit):
-            raise
-        except:
-            self.handleError(record)
-
-
-owslib_logger = logging.getLogger('owslib')
-owslib_logger.setLevel(logging.DEBUG)
-
-owslib_handler = None
-for handler in owslib_logger.handlers:
-    if handler.__class__.__name__ == QgsMessageLogHandler.__name__:
-        owslib_handler = handler
-        break
-if owslib_handler is None:
-    owslib_handler = QgsMessageLogHandler('owslib')
-    owslib_handler.setLevel(logging.DEBUG)
-    owslib_logger.addHandler(owslib_handler)
 
 
 class DownloadWfs2Panel(BASE, WIDGET):
