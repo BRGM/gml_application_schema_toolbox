@@ -144,10 +144,18 @@ class ImportGmlasPanel(BASE, WIDGET):
 
     def gmlas_datasource(self):
         gmlasconf = self.gmlasConfigLineEdit.text()
-        return gdal.OpenEx("GMLAS:{}".format(self.parent().parent().gml_path()),
-                           open_options=['CONFIG_FILE={}'.format(gmlasconf),
-                                         'EXPOSE_METADATA_LAYERS=YES'])
-                                         # 'VALIDATE=YES'])
+        datasourceFile = self.parent().parent().gml_path()
+        isXsd = datasourceFile.endswith(".xsd")
+        if isXsd:
+            return gdal.OpenEx("GMLAS:",
+                               open_options=['XSD={}'.format(datasourceFile), 
+                                             'CONFIG_FILE={}'.format(gmlasconf),
+                                             'EXPOSE_METADATA_LAYERS=YES'])
+        else:
+            return gdal.OpenEx("GMLAS:{}".format(datasourceFile),
+                               open_options=['CONFIG_FILE={}'.format(gmlasconf),
+                                             'EXPOSE_METADATA_LAYERS=YES'])
+                                             # 'VALIDATE=YES'])
 
     @pyqtSlot()
     def on_validateButton_clicked(self):
