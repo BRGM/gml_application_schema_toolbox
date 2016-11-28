@@ -203,6 +203,8 @@ class ImportGmlasPanel(BASE, WIDGET):
             self.datasetsListWidget.addItem(item)
 
         self.datasetsListWidget.sortItems()
+        self.datasetsListWidget.selectAll()
+
 
     def selected_layers(self):
         layers = []
