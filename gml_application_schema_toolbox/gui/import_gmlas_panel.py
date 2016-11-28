@@ -249,9 +249,18 @@ class ImportGmlasPanel(BASE, WIDGET):
 
     def dst_datasource_name(self):
         if self.sqliteRadioButton.isChecked():
-            return self.sqlitePathLineEdit.text()
+            path = self.sqlitePathLineEdit.text()
+            if path == '':
+                QMessageBox.warning(self,
+                                    plugin_name(),
+                                    "You must select a SQLite file")
+                return None
+            return path
         if self.pgsqlRadioButton.isChecked():
             if self._pgsql_db is None:
+                QMessageBox.warning(self,
+                                    plugin_name(),
+                                    "You must select a PostgreSQL connection")
                 return None
             return 'PG:{}'.format(self._pgsql_db.uri.connectionInfo(True))
 
@@ -304,9 +313,6 @@ class ImportGmlasPanel(BASE, WIDGET):
     def import_params(self):
         dst_datasource_name = self.dst_datasource_name()
         if not dst_datasource_name:
-            QMessageBox.warning(self,
-                                plugin_name(),
-                                "You must select a PostgreSQL connection")
             return None
 
         params = {
