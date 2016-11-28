@@ -219,11 +219,15 @@ class MainPlugin(object):
         self.aboutAction = QAction("About", self.iface.mainWindow())
         self.aboutAction.triggered.connect(self.onAbout)
 
+        self.helpAction = QAction("Help", self.iface.mainWindow())
+        self.helpAction.triggered.connect(self.onHelp)
+
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu(plugin_name(), self.action)
         self.iface.addToolBarIcon(self.schemaAction)
         self.iface.addPluginToMenu(plugin_name(), self.schemaAction)
         self.iface.addPluginToMenu(plugin_name(), self.aboutAction)
+        self.iface.addPluginToMenu(plugin_name(), self.helpAction)
 
         QgsProject.instance().writeProject.connect(self.onProjectWrite)
 
@@ -240,6 +244,7 @@ class MainPlugin(object):
         self.iface.removeToolBarIcon(self.schemaAction)
         self.iface.removePluginMenu(plugin_name(),self.schemaAction)
         self.iface.removePluginMenu(plugin_name(), self.aboutAction)
+        self.iface.removePluginMenu(plugin_name(), self.helpAction)
 
         self.dock_widget.setVisible(False)
         self.iface.removeDockWidget(self.dock_widget)
@@ -420,6 +425,10 @@ class MainPlugin(object):
         self.model_dlg = ModelDialog(self.model)
         self.model_dlg.tableSelected.connect(onTableSelected)
         self.model_dlg.show()
+
+    def onHelp(self):
+        url = 'https://github.com/INSPIRE-MIF/gml_application_schema_toolbox/blob/master/gml_application_schema_toolbox/doc/README.md'
+        QDesktopServices.openUrl(QUrl(url))
 
     def onProjectWrite(self, dom):
         # make sure the model is saved with the project
