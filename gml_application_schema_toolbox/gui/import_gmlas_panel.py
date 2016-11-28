@@ -202,6 +202,8 @@ class ImportGmlasPanel(BASE, WIDGET):
             item.setData(Qt.UserRole, layer_name)
             self.datasetsListWidget.addItem(item)
 
+        self.datasetsListWidget.sortItems()
+
     def selected_layers(self):
         layers = []
         for item in self.datasetsListWidget.selectedItems():
