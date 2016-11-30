@@ -18,7 +18,7 @@ In a relational approach, the main problem is to convert from an XML flow of Com
 ![Feature info](img/read-db-gmlas.png)
 
 
-## Using PyXB
+## Using PyXB (deprecated)
 
 This mode is deprecated and should be used only for demonstration purpose as some features are not available using GMLAS driver mode.
 
