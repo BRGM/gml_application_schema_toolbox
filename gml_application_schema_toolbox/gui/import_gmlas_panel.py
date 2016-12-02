@@ -190,17 +190,19 @@ class ImportGmlasPanel(BASE, WIDGET):
         layer_category TOP_LEVEL_ELEMENT, NESTED_ELEMENT or JUNCTION_TABLE
         layer_documentation
         '''
+        ogrMetadataLayerPrefix = '_ogr_'
 
         self.datasetsListWidget.clear()
         for i in range(0, data_source.GetLayerCount()):
             layer = data_source.GetLayer(i)
             layer_name = layer.GetName()
-            feature_count = layer.GetFeatureCount()
+            if not layer_name.startswith(ogrMetadataLayerPrefix): 
+              feature_count = layer.GetFeatureCount()
 
-            from qgis.PyQt.QtWidgets import QListWidgetItem
-            item = QListWidgetItem("{} ({})".format(layer_name, feature_count))
-            item.setData(Qt.UserRole, layer_name)
-            self.datasetsListWidget.addItem(item)
+              from qgis.PyQt.QtWidgets import QListWidgetItem
+              item = QListWidgetItem("{} ({})".format(layer_name, feature_count))
+              item.setData(Qt.UserRole, layer_name)
+              self.datasetsListWidget.addItem(item)
 
         self.datasetsListWidget.sortItems()
         self.datasetsListWidget.selectAll()
