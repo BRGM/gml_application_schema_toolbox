@@ -51,7 +51,7 @@
       <item>
        <widget class="QPushButton" name="validateButton">
         <property name="text">
-         <string>Validate</string>
+         <string>Load layer list</string>
         </property>
        </widget>
       </item>
@@ -67,7 +67,7 @@
       </sizepolicy>
      </property>
      <property name="title">
-      <string>Datasets</string>
+      <string>Layers</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_6">
       <item>
@@ -302,7 +302,7 @@
    <item>
     <widget class="QPushButton" name="importButton">
      <property name="text">
-      <string>Import</string>
+      <string>Convert</string>
      </property>
     </widget>
    </item>
