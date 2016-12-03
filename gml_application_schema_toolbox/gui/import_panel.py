@@ -8,7 +8,6 @@ from qgis.PyQt import uic
 
 from gml_application_schema_toolbox.gui.import_gmlas_panel import ImportGmlasPanel
 from gml_application_schema_toolbox.gui.import_xml_panel import ImportXmlPanel
-from gml_application_schema_toolbox.gui.import_pyxb_panel import ImportPyxbPanel
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'import_panel.ui'))
@@ -30,10 +29,6 @@ class ImportPanel(BASE, WIDGET):
         self.xml_panel = self.addImportPanel(
             self.tr("Import as XML"),
             ImportXmlPanel())
-
-        self.pyxb_panel = self.addImportPanel(
-            self.tr("Import using initial POC code - with PyXB"),
-            ImportPyxbPanel())
 
         self.gmlPathLineEdit.setText('/home/qgis/qgisgmlas/data/geosciml/mappedfeature.gml')
 

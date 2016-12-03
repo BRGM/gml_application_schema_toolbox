@@ -93,8 +93,6 @@ class CreationDialog(QDialog, FORM_CLASS):
         self.attributeTable.selectionModel().selectionChanged.connect(self.onSelectMapping)
         self.browseOutButton.clicked.connect(self.onBrowseOut)
 
-        self.mArchiveDirEdit.setText(os.path.join(QDir.tempPath(), "cache"))
-        self.mArchiveDirBrowseBtn.clicked.connect(self.onArchiveDirBrowse)
 
     def onBrowse(self):
         openDir = QSettings("complex_features").value("xml_file_location", "")
@@ -102,13 +100,6 @@ class CreationDialog(QDialog, FORM_CLASS):
         if xml_file:
             QSettings("complex_features").setValue("xml_file_location", os.path.dirname(xml_file))
             self.filenameText.setText(xml_file)
-
-    def onArchiveDirBrowse(self):
-        openDir = QSettings("complex_features").value("archive_dir_location", "")
-        archive_dir = QFileDialog.getExistingDirectory(None, u"Select archive directory")
-        if archive_dir:
-            QSettings("complex_features").setValue("archive_dir_location", os.path.dirname(archive_dir))
-            self.mArchiveDirEdit.setText(archive_dir)
 
     def onBrowseOut(self):
         openDir = QSettings("complex_features").value("out_file_location", "")

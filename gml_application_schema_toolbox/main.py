@@ -346,57 +346,6 @@ class MainPlugin(object):
                 new_layer.editFormConfig().setWidgetType('_xml_', "Hidden")
                 new_layer.setDisplayExpression("fid")
 
-            else: # import type == 2
-                is_remote, url = creation_dlg.source()
-                output_filename = creation_dlg.output_filename()
-                archive_dir = creation_dlg.archive_directory()
-                merge_depth = creation_dlg.merge_depth()
-                merge_sequences = creation_dlg.merge_sequences()
-                enforce_not_null = creation_dlg.enforce_not_null()
-
-                # temporary sqlite file
-                tfile = QTemporaryFile()
-                tfile.open()
-                project_file = tfile.fileName() + ".qgs"
-                model_file = project_file + ".model"
-                tfile.close()
-
-                if os.path.exists(output_filename):
-                    os.unlink(output_filename)
-
-                def opener(uri):
-                    self.p_widget.setText("Downloading {} ...".format(uri))
-                    return remote_open_from_qgis(uri)
-
-                uri = URI(url, opener)
-                model = load_gml_model(uri, archive_dir,
-                                       merge_max_depth = merge_depth,
-                                       merge_sequences = merge_sequences,
-                                       urlopener = opener,
-                                       logger = MyLogger(self.p_widget))
-                save_model_to(model, model_file)
-
-                self.p_widget.setText("Creating the Spatialite file ...")
-                QCoreApplication.processEvents()
-                create_sqlite_from_model(model, output_filename, enforce_not_null)
-
-                self.p_widget.setText("Creating the QGIS project ...")
-                QCoreApplication.processEvents()
-                create_qgis_project_from_model(model, output_filename, project_file, QgsApplication.srsDbFilePath(), QGis.QGIS_VERSION)
-                QgsProject.instance().setFileName(project_file)
-                QgsProject.instance().read()
-
-                # custom viewers initialization
-                viewers = custom_viewers.get_custom_viewers()
-                table_names = list(model.tables().keys())
-                for viewer in list(viewers.values()):
-                    if viewer.table_name() in table_names:
-                        # fix_print_with_import
-                        print("Init {} viewer on {}".format(viewer.name(), viewer.table_name()))
-                        layer = QgsMapLayerRegistry.instance().mapLayersByName(viewer.table_name())[0]
-                        layer.editFormConfig().setInitCode(show_viewer_init_code())
-                        layer.editFormConfig().setInitFunction("my_form_open")
-                        layer.editFormConfig().setInitCodeSource(QgsEditFormConfig.CodeSourceDialog)
 
         except sqlite3.dbapi2.IntegrityError as e:
             if "NOT NULL constraint" in str(e):
