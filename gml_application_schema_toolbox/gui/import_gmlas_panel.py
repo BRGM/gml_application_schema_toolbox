@@ -219,6 +219,8 @@ class ImportGmlasPanel(BASE, WIDGET):
             layers.append(item.data(Qt.UserRole))
         return layers
 
+
+
     @pyqtSlot(bool)
     def on_sqliteRadioButton_toggled(self, checked):
         print('on_sqliteRadioButton_toggled')
@@ -321,6 +323,14 @@ class ImportGmlasPanel(BASE, WIDGET):
         assert srs.Validate() == 0
         return srs
 
+    def translate_options(self):
+        options = []
+        if not self.forceNullableCheckbox.isChecked():
+            options.append('-forceNullable')
+        if self.skipFailuresCheckbox.isChecked():
+            options.append('-skipfailures')
+        return options
+
     def import_params(self):
         dst_datasource_name = self.dst_datasource_name()
         if not dst_datasource_name:
@@ -335,8 +345,11 @@ class ImportGmlasPanel(BASE, WIDGET):
             'layerCreationOptions': self.layer_creation_options(),
             'dstSRS': self.dest_srs(),
             'reproject': True,
+            'options': self.translate_options(),
             'callback': self.import_callback
         }
+        if self.convertToLinearCheckbox.isChecked():
+             params['geometryType'] = 'CONVERT_TO_LINEAR'
 
         layers = self.selected_layers()
         if len(layers) > 0:
