@@ -22,11 +22,16 @@
 """
 
 import os
+import tempfile
+
+from io import BytesIO
+
+from lxml import etree
+
 from osgeo import gdal, osr
 
 from qgis.core import QgsApplication
 from qgis.utils import iface
-
 from qgis.PyQt.QtCore import (
     QSettings, Qt, QUrl, pyqtSlot, QFile, QIODevice,
     QAbstractItemModel, QModelIndex,
@@ -49,7 +54,7 @@ WIDGET, BASE = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'import_gmlas_panel.ui'))
 
 
-data_folder = '/home/qgis/qgisgmlas/data'
+data_folder = '~'
 
 gdal.UseExceptions()
 
@@ -142,8 +147,36 @@ class ImportGmlasPanel(BASE, WIDGET):
         if path:
             self.gmlasConfigLineEdit.setText(path)
 
+
+    # Read XML file and substitute form parameters
+    def gmlas_config(self):
+        xmlConfig = etree.parse(self.gmlasConfigLineEdit.text())
+
+        # Clean up all comments (ie. mainly due to the top licence statement of sample config files)
+        etree.strip_tags(xmlConfig, etree.Comment)
+
+        # Set parameters
+        for l in xmlConfig.xpath("/Configuration/ExposeMetadataLayers"):
+            l.text = str(self.ogrExposeMetadataLayersCheckbox.isChecked()).lower()
+        for l in xmlConfig.xpath("/Configuration/LayerBuildingRules/RemoveUnusedLayers"):
+            l.text = str(self.ogrRemoveUnusedLayersCheckbox.isChecked()).lower()
+        for l in xmlConfig.xpath("/Configuration/LayerBuildingRules/RemoveUnusedFields"):
+            l.text = str(self.ogrRemoveUnusedFieldsCheckbox.isChecked()).lower()
+
+        textConfig = BytesIO()
+        xmlConfig.write(textConfig, encoding='utf-8', xml_declaration=False)
+
+        # Write config in temp file
+        tf = tempfile.NamedTemporaryFile(prefix='gmlasconf_', suffix='.xml', delete=False)
+        tf.write(textConfig.getvalue())
+        tf.close()
+        log("Temporary configuration file created '{}' for conversion.".format(str(tf.name)))
+
+        return tf.name
+
+
     def gmlas_datasource(self):
-        gmlasconf = self.gmlasConfigLineEdit.text()
+        gmlasconf = self.gmlas_config()
         datasourceFile = self.parent().parent().gml_path()
         isXsd = datasourceFile.endswith(".xsd")
         isUrl = datasourceFile.startswith("http")
@@ -171,10 +204,11 @@ class ImportGmlasPanel(BASE, WIDGET):
             self.unsetCursor()
 
     def validate(self):
+        self.layerList.setTitle('Layers')
         data_source = self.gmlas_datasource() 
 
         if data_source is None:
-            QMessageBox.critical(self, 'GMLAS', 'Impossible to open file using GMLAS driver')
+            QMessageBox.critical(self, 'GMLAS', 'Failed to open file using OGR GMLAS driver')
             return
 
         '''
@@ -197,6 +231,7 @@ class ImportGmlasPanel(BASE, WIDGET):
         '''
         ogrMetadataLayerPrefix = '_ogr_'
 
+        self.layerList.setTitle('{} layer(s) found:'.format(data_source.GetLayerCount()))
         self.datasetsListWidget.clear()
         for i in range(0, data_source.GetLayerCount()):
             layer = data_source.GetLayer(i)

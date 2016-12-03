@@ -3,9 +3,12 @@
 import os
 import owslib_hacks
 import owslib
+
 from owslib.wfs import WebFeatureService
 from owslib.feature.wfs200 import WFSCapabilitiesReader
+
 from tempfile import NamedTemporaryFile
+
 import logging
 
 from qgis.core import QgsCoordinateTransform, QgsCoordinateReferenceSystem
@@ -21,6 +24,7 @@ from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
 from gml_application_schema_toolbox.core.logging import log
+
 from .xml_dialog import XmlDialog
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
