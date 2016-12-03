@@ -39,6 +39,7 @@ class DownloadWfs2Panel(BASE, WIDGET):
 
         self.downloadProgressBar.setVisible(False)
 
+        # TODO: Move to config
         self.uriComboBox.addItem('http://geoserv.weichand.de:8080/geoserver/wfs')
         self.uriComboBox.addItem('https://wfspoc.brgm-rec.fr/geoserver/ows')
         self.uriComboBox.addItem('https://wfspoc.brgm-rec.fr/constellation/WS/wfs/BRGM:GWML2')
@@ -59,9 +60,14 @@ class DownloadWfs2Panel(BASE, WIDGET):
             item.setData(Qt.UserRole, feature_type)
             self.featureTypesListWidget.addItem(item)
 
+        self.featureTypesListWidget.sortItems()
+
+
         self.storedQueriesListWidget.clear()
         for stored_query in list(wfs.storedqueries):
             self.storedQueriesListWidget.addItem(stored_query.id)
+
+        self.storedQueriesListWidget.sortItems()
 
     @pyqtSlot()
     def on_showCapabilitiesButton_clicked(self):
