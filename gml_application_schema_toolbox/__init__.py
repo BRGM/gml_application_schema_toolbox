@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 """
 /**
- *   Copyright (C) 2016 BRGM (http:///brgm.fr)
+ *   Copyright (C) 2016 BRGM (http://brgm.fr)
  *   Copyright (C) 2016 Oslandia <infos@oslandia.com>
+ *   Copyright (C) 2016 Camptocamp (http://camptocamp.com)
  *
  *   This library is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU Library General Public
@@ -23,13 +24,13 @@ def name():
 def description():
     return u"QGIS GML Application Schema Toolbox"
 def version():
-    return u"0.8.4"
+    return u"1.0.0"
 def icon():
     return "icon.png"
 def qgisMinimumVersion():
-    return u"2.14"
-def qgisMaximumVersion():
     return u"2.99"
+def qgisMaximumVersion():
+    return u"3.99"
 def classFactory(iface):
     from .main import MainPlugin
     return MainPlugin(iface)
