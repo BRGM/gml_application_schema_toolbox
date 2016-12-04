@@ -27,7 +27,11 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="urlLineEdit"/>
+      <widget class="QLineEdit" name="urlInput">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;URL of the GML document to download. This could be a GetFeature request or a link to a file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="outputLabel">
@@ -39,7 +43,10 @@
      <item row="1" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_6">
        <item>
-        <widget class="QLineEdit" name="outputLineEdit">
+        <widget class="QLineEdit" name="outputInput">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The file downloaded will be saved in this location. If not set, a temporary file is created.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="placeholderText">
           <string>Create temporary file</string>
          </property>
@@ -57,7 +64,10 @@
     </layout>
    </item>
    <item>
-    <widget class="QPushButton" name="downloadButton">
+    <widget class="QPushButton" name="downloadByUrlButton">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click to start the download.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>Download</string>
      </property>
