@@ -19,11 +19,17 @@ In the ```download``` tab define the target service to download data from:
 ![Configure target WFS service](img/download-service.png)
 
 
-Once set, connect to the service using the ```GetCapabilities``` button. The ```Show capabilities``` provides a simple preview of the GetCapabilities document. After connection, the list of ```Feature Types``` and ```Stored Queries``` are populated.
+Once set, connect to the service using the ```Get capabilities``` button. 
+The ```Show capabilities``` provides a simple preview of the 
+GetCapabilities document. After connection, the list of 
+```Feature Types``` and ```Stored Queries``` are populated.
 
 
-In case of error, a notification pops up with information about the problem:
+In case of error, a notification pops up with information about 
+the problem. Check also the log panel for more details about the error:
 
+
+![Download from bad URL](img/download-service-bad-url.png)
 
 
 ## Download data
@@ -38,4 +44,14 @@ To download data in GML format, set the following parameters:
 Click the ```Download``` button to start the download.
 
 ![Configure target feature type or stored query to download](img/download-data.png)
+
+
+After download, the convert panel is activated with the path to the downloaded file.
+
+## Download from URL
+
+The panel can also be used to download file from a URL. This URL 
+could point to an existing GML file or could be a ```GetFeature``` request.
+
+![Download from URL](img/download-from-url.png)
 

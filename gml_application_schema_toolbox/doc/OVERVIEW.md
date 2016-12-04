@@ -5,6 +5,9 @@
 Use [QGIS plugin manager](http://docs.qgis.org/2.14/en/docs/training_manual/qgis_plugins/fetching_plugins.html) to install the plugin from the repository.
 
 
+![Plugin manager](img/install-plugin.png)
+
+
 ## From sourcecode
 
 The plugin source code is available here: https://github.com/INSPIRE-MIF/gml_application_schema_toolbox

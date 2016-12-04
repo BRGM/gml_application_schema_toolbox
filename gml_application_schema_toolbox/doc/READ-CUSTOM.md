@@ -12,14 +12,10 @@ The idea behind this custom viewer is to offer an API that could be used by thir
 The ```time series``` custom viewer is shipped with the current plugin. It is associated with ```wml2:MeasurementTimeseries``` elements. In both modes (native XML or relational), a button allows to display time series thanks to this custom viewer.
 
 
-* In XML mode
+In XML mode
 
 ![Time series button in XML mode](img/read-custom-timeseries.png)
 
-
-* In DB PyXB mode
-
-![Time series button in database mode](img/read-custom-timeseries-db.png)
 
 
 
