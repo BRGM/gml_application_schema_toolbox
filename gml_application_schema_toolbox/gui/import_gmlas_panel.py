@@ -249,7 +249,7 @@ class ImportGmlasPanel(BASE, WIDGET):
 
         self.datasetsListWidget.sortItems()
         self.datasetsListWidget.selectAll()
-        self.layerList.setTitle('{} layer(s) found:'.format(self.datasetsListWidget.count))
+        self.layerList.setTitle('{} layer(s) found:'.format(self.datasetsListWidget.count()))
 
 
     def selected_layers(self):

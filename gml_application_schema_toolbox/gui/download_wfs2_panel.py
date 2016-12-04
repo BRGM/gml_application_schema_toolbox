@@ -44,6 +44,7 @@ class DownloadWfs2Panel(BASE, WIDGET):
         self.downloadProgressBar.setVisible(False)
 
         # TODO: Move to config
+        self.featureLimitBox.setValue(100)
         self.uriComboBox.addItem('http://geoserv.weichand.de:8080/geoserver/wfs')
         self.uriComboBox.addItem('https://wfspoc.brgm-rec.fr/geoserver/ows')
         self.uriComboBox.addItem('https://wfspoc.brgm-rec.fr/constellation/WS/wfs/BRGM:GWML2')

@@ -35,7 +35,11 @@
         <item row="0" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QLineEdit" name="gmlasConfigLineEdit"/>
+           <widget class="QLineEdit" name="gmlasConfigLineEdit">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;GML file to load into a database.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QToolButton" name="gmlasConfigButton">
@@ -137,6 +141,9 @@ p, li { white-space: pre-wrap; }
    </item>
    <item>
     <widget class="QGroupBox" name="bboxGroupBox">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define an area of interest to download data from. The extent can be defined from map canvas.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="title">
       <string>Filter by extent</string>
      </property>
@@ -263,7 +270,7 @@ p, li { white-space: pre-wrap; }
       </sizepolicy>
      </property>
      <property name="title">
-      <string>Target</string>
+      <string>Target database</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_8">
       <item>
@@ -511,15 +518,15 @@ p, li { white-space: pre-wrap; }
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QgsProjectionSelectionWidget</class>
-   <extends>QWidget</extends>
-   <header>qgis.gui</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>BboxWidget</class>
    <extends>QWidget</extends>
    <header>gml_application_schema_toolbox.gui.bbox_widget</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QgsProjectionSelectionWidget</class>
+   <extends>QWidget</extends>
+   <header>qgis.gui</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

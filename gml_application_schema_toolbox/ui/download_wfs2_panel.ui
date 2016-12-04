@@ -34,6 +34,9 @@
         </item>
         <item row="0" column="1">
          <widget class="QComboBox" name="uriComboBox">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;URL of the WFS service to download from.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="editable">
            <bool>true</bool>
           </property>
@@ -50,7 +53,11 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit"/>
+         <widget class="QLineEdit" name="lineEdit">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Optional user name and password if remote download service require authentication (Basic authentication supported only).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_3">
@@ -68,13 +75,19 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QPushButton" name="getCapabilitiesButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Request the GetCapabilities document from the download service to retrieve list of feature types and stored queries.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
-           <string>GetCapabilities</string>
+           <string>Get capabilities</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="showCapabilitiesButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Display GetCapabilities document using a simple tree view.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Show capabitilies</string>
           </property>
@@ -97,8 +110,11 @@
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
         <widget class="QListWidget" name="featureTypesListWidget">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose the feature type to download.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="selectionMode">
-          <enum>QAbstractItemView::ExtendedSelection</enum>
+          <enum>QAbstractItemView::SingleSelection</enum>
          </property>
         </widget>
        </item>
@@ -111,6 +127,9 @@
       <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
         <widget class="QListWidget" name="storedQueriesListWidget">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose the stored query to use. Currently, stored query parameters are not supported.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="selectionMode">
           <enum>QAbstractItemView::SingleSelection</enum>
          </property>
@@ -125,6 +144,9 @@
    </item>
    <item>
     <widget class="QGroupBox" name="bboxGroupBox">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define an area of interest to download data from. The extent can be defined from map canvas.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="title">
       <string>Filter by extent</string>
      </property>
@@ -165,7 +187,7 @@
         <item row="0" column="0">
          <widget class="QLabel" name="label_10">
           <property name="text">
-           <string>Feature limit</string>
+           <string>Limit to</string>
           </property>
          </widget>
         </item>
@@ -173,11 +195,17 @@
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
            <widget class="QSpinBox" name="featureLimitBox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum number of features to download.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="suffix">
+             <string> feature(s)</string>
+            </property>
             <property name="maximum">
-             <number>10000</number>
+             <number>100000</number>
             </property>
             <property name="value">
-             <number>10</number>
+             <number>0</number>
             </property>
            </widget>
           </item>
