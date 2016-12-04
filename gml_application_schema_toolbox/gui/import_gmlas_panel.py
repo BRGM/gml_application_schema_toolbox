@@ -163,6 +163,10 @@ class ImportGmlasPanel(BASE, WIDGET):
         for l in xmlConfig.xpath("/Configuration/LayerBuildingRules/RemoveUnusedFields"):
             l.text = str(self.ogrRemoveUnusedFieldsCheckbox.isChecked()).lower()
 
+        for l in xmlConfig.xpath("/Configuration/XLinkResolution/URLSpecificResolution/HTTPHeader[Name = 'Accept-Language']/Value"):
+            l.text = self.acceptLanguageHeaderInput.text()
+
+
         textConfig = BytesIO()
         xmlConfig.write(textConfig, encoding='utf-8', xml_declaration=False)
 
@@ -231,7 +235,6 @@ class ImportGmlasPanel(BASE, WIDGET):
         '''
         ogrMetadataLayerPrefix = '_ogr_'
 
-        self.layerList.setTitle('{} layer(s) found:'.format(data_source.GetLayerCount()))
         self.datasetsListWidget.clear()
         for i in range(0, data_source.GetLayerCount()):
             layer = data_source.GetLayer(i)
@@ -246,6 +249,7 @@ class ImportGmlasPanel(BASE, WIDGET):
 
         self.datasetsListWidget.sortItems()
         self.datasetsListWidget.selectAll()
+        self.layerList.setTitle('{} layer(s) found:'.format(self.datasetsListWidget.count))
 
 
     def selected_layers(self):

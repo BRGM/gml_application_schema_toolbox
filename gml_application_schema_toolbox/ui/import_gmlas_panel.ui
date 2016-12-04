@@ -210,6 +210,51 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
+    <widget class="QWidget" name="widget" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>28</height>
+      </size>
+     </property>
+     <widget class="QSplitter" name="splitter">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>0</y>
+        <width>461</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QLabel" name="label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For XLink resolution (eg. resources resolved from INSPIRE registry), define which language to use in HTTP header 'Accep-Language'.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>Language</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="acceptLanguageHeaderInput">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For XLink resolution (eg. resources resolved from INSPIRE registry), define which language to use in HTTP header 'Accep-Language'.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>en</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="groupBox_6">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
