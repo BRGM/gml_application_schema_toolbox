@@ -1,3 +1,8 @@
+1.0.0 - 15/12/2016
+        * Add WFS 2 download panel
+        * Add OGR GMLAS convert panel
+        * Remove DB relational mode using PyXB (replaced by GMLAS OGR mode)
+        * Add OGR GMLAS write panel
 0.8.4 - 17/08/2016
 	* Handle HTTP 302 redirections
 0.8.3 - 27/06/2016
