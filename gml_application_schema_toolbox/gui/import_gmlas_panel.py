@@ -184,20 +184,22 @@ class ImportGmlasPanel(BASE, WIDGET):
         datasourceFile = self.parent().parent().gml_path()
         isXsd = datasourceFile.endswith(".xsd")
         isUrl = datasourceFile.startswith("http")
+        swapCoordinates = self.swapCoordinatesCombo.currentText()
+        driverConnection = ""
+        openOptions = ['EXPOSE_METADATA_LAYERS=YES', 'CONFIG_FILE={}'.format(gmlasconf)]
+
+        openOptions.append('SWAP_COORDINATES={}'.format(swapCoordinates))
 
         if isXsd:
-            return gdal.OpenEx("GMLAS:",
-                               open_options=['XSD={}'.format(datasourceFile), 
-                                             'CONFIG_FILE={}'.format(gmlasconf),
-                                             'EXPOSE_METADATA_LAYERS=YES'])
+            driverConnection = "GMLAS"
+            openOptions.append('XSD={}'.format(datasourceFile))
         elif isUrl:
-            return gdal.OpenEx("GMLAS:/vsicurl_streaming/{}".format(datasourceFile),
-                               open_options=['CONFIG_FILE={}'.format(gmlasconf),
-                                             'EXPOSE_METADATA_LAYERS=YES'])
+            driverConnection = "GMLAS:/vsicurl_streaming/{}".format(datasourceFile)
         else:
-            return gdal.OpenEx("GMLAS:{}".format(datasourceFile),
-                               open_options=['CONFIG_FILE={}'.format(gmlasconf),
-                                             'EXPOSE_METADATA_LAYERS=YES'])
+            driverConnection = "GMLAS:{}".format(datasourceFile)
+
+        return gdal.OpenEx(driverConnection,
+                           open_options=openOptions)
 
     @pyqtSlot()
     def on_validateButton_clicked(self):
