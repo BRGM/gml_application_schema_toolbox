@@ -191,7 +191,7 @@ class ImportGmlasPanel(BASE, WIDGET):
         openOptions.append('SWAP_COORDINATES={}'.format(swapCoordinates))
 
         if isXsd:
-            driverConnection = "GMLAS"
+            driverConnection = "GMLAS:"
             openOptions.append('XSD={}'.format(datasourceFile))
         elif isUrl:
             driverConnection = "GMLAS:/vsicurl_streaming/{}".format(datasourceFile)
