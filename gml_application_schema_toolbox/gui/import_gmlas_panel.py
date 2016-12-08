@@ -30,18 +30,13 @@ from owslib.etree import etree
 
 from osgeo import gdal, osr
 
-from qgis.core import QgsApplication
 from qgis.utils import iface
 from qgis.PyQt.QtCore import (
-    QSettings, Qt, QUrl, pyqtSlot, QFile, QIODevice,
-    QAbstractItemModel, QModelIndex,
+    Qt, QUrl, pyqtSlot, QFile,  QIODevice,
     QEventLoop)
-from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem
 from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QProgressDialog
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
-
-from processing.tools.postgis import GeoDB
 
 from gml_application_schema_toolbox import name as plugin_name
 from gml_application_schema_toolbox.core.logging import log, gdal_error_handler
@@ -89,33 +84,6 @@ class OgrLayersMetadataModel(QStandardItemModel):
 '''
 
 
-class PgsqlConnectionsModel(QAbstractItemModel):
-
-    def __init__(self, parent=None):
-        super(PgsqlConnectionsModel, self).__init__(parent)
-
-        self._settings = QSettings()
-        self._settings.beginGroup('/PostgreSQL/connections/')
-
-    def _groups(self):
-        return self._settings.childGroups()
-
-    def parent(self, index):
-        return QModelIndex()
-
-    def index(self, row, column, parent):
-        return self.createIndex(row, column)
-
-    def rowCount(self, parent):
-        return len(self._groups())
-
-    def columnCount(self, parent):
-        return 1
-
-    def data(self, index, role=Qt.DisplayRole):
-        return self._groups()[index.row()]
-
-
 class ImportGmlasPanel(BASE, WIDGET):
 
     def __init__(self, parent=None):
@@ -124,16 +92,7 @@ class ImportGmlasPanel(BASE, WIDGET):
 
         self.gmlPathLineEdit.setText('/home/qgis/qgisgmlas/data/geosciml/mappedfeature.gml')
         self.gmlasConfigLineEdit.setText(DEFAULT_GMLAS_CONF)
-
-        self._pgsql_db = None
-        self.pgsqlFormWidget.setVisible(False)
-        self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
-        self.pgsqlConnectionsRefreshButton.setIcon(
-            QgsApplication.getThemeIcon('/mActionRefresh.png'))
-
-    @pyqtSlot(str)
-    def set_gml_path(self, path):
-        self._gml_path = path
+        self.databaseWidget.set_accept_mode(QFileDialog.AcceptSave)
 
     def showEvent(self, event):
         # Cannot do that in the constructor. The project is not fully setup when
@@ -160,7 +119,6 @@ class ImportGmlasPanel(BASE, WIDGET):
             self.tr("XML Files (*.xml)"))
         if path:
             self.gmlasConfigLineEdit.setText(path)
-
 
     # Read XML file and substitute form parameters
     def gmlas_config(self):
@@ -270,93 +228,18 @@ class ImportGmlasPanel(BASE, WIDGET):
             layers.append(item.data(Qt.UserRole))
         return layers
 
-
-
-    @pyqtSlot(bool)
-    def on_sqliteRadioButton_toggled(self, checked):
-        print('on_sqliteRadioButton_toggled')
-        self.sqliteFormWidget.setVisible(self.sqliteRadioButton.isChecked())
-
-    @pyqtSlot(bool)
-    def on_pgsqlRadioButton_toggled(self, checked):
-        print('on_pgsqlRadioButton_toggled')
-        self.pgsqlFormWidget.setVisible(self.pgsqlRadioButton.isChecked())
-
-    @pyqtSlot()
-    def on_sqlitePathButton_clicked(self):
-        current_path = self.sqlitePathLineEdit.text()
-        cur_dir = os.path.dirname(current_path) if current_path else ''
-        path, filter = QFileDialog.getSaveFileName(self,
-            self.tr("Save to sqlite database"),
-            cur_dir,
-            self.tr("SQLite Files (*.sqlite)"))
-        if path:
-            if os.path.splitext(path)[1] == '':
-                path = '{}.sqlite'.format(path)
-            self.sqlitePathLineEdit.setText(path)
-
-    @pyqtSlot(str)
-    def on_pgsqlConnectionsBox_currentIndexChanged(self, text):
-        if self.pgsqlConnectionsBox.currentIndex() == -1:
-            self._pgsql_db = None
-        else:
-            self._pgsql_db = GeoDB.from_name(self.pgsqlConnectionsBox.currentText())
-
-        self.pgsqlSchemaBox.clear()
-        schemas = sorted([schema[1] for schema in self._pgsql_db.list_schemas()])
-        for schema in schemas:
-            self.pgsqlSchemaBox.addItem(schema)
-
-    @pyqtSlot()
-    def on_pgsqlConnectionsRefreshButton_clicked(self):
-        self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
-
-    def dst_datasource_name(self):
-        if self.sqliteRadioButton.isChecked():
-            path = self.sqlitePathLineEdit.text()
-            if path == '':
-                QMessageBox.warning(self,
-                                    plugin_name(),
-                                    "You must select a SQLite file")
-                return None
-            return path
-        if self.pgsqlRadioButton.isChecked():
-            if self._pgsql_db is None:
-                QMessageBox.warning(self,
-                                    plugin_name(),
-                                    "You must select a PostgreSQL connection")
-                return None
-            return 'PG:{}'.format(self._pgsql_db.uri.connectionInfo(True))
-
     def dataset_creation_options(self):
-        if self.sqliteRadioButton.isChecked():
+        if self.databaseWidget.format() == 'SQLite':
             return ['SPATIALITE=YES']
 
     def layer_creation_options(self):
         options = []
-        if self.pgsqlRadioButton.isChecked():
-            schema = self.pgsqlSchemaBox.currentText()
-
-            #if self.pgsqlSchemaBox.currentIndex() == -1:
-            schemas = [schema[1] for schema in self._pgsql_db.list_schemas()]
-            if not schema in schemas:
-                res = QMessageBox.question(self,
-                                           plugin_name(),
-                                           self.tr('Create schema "{}" ?').
-                                           format(schema))
-                if res != QMessageBox.Ok:
-                    return False
-                self._pgsql_db.create_schema(schema)
+        if self.databaseWidget.format() == 'PostgreSQL':
+            schema = self.databaseWidget.schema(create=True)
             options.append('SCHEMA={}'.format(schema or 'public'))
             if self.accessMode() == 'overwrite':
                 options.append('OVERWRITE=YES')
         return options
-
-    def format(self):
-        if self.sqliteRadioButton.isChecked():
-            return 'SQLite'
-        if self.pgsqlRadioButton.isChecked():
-            return "PostgreSQL"
 
     def accessMode(self):
         if self.createRadioButton.isChecked():
@@ -383,14 +266,14 @@ class ImportGmlasPanel(BASE, WIDGET):
         return options
 
     def import_params(self):
-        dst_datasource_name = self.dst_datasource_name()
+        dst_datasource_name = self.databaseWidget.datasource_name()
         if not dst_datasource_name:
             return None
 
         params = {
             'destNameOrDestDS': dst_datasource_name,
             'srcDS': self.gmlas_datasource(),
-            'format': self.format(),
+            'format': self.databaseWidget.format(),
             'accessMode': self.accessMode(),
             'datasetCreationOptions': self.dataset_creation_options(),
             'layerCreationOptions': self.layer_creation_options(),
