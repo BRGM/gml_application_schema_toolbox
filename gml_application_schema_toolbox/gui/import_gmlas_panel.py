@@ -122,6 +122,7 @@ class ImportGmlasPanel(BASE, WIDGET):
         super(ImportGmlasPanel, self).__init__(parent)
         self.setupUi(self)
 
+        self.gmlPathLineEdit.setText('/home/qgis/qgisgmlas/data/geosciml/mappedfeature.gml')
         self.gmlasConfigLineEdit.setText(DEFAULT_GMLAS_CONF)
 
         self._pgsql_db = None
@@ -130,12 +131,25 @@ class ImportGmlasPanel(BASE, WIDGET):
         self.pgsqlConnectionsRefreshButton.setIcon(
             QgsApplication.getThemeIcon('/mActionRefresh.png'))
 
+    @pyqtSlot(str)
+    def set_gml_path(self, path):
+        self._gml_path = path
+
     def showEvent(self, event):
         # Cannot do that in the constructor. The project is not fully setup when
         # it is called
         if not self.srsSelectionWidget.crs().isValid():
             self.srsSelectionWidget.setCrs(iface.mapCanvas().mapSettings().destinationCrs())
         BASE.showEvent(self, event)
+
+    @pyqtSlot()
+    def on_gmlPathButton_clicked(self):
+        path, filter = QFileDialog.getOpenFileName(self,
+            self.tr("Open GML file"),
+            data_folder,
+            self.tr("GML files or XSD (*.gml *.xml *.xsd)"))
+        if path:
+            self.gmlPathLineEdit.setText(path)
 
     @pyqtSlot()
     def on_gmlasConfigButton_clicked(self):
@@ -175,10 +189,9 @@ class ImportGmlasPanel(BASE, WIDGET):
 
         return tf.name
 
-
     def gmlas_datasource(self):
         gmlasconf = self.gmlas_config()
-        datasourceFile = self.parent().parent().gml_path()
+        datasourceFile = self.gmlPathLineEdit.text()
         isXsd = datasourceFile.endswith(".xsd")
         isUrl = datasourceFile.startswith("http")
         swapCoordinates = self.swapCoordinatesCombo.currentText()
