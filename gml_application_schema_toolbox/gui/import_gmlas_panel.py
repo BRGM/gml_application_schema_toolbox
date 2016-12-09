@@ -26,7 +26,7 @@ import tempfile
 
 from io import BytesIO
 
-from lxml import etree
+from owslib.etree import etree
 
 from osgeo import gdal, osr
 
@@ -152,20 +152,17 @@ class ImportGmlasPanel(BASE, WIDGET):
     def gmlas_config(self):
         xmlConfig = etree.parse(self.gmlasConfigLineEdit.text())
 
-        # Clean up all comments (ie. mainly due to the top licence statement of sample config files)
-        etree.strip_tags(xmlConfig, etree.Comment)
-
         # Set parameters
-        for l in xmlConfig.xpath("/Configuration/ExposeMetadataLayers"):
+        c = xmlConfig.getroot()
+        for l in c.iter('ExposeMetadataLayers'):
             l.text = str(self.ogrExposeMetadataLayersCheckbox.isChecked()).lower()
-        for l in xmlConfig.xpath("/Configuration/LayerBuildingRules/RemoveUnusedLayers"):
+        for l in c.iter("LayerBuildingRules/RemoveUnusedLayers"):
             l.text = str(self.ogrRemoveUnusedLayersCheckbox.isChecked()).lower()
-        for l in xmlConfig.xpath("/Configuration/LayerBuildingRules/RemoveUnusedFields"):
+        for l in c.iter("LayerBuildingRules/RemoveUnusedFields"):
             l.text = str(self.ogrRemoveUnusedFieldsCheckbox.isChecked()).lower()
 
-        for l in xmlConfig.xpath("/Configuration/XLinkResolution/URLSpecificResolution/HTTPHeader[Name = 'Accept-Language']/Value"):
+        for l in c.iter("XLinkResolution/URLSpecificResolution/HTTPHeader[Name = 'Accept-Language']/Value"):
             l.text = self.acceptLanguageHeaderInput.text()
-
 
         textConfig = BytesIO()
         xmlConfig.write(textConfig, encoding='utf-8', xml_declaration=False)
