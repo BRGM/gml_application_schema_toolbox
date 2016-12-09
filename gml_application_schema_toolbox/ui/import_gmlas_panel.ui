@@ -25,14 +25,14 @@
         <property name="fieldGrowthPolicy">
          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
         </property>
-        <item row="0" column="0">
+        <item row="1" column="0">
          <widget class="QLabel" name="label_11">
           <property name="text">
            <string>GMLAS config</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
+        <item row="1" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="QLineEdit" name="gmlasConfigLineEdit">
@@ -43,6 +43,27 @@
           </item>
           <item>
            <widget class="QToolButton" name="gmlasConfigButton">
+            <property name="text">
+             <string>...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Input file or URL</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLineEdit" name="gmlPathLineEdit"/>
+          </item>
+          <item>
+           <widget class="QToolButton" name="gmlPathButton">
             <property name="text">
              <string>...</string>
             </property>
@@ -346,131 +367,7 @@ p, li { white-space: pre-wrap; }
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_8">
       <item>
-       <widget class="QWidget" name="formatWidget" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QRadioButton" name="sqliteRadioButton">
-           <property name="text">
-            <string>SQLite</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="pgsqlRadioButton">
-           <property name="text">
-            <string>PostgreSQL</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QWidget" name="sqliteFormWidget" native="true">
-        <layout class="QFormLayout" name="formLayout_7">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_14">
-           <property name="text">
-            <string>Path</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="QLineEdit" name="sqlitePathLineEdit"/>
-           </item>
-           <item>
-            <widget class="QToolButton" name="sqlitePathButton">
-             <property name="text">
-              <string>...</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QWidget" name="pgsqlFormWidget" native="true">
-        <layout class="QFormLayout" name="formLayout_8">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>Database</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>Schema</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="pgsqlSchemaBox">
-           <property name="editable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_11">
-           <item>
-            <widget class="QComboBox" name="pgsqlConnectionsBox"/>
-           </item>
-           <item>
-            <widget class="QToolButton" name="pgsqlConnectionsRefreshButton">
-             <property name="text">
-              <string>...</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
+       <widget class="DatabaseWidget" name="databaseWidget" native="true"/>
       </item>
       <item>
        <layout class="QFormLayout" name="formLayout_4">
@@ -503,16 +400,7 @@ p, li { white-space: pre-wrap; }
           <item>
            <widget class="QWidget" name="accessModeWidget" native="true">
             <layout class="QHBoxLayout" name="horizontalLayout_5">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
+             <property name="margin">
               <number>0</number>
              </property>
              <item>
@@ -576,7 +464,7 @@ p, li { white-space: pre-wrap; }
       <enum>Qt::Vertical</enum>
      </property>
      <property name="sizeType">
-      <enum>QSizePolicy::Fixed</enum>
+      <enum>QSizePolicy::Preferred</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
@@ -599,6 +487,12 @@ p, li { white-space: pre-wrap; }
    <class>QgsProjectionSelectionWidget</class>
    <extends>QWidget</extends>
    <header>qgis.gui</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DatabaseWidget</class>
+   <extends>QWidget</extends>
+   <header>gml_application_schema_toolbox.gui.database_widget</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

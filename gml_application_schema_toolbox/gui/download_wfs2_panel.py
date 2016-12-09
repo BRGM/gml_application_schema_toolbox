@@ -82,11 +82,9 @@ class DownloadWfs2Panel(BASE, WIDGET):
 
     @pyqtSlot()
     def on_outputPathButton_clicked(self):
-        current_path = self.outputPathLineEdit.text()
-        cur_dir = os.path.dirname(current_path) if current_path else ''
         path, filter = QFileDialog.getSaveFileName(self,
             self.tr("Select output file"),
-            cur_dir,
+            self.outputPathLineEdit.text(),
             self.tr("GML Files (*.gml *.xml)"))
         if path:
             if os.path.splitext(path)[1] == '':
