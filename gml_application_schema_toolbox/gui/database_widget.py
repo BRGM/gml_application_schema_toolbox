@@ -9,6 +9,7 @@ from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem
 from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog
 
 from gml_application_schema_toolbox import name as plugin_name
+from gml_application_schema_toolbox.gui import InputError
 
 from processing.tools.postgis import GeoDB
 
@@ -118,17 +119,11 @@ class DatabaseWidget(BASE, WIDGET):
         if self.sqliteRadioButton.isChecked():
             path = self.sqlitePathLineEdit.text()
             if path == '':
-                QMessageBox.warning(self,
-                                    plugin_name(),
-                                    "You must select a SQLite file")
-                return None
+                raise InputError("You must select a SQLite file")
             return path
         if self.pgsqlRadioButton.isChecked():
             if self._pgsql_db is None:
-                QMessageBox.warning(self,
-                                    plugin_name(),
-                                    "You must select a PostgreSQL connection")
-                return None
+                raise InputError("You must select a PostgreSQL connection")
             return 'PG:{}'.format(self._pgsql_db.uri.connectionInfo(True))
 
     def schema(self, create=False):
@@ -142,8 +137,7 @@ class DatabaseWidget(BASE, WIDGET):
                                        plugin_name(),
                                        self.tr('Create schema "{}" ?').
                                        format(schema))
-            if res != QMessageBox.Ok:
-                return False
+            if res != QMessageBox.Yes:
+                raise InputError()
             self._pgsql_db.create_schema(schema)
         return schema
-

@@ -34,13 +34,14 @@ from qgis.utils import iface
 from qgis.PyQt.QtCore import (
     Qt, QUrl, pyqtSlot, QFile,  QIODevice,
     QEventLoop)
-from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QProgressDialog
+from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
 from gml_application_schema_toolbox import name as plugin_name
 from gml_application_schema_toolbox.core import DEFAULT_GMLAS_CONF
 from gml_application_schema_toolbox.core.logging import log, gdal_error_handler
+from gml_application_schema_toolbox.gui import InputError
 from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
 from .xml_dialog import XmlDialog
 
@@ -48,36 +49,6 @@ WIDGET, BASE = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'import_gmlas_panel.ui'))
 
 gdal.UseExceptions()
-
-
-'''
-class OgrLayersMetadataModel(QStandardItemModel):
-
-    def __init__(self, datasource=None, parent=None):
-        super(OgrLayersMetadataModel, self).__init__(parent)
-        self.setDatasource(datasource)
-
-    def setDatasource(self, datasource):
-        self.clear()
-        if datasource is None:
-            return
-
-        metadata_layer = datasource.GetLayerByName('_ogr_layers_metadata')
-
-        self.setColumnCount(1)
-        self.setRowCount(metadata_layer.GetFeatureCount())
-
-        row = 0
-        for feature in metadata_layer:
-            item = self.createItem(feature)
-            self.setItem(row, item)
-            row += 1
-
-    def createItem(self, feature):
-        layer_name = feature.GetField("layer_name")
-        item = QStandardItem(layer_name)
-        item.setData(Qt.UserRole, layer_name)
-'''
 
 
 class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
@@ -168,27 +139,11 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         data_source = self.gmlas_datasource() 
 
         if data_source is None:
-            QMessageBox.critical(self, 'GMLAS', 'Failed to open file using OGR GMLAS driver')
+            QMessageBox.critical(self,
+                                 plugin_name(),
+                                 self.tr('Failed to open file using OGR GMLAS driver'))
             return
 
-        '''
-        metadata_layer = data_source.GetLayerByName('_ogr_layers_metadata')
-        self.datasetsListWidget.clear()
-        for feature in metadata_layer:
-            layer_name = feature.GetField("layer_name")
-            self.datasetsListWidget.addItem(layer_name)
- 
-            layer = data_source.GetLayerByName(layer_name)
-            if layer is not None:
-                feature_count = layer.GetFeatureCount()
-                self.datasetsListWidget.addItem("{} ({})".format(layer_name, feature_count))
-            else:
-                
-        layer_name
-        layer_xpath
-        layer_category TOP_LEVEL_ELEMENT, NESTED_ELEMENT or JUNCTION_TABLE
-        layer_documentation
-        '''
         ogrMetadataLayerPrefix = '_ogr_'
 
         self.datasetsListWidget.clear()
@@ -198,7 +153,6 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             if not layer_name.startswith(ogrMetadataLayerPrefix): 
               feature_count = layer.GetFeatureCount()
 
-              from qgis.PyQt.QtWidgets import QListWidgetItem
               item = QListWidgetItem("{} ({})".format(layer_name, feature_count))
               item.setData(Qt.UserRole, layer_name)
               self.datasetsListWidget.addItem(item)
@@ -252,12 +206,8 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         return options
 
     def import_params(self):
-        dst_datasource_name = self.databaseWidget.datasource_name()
-        if not dst_datasource_name:
-            return None
-
         params = {
-            'destNameOrDestDS': dst_datasource_name,
+            'destNameOrDestDS': self.databaseWidget.datasource_name(),
             'srcDS': self.gmlas_datasource(),
             'format': self.databaseWidget.format(),
             'accessMode': self.accessMode(),
@@ -277,15 +227,9 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         if self.bboxGroupBox.isChecked():
             if self.bboxWidget.value() == '':
-                QMessageBox.warning(self,
-                                    plugin_name(),
-                                    "Extent is empty")
-                return
+                raise InputError("Extent is empty")
             if not self.bboxWidget.isValid():
-                QMessageBox.warning(self,
-                                    plugin_name(),
-                                    "Extent is invalid")
-                return
+                raise InputError("Extent is invalid")
             bbox = self.bboxWidget.rectangle()
             params['spatFilter'] = (bbox.xMinimum(),
                                     bbox.yMinimum(),
@@ -300,4 +244,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     @pyqtSlot()
     def on_importButton_clicked(self):
-        self.translate(self.import_params())
+        try:
+            self.translate(self.import_params())
+        except InputError as e:
+            e.show()
