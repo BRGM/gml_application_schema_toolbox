@@ -9,10 +9,9 @@ from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem
 from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog
 
 from gml_application_schema_toolbox import name as plugin_name
+from gml_application_schema_toolbox.core.gmlas_postgis_db import GmlasPostgisDB
 from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
-
-from processing.tools.postgis import GeoDB
 
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
@@ -60,6 +59,10 @@ class DatabaseWidget(BASE, WIDGET):
         self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
         self.pgsqlConnectionsRefreshButton.setIcon(
             QgsApplication.getThemeIcon('/mActionRefresh.png'))
+        self.addFkeysButton.setIcon(
+            QgsApplication.getThemeIcon('/mActionAdd.svg'))
+        self.dropFkeysButton.setIcon(
+            QgsApplication.getThemeIcon('/mActionRemove.svg'))
 
         self.set_format(settings.value('default_db_type'))
 
@@ -102,7 +105,7 @@ class DatabaseWidget(BASE, WIDGET):
         if self.pgsqlConnectionsBox.currentIndex() == -1:
             self._pgsql_db = None
         else:
-            self._pgsql_db = GeoDB.from_name(self.pgsqlConnectionsBox.currentText())
+            self._pgsql_db = GmlasPostgisDB.from_name(self.pgsqlConnectionsBox.currentText())
 
         self.pgsqlSchemaBox.clear()
         if self._pgsql_db is None:
@@ -114,6 +117,14 @@ class DatabaseWidget(BASE, WIDGET):
     @pyqtSlot()
     def on_pgsqlConnectionsRefreshButton_clicked(self):
         self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
+
+    @pyqtSlot()
+    def on_addFkeysButton_clicked(self):
+        self._pgsql_db.add_foreign_key_constraints(self.schema())
+
+    @pyqtSlot()
+    def on_dropFkeysButton_clicked(self):
+        self._pgsql_db.drop_foreign_key_constraints(self.schema())
 
     def set_format(self, value):
         if value == 'SQLite':
