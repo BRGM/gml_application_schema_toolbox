@@ -39,17 +39,13 @@ from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
 from gml_application_schema_toolbox import name as plugin_name
+from gml_application_schema_toolbox.core import DEFAULT_GMLAS_CONF
 from gml_application_schema_toolbox.core.logging import log, gdal_error_handler
+from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
 from .xml_dialog import XmlDialog
-
-DEFAULT_GMLAS_CONF = os.path.realpath(os.path.join(os.path.dirname(__file__),
-                                      '..', 'conf', 'gmlasconf.xml'))
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'import_gmlas_panel.ui'))
-
-
-data_folder = '~'
 
 gdal.UseExceptions()
 
@@ -84,7 +80,7 @@ class OgrLayersMetadataModel(QStandardItemModel):
 '''
 
 
-class ImportGmlasPanel(BASE, WIDGET):
+class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     def __init__(self, parent=None):
         super(ImportGmlasPanel, self).__init__(parent)
@@ -105,20 +101,10 @@ class ImportGmlasPanel(BASE, WIDGET):
     def on_gmlPathButton_clicked(self):
         path, filter = QFileDialog.getOpenFileName(self,
             self.tr("Open GML file"),
-            data_folder,
+            self.gmlPathLineEdit.text(),
             self.tr("GML files or XSD (*.gml *.xml *.xsd)"))
         if path:
             self.gmlPathLineEdit.setText(path)
-
-    @pyqtSlot()
-    def on_gmlasConfigButton_clicked(self):
-        cur_dir = os.path.dirname(self.gmlasConfigLineEdit.text())
-        path, filter = QFileDialog.getOpenFileName(self,
-            self.tr("Open GMLAS config file"),
-            cur_dir,
-            self.tr("XML Files (*.xml)"))
-        if path:
-            self.gmlasConfigLineEdit.setText(path)
 
     # Read XML file and substitute form parameters
     def gmlas_config(self):
@@ -314,33 +300,4 @@ class ImportGmlasPanel(BASE, WIDGET):
 
     @pyqtSlot()
     def on_importButton_clicked(self):
-        params = self.import_params()
-        if params is None:
-            return
-
-        dlg = QProgressDialog(self)
-        dlg.setWindowTitle(plugin_name())
-        dlg.setLabelText('Operation in progress')
-        dlg.setMinimum(0)
-        dlg.setMaximum(100)
-        dlg.setWindowModality(Qt.WindowModal)
-        self.progress_dlg = dlg
-
-        self.setCursor(Qt.WaitCursor)
-        try:
-            log("gdal.VectorTranslate({})".format(str(params)))
-            gdal.PushErrorHandler(gdal_error_handler)
-            res = gdal.VectorTranslate(**params)
-            gdal.PopErrorHandler()
-            log(str(res))
-        finally:
-            self.unsetCursor()
-            self.progress_dlg.reset()
-            self.progress_dlg = None
-
-    def import_callback(self, pct, msg, user_data):
-        self.progress_dlg.setValue(int(100*pct))
-        QgsApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
-        if self.progress_dlg.wasCanceled():
-            return 0
-        return 1
+        self.translate(self.import_params())
