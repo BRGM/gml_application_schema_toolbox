@@ -52,7 +52,7 @@ class DatabaseWidget(BASE, WIDGET):
         super(DatabaseWidget, self).__init__(parent)
         self.setupUi(self)
 
-        self._accept_mode = QFileDialog.AcceptOpen
+        self.set_accept_mode(QFileDialog.AcceptOpen)
         self._pgsql_db = None
 
         self.pgsqlFormWidget.setVisible(False)
@@ -63,6 +63,7 @@ class DatabaseWidget(BASE, WIDGET):
     def set_accept_mode(self, accept_mode):
         """QFileDialog.AcceptOpen or QFileDialog.AcceptSave"""
         self._accept_mode = accept_mode
+        self.pgsqlSchemaBox.setEditable(accept_mode == QFileDialog.AcceptSave)
 
     @pyqtSlot(bool)
     def on_sqliteRadioButton_toggled(self, checked):
