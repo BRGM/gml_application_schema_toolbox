@@ -83,19 +83,22 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         # Set parameters
         c = xmlConfig.getroot()
+
         for l in c.iter('ExposeMetadataLayers'):
             l.text = str(self.ogrExposeMetadataLayersCheckbox.isChecked()).lower()
-        for l in c.iter("LayerBuildingRules/RemoveUnusedLayers"):
-            l.text = str(self.ogrRemoveUnusedLayersCheckbox.isChecked()).lower()
-        for l in c.iter("LayerBuildingRules/RemoveUnusedFields"):
-            l.text = str(self.ogrRemoveUnusedFieldsCheckbox.isChecked()).lower()
+        for l in c.iter('LayerBuildingRules'):
+            for n in l.iter('RemoveUnusedLayers'):
+                n.text = str(self.ogrRemoveUnusedLayersCheckbox.isChecked()).lower()
+            for n in l.iter('RemoveUnusedFields'):
+                n.text = str(self.ogrRemoveUnusedFieldsCheckbox.isChecked()).lower()
 
-        for l in c.iter("XLinkResolution/URLSpecificResolution/HTTPHeader[Name = 'Accept-Language']/Value"):
-            l.text = self.acceptLanguageHeaderInput.text()
+        for l in c.findall("XLinkResolution/URLSpecificResolution/HTTPHeader"):
+            name = l.find('Name').text
+            if name == 'Accept-Language':
+                l.find('Value').text = self.acceptLanguageHeaderInput.text()
 
         textConfig = BytesIO()
         xmlConfig.write(textConfig, encoding='utf-8', xml_declaration=False)
-
         # Write config in temp file
         tf = tempfile.NamedTemporaryFile(prefix='gmlasconf_', suffix='.xml', delete=False)
         tf.write(textConfig.getvalue())
