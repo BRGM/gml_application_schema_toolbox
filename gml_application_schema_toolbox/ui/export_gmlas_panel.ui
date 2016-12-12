@@ -112,6 +112,9 @@
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_2">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This is optional and only required if the source database contains multiple schemas.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Target XSD</string>
           </property>
