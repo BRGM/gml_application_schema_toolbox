@@ -76,16 +76,10 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     def src_datasource(self):
         options = ['LIST_ALL_TABLES=YES']
-
-        schema = self.databaseWidget.schema()
-        if schema:
-            options.append('SCHEMAS={}'.format(schema))
-            #options.append('ACTIVE_SCHEMA={}'.format(schema))
-
-        data_source = gdal.OpenEx(self.databaseWidget.datasource_name(),
-                                  open_options=options)
-
-        return data_source
+        options.append('SCHEMAS={}'.format(self.databaseWidget.schema()))
+        return gdal.OpenEx(self.databaseWidget.datasource_name(),
+                           gdal.OF_VECTOR,
+                           open_options=options)
 
     def dst_datasource_name(self):
         gml_path = self.gmlPathLineEdit.text()
