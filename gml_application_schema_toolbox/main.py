@@ -58,6 +58,7 @@ from . import name as plugin_name
 from . import version as plugin_version
 
 from .gui.dockwidget import DockWidget
+from .gui.settings_dialog import SettingsDialog
 
 
 # ==============================
@@ -216,6 +217,9 @@ class MainPlugin(object):
                               u"Show schema", self.iface.mainWindow())
         self.schemaAction.triggered.connect(self.onShowSchema)
 
+        self.settingsAction = QAction("Settings", self.iface.mainWindow())
+        self.settingsAction.triggered.connect(self.onSettings)
+
         self.aboutAction = QAction("About", self.iface.mainWindow())
         self.aboutAction.triggered.connect(self.onAbout)
 
@@ -226,6 +230,7 @@ class MainPlugin(object):
         self.iface.addPluginToMenu(plugin_name(), self.action)
         self.iface.addToolBarIcon(self.schemaAction)
         self.iface.addPluginToMenu(plugin_name(), self.schemaAction)
+        self.iface.addPluginToMenu(plugin_name(), self.settingsAction)
         self.iface.addPluginToMenu(plugin_name(), self.aboutAction)
         self.iface.addPluginToMenu(plugin_name(), self.helpAction)
 
@@ -243,6 +248,7 @@ class MainPlugin(object):
         self.iface.removePluginMenu(plugin_name(),self.action)
         self.iface.removeToolBarIcon(self.schemaAction)
         self.iface.removePluginMenu(plugin_name(),self.schemaAction)
+        self.iface.removePluginMenu(plugin_name(), self.settingsAction)
         self.iface.removePluginMenu(plugin_name(), self.aboutAction)
         self.iface.removePluginMenu(plugin_name(), self.helpAction)
 
@@ -352,6 +358,10 @@ class MainPlugin(object):
                 QMessageBox.critical(None, "Integrity error", str(e) + "\nTry reloading the file without NOT NULL constraints")
         finally:
             self.p_widget.hide()
+
+    def onSettings(self):
+        dlg = SettingsDialog()
+        dlg.exec_()
 
     def onShowSchema(self):
         # load the model

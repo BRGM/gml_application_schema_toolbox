@@ -9,6 +9,7 @@ from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem
 from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog
 
 from gml_application_schema_toolbox import name as plugin_name
+from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
 
 from processing.tools.postgis import GeoDB
@@ -51,14 +52,16 @@ class DatabaseWidget(BASE, WIDGET):
     def __init__(self, parent=None):
         super(DatabaseWidget, self).__init__(parent)
         self.setupUi(self)
-
         self.set_accept_mode(QFileDialog.AcceptOpen)
+
         self._pgsql_db = None
 
         self.pgsqlFormWidget.setVisible(False)
         self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
         self.pgsqlConnectionsRefreshButton.setIcon(
             QgsApplication.getThemeIcon('/mActionRefresh.png'))
+
+        self.set_format(settings.value('default_db_type'))
 
     def set_accept_mode(self, accept_mode):
         """QFileDialog.AcceptOpen or QFileDialog.AcceptSave"""
@@ -109,6 +112,12 @@ class DatabaseWidget(BASE, WIDGET):
     @pyqtSlot()
     def on_pgsqlConnectionsRefreshButton_clicked(self):
         self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
+
+    def set_format(self, value):
+        if value == 'SQLite':
+            self.sqliteRadioButton.setChecked(True)
+        if value == 'PostgreSQL':
+            self.pgsqlRadioButton.setChecked(True)
 
     def format(self):
         if self.sqliteRadioButton.isChecked():

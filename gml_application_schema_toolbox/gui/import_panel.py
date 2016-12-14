@@ -6,6 +6,7 @@ from qgis.PyQt.QtCore import pyqtSlot
 from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog
 from qgis.PyQt import uic
 
+from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui.import_gmlas_panel import ImportGmlasPanel
 from gml_application_schema_toolbox.gui.import_xml_panel import ImportXmlPanel
 
@@ -29,6 +30,11 @@ class ImportPanel(BASE, WIDGET):
         self.xml_panel = self.addImportPanel(
             self.tr("Import as XML"),
             ImportXmlPanel())
+
+        if settings.value('default_import_method') == 'gmlas':
+            self.stackedWidget.setCurrentWidget(self.gmlas_panel)
+        if settings.value('default_import_method') == 'xml':
+            self.stackedWidget.setCurrentWidget(self.xml_panel)
 
     def addImportPanel(self, text, panel):
         self.stackedWidget.addWidget(panel)

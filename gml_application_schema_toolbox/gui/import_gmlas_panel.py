@@ -39,8 +39,8 @@ from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
 from gml_application_schema_toolbox import name as plugin_name
-from gml_application_schema_toolbox.core import DEFAULT_GMLAS_CONF
-from gml_application_schema_toolbox.core.logging import log, gdal_error_handler
+from gml_application_schema_toolbox.core.logging import log
+from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
 from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
 from .xml_dialog import XmlDialog
@@ -56,10 +56,11 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
     def __init__(self, parent=None):
         super(ImportGmlasPanel, self).__init__(parent)
         self.setupUi(self)
-
-        self.gmlPathLineEdit.setText('/home/qgis/qgisgmlas/data/geosciml/mappedfeature.gml')
-        self.gmlasConfigLineEdit.setText(DEFAULT_GMLAS_CONF)
         self.databaseWidget.set_accept_mode(QFileDialog.AcceptSave)
+
+        self.gmlasConfigLineEdit.setText(settings.value('default_gmlas_config'))
+        self.acceptLanguageHeaderInput.setText(settings.value('default_language'))
+        self.set_access_mode(settings.value('default_access_mode'))
 
     def showEvent(self, event):
         # Cannot do that in the constructor. The project is not fully setup when
@@ -184,7 +185,17 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
                 options.append('OVERWRITE=YES')
         return options
 
-    def accessMode(self):
+    def set_access_mode(self, value):
+        if value is None:
+            self.createRadioButton.setChecked(True)
+        if value == "update":
+            self.updateRadioButton.setChecked(True)
+        if value == "append":
+            self.appendRadioButton.setChecked(True)
+        if value == "overwrite":
+            self.overwriteRadioButton.setChecked(True)
+
+    def access_mode(self):
         if self.createRadioButton.isChecked():
             return None
         if self.updateRadioButton.isChecked():
@@ -213,7 +224,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             'destNameOrDestDS': self.databaseWidget.datasource_name(),
             'srcDS': self.gmlas_datasource(),
             'format': self.databaseWidget.format(),
-            'accessMode': self.accessMode(),
+            'accessMode': self.access_mode(),
             'datasetCreationOptions': self.dataset_creation_options(),
             'layerCreationOptions': self.layer_creation_options(),
             'dstSRS': self.dest_srs(),
