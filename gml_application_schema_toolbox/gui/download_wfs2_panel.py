@@ -24,6 +24,7 @@ from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
 from gml_application_schema_toolbox.core.logging import log
+from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 from gml_application_schema_toolbox.core.settings import settings
 
 from .xml_dialog import XmlDialog
@@ -51,7 +52,8 @@ class DownloadWfs2Panel(BASE, WIDGET):
 
     def wfs(self):
         uri = self.uriComboBox.currentText()
-        return WebFeatureService(url=uri, version='2.0.0')
+        with qgis_proxy_settings():
+            return WebFeatureService(url=uri, version='2.0.0')
 
     @pyqtSlot()
     def on_getCapabilitiesButton_clicked(self):
@@ -152,7 +154,8 @@ class DownloadWfs2Panel(BASE, WIDGET):
             params['bbox'] = self._get_bbox(wfs)
 
         try:
-            response = wfs.getfeature(**params)
+            with qgis_proxy_settings():
+                response = wfs.getfeature(**params)
         except owslib.util.ServiceException as e:
             QMessageBox.critical(self, 'ServiceException', str(e))
             return

@@ -30,6 +30,7 @@ from qgis.PyQt.QtWidgets import QFileDialog, QProgressDialog
 
 from gml_application_schema_toolbox import name as plugin_name
 from gml_application_schema_toolbox.core.logging import log, gdal_error_handler
+from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 
 
 class GmlasPanelMixin():
@@ -59,7 +60,8 @@ class GmlasPanelMixin():
         try:
             log("gdal.VectorTranslate({})".format(str(params)))
             gdal.PushErrorHandler(gdal_error_handler)
-            res = gdal.VectorTranslate(**params)
+            with qgis_proxy_settings():
+                res = gdal.VectorTranslate(**params)
             gdal.PopErrorHandler()
             log(str(res))
         finally:

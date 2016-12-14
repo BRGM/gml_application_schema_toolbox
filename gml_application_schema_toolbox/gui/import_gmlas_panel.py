@@ -40,6 +40,7 @@ from qgis.PyQt import uic
 
 from gml_application_schema_toolbox import name as plugin_name
 from gml_application_schema_toolbox.core.logging import log
+from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
 from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
@@ -127,8 +128,9 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         else:
             driverConnection = "GMLAS:{}".format(datasourceFile)
 
-        return gdal.OpenEx(driverConnection,
-                           open_options=openOptions)
+        with qgis_proxy_settings():
+            return gdal.OpenEx(driverConnection,
+                               open_options=openOptions)
 
     @pyqtSlot()
     def on_validateButton_clicked(self):
