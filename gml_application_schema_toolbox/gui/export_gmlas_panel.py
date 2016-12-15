@@ -29,7 +29,7 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtCore import pyqtSlot
 from qgis.PyQt.QtWidgets import QFileDialog
 
-from gml_application_schema_toolbox.core import DEFAULT_GMLAS_CONF
+from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
 from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
 
@@ -48,7 +48,7 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         self.setupUi(self)
 
         self.databaseWidget.set_accept_mode(QFileDialog.AcceptOpen)
-        self.gmlasConfigLineEdit.setText(DEFAULT_GMLAS_CONF)
+        self.gmlasConfigLineEdit.setText(settings.value('default_gmlas_config'))
 
     @pyqtSlot()
     def on_gmlPathButton_clicked(self):
