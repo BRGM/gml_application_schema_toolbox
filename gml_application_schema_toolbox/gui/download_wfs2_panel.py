@@ -161,8 +161,6 @@ class DownloadWfs2Panel(BASE, WIDGET):
             return
         xml = response.read()
 
-        XmlDialog(self, xml).exec_()
-
         doc = QDomDocument()
         if not doc.setContent(xml):
             return
