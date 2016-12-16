@@ -183,7 +183,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         if self.databaseWidget.format() == 'PostgreSQL':
             schema = self.databaseWidget.schema(create=True)
             options.append('SCHEMA={}'.format(schema or 'public'))
-            if self.accessMode() == 'overwrite':
+            if self.access_mode() == 'overwrite':
                 options.append('OVERWRITE=YES')
         return options
 
