@@ -46,8 +46,7 @@ class DownloadWfs2Panel(BASE, WIDGET):
         self.downloadProgressBar.setVisible(False)
 
         self.featureLimitBox.setValue(int(settings.value('default_maxfeatures')))
-        for service in settings.value('wfs2_services'):
-            self.uriComboBox.addItem(service)
+        self.uriComboBox.addItems(settings.value('wfs2_services') or [])
         self.uriComboBox.setCurrentText(settings.value('default_wfs2_service'))
 
     def wfs(self):

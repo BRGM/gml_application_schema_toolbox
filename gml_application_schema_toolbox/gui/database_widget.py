@@ -105,6 +105,8 @@ class DatabaseWidget(BASE, WIDGET):
             self._pgsql_db = GeoDB.from_name(self.pgsqlConnectionsBox.currentText())
 
         self.pgsqlSchemaBox.clear()
+        if self._pgsql_db is None:
+            return
         schemas = sorted([schema[1] for schema in self._pgsql_db.list_schemas()])
         for schema in schemas:
             self.pgsqlSchemaBox.addItem(schema)

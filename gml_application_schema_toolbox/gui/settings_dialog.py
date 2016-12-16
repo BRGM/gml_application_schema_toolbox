@@ -34,7 +34,7 @@ class SettingsDialog(BASE, WIDGET):
         self.set_wfs2_services(settings.value('wfs2_services'))
         self.wfs2ServiceBox.setCurrentText(settings.value('default_wfs2_service'))
         self.set_import_method(settings.value('default_import_method'))
-        self.gmlasConfigLineEdit.setText(settings.default('default_gmlas_config'))
+        self.gmlasConfigLineEdit.setText(settings.value('default_gmlas_config'))
         self.languageLineEdit.setText(settings.value('default_language'))
         self.set_db_type(settings.value('default_db_type'))
         self.set_access_mode(settings.value('default_access_mode'))
@@ -49,8 +49,10 @@ class SettingsDialog(BASE, WIDGET):
         settings.setValue('default_access_mode', self.access_mode())
 
     def set_wfs2_services(self, values):
-        for service in values:
-            self.add_wfs2_service(service)
+        self.wfs2ServicesList.clear()
+        if values is not None:
+            for service in values:
+                self.add_wfs2_service(service)
         self.refresh_wfs2ServiceBox()
 
     def add_wfs2_service(self, text):
