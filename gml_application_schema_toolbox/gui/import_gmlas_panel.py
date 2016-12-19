@@ -81,6 +81,10 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     # Read XML file and substitute form parameters
     def gmlas_config(self):
+        path = self.gmlasConfigLineEdit.text()
+        if path == '':
+            raise InputError(self.tr("You must select a GMLAS config file"))
+
         xmlConfig = etree.parse(self.gmlasConfigLineEdit.text())
 
         # Set parameters
@@ -112,6 +116,8 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
     def gmlas_datasource(self):
         gmlasconf = self.gmlas_config()
         datasourceFile = self.gmlPathLineEdit.text()
+        if datasourceFile == '':
+            raise InputError(self.tr("You must select a input file or URL"))
         isXsd = datasourceFile.endswith(".xsd")
         isUrl = datasourceFile.startswith("http")
         swapCoordinates = self.swapCoordinatesCombo.currentText()
@@ -137,6 +143,8 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         self.setCursor(Qt.WaitCursor)
         try:
             self.validate()
+        except InputError as e:
+            e.show()
         finally:
             self.unsetCursor()
 
