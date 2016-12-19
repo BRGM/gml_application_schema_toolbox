@@ -356,20 +356,6 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="QgsProjectionSelectionWidget" name="srsSelectionWidget" native="true">
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>20</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
         <item row="1" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout_8">
           <item>
@@ -421,6 +407,16 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
+        <item row="0" column="1">
+         <widget class="QgsProjectionSelectionWidget" name="srsSelectionWidget">
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>20</height>
+           </size>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>
@@ -453,15 +449,15 @@ p, li { white-space: pre-wrap; }
  </widget>
  <customwidgets>
   <customwidget>
-   <class>BboxWidget</class>
+   <class>QgsProjectionSelectionWidget</class>
    <extends>QWidget</extends>
-   <header>gml_application_schema_toolbox.gui.bbox_widget</header>
+   <header>qgsprojectionselectionwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QgsProjectionSelectionWidget</class>
+   <class>BboxWidget</class>
    <extends>QWidget</extends>
-   <header>qgis.gui</header>
+   <header>gml_application_schema_toolbox.gui.bbox_widget</header>
    <container>1</container>
   </customwidget>
   <customwidget>
