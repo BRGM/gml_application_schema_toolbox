@@ -22,6 +22,7 @@
 """
 
 import os
+from tempfile import NamedTemporaryFile
 from osgeo import gdal, osr
 
 from qgis.utils import iface
@@ -50,6 +51,13 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         self.databaseWidget.set_accept_mode(QFileDialog.AcceptOpen)
         self.gmlasConfigLineEdit.setText(settings.value('default_gmlas_config'))
 
+    def showEvent(self, event):
+        # Cannot do that in the constructor. The project is not fully setup when
+        # it is called
+        if not self.srsSelectionWidget.crs().isValid():
+            self.srsSelectionWidget.setCrs(iface.mapCanvas().mapSettings().destinationCrs())
+        BASE.showEvent(self, event)
+
     @pyqtSlot()
     def on_gmlPathButton_clicked(self):
         path, filter = QFileDialog.getSaveFileName(self,
@@ -77,9 +85,10 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
     def src_datasource(self):
         options = ['LIST_ALL_TABLES=YES']
         options.append('SCHEMAS={}'.format(self.databaseWidget.schema()))
-        return gdal.OpenEx(self.databaseWidget.datasource_name(),
+        datasource = gdal.OpenEx(self.databaseWidget.datasource_name(),
                            gdal.OF_VECTOR,
                            open_options=options)
+        return datasource
 
     def dst_datasource_name(self):
         gml_path = self.gmlPathLineEdit.text()
@@ -102,12 +111,20 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         return options
 
-    def export_params(self):
+    def dest_srs(self):
+        srs = osr.SpatialReference()
+        srs.ImportFromWkt(self.srsSelectionWidget.crs().toWkt())
+        assert srs.Validate() == 0
+        return srs
+
+    def reproject_params(self, temp_datasource_path):
         params = {
-            'destNameOrDestDS': self.dst_datasource_name(),
+            'destNameOrDestDS': temp_datasource_path,
             'srcDS': self.src_datasource(),
-            'format': 'GMLAS',
-            'datasetCreationOptions': self.dataset_creation_options()
+            'format': 'SQLite',
+            'datasetCreationOptions': ['SPATIALITE=YES'],
+            'dstSRS': self.dest_srs(),
+            'reproject': True
         }
 
         if self.bboxGroupBox.isChecked():
@@ -127,9 +144,23 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         return params
 
+    def export_params(self, temp_datasource_path):
+        temp_datasource = gdal.OpenEx(temp_datasource_path,
+                                      open_options=['LIST_ALL_TABLES=YES'])
+        params = {
+            'destNameOrDestDS': self.dst_datasource_name(),
+            'srcDS': temp_datasource,
+            'format': 'GMLAS',
+            'datasetCreationOptions': self.dataset_creation_options()
+        }
+        return params
+
     @pyqtSlot()
     def on_exportButton_clicked(self):
+        with NamedTemporaryFile(mode="w+t", suffix='.sqlite', delete=True) as out:
+            temp_datasource_path = out.name
         try:
-            self.translate(self.export_params())
+            self.translate(self.reproject_params(temp_datasource_path))
+            self.translate(self.export_params(temp_datasource_path))
         except InputError as e:
             e.show()
