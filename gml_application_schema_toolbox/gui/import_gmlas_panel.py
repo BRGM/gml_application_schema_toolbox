@@ -231,8 +231,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             'layerCreationOptions': self.layer_creation_options(),
             'dstSRS': self.dest_srs(),
             'reproject': True,
-            'options': self.translate_options(),
-            'callback': self.import_callback
+            'options': self.translate_options()
         }
         if self.convertToLinearCheckbox.isChecked():
              params['geometryType'] = 'CONVERT_TO_LINEAR'

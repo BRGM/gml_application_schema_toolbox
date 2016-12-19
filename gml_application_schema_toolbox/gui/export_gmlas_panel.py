@@ -107,8 +107,7 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             'destNameOrDestDS': self.dst_datasource_name(),
             'srcDS': self.src_datasource(),
             'format': 'GMLAS',
-            'datasetCreationOptions': self.dataset_creation_options(),
-            'callback': self.import_callback
+            'datasetCreationOptions': self.dataset_creation_options()
         }
 
         if self.bboxGroupBox.isChecked():

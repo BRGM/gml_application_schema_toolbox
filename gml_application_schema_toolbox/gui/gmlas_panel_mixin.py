@@ -47,6 +47,7 @@ class GmlasPanelMixin():
     def translate(self, params):
         if params is None:
             return
+        params['callback'] = self.translate_callback
 
         dlg = QProgressDialog(self)
         dlg.setWindowTitle(plugin_name())
@@ -69,7 +70,7 @@ class GmlasPanelMixin():
             self.progress_dlg.reset()
             self.progress_dlg = None
 
-    def import_callback(self, pct, msg, user_data):
+    def translate_callback(self, pct, msg, user_data):
         self.progress_dlg.setValue(int(100*pct))
         QgsApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
         if self.progress_dlg.wasCanceled():
