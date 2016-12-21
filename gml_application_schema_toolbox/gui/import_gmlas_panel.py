@@ -247,6 +247,12 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         layers = self.selected_layers()
         if len(layers) > 0:
             params['layers'] = self.selected_layers()
+            if self.ogrExposeMetadataLayersCheckbox.isChecked():
+                params['layers'] = params['layers'] + [
+                    '_ogr_fields_metadata',
+                    '_ogr_layer_relationships',
+                    '_ogr_layers_metadata',
+                    '_ogr_other_metadata']
 
         if self.bboxGroupBox.isChecked():
             if self.bboxWidget.value() == '':
