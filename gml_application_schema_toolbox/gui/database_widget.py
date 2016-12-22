@@ -73,12 +73,10 @@ class DatabaseWidget(BASE, WIDGET):
 
     @pyqtSlot(bool)
     def on_sqliteRadioButton_toggled(self, checked):
-        print('on_sqliteRadioButton_toggled')
         self.sqliteFormWidget.setVisible(self.sqliteRadioButton.isChecked())
 
     @pyqtSlot(bool)
     def on_pgsqlRadioButton_toggled(self, checked):
-        print('on_pgsqlRadioButton_toggled')
         self.pgsqlFormWidget.setVisible(self.pgsqlRadioButton.isChecked())
 
     @pyqtSlot()
