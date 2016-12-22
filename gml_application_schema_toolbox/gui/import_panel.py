@@ -32,9 +32,11 @@ class ImportPanel(BASE, WIDGET):
             ImportXmlPanel())
 
         if settings.value('default_import_method') == 'gmlas':
-            self.stackedWidget.setCurrentWidget(self.gmlas_panel)
+            self.importTypeCombo.setCurrentIndex(
+                self.importTypeCombo.findData(self.gmlas_panel))
         if settings.value('default_import_method') == 'xml':
-            self.stackedWidget.setCurrentWidget(self.xml_panel)
+            self.importTypeCombo.setCurrentIndex(
+                self.importTypeCombo.findData(self.xml_panel))
 
     def addImportPanel(self, text, panel):
         self.stackedWidget.addWidget(panel)
