@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:FeatureCollection xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:om="http://www.opengis.net/om/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" gml:id="fc_4A1CB5653E1DD8F6A099C6B2F7EADFD0BA955354" xsi:schemaLocation="http://www.opengis.net/swes/2.0 http://schemas.opengis.net/swes/2.0/swes.xsd http://www.opengis.net/sos/2.0 http://schemas.opengis.net/sos/2.0/sosGetObservation.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd http://dd.eionet.europa.eu/schemaset/id2011850eu-1.0 http://dd.eionet.europa.eu/schemas/id2011850eu-1.0/AirQualityReporting.xsd http://www.opengis.net/om/2.0 http://schemas.opengis.net/om/2.0/observation.xsd">
+  <gml:featureMember>
+    <aqd:AQD_ReportingHeader xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0" xmlns:aqd="http://dd.eionet.europa.eu/schemaset/id2011850eu-1.0" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:base2="http://inspire.ec.europa.eu/schemas/base2/1.0" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0" gml:id="_349A934DD9F561D557DD4E51EB318615F95F442">
+      <aqd:change>false</aqd:change>
+      <aqd:changeDescription/>
+      <aqd:inspireId>
+        <base:Identifier>
+          <base:localId>REP_E2a</base:localId>
+          <base:namespace>SE.NV.AQ</base:namespace>
+          <base:versionId xsi:nil="true" nilReason="missing"/>
+        </base:Identifier>
+      </aqd:inspireId>
+      <aqd:reportingAuthority>
+        <base2:RelatedParty>
+          <base2:individualName>
+            <gco:CharacterString>Matthew Ross-Jones</gco:CharacterString>
+          </base2:individualName>
+          <base2:organisationName>
+            <gco:CharacterString>Naturv�rdsverket</gco:CharacterString>
+          </base2:organisationName>
+          <base2:positionName xsi:nil="true" gco:nilReason="missing"/>
+          <base2:contact>
+            <base2:Contact>
+              <base2:address>
+                <ad:AddressRepresentation>
+                  <ad:adminUnit>
+                    <gn:GeographicalName>
+                      <gn:language xsi:nil="true" nilReason="missing"/>
+                      <gn:nativeness xsi:nil="true" nilReason="missing"/>
+                      <gn:nameStatus xsi:nil="true" nilReason="missing"/>
+                      <gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+                      <gn:pronunciation xsi:nil="true" nilReason="missing"/>
+                      <gn:spelling>
+                        <gn:SpellingOfName>
+                          <gn:text>unknown</gn:text>
+                          <gn:script xsi:nil="true" nilReason="missing"/>
+                          <gn:transliterationScheme xsi:nil="true" nilReason="missing"/>
+                        </gn:SpellingOfName>
+                      </gn:spelling>
+                      <gn:grammaticalGender xsi:nil="true" nilReason="missing"/>
+                      <gn:grammaticalNumber xsi:nil="true" nilReason="missing"/>
+                    </gn:GeographicalName>
+                  </ad:adminUnit>
+                  <ad:locatorDesignator>Sweden</ad:locatorDesignator>
+                  <ad:locatorName>
+                    <gn:GeographicalName>
+                      <gn:language xsi:nil="true" nilReason="missing"/>
+                      <gn:nativeness xsi:nil="true" nilReason="missing"/>
+                      <gn:nameStatus xsi:nil="true" nilReason="missing"/>
+                      <gn:sourceOfName xsi:nil="true" nilReason="missing"/>
+                      <gn:pronunciation xsi:nil="true" nilReason="missing"/>
+                      <gn:spelling>
+                        <gn:SpellingOfName>
+                          <gn:text>unknown</gn:text>
+                          <gn:script xsi:nil="true" nilReason="missing"/>
+                          <gn:transliterationScheme xsi:nil="true" nilReason="missing"/>
+                        </gn:SpellingOfName>
+                      </gn:spelling>
+                      <gn:grammaticalGender xsi:nil="true" nilReason="missing"/>
+                      <gn:grammaticalNumber xsi:nil="true" nilReason="missing"/>
+                    </gn:GeographicalName>
+                  </ad:locatorName>
+                  <ad:postCode xsi:nil="true" nilReason="missing"/>
+                  <ad:addressFeature xsi:nil="true" nilReason="missing"/>
+                </ad:AddressRepresentation>
+              </base2:address>
+              <base2:contactInstructions xsi:nil="true" gco:nilReason="missing"/>
+              <base2:electronicMailAddress>matthew.ross-jones@naturvardsverket.se</base2:electronicMailAddress>
+              <base2:hoursOfService xsi:nil="true" gco:nilReason="missing"/>
+              <base2:website>http://www.naturvardsverket.se</base2:website>
+            </base2:Contact>
+          </base2:contact>
+        </base2:RelatedParty>
+      </aqd:reportingAuthority>
+      <aqd:reportingPeriod>
+        <gml:TimePeriod gml:id="_3863393D25F716F4969F6AE53D50E7DF368BD75">
+          <gml:beginPosition>2016-11-24T01:00:00.000Z</gml:beginPosition>
+          <gml:endPosition>2016-11-25T11:00:00.000Z</gml:endPosition>
+        </gml:TimePeriod>
+      </aqd:reportingPeriod>
+      <aqd:content xlink:href="SE.NV.AQ/o_1"/>
+    </aqd:AQD_ReportingHeader>
+  </gml:featureMember>
+  <gml:featureMember>
+    <om:OM_Observation gml:id="o_1">
+      <om:type xlink:href="http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_SWEArrayObservation"/>
+      <om:phenomenonTime>
+        <gml:TimePeriod gml:id="phenomenonTime_3772632">
+          <gml:beginPosition>2016-11-24T01:00:00.000Z</gml:beginPosition>
+          <gml:endPosition>2016-11-25T11:00:00.000Z</gml:endPosition>
+        </gml:TimePeriod>
+      </om:phenomenonTime>
+      <om:resultTime>
+        <gml:TimeInstant gml:id="ti_C08BDC09B09268876D34C1C9E505B36789775B90">
+          <gml:timePosition>2016-11-25T13:22:36.007Z</gml:timePosition>
+        </gml:TimeInstant>
+      </om:resultTime>
+      <om:procedure xlink:href="SPP-SE_UV-P_ML9810"/>
+      <om:parameter>
+        <om:NamedValue>
+          <om:name xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/processparameter/SamplingPoint"/>
+          <om:value xlink:href="SPO-SE0012R_00007_100"/>
+        </om:NamedValue>
+      </om:parameter>
+      <om:parameter>
+        <om:NamedValue>
+          <om:name xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/processparameter/AssessmentType"/>
+          <om:value xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/assessmenttype/fixed
+"/>
+        </om:NamedValue>
+      </om:parameter>
+      <om:observedProperty xlink:href="http://dd.eionet.europa.eu/vocabulary/aq/pollutant/7"/>
+      <om:featureOfInterest xlink:href="SPO_F-SE0012R_00007_100_100" xlink:title="Aspvreten"/>
+      <om:result xmlns:ns="http://www.opengis.net/swe/2.0" xsi:type="ns:DataArrayPropertyType">
+        <ns:DataArray>
+          <ns:elementCount>
+            <ns:Count>
+              <ns:value>28</ns:value>
+            </ns:Count>
+          </ns:elementCount>
+          <ns:elementType name="FixedObservations">
+            <ns:DataRecord>
+              <ns:field name="StartTime">
+                <ns:Time definition="http://www.opengis.net/def/property/OGC/0/SamplingTime">
+                  <ns:uom xlink:href="http://www.opengis.net/def/uom/ISO-8601/0/Gregorian"/>
+                </ns:Time>
+              </ns:field>
+              <ns:field name="EndTime">
+                <ns:Time definition="http://www.opengis.net/def/property/OGC/0/SamplingTime">
+                  <ns:uom xlink:href="http://www.opengis.net/def/uom/ISO-8601/0/Gregorian"/>
+                </ns:Time>
+              </ns:field>
+              <ns:field name="Verification">
+                <ns:Category definition="http://dd.eionet.europa.eu/vocabularies/aq/observationverification"/>
+              </ns:field>
+              <ns:field name="Validity">
+                <ns:Category definition="http://dd.eionet.europa.eu/vocabularies/aq/observationvalidity"/>
+              </ns:field>
+              <ns:field name="Value">
+                <ns:Quantity definition="http://dd.eionet.europa.eu/vocabulary/aq/primaryObservation/hour">
+                  <ns:uom xlink:href="http://dd.eionet.europa.eu/vocabulary/uom/concentration/ug.m-3"/>
+                </ns:Quantity>
+              </ns:field>
+            </ns:DataRecord>
+          </ns:elementType>
+          <ns:encoding>
+            <ns:TextEncoding blockSeparator=";" decimalSeparator="." tokenSeparator=","/>
+          </ns:encoding>
+          <ns:values>2016-11-24T01:00:00.000Z,2016-11-24T02:00:00.000Z,3,1,43.70000076293945;2016-11-24T02:00:00.000Z,2016-11-24T03:00:00.000Z,3,1,43.29999923706055;2016-11-24T03:00:00.000Z,2016-11-24T04:00:00.000Z,3,1,49.20000076293945;2016-11-24T04:00:00.000Z,2016-11-24T05:00:00.000Z,3,1,50.79999923706055;2016-11-24T05:00:00.000Z,2016-11-24T06:00:00.000Z,3,1,48.20000076293945;2016-11-24T06:00:00.000Z,2016-11-24T07:00:00.000Z,3,1,47.400001525878906;2016-11-24T07:00:00.000Z,2016-11-24T08:00:00.000Z,3,1,45.400001525878906;2016-11-24T10:00:00.000Z,2016-11-24T11:00:00.000Z,3,1,42.5;2016-11-24T11:00:00.000Z,2016-11-24T12:00:00.000Z,3,1,43.20000076293945;2016-11-24T14:00:00.000Z,2016-11-24T15:00:00.000Z,3,1,40.79999923706055;2016-11-24T15:00:00.000Z,2016-11-24T16:00:00.000Z,3,1,40.599998474121094;2016-11-24T16:00:00.000Z,2016-11-24T17:00:00.000Z,3,1,39.400001525878906;2016-11-24T17:00:00.000Z,2016-11-24T18:00:00.000Z,3,1,38.599998474121094;2016-11-24T18:00:00.000Z,2016-11-24T19:00:00.000Z,3,1,38.400001525878906;2016-11-24T21:00:00.000Z,2016-11-24T22:00:00.000Z,3,1,36.400001525878906;2016-11-24T22:00:00.000Z,2016-11-24T23:00:00.000Z,3,1,36.20000076293945;2016-11-24T23:00:00.000Z,2016-11-25T00:00:00.000Z,3,1,32.900001525878906;2016-11-25T00:00:00.000Z,2016-11-25T01:00:00.000Z,3,1,30.899999618530273;2016-11-25T01:00:00.000Z,2016-11-25T02:00:00.000Z,3,1,29.700000762939453;2016-11-25T02:00:00.000Z,2016-11-25T03:00:00.000Z,3,1,30.200000762939453;2016-11-25T03:00:00.000Z,2016-11-25T04:00:00.000Z,3,1,29.0;2016-11-25T04:00:00.000Z,2016-11-25T05:00:00.000Z,3,1,25.299999237060547;2016-11-25T05:00:00.000Z,2016-11-25T06:00:00.000Z,3,1,18.5;2016-11-25T06:00:00.000Z,2016-11-25T07:00:00.000Z,3,1,14.5;2016-11-25T07:00:00.000Z,2016-11-25T08:00:00.000Z,3,1,17.200000762939453;2016-11-25T08:00:00.000Z,2016-11-25T09:00:00.000Z,3,1,20.899999618530273;2016-11-25T09:00:00.000Z,2016-11-25T10:00:00.000Z,3,1,25.200000762939453;2016-11-25T10:00:00.000Z,2016-11-25T11:00:00.000Z,3,1,29.600000381469727</ns:values>
+        </ns:DataArray>
+      </om:result>
+    </om:OM_Observation>
+  </gml:featureMember>
+</gml:FeatureCollection>
