@@ -6,6 +6,7 @@ from qgis.PyQt.QtCore import pyqtSlot
 from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog
 from qgis.PyQt import uic
 
+from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui.import_gmlas_panel import ImportGmlasPanel
 from gml_application_schema_toolbox.gui.import_xml_panel import ImportXmlPanel
 
@@ -30,24 +31,17 @@ class ImportPanel(BASE, WIDGET):
             self.tr("Import as XML"),
             ImportXmlPanel())
 
-        self.gmlPathLineEdit.setText('/home/qgis/qgisgmlas/data/geosciml/mappedfeature.gml')
+        if settings.value('default_import_method') == 'gmlas':
+            self.importTypeCombo.setCurrentIndex(
+                self.importTypeCombo.findData(self.gmlas_panel))
+        if settings.value('default_import_method') == 'xml':
+            self.importTypeCombo.setCurrentIndex(
+                self.importTypeCombo.findData(self.xml_panel))
 
     def addImportPanel(self, text, panel):
         self.stackedWidget.addWidget(panel)
         self.importTypeCombo.addItem(text, panel)
         return panel
-
-    def gml_path(self):
-        return self.gmlPathLineEdit.text()
-
-    @pyqtSlot()
-    def on_gmlPathButton_clicked(self):
-        path, filter = QFileDialog.getOpenFileName(self,
-            self.tr("Open GML file"),
-            data_folder,
-            self.tr("GML files or XSD (*.gml *.xml *.xsd)"))
-        if path:
-            self.gmlPathLineEdit.setText(path)
 
     @pyqtSlot(int)
     def on_importTypeCombo_currentIndexChanged(self, index):

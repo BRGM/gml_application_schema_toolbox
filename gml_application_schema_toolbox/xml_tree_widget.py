@@ -32,7 +32,8 @@ from .complex_features import load_complex_gml, is_layer_complex, remote_open_fr
 from .gml2relational.xml_utils import no_prefix, split_tag, xml_parse, xml_parse_from_string
 from .custom_viewers import get_custom_viewers
 
-from qgis.core import QgsMapLayerRegistry
+from qgis.core import QgsProject
+
 
 def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers = {}):
     """
@@ -183,7 +184,7 @@ class XMLTreeWidget(QTreeWidget):
 
             addToMenu = QMenu("Add to layer", menu)
             addToEmpty = True
-            for id, l in QgsMapLayerRegistry.instance().mapLayers().items():
+            for id, l in QgsProject.instance().mapLayers().items():
                 if is_layer_complex(l):
                     action = QAction(l.name(), addToMenu)
                     action.triggered.connect(lambda checked, layer=l: self.onResolveAddToLayer(layer))
@@ -247,7 +248,7 @@ class XMLTreeWidget(QTreeWidget):
         uri = item.data(1, Qt.UserRole)
         new_layer = load_complex_gml(uri, True)
         if new_layer:
-            QgsMapLayerRegistry.instance().addMapLayer(new_layer)
+            QgsProject.instance().addMapLayer(new_layer)
 
     def onResolveAddToLayer(self, layer, checked=False):
         item = self.currentItem()

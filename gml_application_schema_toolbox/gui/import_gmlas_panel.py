@@ -26,109 +26,42 @@ import tempfile
 
 from io import BytesIO
 
-from lxml import etree
+from owslib.etree import etree
 
 from osgeo import gdal, osr
 
-from qgis.core import QgsApplication
 from qgis.utils import iface
 from qgis.PyQt.QtCore import (
-    QSettings, Qt, QUrl, pyqtSlot, QFile, QIODevice,
-    QAbstractItemModel, QModelIndex,
+    Qt, QUrl, pyqtSlot, QFile,  QIODevice,
     QEventLoop)
-from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem
-from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QProgressDialog
+from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
-from processing.tools.postgis import GeoDB
-
 from gml_application_schema_toolbox import name as plugin_name
-from gml_application_schema_toolbox.core.logging import log, gdal_error_handler
+from gml_application_schema_toolbox.core.logging import log
+from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
+from gml_application_schema_toolbox.core.settings import settings
+from gml_application_schema_toolbox.gui import InputError
+from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
 from .xml_dialog import XmlDialog
-
-DEFAULT_GMLAS_CONF = os.path.realpath(os.path.join(os.path.dirname(__file__),
-                                      '..', 'conf', 'gmlasconf.xml'))
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'import_gmlas_panel.ui'))
 
-
-data_folder = '~'
-
 gdal.UseExceptions()
 
 
-'''
-class OgrLayersMetadataModel(QStandardItemModel):
-
-    def __init__(self, datasource=None, parent=None):
-        super(OgrLayersMetadataModel, self).__init__(parent)
-        self.setDatasource(datasource)
-
-    def setDatasource(self, datasource):
-        self.clear()
-        if datasource is None:
-            return
-
-        metadata_layer = datasource.GetLayerByName('_ogr_layers_metadata')
-
-        self.setColumnCount(1)
-        self.setRowCount(metadata_layer.GetFeatureCount())
-
-        row = 0
-        for feature in metadata_layer:
-            item = self.createItem(feature)
-            self.setItem(row, item)
-            row += 1
-
-    def createItem(self, feature):
-        layer_name = feature.GetField("layer_name")
-        item = QStandardItem(layer_name)
-        item.setData(Qt.UserRole, layer_name)
-'''
-
-
-class PgsqlConnectionsModel(QAbstractItemModel):
-
-    def __init__(self, parent=None):
-        super(PgsqlConnectionsModel, self).__init__(parent)
-
-        self._settings = QSettings()
-        self._settings.beginGroup('/PostgreSQL/connections/')
-
-    def _groups(self):
-        return self._settings.childGroups()
-
-    def parent(self, index):
-        return QModelIndex()
-
-    def index(self, row, column, parent):
-        return self.createIndex(row, column)
-
-    def rowCount(self, parent):
-        return len(self._groups())
-
-    def columnCount(self, parent):
-        return 1
-
-    def data(self, index, role=Qt.DisplayRole):
-        return self._groups()[index.row()]
-
-
-class ImportGmlasPanel(BASE, WIDGET):
+class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     def __init__(self, parent=None):
         super(ImportGmlasPanel, self).__init__(parent)
         self.setupUi(self)
+        self.databaseWidget.set_accept_mode(QFileDialog.AcceptSave)
 
-        self.gmlasConfigLineEdit.setText(DEFAULT_GMLAS_CONF)
-
-        self._pgsql_db = None
-        self.pgsqlFormWidget.setVisible(False)
-        self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
-        self.pgsqlConnectionsRefreshButton.setIcon(
-            QgsApplication.getThemeIcon('/mActionRefresh.png'))
+        self.gmlasConfigLineEdit.setText(settings.value('default_gmlas_config'))
+        self.acceptLanguageHeaderInput.setText(settings.value('default_language'))
+        self.set_access_mode(settings.value('default_access_mode'))
 
     def showEvent(self, event):
         # Cannot do that in the constructor. The project is not fully setup when
@@ -138,38 +71,40 @@ class ImportGmlasPanel(BASE, WIDGET):
         BASE.showEvent(self, event)
 
     @pyqtSlot()
-    def on_gmlasConfigButton_clicked(self):
-        cur_dir = os.path.dirname(self.gmlasConfigLineEdit.text())
+    def on_gmlPathButton_clicked(self):
         path, filter = QFileDialog.getOpenFileName(self,
-            self.tr("Open GMLAS config file"),
-            cur_dir,
-            self.tr("XML Files (*.xml)"))
+            self.tr("Open GML file"),
+            self.gmlPathLineEdit.text(),
+            self.tr("GML files or XSD (*.gml *.xml *.xsd)"))
         if path:
-            self.gmlasConfigLineEdit.setText(path)
-
+            self.gmlPathLineEdit.setText(path)
 
     # Read XML file and substitute form parameters
     def gmlas_config(self):
+        path = self.gmlasConfigLineEdit.text()
+        if path == '':
+            raise InputError(self.tr("You must select a GMLAS config file"))
+
         xmlConfig = etree.parse(self.gmlasConfigLineEdit.text())
 
-        # Clean up all comments (ie. mainly due to the top licence statement of sample config files)
-        etree.strip_tags(xmlConfig, etree.Comment)
-
         # Set parameters
-        for l in xmlConfig.xpath("/Configuration/ExposeMetadataLayers"):
+        c = xmlConfig.getroot()
+
+        for l in c.iter('ExposeMetadataLayers'):
             l.text = str(self.ogrExposeMetadataLayersCheckbox.isChecked()).lower()
-        for l in xmlConfig.xpath("/Configuration/LayerBuildingRules/RemoveUnusedLayers"):
-            l.text = str(self.ogrRemoveUnusedLayersCheckbox.isChecked()).lower()
-        for l in xmlConfig.xpath("/Configuration/LayerBuildingRules/RemoveUnusedFields"):
-            l.text = str(self.ogrRemoveUnusedFieldsCheckbox.isChecked()).lower()
+        for l in c.iter('LayerBuildingRules'):
+            for n in l.iter('RemoveUnusedLayers'):
+                n.text = str(self.ogrRemoveUnusedLayersCheckbox.isChecked()).lower()
+            for n in l.iter('RemoveUnusedFields'):
+                n.text = str(self.ogrRemoveUnusedFieldsCheckbox.isChecked()).lower()
 
-        for l in xmlConfig.xpath("/Configuration/XLinkResolution/URLSpecificResolution/HTTPHeader[Name = 'Accept-Language']/Value"):
-            l.text = self.acceptLanguageHeaderInput.text()
-
+        for l in c.findall("XLinkResolution/URLSpecificResolution/HTTPHeader"):
+            name = l.find('Name').text
+            if name == 'Accept-Language':
+                l.find('Value').text = self.acceptLanguageHeaderInput.text()
 
         textConfig = BytesIO()
         xmlConfig.write(textConfig, encoding='utf-8', xml_declaration=False)
-
         # Write config in temp file
         tf = tempfile.NamedTemporaryFile(prefix='gmlasconf_', suffix='.xml', delete=False)
         tf.write(textConfig.getvalue())
@@ -178,10 +113,11 @@ class ImportGmlasPanel(BASE, WIDGET):
 
         return tf.name
 
-
     def gmlas_datasource(self):
         gmlasconf = self.gmlas_config()
-        datasourceFile = self.parent().parent().gml_path()
+        datasourceFile = self.gmlPathLineEdit.text()
+        if datasourceFile == '':
+            raise InputError(self.tr("You must select a input file or URL"))
         isXsd = datasourceFile.endswith(".xsd")
         isUrl = datasourceFile.startswith("http")
         swapCoordinates = self.swapCoordinatesCombo.currentText()
@@ -198,14 +134,17 @@ class ImportGmlasPanel(BASE, WIDGET):
         else:
             driverConnection = "GMLAS:{}".format(datasourceFile)
 
-        return gdal.OpenEx(driverConnection,
-                           open_options=openOptions)
+        with qgis_proxy_settings():
+            return gdal.OpenEx(driverConnection,
+                               open_options=openOptions)
 
     @pyqtSlot()
     def on_validateButton_clicked(self):
         self.setCursor(Qt.WaitCursor)
         try:
             self.validate()
+        except InputError as e:
+            e.show()
         finally:
             self.unsetCursor()
 
@@ -214,27 +153,11 @@ class ImportGmlasPanel(BASE, WIDGET):
         data_source = self.gmlas_datasource() 
 
         if data_source is None:
-            QMessageBox.critical(self, 'GMLAS', 'Failed to open file using OGR GMLAS driver')
+            QMessageBox.critical(self,
+                                 plugin_name(),
+                                 self.tr('Failed to open file using OGR GMLAS driver'))
             return
 
-        '''
-        metadata_layer = data_source.GetLayerByName('_ogr_layers_metadata')
-        self.datasetsListWidget.clear()
-        for feature in metadata_layer:
-            layer_name = feature.GetField("layer_name")
-            self.datasetsListWidget.addItem(layer_name)
- 
-            layer = data_source.GetLayerByName(layer_name)
-            if layer is not None:
-                feature_count = layer.GetFeatureCount()
-                self.datasetsListWidget.addItem("{} ({})".format(layer_name, feature_count))
-            else:
-                
-        layer_name
-        layer_xpath
-        layer_category TOP_LEVEL_ELEMENT, NESTED_ELEMENT or JUNCTION_TABLE
-        layer_documentation
-        '''
         ogrMetadataLayerPrefix = '_ogr_'
 
         self.datasetsListWidget.clear()
@@ -244,7 +167,6 @@ class ImportGmlasPanel(BASE, WIDGET):
             if not layer_name.startswith(ogrMetadataLayerPrefix): 
               feature_count = layer.GetFeatureCount()
 
-              from qgis.PyQt.QtWidgets import QListWidgetItem
               item = QListWidgetItem("{} ({})".format(layer_name, feature_count))
               item.setData(Qt.UserRole, layer_name)
               self.datasetsListWidget.addItem(item)
@@ -260,95 +182,30 @@ class ImportGmlasPanel(BASE, WIDGET):
             layers.append(item.data(Qt.UserRole))
         return layers
 
-
-
-    @pyqtSlot(bool)
-    def on_sqliteRadioButton_toggled(self, checked):
-        print('on_sqliteRadioButton_toggled')
-        self.sqliteFormWidget.setVisible(self.sqliteRadioButton.isChecked())
-
-    @pyqtSlot(bool)
-    def on_pgsqlRadioButton_toggled(self, checked):
-        print('on_pgsqlRadioButton_toggled')
-        self.pgsqlFormWidget.setVisible(self.pgsqlRadioButton.isChecked())
-
-    @pyqtSlot()
-    def on_sqlitePathButton_clicked(self):
-        current_path = self.sqlitePathLineEdit.text()
-        cur_dir = os.path.dirname(current_path) if current_path else ''
-        path, filter = QFileDialog.getSaveFileName(self,
-            self.tr("Save to sqlite database"),
-            cur_dir,
-            self.tr("SQLite Files (*.sqlite)"))
-        if path:
-            if os.path.splitext(path)[1] == '':
-                path = '{}.sqlite'.format(path)
-            self.sqlitePathLineEdit.setText(path)
-
-    @pyqtSlot(str)
-    def on_pgsqlConnectionsBox_currentIndexChanged(self, text):
-        if self.pgsqlConnectionsBox.currentIndex() == -1:
-            self._pgsql_db = None
-        else:
-            self._pgsql_db = GeoDB.from_name(self.pgsqlConnectionsBox.currentText())
-
-        self.pgsqlSchemaBox.clear()
-        schemas = sorted([schema[1] for schema in self._pgsql_db.list_schemas()])
-        for schema in schemas:
-            self.pgsqlSchemaBox.addItem(schema)
-
-    @pyqtSlot()
-    def on_pgsqlConnectionsRefreshButton_clicked(self):
-        self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
-
-    def dst_datasource_name(self):
-        if self.sqliteRadioButton.isChecked():
-            path = self.sqlitePathLineEdit.text()
-            if path == '':
-                QMessageBox.warning(self,
-                                    plugin_name(),
-                                    "You must select a SQLite file")
-                return None
-            return path
-        if self.pgsqlRadioButton.isChecked():
-            if self._pgsql_db is None:
-                QMessageBox.warning(self,
-                                    plugin_name(),
-                                    "You must select a PostgreSQL connection")
-                return None
-            return 'PG:{}'.format(self._pgsql_db.uri.connectionInfo(True))
-
     def dataset_creation_options(self):
-        if self.sqliteRadioButton.isChecked():
+        if self.databaseWidget.format() == 'SQLite':
             return ['SPATIALITE=YES']
 
     def layer_creation_options(self):
         options = []
-        if self.pgsqlRadioButton.isChecked():
-            schema = self.pgsqlSchemaBox.currentText()
-
-            #if self.pgsqlSchemaBox.currentIndex() == -1:
-            schemas = [schema[1] for schema in self._pgsql_db.list_schemas()]
-            if not schema in schemas:
-                res = QMessageBox.question(self,
-                                           plugin_name(),
-                                           self.tr('Create schema "{}" ?').
-                                           format(schema))
-                if res != QMessageBox.Ok:
-                    return False
-                self._pgsql_db.create_schema(schema)
+        if self.databaseWidget.format() == 'PostgreSQL':
+            schema = self.databaseWidget.schema(create=True)
             options.append('SCHEMA={}'.format(schema or 'public'))
-            if self.accessMode() == 'overwrite':
+            if self.access_mode() == 'overwrite':
                 options.append('OVERWRITE=YES')
         return options
 
-    def format(self):
-        if self.sqliteRadioButton.isChecked():
-            return 'SQLite'
-        if self.pgsqlRadioButton.isChecked():
-            return "PostgreSQL"
+    def set_access_mode(self, value):
+        if value is None:
+            self.createRadioButton.setChecked(True)
+        if value == "update":
+            self.updateRadioButton.setChecked(True)
+        if value == "append":
+            self.appendRadioButton.setChecked(True)
+        if value == "overwrite":
+            self.overwriteRadioButton.setChecked(True)
 
-    def accessMode(self):
+    def access_mode(self):
         if self.createRadioButton.isChecked():
             return None
         if self.updateRadioButton.isChecked():
@@ -373,21 +230,16 @@ class ImportGmlasPanel(BASE, WIDGET):
         return options
 
     def import_params(self):
-        dst_datasource_name = self.dst_datasource_name()
-        if not dst_datasource_name:
-            return None
-
         params = {
-            'destNameOrDestDS': dst_datasource_name,
+            'destNameOrDestDS': self.databaseWidget.datasource_name(),
             'srcDS': self.gmlas_datasource(),
-            'format': self.format(),
-            'accessMode': self.accessMode(),
+            'format': self.databaseWidget.format(),
+            'accessMode': self.access_mode(),
             'datasetCreationOptions': self.dataset_creation_options(),
             'layerCreationOptions': self.layer_creation_options(),
             'dstSRS': self.dest_srs(),
             'reproject': True,
-            'options': self.translate_options(),
-            'callback': self.import_callback
+            'options': self.translate_options()
         }
         if self.convertToLinearCheckbox.isChecked():
              params['geometryType'] = 'CONVERT_TO_LINEAR'
@@ -395,18 +247,18 @@ class ImportGmlasPanel(BASE, WIDGET):
         layers = self.selected_layers()
         if len(layers) > 0:
             params['layers'] = self.selected_layers()
+            if self.ogrExposeMetadataLayersCheckbox.isChecked():
+                params['layers'] = params['layers'] + [
+                    '_ogr_fields_metadata',
+                    '_ogr_layer_relationships',
+                    '_ogr_layers_metadata',
+                    '_ogr_other_metadata']
 
         if self.bboxGroupBox.isChecked():
             if self.bboxWidget.value() == '':
-                QMessageBox.warning(self,
-                                    plugin_name(),
-                                    "Extent is empty")
-                return
+                raise InputError("Extent is empty")
             if not self.bboxWidget.isValid():
-                QMessageBox.warning(self,
-                                    plugin_name(),
-                                    "Extent is invalid")
-                return
+                raise InputError("Extent is invalid")
             bbox = self.bboxWidget.rectangle()
             params['spatFilter'] = (bbox.xMinimum(),
                                     bbox.yMinimum(),
@@ -421,33 +273,7 @@ class ImportGmlasPanel(BASE, WIDGET):
 
     @pyqtSlot()
     def on_importButton_clicked(self):
-        params = self.import_params()
-        if params is None:
-            return
-
-        dlg = QProgressDialog(self)
-        dlg.setWindowTitle(plugin_name())
-        dlg.setLabelText('Operation in progress')
-        dlg.setMinimum(0)
-        dlg.setMaximum(100)
-        dlg.setWindowModality(Qt.WindowModal)
-        self.progress_dlg = dlg
-
-        self.setCursor(Qt.WaitCursor)
         try:
-            log("gdal.VectorTranslate({})".format(str(params)))
-            gdal.PushErrorHandler(gdal_error_handler)
-            res = gdal.VectorTranslate(**params)
-            gdal.PopErrorHandler()
-            log(str(res))
-        finally:
-            self.unsetCursor()
-            self.progress_dlg.reset()
-            self.progress_dlg = None
-
-    def import_callback(self, pct, msg, user_data):
-        self.progress_dlg.setValue(int(100*pct))
-        QgsApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
-        if self.progress_dlg.wasCanceled():
-            return 0
-        return 1
+            self.translate(self.import_params())
+        except InputError as e:
+            e.show()

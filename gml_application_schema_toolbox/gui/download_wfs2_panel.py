@@ -24,6 +24,8 @@ from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
 from gml_application_schema_toolbox.core.logging import log
+from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
+from gml_application_schema_toolbox.core.settings import settings
 
 from .xml_dialog import XmlDialog
 
@@ -43,17 +45,14 @@ class DownloadWfs2Panel(BASE, WIDGET):
 
         self.downloadProgressBar.setVisible(False)
 
-        # TODO: Move to config
-        self.featureLimitBox.setValue(100)
-        self.uriComboBox.addItem('http://geoserv.weichand.de:8080/geoserver/wfs')
-        self.uriComboBox.addItem('https://wfspoc.brgm-rec.fr/geoserver/ows')
-        self.uriComboBox.addItem('https://wfspoc.brgm-rec.fr/constellation/WS/wfs/BRGM:GWML2')
-        self.uriComboBox.addItem('http://geoserverref.brgm-rec.fr/geoserver/ows')
-        self.uriComboBox.addItem('http://minerals4eu.brgm-rec.fr/deegree/services/m4eu')
+        self.featureLimitBox.setValue(int(settings.value('default_maxfeatures')))
+        self.uriComboBox.addItems(settings.value('wfs2_services') or [])
+        self.uriComboBox.setCurrentText(settings.value('default_wfs2_service'))
 
     def wfs(self):
         uri = self.uriComboBox.currentText()
-        return WebFeatureService(url=uri, version='2.0.0')
+        with qgis_proxy_settings():
+            return WebFeatureService(url=uri, version='2.0.0')
 
     @pyqtSlot()
     def on_getCapabilitiesButton_clicked(self):
@@ -82,11 +81,9 @@ class DownloadWfs2Panel(BASE, WIDGET):
 
     @pyqtSlot()
     def on_outputPathButton_clicked(self):
-        current_path = self.outputPathLineEdit.text()
-        cur_dir = os.path.dirname(current_path) if current_path else ''
         path, filter = QFileDialog.getSaveFileName(self,
             self.tr("Select output file"),
-            cur_dir,
+            self.outputPathLineEdit.text(),
             self.tr("GML Files (*.gml *.xml)"))
         if path:
             if os.path.splitext(path)[1] == '':
@@ -156,13 +153,12 @@ class DownloadWfs2Panel(BASE, WIDGET):
             params['bbox'] = self._get_bbox(wfs)
 
         try:
-            response = wfs.getfeature(**params)
+            with qgis_proxy_settings():
+                response = wfs.getfeature(**params)
         except owslib.util.ServiceException as e:
             QMessageBox.critical(self, 'ServiceException', str(e))
             return
         xml = response.read()
-
-        XmlDialog(self, xml).exec_()
 
         doc = QDomDocument()
         if not doc.setContent(xml):
