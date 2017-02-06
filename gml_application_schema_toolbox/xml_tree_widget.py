@@ -16,20 +16,24 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+from __future__ import absolute_import
+from builtins import next
+from builtins import range
 # -*- coding: utf-8 -*-
 import os
 
-from PyQt4 import QtGui
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtWidgets import *
 
 import xml.etree.ElementTree as ET
 
-from complex_features import load_complex_gml, is_layer_complex, remote_open_from_qgis
-from gml2relational.xml_utils import no_prefix, split_tag, xml_parse, xml_parse_from_string
-from custom_viewers import get_custom_viewers
+from .complex_features import load_complex_gml, is_layer_complex, remote_open_from_qgis
+from .gml2relational.xml_utils import no_prefix, split_tag, xml_parse, xml_parse_from_string
+from .custom_viewers import get_custom_viewers
 
-from qgis.core import QgsMapLayerRegistry
+from qgis.core import QgsProject
+
 
 def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers = {}):
     """
@@ -50,7 +54,7 @@ def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers =
     treeItem.setFont(0,f)
 
     # custom viewer
-    if custom_viewers.has_key(elt.tag):
+    if elt.tag in custom_viewers:
         custom_viewer_widget = custom_viewers[elt.tag]
         btn = QToolButton(widget)
         btn.setIcon(custom_viewer_widget.icon())
@@ -69,7 +73,7 @@ def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers =
         widget.setItemWidget(treeItem, 1, w)
 
     # attributes
-    for k, v in elt.attrib.iteritems():
+    for k, v in elt.attrib.items():
         child = QTreeWidgetItem()
         treeItem.addChild(child)
         if '}' in k:
@@ -120,14 +124,14 @@ def fill_tree_with_xml(treeWidget, xml):
     treeWidget.setColumnCount(2)
 
     ns_imap = {}
-    for k, v in ns_map.iteritems():
+    for k, v in ns_map.items():
         ns_imap[v] = k
     fill_tree_with_element(treeWidget, treeWidget.invisibleRootItem(), doc.getroot(), ns_imap, get_custom_viewers())
     recurse_expand(treeWidget.invisibleRootItem())
     treeWidget.resizeColumnToContents(0)
     treeWidget.resizeColumnToContents(1)
 
-class XMLTreeWidget(QtGui.QTreeWidget):
+class XMLTreeWidget(QTreeWidget):
     def __init__(self, parent = None):
         """Constructor.
         :param feature: a QgsFeature
@@ -136,9 +140,9 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         super(XMLTreeWidget, self).__init__(parent)
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.setAlternatingRowColors(True)
-        self.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setWordWrap(True)
         self.setExpandsOnDoubleClick(False)
         self.headerItem().setText(0, "Element")
@@ -180,7 +184,7 @@ class XMLTreeWidget(QtGui.QTreeWidget):
 
             addToMenu = QMenu("Add to layer", menu)
             addToEmpty = True
-            for id, l in QgsMapLayerRegistry.instance().mapLayers().iteritems():
+            for id, l in QgsProject.instance().mapLayers().items():
                 if is_layer_complex(l):
                     action = QAction(l.name(), addToMenu)
                     action.triggered.connect(lambda checked, layer=l: self.onResolveAddToLayer(layer))
@@ -233,7 +237,7 @@ class XMLTreeWidget(QtGui.QTreeWidget):
                 return
 
             ns_imap = {}
-            for k, v in ns_map.iteritems():
+            for k, v in ns_map.items():
                 ns_imap[v] = k
             fill_tree_with_element(self, item.parent(), doc.getroot(), ns_imap, get_custom_viewers())
         finally:
@@ -244,7 +248,7 @@ class XMLTreeWidget(QtGui.QTreeWidget):
         uri = item.data(1, Qt.UserRole)
         new_layer = load_complex_gml(uri, True)
         if new_layer:
-            QgsMapLayerRegistry.instance().addMapLayer(new_layer)
+            QgsProject.instance().addMapLayer(new_layer)
 
     def onResolveAddToLayer(self, layer, checked=False):
         item = self.currentItem()

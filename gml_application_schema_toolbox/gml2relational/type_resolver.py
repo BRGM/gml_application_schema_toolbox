@@ -16,16 +16,21 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import zip
+from builtins import object
 # -*- coding: utf-8 -*-
 import logging
 
-from xml_utils import no_prefix, split_tag, prefix
-from gml_utils import extract_features
+from .xml_utils import no_prefix, split_tag, prefix
+from .gml_utils import extract_features
 from pyxb.xmlschema.structures import Schema, ElementDeclaration, ComplexTypeDefinition, Particle, ModelGroup, SimpleTypeDefinition, Wildcard, AttributeUse, AttributeDeclaration
-from schema_parser import parse_schemas
-from uri import URI
+from .schema_parser import parse_schemas
+from .uri import URI
 
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import os
 import xml.etree.ElementTree as ET
 
@@ -43,10 +48,10 @@ def _find_element_declarations(obj, ns_map, min_occurs = 1, max_occurs = 1):
         if isinstance(obj.typeDefinition(), ComplexTypeDefinition) and obj.typeDefinition().abstract():
             types = []
             # look for concrete types that derives from this abstract type
-            for ns in ns_map.values():
+            for ns in list(ns_map.values()):
                 if not hasattr(ns,"elementDeclarations"):
                     continue
-                for ed in ns.elementDeclarations().values():
+                for ed in list(ns.elementDeclarations().values()):
                     if _xsd_isinstance(ed.typeDefinition(), obj.typeDefinition()):
                         types.append((ed, obj, min_occurs, max_occurs))
             return types
@@ -122,7 +127,7 @@ def _resolve_types(etree_node, ns_map, declaration, abstract_declaration, min_oc
 
     if len(etree_node.attrib) > 0:
         attrs_uses = declaration.typeDefinition().attributeUses()
-        for attr_name in etree_node.attrib.keys():
+        for attr_name in list(etree_node.attrib.keys()):
             ns_attr, n_attr_name = split_tag(attr_name)
             if ns_attr in ["http://www.w3.org/2001/XMLSchema-instance", 'http://www.w3.org/1999/xlink']:
                 continue
@@ -248,7 +253,7 @@ class SchemaCacher(object):
         for child in root:
             n_child_tag = no_prefix(child.tag)
             if n_child_tag == "import" or n_child_tag == "include":
-                for an, av in child.attrib.iteritems():
+                for an, av in child.attrib.items():
                     if no_prefix(an) == "schemaLocation":
                         self.cache_uri(av, base_uri, lvl+2)
         return out_file_name
@@ -263,7 +268,7 @@ def load_schemas_and_resolve_types(xml_uri, archive_dir, xsd_files = None, urlop
     if xsd_files is None:
         xsd_files = []
     if urlopener is None:
-        urlopener = urllib2.urlopen
+        urlopener = urllib.request.urlopen
     if logger is None:
         logger = default_logger
 
@@ -279,7 +284,7 @@ def load_schemas_and_resolve_types(xml_uri, archive_dir, xsd_files = None, urlop
     if len(xsd_files) == 0:
         # try to download schemas
         root = doc.getroot()
-        for an, av in root.attrib.iteritems():
+        for an, av in root.attrib.items():
             if no_prefix(an) == "schemaLocation":
                 avs = av.split()
                 for ns_name, ns_uri in zip(avs[0::2], avs[1::2]):

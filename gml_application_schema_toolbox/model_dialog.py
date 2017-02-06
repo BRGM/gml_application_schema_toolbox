@@ -16,9 +16,13 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+from builtins import next
+from builtins import range
 # -*- coding: utf-8 -*-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtWidgets import *
 
 import os
 import math
@@ -176,7 +180,7 @@ class ModelDialogScene(QGraphicsScene):
         min_grid_y = None
         max_grid_y = None
         self.table_items = {}
-        for table_name, table in model.tables().iteritems():
+        for table_name, table in model.tables().items():
             # widget, grid_x, grid_y, x, y
             grid_x, grid_y = next(spiral)
             if grid_x > max_grid_x or max_grid_x is None:
@@ -274,7 +278,7 @@ class ModelDialogScene(QGraphicsScene):
             i4 = self.addLine(QLineF(p2, p4))
             return [i1, i2, i3, i4]
 
-        for table_name, table in model.tables().iteritems():
+        for table_name, table in model.tables().items():
             tw = self.table_items[table_name]
             y = len(table.columns())
             items = [tw]
@@ -298,7 +302,7 @@ class ModelDialogScene(QGraphicsScene):
         x = pos.x()
         y = pos.y()
         #self.marker.setPos(x, y)
-        for table_name, items in self.table_items.iteritems():
+        for table_name, items in self.table_items.items():
             table_item = items[0]
             if 0 <= x - table_item.x() <= table_item.widget().width() and \
                0 <= y - table_item.y() <= table_item.widget().height():

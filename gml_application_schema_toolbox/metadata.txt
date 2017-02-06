@@ -10,21 +10,22 @@
 
 [general]
 name=QGIS GML Application Schema Toolbox
-qgisMinimumVersion=2.14
-qgisMaximumVersion=2.99
-description=Prototype to load OGC Complex Features in QGIS
-about=This plugins allows to import Complex Features streams in QGIS either through a native XML mode or through a conversion to a relational database model
+qgisMinimumVersion=2.99
+qgisMaximumVersion=3.99
+description=Consumption and use of GML complex features like INSPIRE harmonised data (vector), GeoSciML within QGIS
+about=This plugins allows to import Complex Features streams in QGIS either through a native XML mode or through a conversion to a relational database model.
 
-version=0.8.4
+version=1.0.0
 changelog=
 
 # tags are comma separated with spaces allowed
-tags=ogc, complex, features
+tags=complex features, gml, gmlas, application schema, INSPIRE, GeoSciML, WaterML
 
 homepage=https://github.com/BRGM/gml_application_schema_toolbox
 tracker=https://github.com/BRGM/gml_application_schema_toolbox/issues
 repository=https://github.com/BRGM/gml_application_schema_toolbox
 icon=
+
 # experimental flag
 experimental=False
 
@@ -32,5 +33,5 @@ experimental=False
 deprecated=False
 
 # Author contact information
-author=Oslandia
-email=hugo.mercier@oslandia.com
+author=BRGM, Oslandia, Copernicus, Camptocamp, Spatialys, titellus
+

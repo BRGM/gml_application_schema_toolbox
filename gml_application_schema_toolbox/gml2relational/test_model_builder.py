@@ -17,6 +17,8 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+from __future__ import print_function
+from __future__ import absolute_import
 # -*- coding: utf-8 -*-
 import unittest
 
@@ -25,18 +27,18 @@ import sys
 import tempfile
 sys.path = [os.path.join(os.path.dirname(__file__), "../extlibs")] + sys.path
 
-from relational_model_builder import load_gml_model
+from .relational_model_builder import load_gml_model
 
 testdata_path = os.path.join(os.path.dirname(__file__), "testdata")
 
-from uri import URI
+from .uri import URI
 
 
 class TestModelBuilder(unittest.TestCase):
 
     def assertTableEqualRepr(self, table, trepr):
         # trepr = set of Field's repr
-        torig_repr = set([repr(f) for f in table.fields().values()])
+        torig_repr = set([repr(f) for f in list(table.fields().values())])
         missing_fields = torig_repr - trepr
         self.assertTrue(missing_fields == set(), "Missing fields : {} got {} expected {}".format(missing_fields, torig_repr, trepr))
         new_fields = trepr - torig_repr
@@ -151,7 +153,7 @@ class TestModelBuilder(unittest.TestCase):
                                "Geometry<location[0]/Point/geometry(),Point(4326)>",
                                "Column<@id,None,autoincremented>"]),
                  'mma_location_alt' : set(["BackLink<location_alt(mma)>","Column<@id,None,autoincremented>","Geometry<Point/geometry(),Point(4326)>"])}
-        for table_name, trepr in treprs.iteritems():
+        for table_name, trepr in treprs.items():
             self.assertTableEqualRepr(model.tables()[table_name], trepr)
             
         # split multiple geometries
@@ -163,7 +165,7 @@ class TestModelBuilder(unittest.TestCase):
                                "Link<location[0]/Point(1-1),mma_location0_Point>",
                                "Column<@id,None,autoincremented>"]),
                   'mma_location_alt' : set(["BackLink<location_alt(mma)>","Column<@id,None,autoincremented>","Geometry<Point/geometry(),Point(4326)>"])}
-        for table_name, trepr in treprs.iteritems():
+        for table_name, trepr in treprs.items():
             self.assertTableEqualRepr(model.tables()[table_name], trepr)
 
         # collect all geometries in a common table
@@ -176,13 +178,13 @@ class TestModelBuilder(unittest.TestCase):
                                "Link<location[0]/Point(1-1),PointType>",
                                "Column<@id,None,autoincremented>"]),
                   'mma_location_alt' : set(["BackLink<location_alt(mma)>","Column<@id,None,autoincremented>","Link<Point(1-1),PointType>"])}
-        for table_name, trepr in treprs.iteritems():
+        for table_name, trepr in treprs.items():
             self.assertTableEqualRepr(model.tables()[table_name], trepr)
 
     def xtest_sg(self):
         # schema with a substitution group
         model = load_gml_model(URI(os.path.join(testdata_path, "substitution_group.xml")), tempfile.gettempdir())
-        for tn, table in model.tables().iteritems():
+        for tn, table in model.tables().items():
             print(table)
 
 if __name__ == '__main__':

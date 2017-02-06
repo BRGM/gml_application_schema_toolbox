@@ -16,9 +16,10 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+from __future__ import absolute_import
 # -*- coding: utf-8 -*-
 
 # list here the different viewer classes to import
 
-from wml2_timeseries import WML2TimeSeriesViewer
+from .wml2_timeseries import WML2TimeSeriesViewer
 

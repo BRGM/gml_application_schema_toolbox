@@ -18,13 +18,17 @@
 """
 # -*- coding: utf-8 -*-
 from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import logging
-from xml_utils import split_tag, no_prefix, resolve_xpath
+from .xml_utils import split_tag, no_prefix, resolve_xpath
 from pyxb.xmlschema.structures import Schema, ElementDeclaration, ComplexTypeDefinition, Particle, ModelGroup, SimpleTypeDefinition, Wildcard, AttributeUse, AttributeDeclaration
-from relational_model import *
-from type_resolver import load_schemas_and_resolve_types
+from .relational_model import *
+from .type_resolver import load_schemas_and_resolve_types
 
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import os
 # for GML geometry to WKT
 from osgeo import ogr
@@ -101,7 +105,7 @@ def gml_geometry_type(node, td):
     else:
         type = tmap[type]
 
-    for k, v in node.attrib.iteritems():
+    for k, v in node.attrib.items():
         if no_prefix(k) == 'srsDimension':
             dim = int(v)
         elif no_prefix(k) == 'srsName':
@@ -128,7 +132,7 @@ def _simple_cardinality_size(node, type_info_dict):
         # geometry, cannot merge
         return None
 
-    if "id" in [no_prefix(an) for an in node.attrib.keys()]:
+    if "id" in [no_prefix(an) for an in list(node.attrib.keys())]:
         # shared table, cannot be merged
         return None
             
@@ -159,7 +163,7 @@ def _merged_columns(node, prefix, type_info_dict):
     n_tag = no_prefix(node.tag)
     p = prefix + "/" if prefix != "" else ""
 
-    for an, av in node.attrib.iteritems():
+    for an, av in node.attrib.items():
         ns, n_an = split_tag(an)
         if n_an == "id":
             # shared table, cannot be merged
@@ -226,7 +230,7 @@ def _build_table(node, table_name, type_info_dict, merge_max_depth, merge_sequen
         gtype, gdim, gsrid = gml_geometry_type(node, node_td)
         table.add_field(Geometry("geometry()", gtype, gdim, gsrid, optional = is_optional))
         # look for an id
-        for attr_name, attr_value in node.attrib.iteritems():
+        for attr_name, attr_value in node.attrib.items():
             ns, n_attr_name = split_tag(attr_name)
             if n_attr_name == "id":
                 au = ti.attribute_type_info_map()[attr_name]
@@ -246,7 +250,7 @@ def _build_table(node, table_name, type_info_dict, merge_max_depth, merge_sequen
     #--------------------------------------------------
     # attributes
     #--------------------------------------------------
-    for attr_name, attr_value in node.attrib.iteritems():
+    for attr_name, attr_value in node.attrib.items():
         ns, n_attr_name = split_tag(attr_name)
         if ns == "http://www.w3.org/2001/XMLSchema-instance":
             continue
@@ -305,7 +309,7 @@ def _build_table(node, table_name, type_info_dict, merge_max_depth, merge_sequen
 
         is_optional = child_ti.min_occurs() == 0 or child_ti.type_info().nillable()
 
-        has_id = any([1 for n in child.attrib.keys() if no_prefix(n) == "id"])
+        has_id = any([1 for n in list(child.attrib.keys()) if no_prefix(n) == "id"])
         if has_id:
             # shared table
             child_table_name = child_td.name() or table_name + "_" + n_child_tag + "_t"
@@ -334,7 +338,7 @@ def _build_table(node, table_name, type_info_dict, merge_max_depth, merge_sequen
                 suffix = "/"
                 if is_seq: # defined as a sequence, but potentially merged
                     suffix = "[0]/"
-                for field in child_table.fields().values():
+                for field in list(child_table.fields().values()):
                     if field.name() == "id":
                         continue
                     f = field.clone()
@@ -373,7 +377,7 @@ def _populate(node, table, parent_id, tables_rows):
     # attributes
     current_id = None
     attr_cols = [c for c in table.columns() if c.xpath().startswith('@')]
-    for attr_name, attr_value in node.attrib.iteritems():
+    for attr_name, attr_value in node.attrib.items():
         ns, n_attr_name = split_tag(attr_name)
         if n_attr_name in [c.name() for c in attr_cols]:
             if n_attr_name == "id":
@@ -397,7 +401,7 @@ def _populate(node, table, parent_id, tables_rows):
             if not c.optional():
                 raise ValueError("Required value {} for element {} not found".format(c.xpath(), node.tag))
             continue
-        if isinstance(child, (str, unicode)):
+        if isinstance(child, str):
             v = child
         else:
             v = child[0].text
@@ -467,7 +471,7 @@ def build_tables(root_node, type_info_dict, tables, merge_max_depth, merge_seque
     collect_tables(table, tables)
 
     # create backlinks
-    for name, table in tables.iteritems():
+    for name, table in tables.items():
         for link in table.links():
             # only for links with a "*" cardinality
             if link.max_occurs() is None and link.ref_table() is not None:
@@ -482,7 +486,7 @@ def uri_is_absolute(uri):
 def uri_join(uri, path):
     return os.path.join(uri, path)
 
-class MyLogger:
+class MyLogger(object):
     def text(self, t):
         if isinstance(t, tuple):
             lvl, msg = t
@@ -501,7 +505,7 @@ def load_gml_model(xml_uri, archive_dir, xsd_files = None, merge_max_depth = 6, 
     if logger is None:
         logger = MyLogger()
     if urlopener is None:
-        urlopener = urllib2.urlopen
+        urlopener = urllib.request.urlopen
 
     if use_cache_file and os.path.exists(cachefile):
         logging.info("Model loaded from " + cachefile)
@@ -524,7 +528,7 @@ def load_gml_model(xml_uri, archive_dir, xsd_files = None, merge_max_depth = 6, 
     # split multi geometry tables if asked to
     if split_multi_geometries:
         new_tables = []
-        for table_name, table in tables.iteritems():
+        for table_name, table in tables.items():
             if len(table.geometries()) > 1:
                 for geometry in table.geometries():
                     xpath1 = '/'.join(geometry.xpath().split('/')[0:-1])

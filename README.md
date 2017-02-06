@@ -1,44 +1,66 @@
-GML application schema toolbox
-==============================
+# GML Application Schema toolbox QGIS plugin
 
-This is a prototype implementation of a toolbox designed to manipulate Complex Features.
+This QGIS plugin provide the capabilities to:
 
-It mainly consists of a QGIS plugin that is able to import Complex Features in two modes:
+* [Download GML from WFS 2 services](gml_application_schema_toolbox/doc/DOWNLOAD.md)
+* [Read GML App Schema files in XML mode](gml_application_schema_toolbox/doc/READ-XML-MODE.md)
+* [Convert GML App Schema files in PostGIS and SQLite format](gml_application_schema_toolbox/doc/READ-DB-MODE.md)
+* [Export PostGIS and SQLite format to GML App Schema files](gml_application_schema_toolbox/doc/WRITE-FROM-DB.md)
 
-  * native XML mode
-  * relational mode (where the XML is first converted into a database, thanks to the PyXB library)
- 
-In native XML mode, the standard QGIS attribute form is extended with a widget that displays an interactive XML tree (allowing the user to resolve xlink:href elements)
+This plugin works with QGIS3+.
 
-![](doc/Resolve_embedded_observation.png)
+![Overview](gml_application_schema_toolbox/doc/img/overview.png)
 
-In relational mode, the application schema is first translated into a set of linked tables in a spatialite database. Some options can be set by the user to define the way tables and columns are created out of the XSD schemas.
 
-![](doc/creation_dialog.png)
+## Context
 
-The whole relational model allows configuration of QGIS, the relations between tables, and the types of edit widgets used for columns. This allows the use of the standard QGIS form for navigation of the relational model.
+In the context of the definition of interoperability standards especially linked to OGC and the European INSPIRE directive initiatives, existing tools being limited for an easy exploitation of these standards, this project aims at developing a QGIS plugin relying on OGR library to deal with GML Application Schema datasets.
 
-This QGIS prototype also explores a functionality for developers to provide custom viewer widgets for some element types. For example, timeseries of a WaterML2 stream is better seen as a plot diagram rather that as a list of values.
+Existing tools being limited for an easy exploitation of these standards, this project aims at developing a prototype around QGIS and open source software pieces.
 
-![](doc/custom_WaterML2_viewer.png)
+In particular, the aim is to develop tools to **manipulate Complex Features streams in a GIS desktop application**.
 
-A prototype API allows developers to extend this mecanism to any kind of complex type.
 
-Directories
------------
 
-The [gml_application_schema_toolbox](gml_application_schema_toolbox) contains the QGIS plugin sources.
+[ISO19109](http://www.iso.org/iso/catalogue_detail.htm?csnumber=39891) defines in its General Feature Model, the notion of FeatureType. Each domain can define its own application schema of FeatureTypes by reusing or extending the base types. Thus, used to describe and exchange domain related content, a FeatureType based information flow is often really rich in its datastructure. The new data structure often leads to the generation of a XSDs; basis of XML exchanges (eg. [INSPIRE data specification XSD](http://inspire.ec.europa.eu/XML-Schemas/Data-Specifications/2892)). “Complex Feature” term is used as opposed to “Simple Feature” (cf. [OGC® 10-100r3](http://portal.opengeospatial.org/files/?artifact_id=42729)), a subset of XML-Schema and GML to lower the “implementation bar” restricting spatial/non-spatial property types, cardinality of properties...
 
-The [samples](samples) directory contains sample Complex Features streams.
 
-The [doc](doc) directory contains some documentation on the project.
 
-Authors
--------
+Complex Features streams are natively represented by an XML content which allows, thanks to its hierarchical structure, to express an instance coming from a rich object model. Although being developed and tested on a fixed subset of application schemas, this project aims at being generic and adaptable to any (valid) application schema. We do not want to limit a priori the rich possibilities offered by the Complex Features object model. Possible problems of performances and limit in model complexity will have to be determined as soon as possible.
 
-This plugin has been funded by BRGM and developed by Oslandia
 
-License
--------
+## Table of content
 
-GPLv2+
+* [Overview](gml_application_schema_toolbox/doc/OVERVIEW.md)
+* [Download](gml_application_schema_toolbox/doc/DOWNLOAD.md)
+* [Read](gml_application_schema_toolbox/doc/READ.md)
+ * [Read in XML mode](gml_application_schema_toolbox/doc/READ-XML-MODE.md)
+ * [Read in database (relational) mode](gml_application_schema_toolbox/doc/READ-DB-MODE.md)
+ * [Browse custom elements](gml_application_schema_toolbox/doc/READ-CUSTOM.md)
+* [Write](gml_application_schema_toolbox/doc/WRITE-FROM-DB.md)
+
+
+## Example & samples
+
+Most of the example below are based on:
+
+* INSPIRE Environmental Monitoring Facility WFS flow on BRGM piezometers,
+* GroundWaterML2.0 WFS flow on French aquifer reference dataset (BD LISA),
+* SOS flows on the groundwater level measurements acquired by the piezometers monitoring those aquifers.
+
+
+## Authors
+
+The plugin has been funded by:
+* [BRGM](http://www.brgm.fr/) - BRGM is involved for a long time in the definition of interoperability standards especially linked to OGC and the European INSPIRE directive initiatives. 
+* [European Union's Earth observation programme Copernicus](http://www.copernicus.eu/), as part of the tasks delegated to the European Environment Agency
+
+The plugin has been developed by [Oslandia](http://www.oslandia.com/), [Camptocamp](http://www.camptocamp.com/) and rely on [OGR GMLAS driver](http://www.gdal.org/drv_gmlas.html) developed by [Spatialys](http://www.spatialys.com/).
+
+Thanks to all [contributors](graphs/contributors).
+
+
+## License
+
+The project license is GPLv2+.
+

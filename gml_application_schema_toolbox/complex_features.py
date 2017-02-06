@@ -17,28 +17,33 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import str
+from builtins import object
 # -*- coding: utf-8 -*-
 
 import xml.etree.ElementTree as ET
 
 from osgeo import ogr
-from PyQt4.QtCore import QVariant, QDateTime
+from qgis.PyQt.QtCore import QVariant, QDateTime
 
-from qgis.core import QGis, QgsGeometry, QgsVectorLayer, QgsField, QgsFeature, QgsMapLayer, QgsDataSourceURI
+from qgis.core import QgsWkbTypes, QgsGeometry, QgsVectorLayer, QgsField, QgsFeature, QgsMapLayer, QgsDataSourceUri
 
-from pyspatialite import dbapi2 as sqlite3
+import sqlite3
+from qgis.utils import spatialite_connect
 
-from qgis_urlopener import remote_open_from_qgis
+from .qgis_urlopener import remote_open_from_qgis
 
-from gml2relational.xml_utils import no_prefix, split_tag, resolve_xpath, xml_parse
-from gml2relational.gml_utils import extract_features
+from .gml2relational.xml_utils import no_prefix, split_tag, resolve_xpath, xml_parse
+from .gml2relational.gml_utils import extract_features
 
 import re
 
 def wkbFromGml(tree):
     # extract the srid
     srid = 4326
-    for k, v in tree.attrib.iteritems():
+    for k, v in tree.attrib.items():
         if no_prefix(k) == 'srsName':
             # EPSG:4326
 		  	# urn:EPSG:geographicCRS:4326
@@ -54,7 +59,7 @@ def wkbFromGml(tree):
             break
             
     # call ogr for GML parsing
-    s = ET.tostring(tree)
+    s = ET.tostring(tree, encoding="unicode")
     g = ogr.CreateGeometryFromGML(s)
     if g is None:
         return None
@@ -82,7 +87,7 @@ def extractGmlFromXPath(tree, xpath):
         return wkbFromGml(r[0])
     return None
 
-class ComplexFeatureSource:
+class ComplexFeatureSource(object):
     def __init__(self, xml, xpath_mapping = {}, geometry_mapping = None, logger = None):
         """
         Construct a ComplexFeatureSource
@@ -119,13 +124,13 @@ class ComplexFeatureSource:
                     fid = child.text
                     break
             if fid is None:
-                for k, v in feature.attrib.iteritems():
+                for k, v in feature.attrib.items():
                     f_ns, f_tag = split_tag(k)                    
                     if f_tag == "id":
                         fid = v
                         break
             if fid is None:
-                fid = unicode(i)
+                fid = str(i)
 
             # get the geometry
             if self.geometry_mapping:
@@ -135,17 +140,17 @@ class ComplexFeatureSource:
 
             # get attribute values
             attrvalues = {}
-            for attr, xpath_t in self.xpath_mapping.iteritems():
+            for attr, xpath_t in self.xpath_mapping.items():
                 xpath, type = xpath_t
                 # resolve xpath
                 #r = feature.xpath("./" + xpath, namespaces = feature.nsmap)
                 r = resolve_xpath(feature, xpath)
                 v = None
                 value = None
-                if isinstance(r, unicode):
+                if isinstance(r, str):
                     v = r
                 if isinstance(r, str):
-                    v = unicode(r)
+                    v = str(r)
                 elif isinstance(r, ET.Element):
                     v = r.text
                 else:
@@ -171,7 +176,7 @@ class ComplexFeatureSource:
             i += 1
 
 
-class ComplexFeatureLoader:
+class ComplexFeatureLoader(object):
     """Allows to load a complex feature source and put features in a QGIS layer"""
 
     def _create_layer(self, geometry_type, srid, attributes, title):
@@ -203,7 +208,7 @@ class ComplexFeatureLoader:
         src = ComplexFeatureSource(xml, attributes, geometry_mapping, logger)
 
         layer = None
-        attr_list = [ (k, v[1]) for k, v in attributes.iteritems() ]
+        attr_list = [ (k, v[1]) for k, v in attributes.items() ]
         for id, fid, g, xml, attrs in src.getFeatures():
             qgsgeom = None
             if g is None:
@@ -213,13 +218,13 @@ class ComplexFeatureLoader:
                 wkb, srid = g
                 qgsgeom = QgsGeometry()
                 qgsgeom.fromWkb(wkb)
-                if qgsgeom and qgsgeom.type() == QGis.Point:
+                if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
                     if layer is None:
                         layer = self._create_layer('point', srid, attr_list, src.title + " (points)")
-                elif qgsgeom and qgsgeom.type() == QGis.Line:
+                elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
                     if layer is None:
                         layer = self._create_layer('linestring', srid, attr_list, src.title + " (lines)")
-                elif qgsgeom and qgsgeom.type() == QGis.Polygon:
+                elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
                     if layer is None:
                         layer = self._create_layer('polygon', srid, attr_list, src.title + " (polygons)")
 
@@ -230,10 +235,10 @@ class ComplexFeatureLoader:
                 f = QgsFeature(pr.fields(), id)
                 if qgsgeom:
                     f.setGeometry(qgsgeom)
-                f.setAttribute("id", unicode(id))
+                f.setAttribute("id", str(id))
                 f.setAttribute("fid", fid)
                 f.setAttribute("_xml_", ET.tostring(xml))
-                for k, v in attrs.iteritems():
+                for k, v in attrs.items():
                     r = f.setAttribute(k, v)
                 pr.addFeatures([f])
 
@@ -298,7 +303,7 @@ class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
         :param attributes: list of (attribute_name, attribute_type, attribute_typename)
         :param title: title of the layer
         """
-        conn = sqlite3.connect(self.output_local_file)
+        conn = spatialite_connect(self.output_local_file)
         cur = conn.cursor()
         cur.execute("SELECT InitSpatialMetadata(1)")
         cur.execute("DROP TABLE IF EXISTS meta")
@@ -325,7 +330,7 @@ class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
 
     def _add_properties_to_layer(self, layer, xml_uri, is_remote, attributes, geom_mapping):
         import json
-        conn = sqlite3.connect(self.output_local_file)
+        conn = spatialite_connect(self.output_local_file)
         cur = conn.cursor()
         cur.execute("INSERT OR REPLACE INTO meta VALUES('complex_features', '1')")
         cur.execute("INSERT OR REPLACE INTO meta VALUES('xml_uri', ?)", (xml_uri,))
@@ -343,8 +348,8 @@ class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
             return nil
         if layer.providerType() != "spatialite":
             return nil
-        u = QgsDataSourceURI(layer.source())
-        conn = sqlite3.connect(u.database())
+        u = QgsDataSourceUri(layer.source())
+        conn = spatialite_connect(u.database())
         cur = conn.cursor()
         try:
             cur.execute("SELECT * FROM meta")
@@ -372,9 +377,9 @@ class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
             return False
         if layer.providerType() != "spatialite":
             return False
-        u = QgsDataSourceURI(layer.source())
+        u = QgsDataSourceUri(layer.source())
         try:
-            conn = sqlite3.connect(u.database())
+            conn = sqlite3.dbapi2.connect(u.database())
             cur = conn.cursor()
             cur.execute("SELECT value FROM meta WHERE key='complex_features'")
             for r in cur:
@@ -402,34 +407,41 @@ def is_layer_complex(layer):
     return ComplexFeatureLoaderInSpatialite.is_layer_complex(layer)
 
 if __name__ == '__main__':
-    print "GSML4"
+    # fix_print_with_import
+    print("GSML4")
     src = ComplexFeatureSource( "../samples/GSML4-Borehole.xml", geometry_mapping = "/gsmlbh:location/gml:Point")
     for x in src.getFeatures():
-        print x
+        # fix_print_with_import
+        print(x)
         
     print("mineral")
     src = ComplexFeatureSource( "../samples/mineral.xml")
     for x in src.getFeatures():
-        print x
+        # fix_print_with_import
+        print(x)
 
     print("Boreholeview")
     src = ComplexFeatureSource( "../samples/BoreholeView.xml")
     for x in src.getFeatures():
-        print x
+        # fix_print_with_import
+        print(x)
 
     print("airquality")
     src = ComplexFeatureSource( "../samples/airquality.xml", { 'mainEmissionSources' : ('.//aqd:mainEmissionSources/@xlink:href', QVariant.String),
                                                                'stationClassification' : ('.//aqd:stationClassification/@xlink:href', QVariant.String) })
     for x in src.getFeatures():
-        print x
+        # fix_print_with_import
+        print(x)
 
     print("env_monitoring")
     src = ComplexFeatureSource( "../samples/env_monitoring.xml")
     for x in src.getFeatures():
-        print x
+        # fix_print_with_import
+        print(x)
 
     print("env_monitoring1")
     src = ComplexFeatureSource( "../samples/env_monitoring1.xml")
     for x in src.getFeatures():
-        print x
+        # fix_print_with_import
+        print(x)
 

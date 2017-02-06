@@ -18,14 +18,17 @@
 """
 # -*- coding: utf-8 -*-
 from __future__ import print_function
+from builtins import str
 import logging
-import pyspatialite.dbapi2 as db
+
+from qgis.utils import spatialite_connect
+
 
 def stream_sql_schema(tables, enforce_not_null = True):
     """Creates SQL(ite) table creation statements from a dict of Table
     :returns: a generator that yield a new SQL line
     """
-    for name, table in tables.iteritems():
+    for name, table in tables.items():
         assert name == table.name()
         stmt = u"CREATE TABLE " + name + u"(\n";
         columns = []
@@ -51,7 +54,7 @@ def stream_sql_schema(tables, enforce_not_null = True):
             # deal with substitution groups
             sgroup = link.substitution_group()
             if sgroup is not None:
-                if not sub_groups.has_key(sgroup):
+                if sgroup not in sub_groups:
                     sub_groups[sgroup] = [link]
                 else:
                     sub_groups[sgroup].append(link)
@@ -77,7 +80,7 @@ def stream_sql_schema(tables, enforce_not_null = True):
             columns.append(u"  FOREIGN KEY({}_id) REFERENCES {}(id)".format(n, t.name()))
 
         # substitution group checks
-        for sg, links in sub_groups.iteritems():
+        for sg, links in sub_groups.items():
             # XOR constraint
             c = [[l2.name() + u"_id IS " + ("NOT NULL" if l == l2 else "NULL") for l2 in links] for l in links]
             txt = u"(" + u") OR (".join([u" AND ".join(e) for e in c]) + u")"
@@ -94,18 +97,18 @@ def stream_sql_rows(tables_rows):
     def escape_value(v):
         if v is None:
             return u'null'
-        if isinstance(v, (str,unicode)):
-            return u"'" + unicode(v).replace("'", "''") + u"'"
+        if isinstance(v, str):
+            return u"'" + str(v).replace("'", "''") + u"'"
         if isinstance(v, tuple):
             # ('GeomFromText('%s', %d)', 'POINT(...)')
             pattern = v[0]
             args = v[1:]
             return pattern % args
         else:
-            return unicode(v)
+            return str(v)
 
     yield(u"PRAGMA foreign_keys = OFF;")
-    for table_name, rows in tables_rows.iteritems():
+    for table_name, rows in tables_rows.items():
         for row in rows:
             columns = [n for n,v in row if v is not None]
             values = [escape_value(v) for _,v in row if v is not None]
@@ -114,7 +117,7 @@ def stream_sql_rows(tables_rows):
 
 
 def create_sqlite_from_model(model, sqlite_file, enforce_not_null = True):
-    conn = db.connect(sqlite_file)
+    conn = spatialite_connect(sqlite_file)
     cur = conn.cursor()
     cur.execute("SELECT InitSpatialMetadata(1);")
     conn.commit()
@@ -126,5 +129,3 @@ def create_sqlite_from_model(model, sqlite_file, enforce_not_null = True):
         logging.debug(line)
         cur.execute(line)
     conn.commit()
-
-

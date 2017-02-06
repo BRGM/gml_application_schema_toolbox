@@ -16,12 +16,18 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+from __future__ import absolute_import
+from builtins import str
+from builtins import range
+from builtins import object
 # -*- coding: utf-8 -*-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtWidgets import *
 from ..gml2relational.xml_utils import no_prefix, split_tag
 
-import viewers_utils
+from . import viewers_utils
 
 from datetime import datetime
 import time
@@ -186,7 +192,7 @@ class PlotScene(QGraphicsScene):
         self.marker.moveTo( ax, self.yToScene(y) )
 
 # graphics items that are displayed on mouse move on the altitude curve
-class PointMarker:
+class PointMarker(object):
     def __init__( self, scene ):
         # circle item
         self.circle = None
@@ -256,7 +262,7 @@ class WML2TimeSeriesViewer(QWidget):
         data = []
         yTitle = 'value'
         title = ''
-        for k, v in xml_tree.attrib.iteritems():
+        for k, v in xml_tree.attrib.items():
             ns, tag = split_tag(k)
             if ns.startswith('http://www.opengis.net/gml') and tag == "id":
                 title = v
@@ -281,7 +287,7 @@ class WML2TimeSeriesViewer(QWidget):
         y = viewers_utils.xpath_on_db(model, table, "point/MeasurementTVP/value/text()", id, sqlite3_conn)
 
         data = []
-        for i in xrange(len(times)):
+        for i in range(len(times)):
             tm = time.mktime(datetime.strptime(times[i], "%Y-%m-%dT%H:%M:%S.000Z").timetuple())
             value = float(y[i])
             data.append((tm, value, times[i]))

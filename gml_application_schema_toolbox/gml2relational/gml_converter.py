@@ -20,6 +20,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from __future__ import absolute_import
 import logging
 from optparse import OptionParser
 
@@ -27,13 +28,13 @@ import os
 import sys
 sys.path = [os.path.join(os.path.dirname(__file__), "../extlibs")] + sys.path
 
-from schema_parser import parse_schemas
-from type_resolver import resolve_types, type_definition_name
-from xml_utils import no_prefix, split_tag
-from relational_model_builder import load_gml_model
+from .schema_parser import parse_schemas
+from .type_resolver import resolve_types, type_definition_name
+from .xml_utils import no_prefix, split_tag
+from .relational_model_builder import load_gml_model
 
-from sqlite_writer import create_sqlite_from_model
-from qgis_project_writer import create_qgis_project_from_model
+from .sqlite_writer import create_sqlite_from_model
+from .qgis_project_writer import create_qgis_project_from_model
 
 parser = OptionParser()
 parser.add_option("-i", "--gml", dest="gml_file",
