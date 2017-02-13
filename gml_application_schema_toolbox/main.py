@@ -159,7 +159,7 @@ class IdentifyGeometry(QgsMapToolIdentify):
 def replace_layer(old_layer, new_layer):
     """Convenience function to replace a layer in the legend"""
     # Add to the registry, but not to the legend
-    QgsMapLayerRegistry.instance().addMapLayer(new_layer, False)
+    QgsProject.instance().addMapLayer(new_layer, False)
     # Copy symbology
     dom = QDomImplementation()
     doc = QDomDocument(dom.createDocumentType("qgis", "http://mrcc.com/qgis.dtd", "SYSTEM"))
@@ -179,7 +179,7 @@ def replace_layer(old_layer, new_layer):
         idx += 1
     parent = in_tree.parent() if in_tree.parent() else root
     parent.insertLayer(idx, new_layer)
-    QgsMapLayerRegistry.instance().removeMapLayer(old_layer)
+    QgsProject.instance().removeMapLayer(old_layer)
 
 class ProgressDialog(QDialog):
     def __init__(self):
@@ -342,7 +342,7 @@ class MainPlugin(object):
                     replace_layer(sel_layer, new_layer)
                 else:
                     # a new layer
-                    QgsMapLayerRegistry.instance().addMapLayer(new_layer)
+                    QgsProject.instance().addMapLayer(new_layer)
 
                 # custom form widget for XML
                 new_layer.editFormConfig().setInitCode(show_xml_init_code())
@@ -374,7 +374,7 @@ class MainPlugin(object):
         def onTableSelected(table_name):
             # make the selected layer the active one
             # and open the attribute table dialog
-            layers = QgsMapLayerRegistry.instance().mapLayersByName(table_name)
+            layers = QgsProject.instance().mapLayersByName(table_name)
             if len(layers) == 1:
                 layer = layers[0]
                 self.iface.setActiveLayer(layer)
