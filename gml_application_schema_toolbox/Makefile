@@ -2,11 +2,11 @@
 
 PLUGINNAME = gml_application_schema_toolbox
 
-PY_FILES = main.py __init__.py complex_features.py creation_dialog.py xml_tree_widget.py qgis_urlopener.py custom_viewers.py model_dialog.py
+PY_FILES = main.py __init__.py complex_features.py creation_dialog.py xml_tree_widget.py qgis_urlopener.py custom_viewers.py model_dialog.py core/*.py gui/*.py
 
-EXTRAS = Changelog *.svg metadata.txt extlibs gml2relational/*.py gml2relational/testdata/* viewers/*.py viewers/*.svg logo_oslandia.png
+EXTRAS = Changelog *.svg metadata.txt extlibs gml2relational/*.py gml2relational/testdata/* viewers/*.py viewers/*.svg conf/*.xml logo_oslandia.png
 
-UI_FILES = creation_dialog.ui
+UI_FILES = creation_dialog.ui ui/*.ui
 
 VERSION=$(shell grep "version=" metadata.txt | cut -d'=' -f 2)
 
@@ -17,27 +17,27 @@ VERSION=$(shell grep "version=" metadata.txt | cut -d'=' -f 2)
 # the Python plugin directory is located at:
 # $HOME/.qgis2/python/plugins
 deploy: transcompile
-	mkdir -p $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
-	cp -vf $(PY_FILES) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
-	cp -vf $(UI_FILES) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
-	cp --parents -vfRa $(EXTRAS) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
+	mkdir -p $(HOME)/.qgis3/python/plugins/$(PLUGINNAME)
+	cp --parents -vfR $(PY_FILES) $(HOME)/.qgis3/python/plugins/$(PLUGINNAME)
+	cp --parents -vfR $(UI_FILES) $(HOME)/.qgis3/python/plugins/$(PLUGINNAME)
+	cp --parents -vfRa $(EXTRAS) $(HOME)/.qgis3/python/plugins/$(PLUGINNAME)
 
 # The dclean target removes compiled python files from plugin directory
 # also delets any .svn entry
 dclean:
-	find $(HOME)/.qgis2/python/plugins/$(PLUGINNAME) -iname "*.pyc" -delete
-	find $(HOME)/.qgis2/python/plugins/$(PLUGINNAME) -iname ".svn" -prune -exec rm -Rf {} \;
+	find $(HOME)/.qgis3/python/plugins/$(PLUGINNAME) -iname "*.pyc" -delete
+	find $(HOME)/.qgis3/python/plugins/$(PLUGINNAME) -iname ".svn" -prune -exec rm -Rf {} \;
 
 # The derase deletes deployed plugin
 derase:
-	rm -Rf $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
+	rm -Rf $(HOME)/.qgis3/python/plugins/$(PLUGINNAME)
 
 # The zip target deploys the plugin and creates a zip file with the deployed
 # content. You can then upload the zip file on http://plugins.qgis.org
 zip: deploy dclean
 	echo $(VERSION)
 	rm -f $(PLUGINNAME)*.zip
-	cd $(HOME)/.qgis2/python/plugins; zip -9r $(CURDIR)/$(PLUGINNAME)-$(VERSION).zip $(PLUGINNAME)
+	cd $(HOME)/.qgis3/python/plugins; zip -9r $(CURDIR)/$(PLUGINNAME)-$(VERSION).zip $(PLUGINNAME)
 
 upload: zip
 	sed s/_VERSION_/$(VERSION)/g < plugins.xml.tmpl > plugins.xml
