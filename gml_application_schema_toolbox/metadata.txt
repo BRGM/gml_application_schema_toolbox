@@ -35,3 +35,5 @@ deprecated=False
 # Author contact information
 author=BRGM, Oslandia, Copernicus, Camptocamp, Spatialys, titellus
 
+# email of the plugin administrator
+email=hugo.mercier@oslandia.com
