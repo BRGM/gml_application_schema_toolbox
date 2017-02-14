@@ -46,13 +46,6 @@ from .creation_dialog import CreationDialog
 from .model_dialog import ModelDialog
 from .xml_tree_widget import XMLTreeWidget
 
-from . import gml2relational
-from .gml2relational.relational_model_builder import load_gml_model
-from .gml2relational.relational_model import load_model_from, save_model_to
-from .gml2relational.sqlite_writer import create_sqlite_from_model
-from .gml2relational.qgis_project_writer import create_qgis_project_from_model
-from .gml2relational.uri import URI
-
 from . import custom_viewers
 from . import name as plugin_name
 from . import version as plugin_version
