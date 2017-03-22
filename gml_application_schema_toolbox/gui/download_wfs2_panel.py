@@ -51,7 +51,7 @@ class DownloadWfs2Panel(BASE, WIDGET):
     def wfs(self):
         uri = self.uriComboBox.currentText()
         with qgis_proxy_settings():
-            return WebFeatureService_2_0_0(url=uri)
+            return WebFeatureService_2_0_0(url=uri, xml=None, version="2.0.0")
 
     @pyqtSlot()
     def on_getCapabilitiesButton_clicked(self):
