@@ -4,7 +4,8 @@ import os
 import owslib_hacks
 import owslib
 
-from owslib.feature.wfs200 import WFSCapabilitiesReader, WebFeatureService_2_0_0
+from owslib.wfs import WebFeatureService
+from owslib.feature.wfs200 import WFSCapabilitiesReader
 
 from tempfile import NamedTemporaryFile
 
@@ -51,7 +52,7 @@ class DownloadWfs2Panel(BASE, WIDGET):
     def wfs(self):
         uri = self.uriComboBox.currentText()
         with qgis_proxy_settings():
-            return WebFeatureService_2_0_0(url=uri, xml=None, version="2.0.0")
+            return WebFeatureService(url=uri)
 
     @pyqtSlot()
     def on_getCapabilitiesButton_clicked(self):
@@ -67,8 +68,9 @@ class DownloadWfs2Panel(BASE, WIDGET):
 
 
         self.storedQueriesListWidget.clear()
-        for stored_query in list(wfs.storedqueries):
-            self.storedQueriesListWidget.addItem(stored_query.id)
+        if hasattr(wfs, "storedqueries"):
+            for stored_query in list(wfs.storedqueries):
+                self.storedQueriesListWidget.addItem(stored_query.id)
 
         self.storedQueriesListWidget.sortItems()
 
