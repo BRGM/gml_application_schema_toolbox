@@ -81,7 +81,7 @@ def find_label_layout(dialog, lbl_text):
     for l in ll:
         for i in range(l.count()):
             it = l.itemAt(i)
-            if isinstance(it, QWidgetItem) and isinstance(it.widget(), QLabel) and it.widget().text() == lbl_text:
+            if isinstance(it, QWidgetItem) and isinstance(it.widget(), QLabel) and it.widget().text().startswith(lbl_text):
                 return l
     return None
 

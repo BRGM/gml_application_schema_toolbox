@@ -32,9 +32,6 @@ from .xml_dialog import XmlDialog
 WIDGET, BASE = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'download_wfs2_panel.ui'))
 
-data_folder = '/home/qgis/qgisgmlas/data'
-
-
 class DownloadWfs2Panel(BASE, WIDGET):
 
     file_downloaded = pyqtSignal(str)

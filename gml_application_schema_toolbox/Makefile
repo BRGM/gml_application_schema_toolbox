@@ -2,7 +2,7 @@
 
 PLUGINNAME = gml_application_schema_toolbox
 
-PY_FILES = main.py __init__.py complex_features.py creation_dialog.py xml_tree_widget.py qgis_urlopener.py custom_viewers.py model_dialog.py core/*.py gui/*.py
+PY_FILES = main.py __init__.py load_gml_as_xml.py creation_dialog.py xml_tree_widget.py qgis_urlopener.py custom_viewers.py model_dialog.py settings.py core/*.py gui/*.py
 
 EXTRAS = Changelog *.svg metadata.txt extlibs gml2relational/*.py gml2relational/testdata/* viewers/*.py viewers/*.svg conf/*.xml logo_oslandia.png
 

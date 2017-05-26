@@ -24,23 +24,53 @@ from builtins import object
 # -*- coding: utf-8 -*-
 
 import xml.etree.ElementTree as ET
-
 from osgeo import ogr
+import sqlite3
+import re
+
 from qgis.PyQt.QtCore import QVariant, QDateTime
 
 from qgis.core import QgsWkbTypes, QgsGeometry, QgsVectorLayer, QgsField, QgsFeature, QgsMapLayer, QgsDataSourceUri
-
-import sqlite3
 from qgis.utils import spatialite_connect
 
 from .qgis_urlopener import remote_open_from_qgis
-
 from .gml2relational.xml_utils import no_prefix, split_tag, resolve_xpath, xml_parse
 from .gml2relational.gml_utils import extract_features
 
-import re
+__all__ = ['load_as_xml_layer', 'properties_from_layer', 'is_layer_gml_xml']
 
-def wkbFromGml(tree):
+def load_as_xml_layer(xml_uri, is_remote, attributes = {}, geometry_mapping = None, output_local_file = None, logger = None):
+    """
+    Load a GML file in a new QGIS layer
+    :param xml_uri: the XML URI
+    :param is_remote: True if it has to be fetched by http
+    :param attributes: { 'attr1' : ( '//xpath/expression', QVariant.Int ) }
+    :param geometry_mapping: XPath expression to a gml geometry node
+    :returns: the created layer
+    """
+    if not output_local_file:
+        import tempfile
+        f = tempfile.NamedTemporaryFile()
+        output_local_file = f.name
+        f.close()
+
+    s = ComplexFeatureLoaderInSpatialite(output_local_file)
+    return s.load_complex_gml(xml_uri, is_remote, attributes, geometry_mapping, logger)
+
+def properties_from_layer(layer):
+    """Returns a tuple of metadata from the layer if it is a "GML as XML" layer"""
+    return ComplexFeatureLoaderInSpatialite.properties_from_layer(layer)
+
+def is_layer_gml_xml(layer):
+    """Returns true if the input layer is a "GML as XML" layer"""
+    return ComplexFeatureLoaderInSpatialite.is_layer_complex(layer)
+
+
+#
+# Implementation
+#
+
+def _wkbFromGml(tree):
     # extract the srid
     srid = 4326
     for k, v in tree.attrib.items():
@@ -65,26 +95,26 @@ def wkbFromGml(tree):
         return None
     return (g.ExportToWkb(), srid)
 
-def extractGmlGeometry(tree):
+def _extractGmlGeometry(tree):
     ns, tag = split_tag(tree.tag)
     if ns.startswith('http://www.opengis.net/gml'):
         if tag in ["Point", "LineString", "Polygon",
                    "MultiPoint", "MultiCurve", "MultiSurface",
                    "Curve", "OrientableCurve", "Surface", 
                    "CompositeCurve", "CompositeSurface", "MultiGeometry"]:
-            return wkbFromGml(tree)
+            return _wkbFromGml(tree)
         
     for child in tree:
-        g = extractGmlGeometry(child)
+        g = _extractGmlGeometry(child)
         if g is not None:
             return g
     return None
 
-def extractGmlFromXPath(tree, xpath):
+def _extractGmlFromXPath(tree, xpath):
     #r = tree.xpath("./" + xpath, namespaces = tree.nsmap)
     r = resolve_xpath(tree, xpath)
     if len(r) > 0:
-        return wkbFromGml(r[0])
+        return _wkbFromGml(r[0])
     return None
 
 class ComplexFeatureSource(object):
@@ -134,9 +164,9 @@ class ComplexFeatureSource(object):
 
             # get the geometry
             if self.geometry_mapping:
-                wkb = extractGmlFromXPath(feature, self.geometry_mapping)
+                wkb = _extractGmlFromXPath(feature, self.geometry_mapping)
             else:
-                wkb = extractGmlGeometry(feature)
+                wkb = _extractGmlGeometry(feature)
 
             # get attribute values
             attrvalues = {}
@@ -244,49 +274,6 @@ class ComplexFeatureLoader(object):
 
         return layer
 
-class ComplexFeatureLoaderInMemory(ComplexFeatureLoader):
-
-    def _create_layer(self, geometry_type, srid, attributes, title):
-        """
-        Creates an empty memory layer
-        :param type: 'Point', 'LineString', 'Polygon', etc.
-        :param srid: CRS ID of the layer
-        :param attributes: list of (attribute_name, attribute_type)
-        :param title: title of the layer
-        """
-        if srid:
-            layer = QgsVectorLayer("{}?crs=EPSG:{}&field=id:string".format(type, srid), title, "memory")
-        else:
-            layer = QgsVectorLayer("none?field=id:string", title, "memory")
-        pr = layer.dataProvider()
-        pr.addAttributes([QgsField("_xml_", QVariant.String)])
-        for aname, atype in attributes:
-            pr.addAttributes([QgsField(aname, atype)])
-        layer.updateFields()
-        return layer
-
-    def _add_properties_to_layer(self, layer, xml_uri, is_remote, attributes, geom_mapping):
-        layer.setCustomProperty("complex_features", True)
-        layer.setCustomProperty("xml_uri", xml_uri)
-        layer.setCustomProperty("is_remote", is_remote)
-        layer.setCustomProperty("attributes", attributes)
-        layer.setCustomProperty("geom_mapping", geom_mapping)
-        
-    @staticmethod
-    def properties_from_layer(layer):
-        return (layer.customProperty("complex_features", False),
-                layer.customProperty("xml_uri", ""),
-                layer.customProperty("is_remote", False),
-                layer.customProperty("attributes", {}),
-                layer.customProperty("geom_mapping", None),
-                None #output filename
-        )
-
-    @staticmethod
-    def is_layer_complex(layer):
-        return layer.type() == QgsMapLayer.VectorLayer and layer.customProperty("complex_features", False)
-
-
 class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
 
     def __init__(self, output_local_file):
@@ -389,22 +376,6 @@ class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
                 return False
             raise
         return False
-
-def load_complex_gml(xml_uri, is_remote, attributes = {}, geometry_mapping = None, output_local_file = None, logger = None):
-    if not output_local_file:
-        import tempfile
-        f = tempfile.NamedTemporaryFile()
-        output_local_file = f.name
-        f.close()
-
-    s = ComplexFeatureLoaderInSpatialite(output_local_file)
-    return s.load_complex_gml(xml_uri, is_remote, attributes, geometry_mapping, logger)
-
-def properties_from_layer(layer):
-    return ComplexFeatureLoaderInSpatialite.properties_from_layer(layer)
-
-def is_layer_complex(layer):
-    return ComplexFeatureLoaderInSpatialite.is_layer_complex(layer)
 
 if __name__ == '__main__':
     # fix_print_with_import

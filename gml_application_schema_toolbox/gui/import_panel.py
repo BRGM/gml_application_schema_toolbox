@@ -14,9 +14,6 @@ WIDGET, BASE = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'import_panel.ui'))
 
 
-data_folder = '/home/qgis/qgisgmlas/data'
-
-
 class ImportPanel(BASE, WIDGET):
 
     def __init__(self, parent=None):
