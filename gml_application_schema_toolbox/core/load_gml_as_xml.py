@@ -256,7 +256,7 @@ class ComplexFeatureLoader(object):
                     if layer is None:
                         layer = self._create_layer('polygon', srid, attr_list, src.title + " (polygons)")
 
-            if layer:
+            if layer is not None:
                 self._add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)
 
                 pr = layer.dataProvider()

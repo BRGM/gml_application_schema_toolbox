@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #   Copyright (C) 2016 BRGM (http:///brgm.fr)
 #   Copyright (C) 2016 Oslandia <infos@oslandia.com>
 #
@@ -16,10 +18,10 @@
 from future import standard_library
 standard_library.install_aliases()
 from builtins import str
-# -*- coding: utf-8 -*-
-from qgis.PyQt.QtCore import QUrl
-from qgis.PyQt.QtNetwork import QNetworkRequest
-from io import StringIO
+
+from qgis.PyQt.QtCore import QUrl, QEventLoop
+from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkAccessManager
+from io import BytesIO
 from qgis.core import QgsNetworkAccessManager
 
 __network_manager = None
@@ -31,25 +33,30 @@ def _sync_get(url):
         __network_manager.setProxy(QgsNetworkAccessManager.instance().proxy())
     pause = QEventLoop()
     req = QNetworkRequest(url)
-    req.setRawHeader("Accept", "application/xml")
-    req.setRawHeader("Accept-Language", "fr")
+    req.setRawHeader(b"Accept", b"application/xml")
+    req.setRawHeader(b"Accept-Language", b"fr")
     reply = __network_manager.get(req)
     reply.finished.connect(pause.quit)
+    is_ok = [True]
     def onError(self):
+        is_ok[0] = False
         pause.quit()
-        raise RuntimeError("Network problem when downloading {}".format(url))
     reply.error.connect(onError)
     pause.exec_()
-    return reply
+    return reply, is_ok[0]
 
 def remote_open_from_qgis(uri):
     """Opens a remote URL using QGIS proxy preferences"""
-    reply = _sync_get(QUrl.fromEncoded(uri))
+    reply, is_ok = _sync_get(QUrl.fromEncoded(bytes(uri, "utf8")))
+    if not is_ok:
+        raise RuntimeError("Network problem when downloading {}".format(uri))
     redirect = reply.attribute(QNetworkRequest.RedirectionTargetAttribute)
     # Handle HTTP 302 redirections
     while redirect is not None and not redirect.isEmpty():
-        reply = _sync_get(redirect)
+        reply, is_ok = _sync_get(redirect)
+        if not is_ok:
+            raise RuntimeError("Network problem when downloading {}".format(uri))
         redirect = reply.attribute(QNetworkRequest.RedirectionTargetAttribute)
-    r = str(reply.readAll())
+    r = bytes(reply.readAll())
     reply.close()
-    return StringIO(r)
+    return BytesIO(r)

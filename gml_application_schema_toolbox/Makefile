@@ -2,11 +2,11 @@
 
 PLUGINNAME = gml_application_schema_toolbox
 
-PY_FILES = main.py __init__.py creation_dialog.py model_dialog.py core/*.py gui/*.py
+PY_FILES = main.py __init__.py model_dialog.py core/*.py gui/*.py
 
 EXTRAS = Changelog *.svg metadata.txt extlibs gml2relational/*.py gml2relational/testdata/* viewers/*.py viewers/*.svg conf/*.xml logo_oslandia.png
 
-UI_FILES = creation_dialog.ui ui/*.ui
+UI_FILES = ui/*.ui
 
 VERSION=$(shell grep "version=" metadata.txt | cut -d'=' -f 2)
 

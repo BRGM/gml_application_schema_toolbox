@@ -90,7 +90,6 @@ def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers =
             html.setOpenExternalLinks(True)
             html.setTextFormat(Qt.RichText)
             html.setText('<a href="{}">{}</a>'.format(v, v))
-            #child.setText(1, '<a href="{}">{}</a>'.format(v, v))
             child.setData(1, Qt.UserRole, v)
             widget.setItemWidget(child, 1, html)
         else:
@@ -227,7 +226,7 @@ class XMLTreeWidget(QTreeWidget):
             f = remote_open_from_qgis(uri)
             try:
                 doc, ns_map = xml_parse(f)
-            except ParseError:
+            except ET.ParseError:
                 # probably not an XML
                 QApplication.restoreOverrideCursor()
                 QMessageBox.warning(self, "XML parsing error", "The external resource is not a well formed XML")
@@ -237,6 +236,10 @@ class XMLTreeWidget(QTreeWidget):
             for k, v in ns_map.items():
                 ns_imap[v] = k
             fill_tree_with_element(self, item.parent(), doc.getroot(), ns_imap, get_custom_viewers())
+        except RuntimeError as e:
+            QApplication.restoreOverrideCursor()
+            QMessageBox.warning(self, "Network error", e.args[0])
+            return
         finally:
             QApplication.restoreOverrideCursor()
 
