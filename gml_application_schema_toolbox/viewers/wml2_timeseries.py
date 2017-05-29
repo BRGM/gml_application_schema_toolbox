@@ -1,21 +1,18 @@
-"""
-/**
- *   Copyright (C) 2016 BRGM (http:///brgm.fr)
- *   Copyright (C) 2016 Oslandia <infos@oslandia.com>
- *
- *   This library is free software; you can redistribute it and/or
- *   modify it under the terms of the GNU Library General Public
- *   License as published by the Free Software Foundation; either
- *   version 2 of the License, or (at your option) any later version.
- *
- *   This library is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *   Library General Public License for more details.
- *   You should have received a copy of the GNU Library General Public
- *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
- */
-"""
+#   Copyright (C) 2016 BRGM (http:///brgm.fr)
+#   Copyright (C) 2016 Oslandia <infos@oslandia.com>
+#
+#   This library is free software; you can redistribute it and/or
+#   modify it under the terms of the GNU Library General Public
+#   License as published by the Free Software Foundation; either
+#   version 2 of the License, or (at your option) any later version.
+#
+#   This library is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#   Library General Public License for more details.
+#   You should have received a copy of the GNU Library General Public
+#   License along with this library; if not, see <http://www.gnu.org/licenses/>.
+
 from __future__ import absolute_import
 from builtins import str
 from builtins import range
@@ -120,13 +117,13 @@ class PlotScene(QGraphicsScene):
         self.yMin = None
         self.yMax = None
         for x, y, _ in self.data:
-            if x > self.xMax or self.xMax is None:
+            if self.xMax is None or x > self.xMax:
                 self.xMax = x
-            if x < self.xMin or self.xMin is None:
+            if  self.xMin is None or x < self.xMin:
                 self.xMin = x
-            if y > self.yMax or self.yMax is None:
+            if self.yMax is None or y > self.yMax:
                 self.yMax = y
-            if y < self.yMin or self.yMin is None:
+            if self.yMin is None or y < self.yMin:
                 self.yMin = y
         # update ratio and offset
         self.setSceneRect(self.sceneRect())
