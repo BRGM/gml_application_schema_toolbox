@@ -40,13 +40,15 @@ import sys
 if not set(package_path).issubset(set(sys.path)):
     sys.path = package_path + sys.path
 
-from .qgis_urlopener import remote_open_from_qgis
-from .complex_features import ComplexFeatureSource, load_complex_gml, properties_from_layer, is_layer_complex
-from .creation_dialog import CreationDialog
-from .model_dialog import ModelDialog
-from .xml_tree_widget import XMLTreeWidget
+print(sys.path)
 
-from . import custom_viewers
+#from .qgis_urlopener import remote_open_from_qgis
+#from .complex_features import ComplexFeatureSource, load_complex_gml, properties_from_layer, is_layer_complex
+#from .creation_dialog import CreationDialog
+#from .model_dialog import ModelDialog
+#from .xml_tree_widget import XMLTreeWidget
+
+#from . import custom_viewers
 from . import name as plugin_name
 from . import version as plugin_version
 
@@ -98,40 +100,11 @@ def add_viewer_to_form(dialog, layer, feature):
     btn.clicked.connect(lambda obj, checked = False: show_viewer(layer, feature, tw, viewer))
     l.addWidget(btn, l.rowCount(), 0, Qt.AlignTop)
 
-def add_xml_tree_to_form(dialog, layer, feature):
-    w = dialog.findChild(QPushButton, "_xml_widget_")
-    if w is not None:
-        return
-    l = find_label_layout(dialog, "fid")
-    if l is None:
-        return
-
-    w = XMLTreeWidget(dialog)
-    w.setObjectName("_xml_widget_")
-    w.updateFeature(feature)
-    lbl = QLabel("XML", dialog)
-    l.addWidget(lbl, l.rowCount()-1, 0)
-    l.addWidget(w, l.rowCount()-1, 1)
-    l.setRowStretch(l.rowCount()-1, 2)
-
-    # the tree widget must not be garbage collected yet
-    # since we want its Python slots to be called on signals
-    # we then transfer its ownership to a C++ object that lives longer
-    import sip
-    sip.transferto(w, dialog)
-
 def show_viewer_init_code():
     return """
 def my_form_open(dialog, layer, feature):
     from gml_application_schema_toolbox import main as mmain
     mmain.add_viewer_to_form(dialog, layer, feature)
-"""
-
-def show_xml_init_code():
-    return """
-def my_form_open(dialog, layer, feature):
-    from gml_application_schema_toolbox import main as mmain
-    mmain.add_xml_tree_to_form(dialog, layer, feature)
 """
 
 # ===============

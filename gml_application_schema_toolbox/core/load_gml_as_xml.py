@@ -34,8 +34,8 @@ from qgis.core import QgsWkbTypes, QgsGeometry, QgsVectorLayer, QgsField, QgsFea
 from qgis.utils import spatialite_connect
 
 from .qgis_urlopener import remote_open_from_qgis
-from .gml2relational.xml_utils import no_prefix, split_tag, resolve_xpath, xml_parse
-from .gml2relational.gml_utils import extract_features
+from .xml_utils import no_prefix, split_tag, resolve_xpath, xml_parse
+from .gml_utils import extract_features
 
 __all__ = ['load_as_xml_layer', 'properties_from_layer', 'is_layer_gml_xml']
 

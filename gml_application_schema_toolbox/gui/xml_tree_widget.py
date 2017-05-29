@@ -1,39 +1,36 @@
-"""
-/**
- *   Copyright (C) 2016 BRGM (http:///brgm.fr)
- *   Copyright (C) 2016 Oslandia <infos@oslandia.com>
- *
- *   This library is free software; you can redistribute it and/or
- *   modify it under the terms of the GNU Library General Public
- *   License as published by the Free Software Foundation; either
- *   version 2 of the License, or (at your option) any later version.
- *
- *   This library is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *   Library General Public License for more details.
- *   You should have received a copy of the GNU Library General Public
- *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
- */
-"""
+# -*- coding: utf-8 -*-
+
+#   Copyright (C) 2017 BRGM (http:///brgm.fr)
+#   Copyright (C) 2017 Oslandia <infos@oslandia.com>
+#
+#   This library is free software; you can redistribute it and/or
+#   modify it under the terms of the GNU Library General Public
+#   License as published by the Free Software Foundation; either
+#   version 2 of the License, or (at your option) any later version.
+#
+#   This library is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#   Library General Public License for more details.
+#   You should have received a copy of the GNU Library General Public
+#   License along with this library; if not, see <http://www.gnu.org/licenses/>.
+
 from __future__ import absolute_import
 from builtins import next
 from builtins import range
-# -*- coding: utf-8 -*-
 import os
 
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtWidgets import *
+from qgis.core import QgsProject
 
 import xml.etree.ElementTree as ET
 
-from .complex_features import load_complex_gml, is_layer_complex, remote_open_from_qgis
-from .gml2relational.xml_utils import no_prefix, split_tag, xml_parse, xml_parse_from_string
+from ..core.qgis_urlopener import remote_open_from_qgis
+from ..core.load_gml_as_xml import load_as_xml_layer, is_layer_gml_xml
+from ..core.xml_utils import no_prefix, split_tag, xml_parse, xml_parse_from_string
 from .custom_viewers import get_custom_viewers
-
-from qgis.core import QgsProject
-
 
 def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers = {}):
     """
@@ -185,7 +182,7 @@ class XMLTreeWidget(QTreeWidget):
             addToMenu = QMenu("Add to layer", menu)
             addToEmpty = True
             for id, l in QgsProject.instance().mapLayers().items():
-                if is_layer_complex(l):
+                if is_layer_gml_xml(l):
                     action = QAction(l.name(), addToMenu)
                     action.triggered.connect(lambda checked, layer=l: self.onResolveAddToLayer(layer))
                     addToMenu.addAction(action)
@@ -246,14 +243,14 @@ class XMLTreeWidget(QTreeWidget):
     def onResolveNewLayer(self):
         item = self.currentItem()
         uri = item.data(1, Qt.UserRole)
-        new_layer = load_complex_gml(uri, True)
+        new_layer = load_as_xml_layer(uri, True)
         if new_layer:
             QgsProject.instance().addMapLayer(new_layer)
 
     def onResolveAddToLayer(self, layer, checked=False):
         item = self.currentItem()
         uri = item.data(1, Qt.UserRole)
-        new_layer = load_complex_gml(uri, True)
+        new_layer = load_as_xml_layer(uri, True)
         if new_layer:
             # read the feature from the new_layer and insert it in the selected layer
             f_in = next(new_layer.getFeatures())

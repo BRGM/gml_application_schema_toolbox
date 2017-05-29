@@ -19,7 +19,7 @@
 from __future__ import absolute_import
 # -*- coding: utf-8 -*-
 import sys
-from .viewers import *
+from ..viewers import *
 
 __custom_viewers = None
 
