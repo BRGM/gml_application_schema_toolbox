@@ -23,7 +23,7 @@ import os
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtWidgets import *
-from qgis.core import QgsProject
+from qgis.core import QgsProject, QgsEditorWidgetSetup
 
 import xml.etree.ElementTree as ET
 
@@ -31,6 +31,7 @@ from ..core.qgis_urlopener import remote_open_from_qgis
 from ..core.load_gml_as_xml import load_as_xml_layer, is_layer_gml_xml
 from ..core.xml_utils import no_prefix, split_tag, xml_parse, xml_parse_from_string
 from .custom_viewers import get_custom_viewers
+from . import qgis_form_custom_widget
 
 def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers = {}):
     """
@@ -248,6 +249,15 @@ class XMLTreeWidget(QTreeWidget):
         uri = item.data(1, Qt.UserRole)
         new_layer = load_as_xml_layer(uri, True)
         if new_layer:
+            # install an XML tree widget
+            qgis_form_custom_widget.install_xml_tree_on_feature_form(new_layer)
+
+            # id column
+            new_layer.setEditorWidgetSetup(0, QgsEditorWidgetSetup("Hidden", {}))
+            # _xml_ column
+            new_layer.setEditorWidgetSetup(2, QgsEditorWidgetSetup("Hidden", {}))
+            new_layer.setDisplayExpression("fid")
+
             QgsProject.instance().addMapLayer(new_layer)
 
     def onResolveAddToLayer(self, layer, checked=False):
