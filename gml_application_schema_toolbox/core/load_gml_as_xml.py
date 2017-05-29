@@ -143,8 +143,8 @@ class ComplexFeatureSource(object):
         i = 1
         for feature in self.features:
             if self.logger is not None:
-                self.logger.text("Feature {}/{}".format(i, len(self.features)))
-                self.logger.progression(i, len(self.features))
+                self.logger.set_text("Feature {}/{}".format(i, len(self.features)))
+                self.logger.set_progress(i, len(self.features))
                 
             # get the id from gml:identifier, then from the "id" attribute
             fid = None

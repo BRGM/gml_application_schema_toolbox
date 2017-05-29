@@ -25,6 +25,7 @@ from qgis.core import QgsProject, QgsEditFormConfig, QgsEditorWidgetSetup
 from ..core.settings import settings
 from ..core.load_gml_as_xml import load_as_xml_layer
 from ..gui import qgis_form_custom_widget
+from ..gui.progress_bar import ProgressBarLogger
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'import_xml_panel.ui'))
@@ -50,10 +51,11 @@ class ImportXmlPanel(BASE, WIDGET):
     @pyqtSlot()
     def on_importButton_clicked(self):
         gml_path = self.gmlPathLineEdit.text()
-        lyr = load_as_xml_layer(gml_path, is_remote = False)
+
+        # add a progress bar during import
+        lyr = load_as_xml_layer(gml_path, is_remote = False, logger = ProgressBarLogger("Importing features ..."))
 
         # install an XML tree widget
-        print("install xml tree")
         qgis_form_custom_widget.install_xml_tree_on_feature_form(lyr)
 
         # id column
