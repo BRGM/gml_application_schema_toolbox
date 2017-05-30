@@ -17,8 +17,8 @@
 
 import os
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import pyqtSlot
-from qgis.PyQt.QtWidgets import QFileDialog
+from qgis.PyQt.QtCore import pyqtSlot, QVariant
+from qgis.PyQt.QtWidgets import QFileDialog, QComboBox, QTableWidgetItem
 
 from qgis.core import QgsProject, QgsEditFormConfig, QgsEditorWidgetSetup
 
@@ -37,6 +37,8 @@ class ImportXmlPanel(BASE, WIDGET):
         super(ImportXmlPanel, self).__init__(parent)
         self.setupUi(self)
 
+        self.attributeTable.selectionModel().selectionChanged.connect(self.onSelectMapping)
+
     @pyqtSlot()
     def on_gmlPathButton_clicked(self):
         gml_path = settings.value("gml_path", "")
@@ -52,8 +54,21 @@ class ImportXmlPanel(BASE, WIDGET):
     def on_importButton_clicked(self):
         gml_path = self.gmlPathLineEdit.text()
 
+        # get attribute mapping
+        mapping = {}
+        for i in range(self.attributeTable.rowCount()):
+            attr = self.attributeTable.item(i, 0).text()
+            xpath = self.attributeTable.item(i, 2).text()
+            combo = self.attributeTable.cellWidget(i, 1)
+            type = combo.itemData(combo.currentIndex())
+            mapping[attr] = (xpath, type)
+
         # add a progress bar during import
-        lyr = load_as_xml_layer(gml_path, is_remote = False, logger = ProgressBarLogger("Importing features ..."))
+        # mediaMonitored/@title
+        lyr = load_as_xml_layer(gml_path,
+                                is_remote = gml_path.startswith('http://') or gml_path.startswith('https://'),
+                                attributes = mapping,
+                                logger = ProgressBarLogger("Importing features ..."))
 
         # install an XML tree widget
         qgis_form_custom_widget.install_xml_tree_on_feature_form(lyr)
@@ -65,3 +80,25 @@ class ImportXmlPanel(BASE, WIDGET):
         lyr.setDisplayExpression("fid")
         
         QgsProject.instance().addMapLayer(lyr)
+
+    @pyqtSlot()
+    def on_addMappingBtn_clicked(self):
+        lastRow = self.attributeTable.rowCount()
+        self.attributeTable.insertRow(lastRow)
+        combo = QComboBox(self.attributeTable)
+        combo.addItem("String", QVariant.String)
+        combo.addItem("Integer", QVariant.Int)
+        combo.addItem("Real", QVariant.Double)
+        combo.addItem("Date/Time", QVariant.DateTime)
+        self.attributeTable.setCellWidget(lastRow, 1, combo)
+        self.attributeTable.setItem(lastRow, 0, QTableWidgetItem())
+        self.attributeTable.setItem(lastRow, 2, QTableWidgetItem())
+
+    @pyqtSlot()
+    def on_removeMappingBtn_clicked(self):
+        idx = self.attributeTable.currentIndex()
+        self.attributeTable.removeRow(idx.row())
+
+    def onSelectMapping(self, selected, deselected):
+        self.removeMappingBtn.setEnabled(selected != -1)
+
