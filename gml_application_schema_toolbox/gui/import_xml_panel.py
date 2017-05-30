@@ -38,6 +38,7 @@ class ImportXmlPanel(BASE, WIDGET):
         self.setupUi(self)
 
         self.attributeTable.selectionModel().selectionChanged.connect(self.onSelectMapping)
+        self.geometryColumnCheck.stateChanged.connect(self.geometryColumnEdit.setEnabled)
 
     @pyqtSlot()
     def on_gmlPathButton_clicked(self):
@@ -63,11 +64,16 @@ class ImportXmlPanel(BASE, WIDGET):
             type = combo.itemData(combo.currentIndex())
             mapping[attr] = (xpath, type)
 
+        # get geometry mapping
+        gmapping = None
+        if self.geometryColumnCheck.isChecked() and self.geometryColumnEdit.text():
+            gmapping = self.geometryColumnEdit.text()
+
         # add a progress bar during import
-        # mediaMonitored/@title
         lyr = load_as_xml_layer(gml_path,
                                 is_remote = gml_path.startswith('http://') or gml_path.startswith('https://'),
                                 attributes = mapping,
+                                geometry_mapping = gmapping,
                                 logger = ProgressBarLogger("Importing features ..."))
 
         # install an XML tree widget
