@@ -52,16 +52,17 @@ def load_as_xml_layer(xml_uri, is_remote, attributes = {}, geometry_mapping = No
         output_local_file = f.name
         f.close()
 
-    s = ComplexFeatureLoaderInSpatialite(output_local_file)
+    #s = ComplexFeatureLoaderInSpatialite(output_local_file)
+    s = ComplexFeatureLoaderInMemory()
     return s.load_complex_gml(xml_uri, is_remote, attributes, geometry_mapping, logger)
 
 def properties_from_layer(layer):
     """Returns a tuple of metadata from the layer if it is a "GML as XML" layer"""
-    return ComplexFeatureLoaderInSpatialite.properties_from_layer(layer)
+    return ComplexFeatureLoaderInMemory.properties_from_layer(layer)
 
 def is_layer_gml_xml(layer):
     """Returns true if the input layer is a "GML as XML" layer"""
-    return ComplexFeatureLoaderInSpatialite.is_layer_complex(layer)
+    return ComplexFeatureLoaderInMemory.is_layer_complex(layer)
 
 
 #
@@ -374,6 +375,50 @@ class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
                 return False
             raise
         return False
+
+class ComplexFeatureLoaderInMemory(ComplexFeatureLoader):
+
+    def _create_layer(self, geometry_type, srid, attributes, title):
+        """
+        Creates an empty memory layer
+        :param geometry_type: 'Point', 'LineString', 'Polygon', etc.
+        :param srid: CRS ID of the layer
+        :param attributes: list of (attribute_name, attribute_type)
+        :param title: title of the layer
+        """
+        if srid:
+            layer = QgsVectorLayer("{}?crs=EPSG:{}&field=id:string".format(geometry_type, srid), title, "memory")
+        else:
+            layer = QgsVectorLayer("none?field=id:string", title, "memory")
+        pr = layer.dataProvider()
+        pr.addAttributes([QgsField("fid", QVariant.String)])
+        pr.addAttributes([QgsField("_xml_", QVariant.String)])
+        for aname, atype in attributes:
+            pr.addAttributes([QgsField(aname, atype)])
+        layer.updateFields()
+        return layer
+
+    def _add_properties_to_layer(self, layer, xml_uri, is_remote, attributes, geom_mapping):
+        layer.setCustomProperty("complex_features", True)
+        layer.setCustomProperty("xml_uri", xml_uri)
+        layer.setCustomProperty("is_remote", is_remote)
+        layer.setCustomProperty("attributes", attributes)
+        layer.setCustomProperty("geom_mapping", geom_mapping)
+        
+    @staticmethod
+    def properties_from_layer(layer):
+        return (layer.customProperty("complex_features", False),
+                layer.customProperty("xml_uri", ""),
+                layer.customProperty("is_remote", False),
+                layer.customProperty("attributes", {}),
+                layer.customProperty("geom_mapping", None),
+                None #output filename
+        )
+
+    @staticmethod
+    def is_layer_complex(layer):
+        return layer.type() == QgsMapLayer.VectorLayer and layer.customProperty("complex_features", False)
+
 
 if __name__ == '__main__':
     # fix_print_with_import
