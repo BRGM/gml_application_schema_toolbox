@@ -28,7 +28,7 @@ import re
 
 from qgis.PyQt.QtCore import QVariant, QDateTime
 
-from qgis.core import QgsWkbTypes, QgsGeometry, QgsVectorLayer, QgsField, QgsFeature, QgsMapLayer, QgsDataSourceUri
+from qgis.core import QgsWkbTypes, QgsGeometry, QgsVectorLayer, QgsField, QgsFeature, QgsMapLayer, QgsDataSourceUri, QgsPoint
 from qgis.utils import spatialite_connect
 
 from .qgis_urlopener import remote_open_from_qgis
@@ -247,13 +247,20 @@ class ComplexFeatureLoader(object):
                 wkb, srid = g
                 qgsgeom = QgsGeometry()
                 qgsgeom.fromWkb(wkb)
+                # OGR returns swapped coordinates, unswap them with QGIS
                 if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
+                    p = qgsgeom.asPoint()
+                    qgsgeom = QgsGeometry.fromPoint(QgsPoint(p[1], p[0]))
                     if layer is None:
                         layer = self._create_layer('point', srid, attr_list, src.title + " (points)")
                 elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
+                    pl = qgsgeom.asPolyline()
+                    qgsgeom = QgsGeometry.fromPolyline([QgsPoint(p[1],p[0]) for p in pl])
                     if layer is None:
                         layer = self._create_layer('linestring', srid, attr_list, src.title + " (lines)")
                 elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
+                    pl = qgsgeom.asPolygon()
+                    qgsgeom = QgsGeometry.fromPolygon([[QgsPoint(p[1],p[0]) for p in r] for r in pl])
                     if layer is None:
                         layer = self._create_layer('polygon', srid, attr_list, src.title + " (polygons)")
 

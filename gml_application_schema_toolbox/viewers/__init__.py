@@ -22,4 +22,5 @@ from __future__ import absolute_import
 # list here the different viewer classes to import
 
 from .wml2_timeseries import WML2TimeSeriesViewer
+from .geology_logs import GeologyLogViewer
 

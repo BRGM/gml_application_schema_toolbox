@@ -60,6 +60,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         self.databaseWidget.set_accept_mode(QFileDialog.AcceptSave)
 
         self.gmlasConfigLineEdit.setText(settings.value('default_gmlas_config'))
+        self.gmlPathLineEdit.setText(settings.value('gml_path', ''))
         self.acceptLanguageHeaderInput.setText(settings.value('default_language'))
         self.set_access_mode(settings.value('default_access_mode'))
 
@@ -77,6 +78,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             self.gmlPathLineEdit.text(),
             self.tr("GML files or XSD (*.gml *.xml *.xsd)"))
         if path:
+            settings.setValue("gml_path", os.path.dirname(path))
             self.gmlPathLineEdit.setText(path)
 
     # Read XML file and substitute form parameters
@@ -272,8 +274,12 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         return params
 
     @pyqtSlot()
-    def on_importButton_clicked(self):
+    def on_convertButton_clicked(self):
         try:
             self.translate(self.import_params())
         except InputError as e:
             e.show()
+
+    #@pyqtSlot()
+    #def on_importButton_clicked(self):
+        

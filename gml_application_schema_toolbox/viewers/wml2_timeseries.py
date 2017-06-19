@@ -22,7 +22,7 @@ from builtins import object
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtWidgets import *
-from ..gml2relational.xml_utils import no_prefix, split_tag
+from ..core.xml_utils import no_prefix, split_tag
 
 from . import viewers_utils
 

@@ -39,7 +39,13 @@ def get_custom_viewers():
             continue
         k = getattr(module, klass)
         if hasattr(k, 'xml_tag'):
-            __custom_viewers[k.xml_tag()] = k
+            r = k.xml_tag()
+            filter = None
+            if isinstance(r, tuple):
+                tag, filter = r
+            else:
+                tag = r
+            __custom_viewers[tag] = (k, filter)
 
     return __custom_viewers
 

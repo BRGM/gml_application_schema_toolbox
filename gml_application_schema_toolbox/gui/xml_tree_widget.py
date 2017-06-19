@@ -33,14 +33,16 @@ from ..core.xml_utils import no_prefix, split_tag, xml_parse, xml_parse_from_str
 from .custom_viewers import get_custom_viewers
 from . import qgis_form_custom_widget
 
-def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers = {}):
+def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers = {}, ns_map = {}):
     """
     :param widget: the QTreeWidget
     :param treeItem: a QTreeWidgetItem to fill
     :param elt: the XML node
     :param ns_imap: an "inverse" namespace map { uri : prefix }
     :param custom_viewers: a dict giving a custom viewer plugin (QWidget) for some elements {tag : constructor}
+    :param ns_map: a namespace map { prefix : uri }
     """
+    is_root = treeItem == widget.invisibleRootItem()
     # tag
     ns, tag = split_tag(elt.tag)
     if ns and ns_imap.get(ns):
@@ -53,22 +55,29 @@ def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers =
 
     # custom viewer
     if elt.tag in custom_viewers:
-        custom_viewer_widget = custom_viewers[elt.tag]
-        btn = QToolButton(widget)
-        btn.setIcon(custom_viewer_widget.icon())
-        btn.setIconSize(QSize(32,32))
-        def show_viewer(btn):
-            widget.w = custom_viewer_widget.init_from_xml(elt)
-            widget.w.setWindowModality(Qt.WindowModal)
-            widget.w.show()
-        btn.clicked.connect(show_viewer)
+        custom_viewer_widget, filter = custom_viewers[elt.tag]
+        if filter is None or elt.find(filter, ns_map) is not None:
+            btn = QToolButton(widget)
+            btn.setIcon(custom_viewer_widget.icon())
+            btn.setIconSize(QSize(32,32))
+            def show_viewer(btn):
+                widget.w = custom_viewer_widget.init_from_xml(elt)
+                widget.w.setWindowModality(Qt.WindowModal)
+                widget.w.show()
+            btn.clicked.connect(show_viewer)
 
-        w = QWidget(widget)
-        l = QHBoxLayout()
-        l.addWidget(btn)
-        l.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
-        w.setLayout(l)
-        widget.setItemWidget(treeItem, 1, w)
+            w = QWidget(widget)
+            l = QHBoxLayout()
+            l.addWidget(btn)
+            l.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
+            w.setLayout(l)
+            if is_root:
+                # insert an item
+                child = QTreeWidgetItem()
+                treeItem.addChild(child)
+                widget.setItemWidget(child, 0, w)
+            else:
+                widget.setItemWidget(treeItem, 1, w)
 
     # attributes
     for k, v in elt.attrib.items():
@@ -103,7 +112,7 @@ def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers =
     for xmlChild in elt:
         child = QTreeWidgetItem()
         treeItem.addChild(child)
-        fill_tree_with_element(widget, child, xmlChild, ns_imap, custom_viewers)
+        fill_tree_with_element(widget, child, xmlChild, ns_imap, custom_viewers, ns_map)
 
 def recurse_expand(treeItem):
     treeItem.setExpanded(True)
@@ -123,7 +132,7 @@ def fill_tree_with_xml(treeWidget, xml):
     ns_imap = {}
     for k, v in ns_map.items():
         ns_imap[v] = k
-    fill_tree_with_element(treeWidget, treeWidget.invisibleRootItem(), doc.getroot(), ns_imap, get_custom_viewers())
+    fill_tree_with_element(treeWidget, treeWidget.invisibleRootItem(), doc.getroot(), ns_imap, get_custom_viewers(), ns_map)
     recurse_expand(treeWidget.invisibleRootItem())
     treeWidget.resizeColumnToContents(0)
     treeWidget.resizeColumnToContents(1)
@@ -236,7 +245,7 @@ class XMLTreeWidget(QTreeWidget):
             ns_imap = {}
             for k, v in ns_map.items():
                 ns_imap[v] = k
-            fill_tree_with_element(self, item.parent(), doc.getroot(), ns_imap, get_custom_viewers())
+            fill_tree_with_element(self, item.parent(), doc.getroot(), ns_imap, get_custom_viewers(), ns_map)
         except RuntimeError as e:
             QApplication.restoreOverrideCursor()
             QMessageBox.warning(self, "Network error", e.args[0])
