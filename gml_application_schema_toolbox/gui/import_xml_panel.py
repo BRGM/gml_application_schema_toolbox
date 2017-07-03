@@ -74,7 +74,8 @@ class ImportXmlPanel(BASE, WIDGET):
                                 is_remote = gml_path.startswith('http://') or gml_path.startswith('https://'),
                                 attributes = mapping,
                                 geometry_mapping = gmapping,
-                                logger = ProgressBarLogger("Importing features ..."))
+                                logger = ProgressBarLogger("Importing features ..."),
+                                swap_xy = self.swapXYCheck.isChecked())
 
         # install an XML tree widget
         qgis_form_custom_widget.install_xml_tree_on_feature_form(lyr)

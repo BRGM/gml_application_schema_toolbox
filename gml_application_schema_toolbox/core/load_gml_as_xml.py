@@ -37,13 +37,14 @@ from .gml_utils import extract_features
 
 __all__ = ['load_as_xml_layer', 'properties_from_layer', 'is_layer_gml_xml']
 
-def load_as_xml_layer(xml_uri, is_remote, attributes = {}, geometry_mapping = None, output_local_file = None, logger = None):
+def load_as_xml_layer(xml_uri, is_remote, attributes = {}, geometry_mapping = None, output_local_file = None, logger = None, swap_xy = False):
     """
     Load a GML file in a new QGIS layer
     :param xml_uri: the XML URI
     :param is_remote: True if it has to be fetched by http
     :param attributes: { 'attr1' : ( '//xpath/expression', QVariant.Int ) }
     :param geometry_mapping: XPath expression to a gml geometry node
+    :param swap_xy: True to swap X/Y coordinates
     :returns: the created layer
     """
     if not output_local_file:
@@ -54,7 +55,7 @@ def load_as_xml_layer(xml_uri, is_remote, attributes = {}, geometry_mapping = No
 
     #s = ComplexFeatureLoaderInSpatialite(output_local_file)
     s = ComplexFeatureLoaderInMemory()
-    return s.load_complex_gml(xml_uri, is_remote, attributes, geometry_mapping, logger)
+    return s.load_complex_gml(xml_uri, is_remote, attributes, geometry_mapping, logger, swap_xy)
 
 def properties_from_layer(layer):
     """Returns a tuple of metadata from the layer if it is a "GML as XML" layer"""
@@ -222,12 +223,13 @@ class ComplexFeatureLoader(object):
     def is_layer_complex(layer):
         raise RuntimeError("No default implementation, use a derived class")
 
-    def load_complex_gml(self, xml_uri, is_remote, attributes = {}, geometry_mapping = None, logger = None):
+    def load_complex_gml(self, xml_uri, is_remote, attributes = {}, geometry_mapping = None, logger = None, swap_xy = False):
         """
         :param xml_uri: the XML URI
         :param is_remote: True if it has to be fetched by http
         :param attributes: { 'attr1' : ( '//xpath/expression', QVariant.Int ) }
         :param geometry_mapping: XPath expression to a gml geometry node
+        :param swap_xy: True if X/Y coordinates must be swapped
         :returns: the created layer
         """
         if is_remote:
@@ -247,20 +249,22 @@ class ComplexFeatureLoader(object):
                 wkb, srid = g
                 qgsgeom = QgsGeometry()
                 qgsgeom.fromWkb(wkb)
-                # OGR returns swapped coordinates, unswap them with QGIS
                 if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
-                    p = qgsgeom.asPoint()
-                    qgsgeom = QgsGeometry.fromPoint(QgsPointXY(p[1], p[0]))
+                    if swap_xy:
+                        p = qgsgeom.asPoint()
+                        qgsgeom = QgsGeometry.fromPoint(QgsPointXY(p[1], p[0]))
                     if layer is None:
                         layer = self._create_layer('point', srid, attr_list, src.title + " (points)")
                 elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
-                    pl = qgsgeom.asPolyline()
-                    qgsgeom = QgsGeometry.fromPolyline([QgsPointXY(p[1],p[0]) for p in pl])
+                    if swap_xy:
+                        pl = qgsgeom.asPolyline()
+                        qgsgeom = QgsGeometry.fromPolyline([QgsPointXY(p[1],p[0]) for p in pl])
                     if layer is None:
                         layer = self._create_layer('linestring', srid, attr_list, src.title + " (lines)")
                 elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
-                    pl = qgsgeom.asPolygon()
-                    qgsgeom = QgsGeometry.fromPolygon([[QgsPointXY(p[1],p[0]) for p in r] for r in pl])
+                    if swap_xy:
+                        pl = qgsgeom.asPolygon()
+                        qgsgeom = QgsGeometry.fromPolygon([[QgsPointXY(p[1],p[0]) for p in r] for r in pl])
                     if layer is None:
                         layer = self._create_layer('polygon', srid, attr_list, src.title + " (polygons)")
 

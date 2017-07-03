@@ -52,6 +52,13 @@
     </layout>
    </item>
    <item>
+    <widget class="QCheckBox" name="swapXYCheck">
+     <property name="text">
+      <string>Swap X/Y axis</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="label">
      <property name="text">
       <string>Attribute mapping</string>
