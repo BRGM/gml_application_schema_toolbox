@@ -235,7 +235,10 @@ class ComplexFeatureLoader(object):
         if is_remote:
             xml = remote_open_from_qgis(xml_uri)
         else:
-            xml = open(xml_uri)
+            # Open the file in binary mode, this means returning bytes
+            # instead of a string whose encoding would have to be interpreted
+            # it is up to the XML parser to determine which encoding it is
+            xml = open(xml_uri, 'rb')
         src = ComplexFeatureSource(xml, attributes, geometry_mapping, logger)
 
         layer = None
