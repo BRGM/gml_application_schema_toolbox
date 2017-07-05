@@ -22,14 +22,13 @@ from builtins import object
 # -*- coding: utf-8 -*-
 
 import xml.etree.ElementTree as ET
-from osgeo import ogr
+from osgeo import ogr, osr
 import sqlite3
 import re
 
 from qgis.PyQt.QtCore import QVariant, QDateTime
 
 from qgis.core import QgsWkbTypes, QgsGeometry, QgsVectorLayer, QgsField, QgsFeature, QgsMapLayer, QgsDataSourceUri, QgsPointXY
-from qgis.utils import spatialite_connect
 
 from .qgis_urlopener import remote_open_from_qgis
 from .xml_utils import no_prefix, split_tag, resolve_xpath, xml_parse
@@ -53,8 +52,7 @@ def load_as_xml_layer(xml_uri, is_remote, attributes = {}, geometry_mapping = No
         output_local_file = f.name
         f.close()
 
-    #s = ComplexFeatureLoaderInSpatialite(output_local_file)
-    s = ComplexFeatureLoaderInMemory()
+    s = ComplexFeatureLoaderInGpkg(output_local_file)
     return s.load_complex_gml(xml_uri, is_remote, attributes, geometry_mapping, logger, swap_xy)
 
 def properties_from_layer(layer):
@@ -241,154 +239,62 @@ class ComplexFeatureLoader(object):
             xml = open(xml_uri, 'rb')
         src = ComplexFeatureSource(xml, attributes, geometry_mapping, logger)
 
-        layer = None
         attr_list = [ (k, v[1]) for k, v in attributes.items() ]
+        
+        # first feature
+        id, fid, g, xml, attrs = next(src.getFeatures())
+        qgsgeom = None
+        if g is None:
+            layer = self._create_layer('none', None, attr_list, src.title)
+        else:
+            wkb, srid = g
+            qgsgeom = QgsGeometry()
+            qgsgeom.fromWkb(wkb)
+            if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
+                layer = self._create_layer('point', srid, attr_list, src.title + " (points)")
+            elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
+                layer = self._create_layer('linestring', srid, attr_list, src.title + " (lines)")
+            elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
+                layer = self._create_layer('polygon', srid, attr_list, src.title + " (polygons)")
+
+        # add metadata
+        self._add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)
+
+        # collect features
+        features = []
         for id, fid, g, xml, attrs in src.getFeatures():
             qgsgeom = None
-            if g is None:
-                if layer is None:
-                    layer = self._create_layer('none', None, attr_list, src.title)
-            else:
-                wkb, srid = g
-                qgsgeom = QgsGeometry()
-                qgsgeom.fromWkb(wkb)
-                if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
-                    if swap_xy:
-                        p = qgsgeom.asPoint()
-                        qgsgeom = QgsGeometry.fromPoint(QgsPointXY(p[1], p[0]))
-                    if layer is None:
-                        layer = self._create_layer('point', srid, attr_list, src.title + " (points)")
-                elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
-                    if swap_xy:
-                        pl = qgsgeom.asPolyline()
-                        qgsgeom = QgsGeometry.fromPolyline([QgsPointXY(p[1],p[0]) for p in pl])
-                    if layer is None:
-                        layer = self._create_layer('linestring', srid, attr_list, src.title + " (lines)")
-                elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
-                    if swap_xy:
-                        pl = qgsgeom.asPolygon()
-                        qgsgeom = QgsGeometry.fromPolygon([[QgsPointXY(p[1],p[0]) for p in r] for r in pl])
-                    if layer is None:
-                        layer = self._create_layer('polygon', srid, attr_list, src.title + " (polygons)")
+            wkb, srid = g
+            qgsgeom = QgsGeometry()
+            qgsgeom.fromWkb(wkb)
+            if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
+                if swap_xy:
+                    p = qgsgeom.asPoint()
+                    qgsgeom = QgsGeometry.fromPoint(QgsPointXY(p[1], p[0]))
+            elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
+                if swap_xy:
+                    pl = qgsgeom.asPolyline()
+                    qgsgeom = QgsGeometry.fromPolyline([QgsPointXY(p[1],p[0]) for p in pl])
+            elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
+                if swap_xy:
+                    pl = qgsgeom.asPolygon()
+                    qgsgeom = QgsGeometry.fromPolygon([[QgsPointXY(p[1],p[0]) for p in r] for r in pl])
 
-            if layer is not None:
-                self._add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)
+            f = QgsFeature(layer.dataProvider().fields(), id)
+            if qgsgeom:
+                f.setGeometry(qgsgeom)
+            f.setAttribute("id", str(id))
+            f.setAttribute("fid", fid)
+            f.setAttribute("_xml_", ET.tostring(xml).decode('utf8'))
+            for k, v in attrs.items():
+                r = f.setAttribute(k, v)
+            features.append(f)
 
-                pr = layer.dataProvider()
-                f = QgsFeature(pr.fields(), id)
-                if qgsgeom:
-                    f.setGeometry(qgsgeom)
-                f.setAttribute("id", str(id))
-                f.setAttribute("fid", fid)
-                f.setAttribute("_xml_", ET.tostring(xml).decode('utf8'))
-                for k, v in attrs.items():
-                    r = f.setAttribute(k, v)
-                pr.addFeatures([f])
+        # write features
+        if len(features) > 0:
+            layer.dataProvider().addFeatures(features)
 
         return layer
-
-class ComplexFeatureLoaderInSpatialite(ComplexFeatureLoader):
-
-    def __init__(self, output_local_file):
-        """
-        :param output_local_file: name of the local sqlite file
-        """
-        self.output_local_file = output_local_file
-
-    def _create_layer(self, type, srid, attributes, title):
-        """
-        Creates an empty spatialite layer
-        :param type: 'Point', 'LineString', 'Polygon', etc.
-        :param srid: CRS ID of the layer
-        :param attributes: list of (attribute_name, attribute_type, attribute_typename)
-        :param title: title of the layer
-        """
-        conn = spatialite_connect(self.output_local_file)
-        cur = conn.cursor()
-        cur.execute("SELECT InitSpatialMetadata(1)")
-        cur.execute("DROP TABLE IF EXISTS meta")
-        cur.execute("DROP TABLE IF EXISTS data")
-        cur.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
-        cur.execute("CREATE TABLE data (id INT NOT NULL PRIMARY KEY, fid TEXT NOT NULL, _xml_ TEXT)")
-        if srid:
-            cur.execute("SELECT AddGeometryColumn('data', 'geometry', {}, '{}', 'XY')".format(srid, type))
-        conn.close()
-
-        if srid:
-            layer = QgsVectorLayer("dbname='{}' table=\"data\" (geometry) sql=".format(self.output_local_file), title, "spatialite")
-        else:
-            layer = QgsVectorLayer("dbname='{}' table=\"data\" sql=".format(self.output_local_file), title, "spatialite")
-
-        pr = layer.dataProvider()
-        pr.addAttributes([QgsField("fid", QVariant.String)])
-        pr.addAttributes([QgsField("_xml_", QVariant.String)])
-        for aname, atype in attributes:
-            atype_name = QVariant.typeToName(atype)
-            pr.addAttributes([QgsField(aname, atype, atype_name)])
-        layer.updateFields()
-        return layer
-
-    def _add_properties_to_layer(self, layer, xml_uri, is_remote, attributes, geom_mapping):
-        import json
-        conn = spatialite_connect(self.output_local_file)
-        cur = conn.cursor()
-        cur.execute("INSERT OR REPLACE INTO meta VALUES('complex_features', '1')")
-        cur.execute("INSERT OR REPLACE INTO meta VALUES('xml_uri', ?)", (xml_uri,))
-        cur.execute("INSERT OR REPLACE INTO meta VALUES('is_remote', ?)", ('1' if is_remote else '0',))
-        cur.execute("INSERT OR REPLACE INTO meta VALUES('attributes', ?)", (json.dumps(attributes),))
-        cur.execute("INSERT OR REPLACE INTO meta VALUES('geom_mapping', ?)", (json.dumps(geom_mapping),))
-        cur.execute("INSERT OR REPLACE INTO meta VALUES('output_filename', ?)", (self.output_local_file,))
-        conn.commit()
-
-    @staticmethod
-    def properties_from_layer(layer):
-        import json
-        nil = (False, None, None, None, None, None)
-        if layer.type() != QgsMapLayer.VectorLayer:
-            return nil
-        if layer.providerType() != "spatialite":
-            return nil
-        u = QgsDataSourceUri(layer.source())
-        conn = spatialite_connect(u.database())
-        cur = conn.cursor()
-        try:
-            cur.execute("SELECT * FROM meta")
-            ret = list(nil)
-            for r in cur:
-                if r[0] == 'complex_features':
-                    ret[0] = r[1] == '1'
-                elif r[0] == 'xml_uri':
-                    ret[1] = r[1]
-                elif r[0] == 'is_remote':
-                    ret[2] = r[1] == '1'
-                elif r[0] == 'attributes':
-                    ret[3] = json.loads(r[1])
-                elif r[0] == 'geom_mapping':
-                    ret[4] = json.loads(r[1])
-                elif r[0] == 'output_filename':
-                    ret[5] = r[1]
-            return ret
-        except sqlite3.OperationalError:
-            return False, None, None, None, None, None
-
-    @staticmethod
-    def is_layer_complex(layer):
-        if layer.type() != QgsMapLayer.VectorLayer:
-            return False
-        if layer.providerType() != "spatialite":
-            return False
-        u = QgsDataSourceUri(layer.source())
-        try:
-            conn = sqlite3.dbapi2.connect(u.database())
-            cur = conn.cursor()
-            cur.execute("SELECT value FROM meta WHERE key='complex_features'")
-            for r in cur:
-                return r[0] == '1'
-        except sqlite3.OperationalError as e:
-            if "no such table" in str(e):
-                return False
-            raise
-        return False
 
 class ComplexFeatureLoaderInMemory(ComplexFeatureLoader):
 
@@ -433,43 +339,112 @@ class ComplexFeatureLoaderInMemory(ComplexFeatureLoader):
     def is_layer_complex(layer):
         return layer.type() == QgsMapLayer.VectorLayer and layer.customProperty("complex_features", False)
 
+class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
 
-if __name__ == '__main__':
-    # fix_print_with_import
-    print("GSML4")
-    src = ComplexFeatureSource( "../samples/GSML4-Borehole.xml", geometry_mapping = "/gsmlbh:location/gml:Point")
-    for x in src.getFeatures():
-        # fix_print_with_import
-        print(x)
-        
-    print("mineral")
-    src = ComplexFeatureSource( "../samples/mineral.xml")
-    for x in src.getFeatures():
-        # fix_print_with_import
-        print(x)
+    def __init__(self, output_local_file):
+        """
+        :param output_local_file: name of the local sqlite file
+        """
+        self.output_local_file = output_local_file
 
-    print("Boreholeview")
-    src = ComplexFeatureSource( "../samples/BoreholeView.xml")
-    for x in src.getFeatures():
-        # fix_print_with_import
-        print(x)
+    def _create_layer(self, type, srid, attributes, title):
+        """
+        Creates an empty spatialite layer
+        :param type: 'Point', 'LineString', 'Polygon', etc.
+        :param srid: CRS ID of the layer
+        :param attributes: list of (attribute_name, attribute_type, attribute_typename)
+        :param title: title of the layer
+        """
+        driver = ogr.GetDriverByName('GPKG')
+        ds = driver.CreateDataSource(self.output_local_file)
+        conn = spatialite_connect(self.output_local_file)
+        layer = ds.CreateLayer("meta", geom_type = ogr.wkbNone)
+        layer.CreateField(ogr.FieldDefn('key', ogr.OFTString))
+        layer.CreateField(ogr.FieldDefn('value', ogr.OFTString))
 
-    print("airquality")
-    src = ComplexFeatureSource( "../samples/airquality.xml", { 'mainEmissionSources' : ('.//aqd:mainEmissionSources/@xlink:href', QVariant.String),
-                                                               'stationClassification' : ('.//aqd:stationClassification/@xlink:href', QVariant.String) })
-    for x in src.getFeatures():
-        # fix_print_with_import
-        print(x)
+        if srid:
+            wkbType = { 'point': ogr.wkbPoint,
+                        'linestring': ogr.wkbLineString,
+                        'polygon': ogr.wkbPolygon }[type]
+            srs = osr.SpatialReference()
+            srs.ImportFromEPSG(int(srid))
+        else:
+            wkbType = ogr.wkbNone
+            srs = None
+        layer = ds.CreateLayer("data", srs, wkbType, ['FID=id'])
+        layer.CreateField(ogr.FieldDefn('id', ogr.OFTInteger64))
+        layer.CreateField(ogr.FieldDefn('fid', ogr.OFTString))
+        layer.CreateField(ogr.FieldDefn('_xml_', ogr.OFTString))
 
-    print("env_monitoring")
-    src = ComplexFeatureSource( "../samples/env_monitoring.xml")
-    for x in src.getFeatures():
-        # fix_print_with_import
-        print(x)
+        att_type_map = {QVariant.String : ogr.OFTString,
+                        QVariant.Int : ogr.OFTInteger,
+                        QVariant.Double: ogr.OFTReal,
+                        QVariant.DateTime: ogr.OFTDateTime}
+        for aname, atype in attributes:
+            layer.CreateField(ogr.FieldDefn(aname, att_type_map[atype]))
 
-    print("env_monitoring1")
-    src = ComplexFeatureSource( "../samples/env_monitoring1.xml")
-    for x in src.getFeatures():
-        # fix_print_with_import
-        print(x)
+        # update fields
+        layer.ResetReading()
 
+        qgs_layer = QgsVectorLayer("{}|layername=data".format(self.output_local_file), title, "ogr")
+        return qgs_layer
+
+    def _add_properties_to_layer(self, layer, xml_uri, is_remote, attributes, geom_mapping):
+        import json
+        qgs_layer = QgsVectorLayer("{}|layername=meta".format(self.output_local_file), "meta", "ogr")
+        pr = qgs_layer.dataProvider()
+        metas = (('complex_features','1'),
+             ('xml_uri', xml_uri),
+             ('is_remote', '1' if is_remote else '0'),
+             ('attributes', json.dumps(attributes)),
+             ('geom_mapping', json.dumps(geom_mapping)),
+             ('output_filename', self.output_local_file))
+        features=[]
+        for k, v in metas:
+            f = QgsFeature(pr.fields())
+            f['key'] = k
+            f['value'] = v
+            features.append(f)
+        pr.addFeatures(features)
+
+    @staticmethod
+    def properties_from_layer(layer):
+        import json
+        nil = (False, None, None, None, None, None)
+        if layer.type() != QgsMapLayer.VectorLayer:
+            return nil
+        if layer.providerType() != "ogr":
+            return nil
+        if not layer.source().endswith('|layername=data'):
+            return nil
+        pkg_file = layer.source()[:layer.source().find('|')]
+        qgs_layer = QgsVectorLayer("{}|layername=meta".format(pkg_file), "meta", "ogr")
+        ret = list(nil)
+        for f in qgs_layer.getFeatures():
+            if f['key'] == 'complex_features':
+                ret[0] = f['value'] == '1'
+            elif f['key'] == 'xml_uri':
+                ret[1] = f['value']
+            elif f['key'] == 'is_remote':
+                ret[2] = f['value'] == '1'
+            elif f['key'] == 'attributes':
+                ret[3] = json.loads(f['value'])
+            elif f['key'] == 'geom_mapping':
+                ret[4] = json.loads(f['value'])
+            elif f['key'] == 'output_filename':
+                ret[5] = f['value']
+        return ret
+
+    @staticmethod
+    def is_layer_complex(layer):
+        if layer.type() != QgsMapLayer.VectorLayer:
+            return False
+        if layer.providerType() != "ogr":
+            return False
+        if not layer.source().endswith('|layername=data'):
+            return False
+        pkg_file = layer.source()[:layer.source().find('|')]
+        qgs_layer = QgsVectorLayer("{}|layername=meta".format(pkg_file), "meta", "ogr")
+        if not qgs_layer.isValid():
+            return False
+        return [f['value'] == '1' for f in qgs_layer.getFeatures() if f['key'] == 'complex_features'][0]
