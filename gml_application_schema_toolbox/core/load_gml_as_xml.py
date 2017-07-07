@@ -34,6 +34,8 @@ from .qgis_urlopener import remote_open_from_qgis
 from .xml_utils import no_prefix, split_tag, resolve_xpath, xml_parse
 from .gml_utils import extract_features
 
+from qgis.utils import spatialite_connect
+
 __all__ = ['load_as_xml_layer', 'properties_from_layer', 'is_layer_gml_xml']
 
 def load_as_xml_layer(xml_uri, is_remote, attributes = {}, geometry_mapping = None, output_local_file = None, logger = None, swap_xy = False):
