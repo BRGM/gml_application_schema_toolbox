@@ -229,69 +229,72 @@ class ComplexFeatureLoader(object):
         :param swap_xy: True if X/Y coordinates must be swapped
         :returns: the created layer
         """
-        if is_remote:
-            xml = remote_open_from_qgis(xml_uri)
-        else:
-            # Open the file in binary mode, this means returning bytes
-            # instead of a string whose encoding would have to be interpreted
-            # it is up to the XML parser to determine which encoding it is
-            xml = open(xml_uri, 'rb')
-        src = ComplexFeatureSource(xml, attributes, geometry_mapping, logger)
+        try:
+            if is_remote:
+                xml_src = remote_open_from_qgis(xml_uri)
+            else:
+                # Open the file in binary mode, this means returning bytes
+                # instead of a string whose encoding would have to be interpreted
+                # it is up to the XML parser to determine which encoding it is
+                xml_src = open(xml_uri, 'rb')
+            src = ComplexFeatureSource(xml_src, attributes, geometry_mapping, logger)
 
-        attr_list = [ (k, v[1]) for k, v in attributes.items() ]
-        
-        # first feature
-        id, fid, g, xml, attrs = next(src.getFeatures())
-        qgsgeom = None
-        if g is None:
-            layer = self._create_layer('none', None, attr_list, src.title)
-        else:
-            wkb, srid = g
-            qgsgeom = QgsGeometry()
-            qgsgeom.fromWkb(wkb)
-            if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
-                layer = self._create_layer('point', srid, attr_list, src.title + " (points)")
-            elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
-                layer = self._create_layer('linestring', srid, attr_list, src.title + " (lines)")
-            elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
-                layer = self._create_layer('polygon', srid, attr_list, src.title + " (polygons)")
+            attr_list = [ (k, v[1]) for k, v in attributes.items() ]
 
-        # add metadata
-        self._add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)
-
-        # collect features
-        features = []
-        for id, fid, g, xml, attrs in src.getFeatures():
+            # first feature
+            id, fid, g, xml, attrs = next(src.getFeatures())
             qgsgeom = None
-            wkb, srid = g
-            qgsgeom = QgsGeometry()
-            qgsgeom.fromWkb(wkb)
-            if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
-                if swap_xy:
-                    p = qgsgeom.asPoint()
-                    qgsgeom = QgsGeometry.fromPoint(QgsPointXY(p[1], p[0]))
-            elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
-                if swap_xy:
-                    pl = qgsgeom.asPolyline()
-                    qgsgeom = QgsGeometry.fromPolyline([QgsPointXY(p[1],p[0]) for p in pl])
-            elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
-                if swap_xy:
-                    pl = qgsgeom.asPolygon()
-                    qgsgeom = QgsGeometry.fromPolygon([[QgsPointXY(p[1],p[0]) for p in r] for r in pl])
+            if g is None:
+                layer = self._create_layer('none', None, attr_list, src.title)
+            else:
+                wkb, srid = g
+                qgsgeom = QgsGeometry()
+                qgsgeom.fromWkb(wkb)
+                if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
+                    layer = self._create_layer('point', srid, attr_list, src.title + " (points)")
+                elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
+                    layer = self._create_layer('linestring', srid, attr_list, src.title + " (lines)")
+                elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
+                    layer = self._create_layer('polygon', srid, attr_list, src.title + " (polygons)")
 
-            f = QgsFeature(layer.dataProvider().fields(), id)
-            if qgsgeom:
-                f.setGeometry(qgsgeom)
-            f.setAttribute("id", str(id))
-            f.setAttribute("fid", fid)
-            f.setAttribute("_xml_", ET.tostring(xml).decode('utf8'))
-            for k, v in attrs.items():
-                r = f.setAttribute(k, v)
-            features.append(f)
+            # add metadata
+            self._add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)
 
-        # write features
-        if len(features) > 0:
-            layer.dataProvider().addFeatures(features)
+            # collect features
+            features = []
+            for id, fid, g, xml, attrs in src.getFeatures():
+                qgsgeom = None
+                wkb, srid = g
+                qgsgeom = QgsGeometry()
+                qgsgeom.fromWkb(wkb)
+                if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
+                    if swap_xy:
+                        p = qgsgeom.asPoint()
+                        qgsgeom = QgsGeometry.fromPoint(QgsPointXY(p[1], p[0]))
+                elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
+                    if swap_xy:
+                        pl = qgsgeom.asPolyline()
+                        qgsgeom = QgsGeometry.fromPolyline([QgsPointXY(p[1],p[0]) for p in pl])
+                elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
+                    if swap_xy:
+                        pl = qgsgeom.asPolygon()
+                        qgsgeom = QgsGeometry.fromPolygon([[QgsPointXY(p[1],p[0]) for p in r] for r in pl])
+
+                f = QgsFeature(layer.dataProvider().fields(), id)
+                if qgsgeom:
+                    f.setGeometry(qgsgeom)
+                f.setAttribute("id", str(id))
+                f.setAttribute("fid", fid)
+                f.setAttribute("_xml_", ET.tostring(xml).decode('utf8'))
+                for k, v in attrs.items():
+                    r = f.setAttribute(k, v)
+                features.append(f)
+
+            # write features
+            if len(features) > 0:
+                layer.dataProvider().addFeatures(features)
+        finally:
+            xml_src.close()
 
         return layer
 
