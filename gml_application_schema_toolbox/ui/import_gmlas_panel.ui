@@ -444,16 +444,19 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="convertButton">
+    <widget class="QCheckBox" name="loadLayersCheck">
      <property name="text">
-      <string>Convert</string>
+      <string>Load layers in QGIS upon creation</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="importButton">
+    <widget class="QPushButton" name="convertButton">
      <property name="text">
-      <string>Import</string>
+      <string>Convert</string>
      </property>
     </widget>
    </item>

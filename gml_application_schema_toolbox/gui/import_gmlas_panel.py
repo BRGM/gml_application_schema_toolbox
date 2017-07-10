@@ -34,11 +34,12 @@ from qgis.utils import iface
 from qgis.PyQt.QtCore import (
     Qt, QUrl, pyqtSlot, QFile,  QIODevice,
     QEventLoop)
-from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem
+from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem, QApplication
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
 from gml_application_schema_toolbox import name as plugin_name
+from gml_application_schema_toolbox.core.load_gmlas_in_qgis import import_in_qgis
 from gml_application_schema_toolbox.core.logging import log
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 from gml_application_schema_toolbox.core.settings import settings
@@ -279,6 +280,15 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             self.translate(self.import_params())
         except InputError as e:
             e.show()
+        print("source", self.databaseWidget.datasource_name())
+        if self.loadLayersCheck.isChecked():
+            try:
+                QApplication.setOverrideCursor(Qt.WaitCursor)
+                import_in_qgis("dbname='{}'".format(self.databaseWidget.datasource_name()),
+                               'postgres' if self.databaseWidget.format() == 'PostgreSQL' else 'spatialite')
+            finally:
+                QApplication.restoreOverrideCursor()
+            
 
     #@pyqtSlot()
     #def on_importButton_clicked(self):
