@@ -23,7 +23,6 @@ from builtins import object
 
 import xml.etree.ElementTree as ET
 from osgeo import ogr, osr
-import sqlite3
 import re
 
 from qgis.PyQt.QtCore import QVariant, QDateTime
@@ -357,7 +356,6 @@ class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
         """
         driver = ogr.GetDriverByName('GPKG')
         ds = driver.CreateDataSource(self.output_local_file)
-        conn = spatialite_connect(self.output_local_file)
         layer = ds.CreateLayer("meta", geom_type = ogr.wkbNone)
         layer.CreateField(ogr.FieldDefn('key', ogr.OFTString))
         layer.CreateField(ogr.FieldDefn('value', ogr.OFTString))
