@@ -1,3 +1,8 @@
+1.1.0 - 11/07/2017
+	* Remove dependency to pyspatialite
+	* Bring back XML mode with custom widgets
+	* Add a custom widget for geology logs
+	* GMLAS import: option to automatically load layers and configure relations + editor widgets
 1.0.0 - 15/12/2016
         * Add WFS 2 download panel
         * Add OGR GMLAS convert panel
