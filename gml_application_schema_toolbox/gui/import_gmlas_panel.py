@@ -283,6 +283,9 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             e.show()
         finally:
                 QApplication.restoreOverrideCursor()
+
+    @pyqtSlot()
+    def on_loadLayersBtn_clicked(self):
         source = self.databaseWidget.datasource_name()
         if source.startswith('PG'):
             source = source[3:]
@@ -290,16 +293,11 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         else:
             source = "dbname='{}'".format(source)
             schema = None
-        if self.loadLayersCheck.isChecked():
-            try:
-                QApplication.setOverrideCursor(Qt.WaitCursor)
-                import_in_qgis(source,
-                               'postgres' if self.databaseWidget.format() == 'PostgreSQL' else 'spatialite',
-                               schema)
-            finally:
-                QApplication.restoreOverrideCursor()
-            
-
-    #@pyqtSlot()
-    #def on_importButton_clicked(self):
+        try:
+            QApplication.setOverrideCursor(Qt.WaitCursor)
+            import_in_qgis(source,
+                           'postgres' if self.databaseWidget.format() == 'PostgreSQL' else 'spatialite',
+                           schema)
+        finally:
+            QApplication.restoreOverrideCursor()
         

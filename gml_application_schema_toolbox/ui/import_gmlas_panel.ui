@@ -398,7 +398,7 @@ p, li { white-space: pre-wrap; }
              <item>
               <widget class="QRadioButton" name="updateRadioButton">
                <property name="text">
-                <string>Update</string>
+                <string>&amp;Update</string>
                </property>
               </widget>
              </item>
@@ -444,19 +444,16 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="loadLayersCheck">
+    <widget class="QPushButton" name="convertButton">
      <property name="text">
-      <string>Load layers in QGIS upon creation</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
+      <string>Convert</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="convertButton">
+    <widget class="QPushButton" name="loadLayersBtn">
      <property name="text">
-      <string>Convert</string>
+      <string>Load and configure layers</string>
      </property>
     </widget>
    </item>
