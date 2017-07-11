@@ -88,8 +88,8 @@ where
     if provider == "postgres":
         sql = "select row_number() over () as _uid_, * from ({}) _r".format(sql)
     l = QgsVectorLayer(gmlas_uri + ' key=\'_uid_\' table="(' + sql + ')" sql=', "l", provider)
-    if not l.isValid():
-        raise RuntimeError("SQL error when requesting 1:1 relations")
+    #if not l.isValid():
+    #    raise RuntimeError("SQL error when requesting 1:1 relations")
     for f in l.getFeatures():
         rel = QgsRelation()
         rel.setId('1_1_' + f['layer_name'] + '_' + f['field_name'])
@@ -108,7 +108,7 @@ where
     relations_1_n = []
     sql = """
 select
-  layer_name, r.parent_pkid, field_related_layer, r.child_pkid
+  layer_name, r.parent_pkid, field_related_layer as child_layer, r.child_pkid
 from
   {}_ogr_fields_metadata f
   join {}_ogr_layer_relationships r
@@ -117,20 +117,42 @@ from
 where
   field_category in ('PATH_TO_CHILD_ELEMENT_WITH_LINK', 'PATH_TO_CHILD_ELEMENT_NO_LINK')
   and field_max_occurs>1
+-- junctions - 1st way
+union all
+select
+  layer_name, r.parent_pkid, field_junction_layer as child_layer, 'parent_pkid' as child_pkid
+from
+  _ogr_fields_metadata f
+  join _ogr_layer_relationships r
+    on r.parent_layer = f.layer_name
+   and r.child_layer = f.field_related_layer
+where
+  field_category = 'PATH_TO_CHILD_ELEMENT_WITH_JUNCTION_TABLE'
+-- junctions - 2nd way
+union all
+select
+  field_related_layer as layer_name, r.child_pkid, field_junction_layer as child_layer, 'child_pkid' as child_pkid
+from
+  _ogr_fields_metadata f
+  join _ogr_layer_relationships r
+    on r.parent_layer = f.layer_name
+   and r.child_layer = f.field_related_layer
+where
+  field_category = 'PATH_TO_CHILD_ELEMENT_WITH_JUNCTION_TABLE'
 """.format(schema_s, schema_s)
     if provider == "postgres":
         sql = "select row_number() over () as _uid_, * from ({}) _r".format(sql)
     l = QgsVectorLayer(gmlas_uri + ' key=\'_uid_\' table="(' + sql + ')" sql=', "l", provider)
-    if not l.isValid():
-        raise RuntimeError("SQL error when requesting 1:n relations")
+    #if not l.isValid():
+    #    raise RuntimeError("SQL error when requesting 1:n relations")
     for f in l.getFeatures():
         rel = QgsRelation()
-        rel.setId('1_n_' + f['layer_name'] + '_' + f['field_related_layer'] + '_' + f['parent_pkid'] + '_' + f['child_pkid'])
-        rel.setName(f['field_related_layer'])
+        rel.setId('1_n_' + f['layer_name'] + '_' + f['child_layer'] + '_' + f['parent_pkid'] + '_' + f['child_pkid'])
+        rel.setName(f['child_layer'])
         # parent layer
         rel.setReferencedLayer(layers[f['layer_name']]['layer_id'])
         # child layer
-        rel.setReferencingLayer(layers[f['field_related_layer']]['layer_id'])
+        rel.setReferencingLayer(layers[f['child_layer']]['layer_id'])
         # parent, child
         rel.addFieldPair(f['child_pkid'], f['parent_pkid'])
         #rel.addFieldPair(f['child_pkid'], 'ogc_fid')
