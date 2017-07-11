@@ -19,16 +19,23 @@ from qgis.core import QgsVectorLayer, QgsProject, QgsCoordinateReferenceSystem, 
 from qgis.core import QgsEditFormConfig, QgsAttributeEditorField, QgsAttributeEditorRelation, QgsAttributeEditorContainer
 from qgis.PyQt.QtCore import QVariant
 
-def import_in_qgis(gmlas_uri, provider):
+def import_in_qgis(gmlas_uri, provider, schema = None):
     """Imports layers from a GMLAS file in QGIS with relations and editor widgets
 
     @param gmlas_uri connection parameters
     @param provider name of the QGIS provider that handles gmlas_uri parameters (postgresql or spatialite)
     """
-
+    if schema is not None:
+        schema_s = schema + "."
+    else:
+        schema_s = ""
+        
     # get list of layers
-    sql = "select o.*, g.f_geometry_column, g.srid from _ogr_layers_metadata o left join geometry_columns g on g.f_table_name = o.layer_name"
-    l = QgsVectorLayer(gmlas_uri + ' table="(' + sql + ')" sql=', "l", provider)
+    sql = "select o.*, g.f_geometry_column, g.srid from {}_ogr_layers_metadata o left join geometry_columns g on g.f_table_name = o.layer_name".format(schema_s)
+    if provider == "postgres":
+        sql = sql.replace("f_geometry_column", "f_geometry_column::text")
+        sql = "select row_number() over () as _uid_, * from ({}) _r".format(sql)
+    l = QgsVectorLayer(gmlas_uri + ' key=\'_uid_\' table="(' + sql + ')" sql=', "l", provider)
     if not l.isValid():
         raise RuntimeError("Cannot find layers metadata")
     layers = dict([(f.attribute("layer_name"),
@@ -47,10 +54,14 @@ def import_in_qgis(gmlas_uri, provider):
     for ln in sorted(layers.keys()):
         lyr = layers[ln]
         g_column = lyr["geometry_column"]
-        if not (isinstance(g_column, QVariant) and g_column.isNull()):
-            l = QgsVectorLayer(gmlas_uri + ' table="{}" ({}) sql='.format(ln, g_column), ln, provider)
+        if schema is None:
+            table_name = '"{}"'.format(ln)
         else:
-            l = QgsVectorLayer(gmlas_uri + ' table="{}" sql='.format(ln), ln, provider)
+            table_name = '"{}"."{}"'.format(schema, ln)
+        if not (isinstance(g_column, QVariant) and g_column.isNull()):
+            l = QgsVectorLayer(gmlas_uri + ' table={} ({}) sql='.format(table_name, g_column), ln, provider)
+        else:
+            l = QgsVectorLayer(gmlas_uri + ' table={} sql='.format(table_name), ln, provider)
         if not l.isValid():
             raise RuntimeError("Problem loading layer {}".format(ln))
         if lyr["srid"]:
@@ -66,17 +77,19 @@ def import_in_qgis(gmlas_uri, provider):
 select
   layer_name, field_name, field_related_layer, r.child_pkid
 from
-  _ogr_fields_metadata f
-  join _ogr_layer_relationships r
+  {}_ogr_fields_metadata f
+  join {}_ogr_layer_relationships r
     on r.parent_layer = f.layer_name
    and r.parent_element_name = f.field_name
 where
   field_category in ('PATH_TO_CHILD_ELEMENT_WITH_LINK', 'PATH_TO_CHILD_ELEMENT_NO_LINK')
   and field_max_occurs=1
-"""
-    l = QgsVectorLayer(gmlas_uri + ' table="(' + sql + ')" sql=', "l", provider)
+""".format(schema_s, schema_s)
+    if provider == "postgres":
+        sql = "select row_number() over () as _uid_, * from ({}) _r".format(sql)
+    l = QgsVectorLayer(gmlas_uri + ' key=\'_uid_\' table="(' + sql + ')" sql=', "l", provider)
     if not l.isValid():
-        raise RuntimeError("SQL error")
+        raise RuntimeError("SQL error when requesting 1:1 relations")
     for f in l.getFeatures():
         rel = QgsRelation()
         rel.setId('1_1_' + f['layer_name'] + '_' + f['field_name'])
@@ -97,17 +110,19 @@ where
 select
   layer_name, r.parent_pkid, field_related_layer, r.child_pkid
 from
-  _ogr_fields_metadata f
-  join _ogr_layer_relationships r
+  {}_ogr_fields_metadata f
+  join {}_ogr_layer_relationships r
     on r.parent_layer = f.layer_name
    and r.child_layer = f.field_related_layer
 where
   field_category in ('PATH_TO_CHILD_ELEMENT_WITH_LINK', 'PATH_TO_CHILD_ELEMENT_NO_LINK')
   and field_max_occurs>1
-"""
-    l = QgsVectorLayer(gmlas_uri + ' table="(' + sql + ')" sql=', "l", provider)
+""".format(schema_s, schema_s)
+    if provider == "postgres":
+        sql = "select row_number() over () as _uid_, * from ({}) _r".format(sql)
+    l = QgsVectorLayer(gmlas_uri + ' key=\'_uid_\' table="(' + sql + ')" sql=', "l", provider)
     if not l.isValid():
-        raise RuntimeError("SQL error")
+        raise RuntimeError("SQL error when requesting 1:n relations")
     for f in l.getFeatures():
         rel = QgsRelation()
         rel.setId('1_n_' + f['layer_name'] + '_' + f['field_related_layer'] + '_' + f['parent_pkid'] + '_' + f['child_pkid'])

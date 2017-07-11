@@ -21,5 +21,10 @@ class TestLoadInQGIS(unittest.TestCase):
         import_in_qgis("dbname='{}'".format(f), "spatialite")
         QgsProject.instance().write("test.qgs")
 
+    def test_postgis(self):
+        f = os.path.join(os.path.dirname(__file__), "..", "samples", "gmlas.sqlite")
+        import_in_qgis("dbname='test_gmlas' port=5434", "postgres", schema="piezo")
+        QgsProject.instance().write("test.qgs")
+
 if __name__ == '__main__':
     unittest.main()

@@ -277,15 +277,25 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
     @pyqtSlot()
     def on_convertButton_clicked(self):
         try:
+            QApplication.setOverrideCursor(Qt.WaitCursor)
             self.translate(self.import_params())
         except InputError as e:
             e.show()
-        print("source", self.databaseWidget.datasource_name())
+        finally:
+                QApplication.restoreOverrideCursor()
+        source = self.databaseWidget.datasource_name()
+        if source.startswith('PG'):
+            source = source[3:]
+            schema = self.databaseWidget.schema()
+        else:
+            source = "dbname='{}'".format(source)
+            schema = None
         if self.loadLayersCheck.isChecked():
             try:
                 QApplication.setOverrideCursor(Qt.WaitCursor)
-                import_in_qgis("dbname='{}'".format(self.databaseWidget.datasource_name()),
-                               'postgres' if self.databaseWidget.format() == 'PostgreSQL' else 'spatialite')
+                import_in_qgis(source,
+                               'postgres' if self.databaseWidget.format() == 'PostgreSQL' else 'spatialite',
+                               schema)
             finally:
                 QApplication.restoreOverrideCursor()
             
