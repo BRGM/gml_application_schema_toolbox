@@ -298,23 +298,20 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             QApplication.restoreOverrideCursor()
 
         # fix geometry types
-        if self.databaseWidget.format() != "PostgreSQL":
-            fix_geometry_types_in_spatialite(self.databaseWidget.datasource_name())
+        #if self.databaseWidget.format() != "PostgreSQL":
+        #    fix_geometry_types_in_spatialite(self.databaseWidget.datasource_name())
 
     @pyqtSlot()
     def on_loadLayersBtn_clicked(self):
         source = self.databaseWidget.datasource_name()
         if source.startswith('PG'):
-            source = source[3:]
             schema = self.databaseWidget.schema()
         else:
-            source = "dbname='{}'".format(source)
             schema = None
         try:
             QApplication.setOverrideCursor(Qt.WaitCursor)
-            import_in_qgis(source,
-                           'postgres' if self.databaseWidget.format() == 'PostgreSQL' else 'spatialite',
-                           schema)
+            import_in_qgis(source, self.databaseWidget.format(), schema)
+
         finally:
             QApplication.restoreOverrideCursor()
         

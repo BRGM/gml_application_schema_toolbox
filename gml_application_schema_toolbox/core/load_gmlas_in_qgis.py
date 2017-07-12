@@ -19,51 +19,76 @@ from qgis.core import QgsVectorLayer, QgsProject, QgsCoordinateReferenceSystem, 
 from qgis.core import QgsEditFormConfig, QgsAttributeEditorField, QgsAttributeEditorRelation, QgsAttributeEditorContainer
 from qgis.PyQt.QtCore import QVariant
 
+from osgeo import ogr
+
+def _qgis_layer(uri, schema_name, layer_name, geometry_column, provider, qgis_layer_name):
+    if geometry_column is not None:
+        g_column = "({})".format(geometry_column)
+    else:
+        g_column = ""
+    if provider == "SQLite":
+        # use OGR for spatialite loading
+        l = QgsVectorLayer("{}|layername={}{}".format(uri, layer_name, g_column), qgis_layer_name, "ogr")
+    else:
+        if schema_name is not None:
+            s_table = '"{}"."{}"'.format(schema_name, layer_name)
+        else:
+            s_table = '"{}"'.format(layer_name)
+        # remove "PG:" in front of the uri
+        uri = uri[3:]
+        l = QgsVectorLayer("{} table={} {} sql=".format(uri, s_table, g_column), qgis_layer_name, "postgres")
+    return l
+
 def import_in_qgis(gmlas_uri, provider, schema = None):
     """Imports layers from a GMLAS file in QGIS with relations and editor widgets
 
     @param gmlas_uri connection parameters
     @param provider name of the QGIS provider that handles gmlas_uri parameters (postgresql or spatialite)
+    @param schema name of the PostgreSQL schema where tables and metadata tables are
     """
     if schema is not None:
         schema_s = schema + "."
     else:
         schema_s = ""
-        
+
+    drv = ogr.GetDriverByName(provider)
+    ds = drv.Open(gmlas_uri)
+
     # get list of layers
     sql = "select o.*, g.f_geometry_column, g.srid from {}_ogr_layers_metadata o left join geometry_columns g on g.f_table_name = o.layer_name".format(schema_s)
-    if provider == "postgres":
-        sql = sql.replace("f_geometry_column", "f_geometry_column::text")
-        sql = "select row_number() over () as _uid_, * from ({}) _r".format(sql)
-    l = QgsVectorLayer(gmlas_uri + ' key=\'_uid_\' table="(' + sql + ')" sql=', "l", provider)
-    if not l.isValid():
-        raise RuntimeError("Cannot find layers metadata")
-    layers = dict([(f.attribute("layer_name"),
-                    {'uid': f.attribute("layer_pkid_name"),
-                     'category': f.attribute("layer_category"),
-                     'xpath': f.attribute("layer_xpath"),
-                     'parent_pkid': f.attribute("layer_parent_pkid_name"),
-                     'geometry_column': f.attribute("f_geometry_column"),
-                     'srid': f.attribute("srid"),
-                     '1_n' : [], # 1:N relations
-                     'layer_id': None,
-                     'layer': None,
-                     'fields' : []}) for f in l.getFeatures()])
+    
+    l = ds.ExecuteSQL(sql)
+    layers = {}
+    for f in l:
+        ln = f.GetField("layer_name")
+        if ln not in layers:
+            layers[ln] = {
+                'uid': f.GetField("layer_pkid_name"),
+                'category': f.GetField("layer_category"),
+                'xpath': f.GetField("layer_xpath"),
+                'parent_pkid': f.GetField("layer_parent_pkid_name"),
+                'srid': f.GetField("srid"),
+                'geometry_column': f.GetField("f_geometry_column"),
+                '1_n' : [], # 1:N relations
+                'layer_id': None,
+                'layer_name' : ln,
+                'layer': None,
+                'fields' : []}
+        else:
+            # additional geometry columns
+            g = f.GetField("f_geometry_column")
+            k = "{} ({})".format(ln, g)
+            layers[k] = dict(layers[ln])
+            layers[k]["geometry_column"] = g
+    
 
     crs = QgsCoordinateReferenceSystem("EPSG:4326")
     for ln in sorted(layers.keys()):
         lyr = layers[ln]
-        g_column = lyr["geometry_column"]
-        if schema is None:
-            table_name = '"{}"'.format(ln)
-        else:
-            table_name = '"{}"."{}"'.format(schema, ln)
-        if not (isinstance(g_column, QVariant) and g_column.isNull()):
-            l = QgsVectorLayer(gmlas_uri + ' table={} ({}) sql='.format(table_name, g_column), ln, provider)
-        else:
-            l = QgsVectorLayer(gmlas_uri + ' table={} sql='.format(table_name), ln, provider)
+        g_column = lyr["geometry_column"] or None
+        l = _qgis_layer(gmlas_uri, schema, lyr["layer_name"], g_column, provider, qgis_layer_name = ln)
         if not l.isValid():
-            raise RuntimeError("Problem loading layer {}".format(ln))
+            raise RuntimeError("Problem loading layer {} with {}".format(ln, l.source()))
         if lyr["srid"]:
             crs = QgsCoordinateReferenceSystem("EPSG:{}".format(lyr["srid"]))
         l.setCrs(crs)
@@ -85,21 +110,19 @@ where
   field_category in ('PATH_TO_CHILD_ELEMENT_WITH_LINK', 'PATH_TO_CHILD_ELEMENT_NO_LINK')
   and field_max_occurs=1
 """.format(schema_s, schema_s)
-    if provider == "postgres":
-        sql = "select row_number() over () as _uid_, * from ({}) _r".format(sql)
-    l = QgsVectorLayer(gmlas_uri + ' key=\'_uid_\' table="(' + sql + ')" sql=', "l", provider)
+    l = ds.ExecuteSQL(sql)
     #if not l.isValid():
     #    raise RuntimeError("SQL error when requesting 1:1 relations")
-    for f in l.getFeatures():
+    for f in l:
         rel = QgsRelation()
-        rel.setId('1_1_' + f['layer_name'] + '_' + f['field_name'])
-        rel.setName('1_1_' + f['layer_name'] + '_' + f['field_name'])
+        rel.setId('1_1_' + f.GetField('layer_name') + '_' + f.GetField('field_name'))
+        rel.setName('1_1_' + f.GetField('layer_name') + '_' + f.GetField('field_name'))
         # parent layer
-        rel.setReferencingLayer(layers[f['layer_name']]['layer_id'])
+        rel.setReferencingLayer(layers[f.GetField('layer_name')]['layer_id'])
         # child layer
-        rel.setReferencedLayer(layers[f['field_related_layer']]['layer_id'])
+        rel.setReferencedLayer(layers[f.GetField('field_related_layer')]['layer_id'])
         # parent, child
-        rel.addFieldPair(f['field_name'], f['child_pkid'])
+        rel.addFieldPair(f.GetField('field_name'), f.GetField('child_pkid'))
         #rel.generateId()
         if rel.isValid():
             relations_1_1.append(rel)
@@ -140,26 +163,24 @@ from
 where
   field_category = 'PATH_TO_CHILD_ELEMENT_WITH_JUNCTION_TABLE'
 """.format(schema_s, schema_s)
-    if provider == "postgres":
-        sql = "select row_number() over () as _uid_, * from ({}) _r".format(sql)
-    l = QgsVectorLayer(gmlas_uri + ' key=\'_uid_\' table="(' + sql + ')" sql=', "l", provider)
+    l = ds.ExecuteSQL(sql)
     #if not l.isValid():
     #    raise RuntimeError("SQL error when requesting 1:n relations")
-    for f in l.getFeatures():
+    for f in l:
         rel = QgsRelation()
-        rel.setId('1_n_' + f['layer_name'] + '_' + f['child_layer'] + '_' + f['parent_pkid'] + '_' + f['child_pkid'])
-        rel.setName(f['child_layer'])
+        rel.setId('1_n_' + f.GetField('layer_name') + '_' + f.GetField('child_layer') + '_' + f.GetField('parent_pkid') + '_' + f.GetField('child_pkid'))
+        rel.setName(f.GetField('child_layer'))
         # parent layer
-        rel.setReferencedLayer(layers[f['layer_name']]['layer_id'])
+        rel.setReferencedLayer(layers[f.GetField('layer_name')]['layer_id'])
         # child layer
-        rel.setReferencingLayer(layers[f['child_layer']]['layer_id'])
+        rel.setReferencingLayer(layers[f.GetField('child_layer')]['layer_id'])
         # parent, child
-        rel.addFieldPair(f['child_pkid'], f['parent_pkid'])
-        #rel.addFieldPair(f['child_pkid'], 'ogc_fid')
+        rel.addFieldPair(f.GetField('child_pkid'), f.GetField('parent_pkid'))
+        #rel.addFieldPair(f.GetField('child_pkid'), 'ogc_fid')
         if rel.isValid():
             relations_1_n.append(rel)
             # add relation to layer
-            layers[f['layer_name']]['1_n'].append(rel)
+            layers[f.GetField('layer_name')]['1_n'].append(rel)
             
     QgsProject.instance().relationManager().setRelations(relations_1_1 + relations_1_n)
 
