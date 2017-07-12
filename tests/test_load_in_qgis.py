@@ -21,6 +21,7 @@ start_app()
 def convert_and_import(xml_file):
     out_f = "/tmp/t.sqlite"
     config_file = os.path.join(os.path.dirname(__file__), "gmlasconf.xml")
+    gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
     ds = gdal.OpenEx("GMLAS:{}".format(xml_file), open_options=['EXPOSE_METADATA_LAYERS=YES', 'CONFIG_FILE={}'.format(config_file)])
     srs = osr.SpatialReference()
     qgs_srs = QgsCoordinateReferenceSystem("EPSG:4326")
@@ -32,11 +33,10 @@ def convert_and_import(xml_file):
         , 'accessMode': "overwrite"
         , 'datasetCreationOptions': ['SPATIALITE=YES']
         , 'options' : ['-forceNullable', '-skipfailures']
-        # FIXME
         #, 'srcSRS': srs
-        , 'dstSRS': srs
+        #, 'dstSRS': srs
         , 'geometryType': 'CONVERT_TO_LINEAR'
-        , 'reproject': True
+        , 'reproject': False
     }
     # call gdal to convert
     gdal.VectorTranslate(**params)
@@ -66,11 +66,38 @@ class TestLoadInQGIS(unittest.TestCase):
         f = os.path.join(os.path.dirname(__file__), "..", "samples", "BRGM_raw_database_observation_waterml2_output.xml")
         #layers = [('boreholeview', 1)]
         #relations = []
+        layers = [('defaulttvpmeasurementmetadata', 100),
+                  ('measurementtimeseries', 100),
+                  ('measurementtimeseries_defaultpointmetadata', 100),
+                  ('measurementtimeseries_point', 100),
+                  ('measurementtimeseriesmetadata', 100),
+                  ('monitoringpoint', 1),
+                  ('monitoringpoint_name', 100),
+                  ('monitoringpoint_sampledfeature', 100),
+                  ('namedvalue', 100),
+                  ('om_observation', 100),
+                  ('om_observation_parameter', 100),
+                  ('temporalextent', 100),
+                  ('timeinstant', 100),
+                  ('timeperiod', 100)]
+        relations = [('1_1', 'measurementtimeseries_defaultpointmetadata', 'defaulttvpmetadata_defaulttvpmeasurementmetadata_pkid', 'defaulttvpmeasurementmetadata', 'ogr_pkid'),
+                     ('1_1', 'measurementtimeseries', 'metadata_timeseriemetadata_measurementimeseriesmetadata_pkid', 'measurementtimeseriesmetadata', 'ogr_pkid'),
+                     ('1_1', 'measurementtimeseriesmetadata', 'temporalextent_pkid', 'temporalextent', 'ogr_pkid'),
+                     ('1_1', 'om_observation', 'featureofinterest_abstractfeature_monitoringpoint_pkid', 'monitoringpoint', 'id'),
+                     ('1_1', 'om_observation_parameter', 'namedvalue_pkid', 'namedvalue', 'ogr_pkid'),
+                     ('1_1', 'om_observation', 'phenomenontime_abstracttimeobject_timeperiod_pkid', 'timeperiod', 'id'),
+                     ('1_1', 'om_observation', 'result_measurementtimeseries_pkid', 'measurementtimeseries', 'id'),
+                     ('1_1', 'om_observation', 'resulttime_timeinstant_pkid', 'timeinstant', 'id'),
+                     ('1_n', 'measurementtimeseries_defaultpointmetadata', 'parent_id', 'measurementtimeseries', 'id'),
+                     ('1_n', 'measurementtimeseries_point', 'parent_id', 'measurementtimeseries', 'id'),
+                     ('1_n', 'monitoringpoint_name', 'parent_id', 'monitoringpoint', 'id'),
+                     ('1_n', 'monitoringpoint_sampledfeature', 'parent_id', 'monitoringpoint', 'id'),
+                     ('1_n', 'om_observation_parameter', 'parent_id', 'om_observation', 'id')]
         imported_layers, imported_relations = convert_and_import(f)
-        #self.assertCountEqual(imported_layers, layers)
-        #self.assertListEqual(imported_layers, layers)
-        #self.assertCountEqual(imported_relations, relations)
-        #self.assertListEqual(imported_relations, relations)
+        self.assertCountEqual(imported_layers, layers)
+        self.assertListEqual(imported_layers, layers)
+        self.assertCountEqual(imported_relations, relations)
+        self.assertListEqual(imported_relations, relations)
 
     def xtest_postgis(self):
         f = os.path.join(os.path.dirname(__file__), "..", "samples", "gmlas.sqlite")
