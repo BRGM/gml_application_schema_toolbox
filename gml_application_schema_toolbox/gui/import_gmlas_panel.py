@@ -69,8 +69,8 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
     def showEvent(self, event):
         # Cannot do that in the constructor. The project is not fully setup when
         # it is called
-        if not self.srsSelectionWidget.crs().isValid():
-            self.srsSelectionWidget.setCrs(iface.mapCanvas().mapSettings().destinationCrs())
+        if not self.destSrs.crs().isValid():
+            self.destSrs.setCrs(iface.mapCanvas().mapSettings().destinationCrs())
         BASE.showEvent(self, event)
 
     @pyqtSlot()
@@ -221,7 +221,13 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     def dest_srs(self):
         srs = osr.SpatialReference()
-        srs.ImportFromWkt(self.srsSelectionWidget.crs().toWkt())
+        srs.ImportFromWkt(self.destSrs.crs().toWkt())
+        assert srs.Validate() == 0
+        return srs
+
+    def src_srs(self):
+        srs = osr.SpatialReference()
+        srs.ImportFromWkt(self.sourceSrs.crs().toWkt())
         assert srs.Validate() == 0
         return srs
 
@@ -241,10 +247,16 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             'accessMode': self.access_mode(),
             'datasetCreationOptions': self.dataset_creation_options(),
             'layerCreationOptions': self.layer_creation_options(),
-            'dstSRS': self.dest_srs(),
-            'reproject': True,
             'options': self.translate_options()
         }
+        if self.reprojectCheck.isChecked():
+            params['reproject'] = True
+            params['dstSRS'] = self.dest_srs()
+        else:
+            params['reproject'] = False
+        if self.sourceSrsCheck.isChecked():
+            params['srcSRS'] = self.src_srs()
+            
         if self.convertToLinearCheckbox.isChecked():
              params['geometryType'] = 'CONVERT_TO_LINEAR'
 
