@@ -1,3 +1,7 @@
+1.1.1 - 13/07/2017
+	* Use ogr API instead of QGIS to load spatialite layers
+	* Add TypingConstraints for wml2 and geologylog
+	* Handle layers with multiple geometries
 1.1.0 - 11/07/2017
 	* Remove dependency to pyspatialite
 	* Bring back XML mode with custom widgets
