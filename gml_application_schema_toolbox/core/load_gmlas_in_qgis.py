@@ -111,21 +111,20 @@ where
   and field_max_occurs=1
 """.format(schema_s, schema_s)
     l = ds.ExecuteSQL(sql)
-    #if not l.isValid():
-    #    raise RuntimeError("SQL error when requesting 1:1 relations")
-    for f in l:
-        rel = QgsRelation()
-        rel.setId('1_1_' + f.GetField('layer_name') + '_' + f.GetField('field_name'))
-        rel.setName('1_1_' + f.GetField('layer_name') + '_' + f.GetField('field_name'))
-        # parent layer
-        rel.setReferencingLayer(layers[f.GetField('layer_name')]['layer_id'])
-        # child layer
-        rel.setReferencedLayer(layers[f.GetField('field_related_layer')]['layer_id'])
-        # parent, child
-        rel.addFieldPair(f.GetField('field_name'), f.GetField('child_pkid'))
-        #rel.generateId()
-        if rel.isValid():
-            relations_1_1.append(rel)
+    if l is not None:
+        for f in l:
+            rel = QgsRelation()
+            rel.setId('1_1_' + f.GetField('layer_name') + '_' + f.GetField('field_name'))
+            rel.setName('1_1_' + f.GetField('layer_name') + '_' + f.GetField('field_name'))
+            # parent layer
+            rel.setReferencingLayer(layers[f.GetField('layer_name')]['layer_id'])
+            # child layer
+            rel.setReferencedLayer(layers[f.GetField('field_related_layer')]['layer_id'])
+            # parent, child
+            rel.addFieldPair(f.GetField('field_name'), f.GetField('child_pkid'))
+            #rel.generateId()
+            if rel.isValid():
+                relations_1_1.append(rel)
 
     # add 1:N relations
     relations_1_n = []
@@ -164,23 +163,22 @@ where
   field_category = 'PATH_TO_CHILD_ELEMENT_WITH_JUNCTION_TABLE'
 """.format(schema_s, schema_s)
     l = ds.ExecuteSQL(sql)
-    #if not l.isValid():
-    #    raise RuntimeError("SQL error when requesting 1:n relations")
-    for f in l:
-        rel = QgsRelation()
-        rel.setId('1_n_' + f.GetField('layer_name') + '_' + f.GetField('child_layer') + '_' + f.GetField('parent_pkid') + '_' + f.GetField('child_pkid'))
-        rel.setName(f.GetField('child_layer'))
-        # parent layer
-        rel.setReferencedLayer(layers[f.GetField('layer_name')]['layer_id'])
-        # child layer
-        rel.setReferencingLayer(layers[f.GetField('child_layer')]['layer_id'])
-        # parent, child
-        rel.addFieldPair(f.GetField('child_pkid'), f.GetField('parent_pkid'))
-        #rel.addFieldPair(f.GetField('child_pkid'), 'ogc_fid')
-        if rel.isValid():
-            relations_1_n.append(rel)
-            # add relation to layer
-            layers[f.GetField('layer_name')]['1_n'].append(rel)
+    if l is not None:
+        for f in l:
+            rel = QgsRelation()
+            rel.setId('1_n_' + f.GetField('layer_name') + '_' + f.GetField('child_layer') + '_' + f.GetField('parent_pkid') + '_' + f.GetField('child_pkid'))
+            rel.setName(f.GetField('child_layer'))
+            # parent layer
+            rel.setReferencedLayer(layers[f.GetField('layer_name')]['layer_id'])
+            # child layer
+            rel.setReferencingLayer(layers[f.GetField('child_layer')]['layer_id'])
+            # parent, child
+            rel.addFieldPair(f.GetField('child_pkid'), f.GetField('parent_pkid'))
+            #rel.addFieldPair(f.GetField('child_pkid'), 'ogc_fid')
+            if rel.isValid():
+                relations_1_n.append(rel)
+                # add relation to layer
+                layers[f.GetField('layer_name')]['1_n'].append(rel)
             
     QgsProject.instance().relationManager().setRelations(relations_1_1 + relations_1_n)
 
