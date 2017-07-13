@@ -39,7 +39,6 @@ from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
 from gml_application_schema_toolbox import name as plugin_name
-from gml_application_schema_toolbox.core.fix_geometry_types import fix_geometry_types_in_spatialite
 from gml_application_schema_toolbox.core.load_gmlas_in_qgis import import_in_qgis
 from gml_application_schema_toolbox.core.logging import log
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
@@ -296,10 +295,6 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             e.show()
         finally:
             QApplication.restoreOverrideCursor()
-
-        # fix geometry types
-        #if self.databaseWidget.format() != "PostgreSQL":
-        #    fix_geometry_types_in_spatialite(self.databaseWidget.datasource_name())
 
     @pyqtSlot()
     def on_loadLayersBtn_clicked(self):
