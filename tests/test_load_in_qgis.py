@@ -19,9 +19,9 @@ from core.load_gmlas_in_qgis import *
 start_app()
 
 def convert_and_import(xml_file):
+    QgsProject.instance().clear()
     with tempfile.NamedTemporaryFile(delete=True) as f:
         out_f = f.name
-    print(out_f)
     config_file = os.path.join(os.path.dirname(__file__), "gmlasconf.xml")
     gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
     ds = gdal.OpenEx("GMLAS:{}".format(xml_file), open_options=['EXPOSE_METADATA_LAYERS=YES', 'CONFIG_FILE={}'.format(config_file)])
@@ -62,7 +62,7 @@ def convert_and_import(xml_file):
 
 class TestLoadInQGIS(unittest.TestCase):
 
-    def xtest_1(self):
+    def test_1(self):
         f = os.path.join(os.path.dirname(__file__), "..", "samples", "BRGM_raw_database_observation_waterml2_output.xml")
         layers = [('defaulttvpmeasurementmetadata', 100),
                   ('measurementtimeseries', 100),
@@ -127,8 +127,6 @@ class TestLoadInQGIS(unittest.TestCase):
                          ('status', 100),
                          ('type', 100)])
         imported_layers, imported_relations = convert_and_import(f)
-        #print(layers)
-        print(imported_layers)
         self.assertEqual(len(imported_layers), len(layers))
         self.assertListEqual(imported_layers, layers)
 
