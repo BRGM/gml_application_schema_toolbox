@@ -51,6 +51,7 @@ def import_in_qgis(gmlas_uri, provider, schema = None):
     else:
         schema_s = ""
 
+    ogr.UseExceptions()
     drv = ogr.GetDriverByName(provider)
     ds = drv.Open(gmlas_uri)
 
@@ -102,14 +103,14 @@ def import_in_qgis(gmlas_uri, provider, schema = None):
 select
   layer_name, field_name, field_related_layer, r.child_pkid
 from
-  {}_ogr_fields_metadata f
-  join {}_ogr_layer_relationships r
+  {0}_ogr_fields_metadata f
+  join {0}_ogr_layer_relationships r
     on r.parent_layer = f.layer_name
    and r.parent_element_name = f.field_name
 where
   field_category in ('PATH_TO_CHILD_ELEMENT_WITH_LINK', 'PATH_TO_CHILD_ELEMENT_NO_LINK')
   and field_max_occurs=1
-""".format(schema_s, schema_s)
+""".format(schema_s)
     l = ds.ExecuteSQL(sql)
     if l is not None:
         for f in l:
@@ -132,8 +133,8 @@ where
 select
   layer_name, r.parent_pkid, field_related_layer as child_layer, r.child_pkid
 from
-  {}_ogr_fields_metadata f
-  join {}_ogr_layer_relationships r
+  {0}_ogr_fields_metadata f
+  join {0}_ogr_layer_relationships r
     on r.parent_layer = f.layer_name
    and r.child_layer = f.field_related_layer
 where
@@ -144,8 +145,8 @@ union all
 select
   layer_name, r.parent_pkid, field_junction_layer as child_layer, 'parent_pkid' as child_pkid
 from
-  _ogr_fields_metadata f
-  join _ogr_layer_relationships r
+  {0}_ogr_fields_metadata f
+  join {0}_ogr_layer_relationships r
     on r.parent_layer = f.layer_name
    and r.child_layer = f.field_related_layer
 where
@@ -155,13 +156,13 @@ union all
 select
   field_related_layer as layer_name, r.child_pkid, field_junction_layer as child_layer, 'child_pkid' as child_pkid
 from
-  _ogr_fields_metadata f
-  join _ogr_layer_relationships r
+  {0}_ogr_fields_metadata f
+  join {0}_ogr_layer_relationships r
     on r.parent_layer = f.layer_name
    and r.child_layer = f.field_related_layer
 where
   field_category = 'PATH_TO_CHILD_ELEMENT_WITH_JUNCTION_TABLE'
-""".format(schema_s, schema_s)
+""".format(schema_s)
     l = ds.ExecuteSQL(sql)
     if l is not None:
         for f in l:
