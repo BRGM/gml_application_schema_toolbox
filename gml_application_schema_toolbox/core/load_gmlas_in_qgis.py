@@ -29,6 +29,7 @@ def _qgis_layer(uri, schema_name, layer_name, geometry_column, provider, qgis_la
     if provider == "SQLite":
         # use OGR for spatialite loading
         l = QgsVectorLayer("{}|layername={}{}".format(uri, layer_name, g_column), qgis_layer_name, "ogr")
+        l.setProviderEncoding("UTF-8")
     else:
         if schema_name is not None:
             s_table = '"{}"."{}"'.format(schema_name, layer_name)
