@@ -133,7 +133,7 @@ class DownloadWfs2Panel(BASE, WIDGET):
             return
 
         params = {
-            'typename': ','.join(typenames),
+            'typename': typenames,
             'maxfeatures': self.featureLimitBox.value(),
         }
 
