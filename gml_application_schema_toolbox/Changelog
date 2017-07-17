@@ -1,3 +1,6 @@
+1.1.3 - 17/07/2017
+	* Fix download tab
+	* Fix XML mode with non-spatiail layers
 1.1.2 - 17/07/2017
 	* Fix encoding issues
 	* Code cleanup
