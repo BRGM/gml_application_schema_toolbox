@@ -124,7 +124,8 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             'format': 'SQLite',
             'datasetCreationOptions': ['SPATIALITE=YES'],
             'dstSRS': self.dest_srs(),
-            'reproject': True
+            'reproject': True,
+            'options': ['-skipfailures']
         }
 
         if self.bboxGroupBox.isChecked():
@@ -157,6 +158,7 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     @pyqtSlot()
     def on_exportButton_clicked(self):
+        gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
         with NamedTemporaryFile(mode="w+t", suffix='.sqlite', delete=True) as out:
             temp_datasource_path = out.name
         try:

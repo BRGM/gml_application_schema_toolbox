@@ -64,6 +64,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         self.gmlPathLineEdit.setText(settings.value('gml_path', ''))
         self.acceptLanguageHeaderInput.setText(settings.value('default_language'))
         self.set_access_mode(settings.value('default_access_mode'))
+        gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
 
     def showEvent(self, event):
         # Cannot do that in the constructor. The project is not fully setup when
