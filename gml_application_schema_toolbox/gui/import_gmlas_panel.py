@@ -64,7 +64,6 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         self.gmlPathLineEdit.setText(settings.value('gml_path', ''))
         self.acceptLanguageHeaderInput.setText(settings.value('default_language'))
         self.set_access_mode(settings.value('default_access_mode'))
-        gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
 
     def showEvent(self, event):
         # Cannot do that in the constructor. The project is not fully setup when
@@ -289,6 +288,8 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     @pyqtSlot()
     def on_convertButton_clicked(self):
+        gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
+        gdal.SetConfigOption('GDAL_HTTP_UNSAFESSL', 'YES')
         try:
             QApplication.setOverrideCursor(Qt.WaitCursor)
             self.translate(self.import_params())
