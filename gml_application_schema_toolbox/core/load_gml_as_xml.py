@@ -264,21 +264,22 @@ class ComplexFeatureLoader(object):
             features = []
             for id, fid, g, xml, attrs in src.getFeatures():
                 qgsgeom = None
-                wkb, srid = g
-                qgsgeom = QgsGeometry()
-                qgsgeom.fromWkb(wkb)
-                if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
-                    if swap_xy:
-                        p = qgsgeom.asPoint()
-                        qgsgeom = QgsGeometry.fromPoint(QgsPointXY(p[1], p[0]))
-                elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
-                    if swap_xy:
-                        pl = qgsgeom.asPolyline()
-                        qgsgeom = QgsGeometry.fromPolyline([QgsPointXY(p[1],p[0]) for p in pl])
-                elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
-                    if swap_xy:
-                        pl = qgsgeom.asPolygon()
-                        qgsgeom = QgsGeometry.fromPolygon([[QgsPointXY(p[1],p[0]) for p in r] for r in pl])
+                if g is not None:
+                    wkb, srid = g
+                    qgsgeom = QgsGeometry()
+                    qgsgeom.fromWkb(wkb)
+                    if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
+                        if swap_xy:
+                            p = qgsgeom.asPoint()
+                            qgsgeom = QgsGeometry.fromPoint(QgsPointXY(p[1], p[0]))
+                    elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
+                        if swap_xy:
+                            pl = qgsgeom.asPolyline()
+                            qgsgeom = QgsGeometry.fromPolyline([QgsPointXY(p[1],p[0]) for p in pl])
+                    elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
+                        if swap_xy:
+                            pl = qgsgeom.asPolygon()
+                            qgsgeom = QgsGeometry.fromPolygon([[QgsPointXY(p[1],p[0]) for p in r] for r in pl])
 
                 f = QgsFeature(layer.dataProvider().fields(), id)
                 if qgsgeom:
