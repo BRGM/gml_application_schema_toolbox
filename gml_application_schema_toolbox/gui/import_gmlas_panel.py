@@ -293,6 +293,10 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             self.translate(self.import_params())
         except InputError as e:
             e.show()
+        except RuntimeError as e:
+            QMessageBox.warning(None,
+                                plugin_name(),
+                                e.args[0])
         finally:
             QApplication.restoreOverrideCursor()
 
@@ -306,7 +310,10 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         try:
             QApplication.setOverrideCursor(Qt.WaitCursor)
             import_in_qgis(source, self.databaseWidget.format(), schema)
-
+        except RuntimeError as e:
+            QMessageBox.warning(None,
+                                plugin_name(),
+                                e.args[0])
         finally:
             QApplication.restoreOverrideCursor()
         

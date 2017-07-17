@@ -55,6 +55,8 @@ def import_in_qgis(gmlas_uri, provider, schema = None):
     ogr.UseExceptions()
     drv = ogr.GetDriverByName(provider)
     ds = drv.Open(gmlas_uri)
+    if ds is None:
+        raise RuntimeError("Problem opening {}".format(gmlas_uri))
 
     # get list of layers
     sql = "select o.*, g.f_geometry_column, g.srid from {}_ogr_layers_metadata o left join geometry_columns g on g.f_table_name = o.layer_name".format(schema_s)
