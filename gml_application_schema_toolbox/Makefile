@@ -10,6 +10,8 @@ UI_FILES = ui/*.ui
 
 VERSION=$(shell grep "version=" metadata.txt | cut -d'=' -f 2)
 
+PLUGINS_DIR=$(HOME)/.local/share/QGIS/QGIS3/profiles/default/python/plugins
+
 %.qm : %.ts
 	lrelease $<
 
@@ -17,27 +19,27 @@ VERSION=$(shell grep "version=" metadata.txt | cut -d'=' -f 2)
 # the Python plugin directory is located at:
 # $HOME/.qgis2/python/plugins
 deploy: transcompile
-	mkdir -p $(HOME)/.qgis3/python/plugins/$(PLUGINNAME)
-	cp --parents -vfR $(PY_FILES) $(HOME)/.qgis3/python/plugins/$(PLUGINNAME)
-	cp --parents -vfR $(UI_FILES) $(HOME)/.qgis3/python/plugins/$(PLUGINNAME)
-	cp --parents -vfRa $(EXTRAS) $(HOME)/.qgis3/python/plugins/$(PLUGINNAME)
+	mkdir -p $(PLUGINS_DIR)/$(PLUGINNAME)
+	cp --parents -vfR $(PY_FILES) $(PLUGINS_DIR)/$(PLUGINNAME)
+	cp --parents -vfR $(UI_FILES) $(PLUGINS_DIR)/$(PLUGINNAME)
+	cp --parents -vfRa $(EXTRAS) $(PLUGINS_DIR)/$(PLUGINNAME)
 
 # The dclean target removes compiled python files from plugin directory
 # also delets any .svn entry
 dclean:
-	find $(HOME)/.qgis3/python/plugins/$(PLUGINNAME) -iname "*.pyc" -delete
-	find $(HOME)/.qgis3/python/plugins/$(PLUGINNAME) -iname ".svn" -prune -exec rm -Rf {} \;
+	find $(PLUGINS_DIR)/$(PLUGINNAME) -iname "*.pyc" -delete
+	find $(PLUGINS_DIR)/$(PLUGINNAME) -iname ".svn" -prune -exec rm -Rf {} \;
 
 # The derase deletes deployed plugin
 derase:
-	rm -Rf $(HOME)/.qgis3/python/plugins/$(PLUGINNAME)
+	rm -Rf $(PLUGINS_DIR)/$(PLUGINNAME)
 
 # The zip target deploys the plugin and creates a zip file with the deployed
 # content. You can then upload the zip file on http://plugins.qgis.org
 zip: deploy dclean
 	echo $(VERSION)
 	rm -f $(PLUGINNAME)*.zip
-	cd $(HOME)/.qgis3/python/plugins; zip -9r $(CURDIR)/$(PLUGINNAME)-$(VERSION).zip $(PLUGINNAME)
+	cd $(PLUGINS_DIR); zip -9r $(CURDIR)/$(PLUGINNAME)-$(VERSION).zip $(PLUGINNAME)
 
 upload: zip
 	sed s/_VERSION_/$(VERSION)/g < plugins.xml.tmpl > plugins.xml
