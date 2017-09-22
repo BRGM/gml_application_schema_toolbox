@@ -250,12 +250,19 @@ class ComplexFeatureLoader(object):
                 wkb, srid = g
                 qgsgeom = QgsGeometry()
                 qgsgeom.fromWkb(wkb)
-                if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
+                print(qgsgeom.wkbType())
+                if qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.Point:
                     layer = self._create_layer('point', srid, attr_list, src.title + " (points)")
-                elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
+                elif qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.MultiPoint:
+                    layer = self._create_layer('multipoint', srid, attr_list, src.title + " (points)")
+                elif qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.LineString:
                     layer = self._create_layer('linestring', srid, attr_list, src.title + " (lines)")
-                elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
+                elif qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.MultiLineString:
+                    layer = self._create_layer('multilinestring', srid, attr_list, src.title + " (lines)")
+                elif qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.Polygon:
                     layer = self._create_layer('polygon', srid, attr_list, src.title + " (polygons)")
+                elif qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.MultiPolygon:
+                    layer = self._create_layer('multipolygon', srid, attr_list, src.title + " (polygons)")
 
             # add metadata
             self._add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)
@@ -366,8 +373,12 @@ class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
 
         if srid:
             wkbType = { 'point': ogr.wkbPoint,
+                        'multipoint': ogr.wkbMultiPoint,
                         'linestring': ogr.wkbLineString,
-                        'polygon': ogr.wkbPolygon }[type]
+                        'multilinestring': ogr.wkbMultiLineString,
+                        'polygon': ogr.wkbPolygon,
+                        'multipolygon': ogr.wkbMultiPolygon
+            }[type]
             srs = osr.SpatialReference()
             srs.ImportFromEPSG(int(srid))
         else:
