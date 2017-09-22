@@ -22,22 +22,25 @@ def extract_features(doc):
     :param doc: a DOM document
     :returns: a list of nodes for each feature
     """
-    nodes = []
-    root = doc.getroot()
-    if root.tag.startswith(u'{http://www.opengis.net/wfs') and root.tag.endswith('FeatureCollection'):
-        # WFS features
-        for child in root:
-            if no_prefix(child.tag) == 'member':
-                nodes.append(child[0])
-            elif no_prefix(child.tag) == 'featureMembers':
-                for cchild in child:
-                    nodes.append(cchild)
-    elif root.tag.startswith(u'{http://www.opengis.net/sos/2') and root.tag.endswith('GetObservationResponse'):
-        # SOS features
-        for child in root:
-            if no_prefix(child.tag) == "observationData":
-                nodes.append(child[0])
-    else:
-        # it seems to be an isolated feature
-        nodes.append(root)
-    return nodes
+    def _extract(node):
+        features = []
+        if node.tag.startswith(u'{http://www.opengis.net/wfs') and node.tag.endswith('FeatureCollection'):
+            # WFS features
+            for child in node:
+                if no_prefix(child.tag) == 'member':
+                    # a member may contain another featurecollection => recursive call
+                    for cchild in child:
+                        features += _extract(cchild)
+                elif no_prefix(child.tag) == 'featureMembers':
+                    for cchild in child:
+                        features.append(cchild)
+        elif node.tag.startswith(u'{http://www.opengis.net/sos/2') and node.tag.endswith('GetObservationResponse'):
+            # SOS features
+            for child in node:
+                if no_prefix(child.tag) == "observationData":
+                    features.append(child[0])
+        else:
+            # it seems to be an isolated feature
+            features.append(node)
+        return features
+    return _extract(doc.getroot())
