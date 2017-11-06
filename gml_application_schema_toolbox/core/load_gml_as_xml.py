@@ -67,51 +67,91 @@ def is_layer_gml_xml(layer):
 # Implementation
 #
 
-def _wkbFromGml(tree):
-    # extract the srid
-    srid = 4326
+def _swap_qgs_geometry(qgsgeom):
+    if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
+        p = qgsgeom.asPoint()
+        qgsgeom = QgsGeometry.fromPointXY(QgsPointXY(p[1], p[0]))
+    elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
+        pl = qgsgeom.asPolyline()
+        qgsgeom = QgsGeometry.fromPolylineXY([QgsPointXY(p[1],p[0]) for p in pl])
+    elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
+        pl = qgsgeom.asPolygon()
+        qgsgeom = QgsGeometry.fromPolygonXY([[QgsPointXY(p[1],p[0]) for p in r] for r in pl])
+    return qgsgeom
+
+def _get_srs_name(tree):
+    # get srsName, either from the current element, or from a child
     for k, v in tree.attrib.items():
         if no_prefix(k) == 'srsName':
-            # EPSG:4326
-		  	# urn:EPSG:geographicCRS:4326
-		  	# urn:ogc:def:crs:EPSG:4326
-		 	# urn:ogc:def:crs:EPSG::4326
-		  	# urn:ogc:def:crs:EPSG:6.6:4326
-		   	# urn:x-ogc:def:crs:EPSG:6.6:4326
-			# http://www.opengis.net/gml/srs/epsg.xml#4326
-			# http://www.epsg.org/6.11.2/4326
-            # get the last number
-            m = re.search('([0-9]+)/?$', v)
-            srid = m.group(1)
-            break
+            return v
+    for child in tree:
+        n = _get_srs_name(child)
+        if n is not None:
+            return n
+    return None
+
+def _wkbFromGml(tree, swap_xy):
+    # extract the srid
+    srid = None
+    srid_axis_swapped = False
+
+    srs_name = _get_srs_name(tree)
+    if srs_name is None:
+        # No SRID found, force to 4326
+        srid = 4326
+        srid_axis_swapped = True
+    else:
+        sr = osr.SpatialReference()
+        # EPSG:4326
+		# urn:EPSG:geographicCRS:4326
+		# urn:ogc:def:crs:EPSG:4326
+		# urn:ogc:def:crs:EPSG::4326
+		# urn:ogc:def:crs:EPSG:6.6:4326
+		# urn:x-ogc:def:crs:EPSG:6.6:4326
+		# http://www.opengis.net/gml/srs/epsg.xml#4326
+		# http://www.epsg.org/6.11.2/4326
+        # get the last number
+        m = re.search('([0-9]+)/?$', srs_name)
+        srid = int(m.group(1))
+        sr.ImportFromEPSGA(srid)
+        srid_axis_swapped = sr.EPSGTreatsAsLatLong() or sr.EPSGTreatsAsNorthingEasting()
+
+	# inversion
+    swap_xy = swap_xy ^ srid_axis_swapped
             
     # call ogr for GML parsing
     s = ET.tostring(tree, encoding="unicode")
     g = ogr.CreateGeometryFromGML(s)
     if g is None:
-        return None
-    return (g.ExportToWkb(), srid)
+        return None, None
 
-def _extractGmlGeometry(tree):
+    qgsgeom = QgsGeometry()
+    qgsgeom.fromWkb(g.ExportToWkb())
+
+    if swap_xy:
+        qgsgeom = _swap_qgs_geometry(qgsgeom)
+    return qgsgeom, srid
+
+def _extractGmlGeometry(tree, swap_xy):
     ns, tag = split_tag(tree.tag)
     if ns.startswith('http://www.opengis.net/gml'):
         if tag in ["Point", "LineString", "Polygon",
                    "MultiPoint", "MultiCurve", "MultiSurface",
                    "Curve", "OrientableCurve", "Surface", 
                    "CompositeCurve", "CompositeSurface", "MultiGeometry"]:
-            return _wkbFromGml(tree)
+            return _wkbFromGml(tree, swap_xy)
         
     for child in tree:
-        g = _extractGmlGeometry(child)
+        g = _extractGmlGeometry(child, swap_xy)
         if g is not None:
             return g
     return None
 
-def _extractGmlFromXPath(tree, xpath):
+def _extractGmlFromXPath(tree, xpath, swap_xy):
     #r = tree.xpath("./" + xpath, namespaces = tree.nsmap)
     r = resolve_xpath(tree, xpath)
     if len(r) > 0:
-        return _wkbFromGml(r[0])
+        return _wkbFromGml(r[0], swap_xy)
     return None
 
 class ComplexFeatureSource(object):
@@ -132,10 +172,12 @@ class ComplexFeatureSource(object):
         self.geometry_mapping = geometry_mapping
         self.logger = logger
 
-    def getFeatures(self):
+    def getFeatures(self, swap_xy=False):
         """
         The iterator that will yield a new feature.
         The yielded value is (feature_id, QgsGeometry or None, xml_tree: Element, { 'attr1' : value, 'attr2' : 'value' })
+
+        @param swap_xy whether to force X/Y coordinate swapping
         """
         i = 1
         for feature in self.features:
@@ -161,9 +203,9 @@ class ComplexFeatureSource(object):
 
             # get the geometry
             if self.geometry_mapping:
-                wkb = _extractGmlFromXPath(feature, self.geometry_mapping)
+                qgs_geom, srid = _extractGmlFromXPath(feature, self.geometry_mapping, swap_xy)
             else:
-                wkb = _extractGmlGeometry(feature)
+                qgs_geom, srid = _extractGmlGeometry(feature, swap_xy)
 
             # get attribute values
             attrvalues = {}
@@ -199,7 +241,7 @@ class ComplexFeatureSource(object):
                         value = None
                 attrvalues[attr] = value
 
-            yield i, fid, wkb, feature, attrvalues
+            yield i, fid, qgs_geom, srid, feature, attrvalues
             i += 1
 
 
@@ -242,15 +284,10 @@ class ComplexFeatureLoader(object):
             attr_list = [ (k, v[1]) for k, v in attributes.items() ]
 
             # first feature
-            id, fid, g, xml, attrs = next(src.getFeatures())
-            qgsgeom = None
-            if g is None:
+            id, fid, qgsgeom, srid, xml, attrs = next(src.getFeatures())
+            if qgsgeom is None:
                 layer = self._create_layer('none', None, attr_list, src.title)
             else:
-                wkb, srid = g
-                qgsgeom = QgsGeometry()
-                qgsgeom.fromWkb(wkb)
-                print(qgsgeom.wkbType())
                 if qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.Point:
                     layer = self._create_layer('point', srid, attr_list, src.title + " (points)")
                 elif qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.MultiPoint:
@@ -269,25 +306,7 @@ class ComplexFeatureLoader(object):
 
             # collect features
             features = []
-            for id, fid, g, xml, attrs in src.getFeatures():
-                qgsgeom = None
-                if g is not None:
-                    wkb, srid = g
-                    qgsgeom = QgsGeometry()
-                    qgsgeom.fromWkb(wkb)
-                    if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
-                        if swap_xy:
-                            p = qgsgeom.asPoint()
-                            qgsgeom = QgsGeometry.fromPoint(QgsPointXY(p[1], p[0]))
-                    elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
-                        if swap_xy:
-                            pl = qgsgeom.asPolyline()
-                            qgsgeom = QgsGeometry.fromPolyline([QgsPointXY(p[1],p[0]) for p in pl])
-                    elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
-                        if swap_xy:
-                            pl = qgsgeom.asPolygon()
-                            qgsgeom = QgsGeometry.fromPolygon([[QgsPointXY(p[1],p[0]) for p in r] for r in pl])
-
+            for id, fid, qgsgeom, srid, xml, attrs in src.getFeatures(swap_xy):
                 f = QgsFeature(layer.dataProvider().fields(), id)
                 if qgsgeom:
                     f.setGeometry(qgsgeom)
@@ -380,7 +399,7 @@ class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
                         'multipolygon': ogr.wkbMultiPolygon
             }[type]
             srs = osr.SpatialReference()
-            srs.ImportFromEPSG(int(srid))
+            srs.ImportFromEPSGA(int(srid))
         else:
             wkbType = ogr.wkbNone
             srs = None
