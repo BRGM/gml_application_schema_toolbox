@@ -140,10 +140,13 @@ def fill_tree_with_xml(treeWidget, xml):
 class XMLTreeWidget(QTreeWidget):
     def __init__(self, parent = None):
         """Constructor.
-        :param feature: a QgsFeature
+        :param swap_xy: whether to force X/Y coordinate swapping
         :param parent: a QWidget parent
         """
         super(XMLTreeWidget, self).__init__(parent)
+
+        self.swap_xy = False
+        self.swap_xy_menu_action = None
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -180,6 +183,13 @@ class XMLTreeWidget(QTreeWidget):
         item = self.currentItem()
         if item.text(0) == '@xlink:href' and item.data(1, Qt.UserRole) and item.data(1, Qt.UserRole).startswith('http'):
             resolveMenu = QMenu("Resolve external", menu)
+
+            swap_xy_menu_action = QAction("Swap X/Y", self)
+            swap_xy_menu_action.setCheckable(True)
+            swap_xy_menu_action.setChecked(self.swap_xy)
+            swap_xy_menu_action.triggered.connect(self.onSwapXY)
+            resolveMenu.addAction(swap_xy_menu_action)
+            
             resolveEmbeddedAction = QAction(u"Embedded", self)
             resolveEmbeddedAction.triggered.connect(self.onResolveEmbedded)
             resolveMenu.addAction(resolveEmbeddedAction)
@@ -202,6 +212,9 @@ class XMLTreeWidget(QTreeWidget):
             menu.addMenu(resolveMenu)
 
         menu.popup(self.mapToGlobal(pos))
+
+    def onSwapXY(self, checked):
+        self.swap_xy = checked
 
     def onCopyXPath(self):
         def get_xpath(item):
@@ -256,7 +269,7 @@ class XMLTreeWidget(QTreeWidget):
     def onResolveNewLayer(self):
         item = self.currentItem()
         uri = item.data(1, Qt.UserRole)
-        new_layer = load_as_xml_layer(uri, True)
+        new_layer = load_as_xml_layer(uri, True, swap_xy=self.swap_xy)
         if new_layer:
             # install an XML tree widget
             qgis_form_custom_widget.install_xml_tree_on_feature_form(new_layer)
@@ -272,7 +285,7 @@ class XMLTreeWidget(QTreeWidget):
     def onResolveAddToLayer(self, layer, checked=False):
         item = self.currentItem()
         uri = item.data(1, Qt.UserRole)
-        new_layer = load_as_xml_layer(uri, True)
+        new_layer = load_as_xml_layer(uri, True, self.swap_xy)
         if new_layer:
             # read the feature from the new_layer and insert it in the selected layer
             f_in = next(new_layer.getFeatures())
