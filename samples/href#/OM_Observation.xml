@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:GetObservationResponse xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sos="http://www.opengis.net/sos/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/waterml/2.0 http://schemas.opengis.net/waterml/2.0/waterml2.xsd http://www.opengis.net/waterml/2.0 http://schemas.opengis.net/waterml/2.0/timeseries.xsd http://www.opengis.net/sos/2.0 http://schemas.opengis.net/sos/2.0/sos.xsd http://www.opengis.net/waterml/2.0 http://schemas.opengis.net/waterml/2.0/monitoringPoint.xsd">
+	<sos:observationData>
+		<om:OM_Observation xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:om="http://www.opengis.net/om/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:wml2="http://www.opengis.net/waterml/2.0" gml:id="o_1">
+			<gml:identifier codeSpace="http://www.ietf.org/rfc/rfc2616">http://ressource.brgm-rec.fr/obs/RawObservationPiezo/06512X0037/STREMY.2-16515480</gml:identifier>
+			<om:type xlink:href="http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement"/>
+			<om:phenomenonTime>
+				<gml:TimeInstant xmlns:gml="http://www.opengis.net/gml/3.2" gml:id="phenomenonTime_1">
+					<gml:timePosition>2017-11-07T10:00:00.000Z</gml:timePosition>
+				</gml:TimeInstant>
+			</om:phenomenonTime>
+			<om:resultTime xlink:href="#phenomenonTime_1"/>
+			<om:procedure xlink:href="http://id.eaufrance.fr/met/403.xml" xlink:title="Electronic piezometric probe"/>
+			<om:parameter>
+				<om:NamedValue xmlns:om="http://www.opengis.net/om/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+					<om:name xlink:href="RelatedMonitoringFeature"/>
+					<om:value xmlns:ns="http://www.opengis.net/gml/3.2" xlink:href="http://ressource.brgm-rec.fr/data/Piezometre/06512X0037/STREMY.2" xsi:type="ns:ReferenceType"/>
+				</om:NamedValue>
+			</om:parameter>
+			<om:parameter>
+				<om:NamedValue xmlns:om="http://www.opengis.net/om/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+					<om:name xlink:href="http://www.opengis.net/def/param-name/OGC-OM/2.0/samplingGeometry"/>
+					<om:value xmlns:ns="http://www.opengis.net/gml/3.2" xsi:type="ns:GeometryPropertyType">
+						<ns:Point ns:id="Point_sp_6776FD1718A8CCAC94181003E0F4501B1D21D809">
+							<ns:pos srsName="http://www.opengis.net/def/crs/EPSG/0/4326">46.1909541655103 5.18713262971692</ns:pos>
+						</ns:Point>
+					</om:value>
+				</om:NamedValue>
+			</om:parameter>
+			<om:parameter>
+				<om:NamedValue xmlns:om="http://www.opengis.net/om/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+					<om:name xlink:href="observationQualification"/>
+					<om:value xmlns:ns="http://www.opengis.net/gml/3.2" xlink:href="http://www.sandre.eaufrance.fr/?urn=urn:sandre:donnees:414::CdElement:0:::referentiel:3.1:xml" xsi:type="ns:ReferenceType"/>
+				</om:NamedValue>
+			</om:parameter>
+			<om:parameter>
+				<om:NamedValue xmlns:om="http://www.opengis.net/om/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+					<om:name xlink:href="observationStatus"/>
+					<om:value xmlns:ns="http://www.opengis.net/gml/3.2" xlink:href="http://www.sandre.eaufrance.fr/?urn=urn:sandre:donnees:415::CdElement:1:::referentiel:3.1:xml" xsi:type="ns:ReferenceType"/>
+				</om:NamedValue>
+			</om:parameter>
+			<om:observedProperty xlink:href="http://id.eaufrance.fr/par/1689.xml" xlink:title="GroundWaterLevel"/>
+			<om:featureOfInterest>
+				<wml2:MonitoringPoint xmlns:wml2="http://www.opengis.net/waterml/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:sf="http://www.opengis.net/sampling/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" gml:id="mp_BFFB91CE9BA5DEAB2D2B8BD158B342A7D8D073AA">
+					<gml:identifier codeSpace="http://www.ietf.org/rfc/rfc2616">http://ressource.brgm-rec.fr/data/Piezometre/06512X0037/STREMY.2</gml:identifier>
+					<gml:name codeSpace="http://www.opengis.net/def/nil/OGC/0/unknown">Piezo 06512X0037/STREMY.2</gml:name>
+					<sf:sampledFeature xlink:href="https://sweet.jpl.nasa.gov/2.3/realmHydro.owl#Aquifer" xlink:title="Aquifer"/>
+					<sams:shape>
+						<ns:Point xmlns:ns="http://www.opengis.net/gml/3.2" ns:id="Point_mp_BFFB91CE9BA5DEAB2D2B8BD158B342A7D8D073AA">
+							<ns:pos srsName="http://www.opengis.net/def/crs/EPSG/0/4326">46.1909541655103 5.18713262971692</ns:pos>
+						</ns:Point>
+					</sams:shape>
+				</wml2:MonitoringPoint>
+			</om:featureOfInterest>
+			<om:result>
+				<wml2:MeasurementTimeseries gml:id="timeseries.1">
+					<wml2:metadata>
+						<wml2:MeasurementTimeseriesMetadata>
+							<wml2:temporalExtent xlink:href="#phenomenonTime_1"/>
+						</wml2:MeasurementTimeseriesMetadata>
+					</wml2:metadata>
+					<wml2:defaultPointMetadata>
+						<wml2:DefaultTVPMeasurementMetadata>
+							<wml2:uom code="m"/>
+							<wml2:interpolationType xlink:href="http://www.opengis.net/def/timeseriesType/WaterML/2.0/continuous" xlink:title="Instantaneous"/>
+						</wml2:DefaultTVPMeasurementMetadata>
+					</wml2:defaultPointMetadata>
+					<wml2:point>
+						<wml2:MeasurementTVP>
+							<wml2:time>2017-11-07T10:00:00.000Z</wml2:time>
+							<wml2:value>4.342</wml2:value>
+						</wml2:MeasurementTVP>
+					</wml2:point>
+				</wml2:MeasurementTimeseries>
+			</om:result>
+		</om:OM_Observation>
+	</sos:observationData>
+</sos:GetObservationResponse>
