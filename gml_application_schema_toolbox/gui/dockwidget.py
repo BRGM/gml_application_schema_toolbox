@@ -53,5 +53,6 @@ class DockWidget(BASE, WIDGET):
         self.download_panel.file_downloaded.connect(self.on_fileDownloaded)
 
     def on_fileDownloaded(self, path):
-        self.import_panel.gmlPathLineEdit.setText(path)
+        self.import_panel.xml_panel.gmlPathLineEdit.setText(path)
+        self.import_panel.gmlas_panel.gmlPathLineEdit.setText(path)
         self.tabWidget.setCurrentIndex(self.tabWidget.indexOf(self.import_panel))

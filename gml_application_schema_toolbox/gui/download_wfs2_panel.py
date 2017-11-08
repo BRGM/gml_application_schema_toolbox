@@ -49,7 +49,7 @@ class DownloadWfs2Panel(BASE, WIDGET):
     def wfs(self):
         uri = self.uriComboBox.currentText()
         with qgis_proxy_settings():
-            return WebFeatureService(url=uri)
+            return WebFeatureService(url=uri, version="2.0.0")
 
     @pyqtSlot()
     def on_getCapabilitiesButton_clicked(self):
@@ -67,7 +67,8 @@ class DownloadWfs2Panel(BASE, WIDGET):
         self.storedQueriesListWidget.clear()
         if hasattr(wfs, "storedqueries"):
             for stored_query in list(wfs.storedqueries):
-                self.storedQueriesListWidget.addItem(stored_query.id)
+                params = ', '.join(["{}: {}".format(p.name, p.type) for p in stored_query.parameters])
+                self.storedQueriesListWidget.addItem("{}({})".format(stored_query.id, params))
 
         self.storedQueriesListWidget.sortItems()
 
