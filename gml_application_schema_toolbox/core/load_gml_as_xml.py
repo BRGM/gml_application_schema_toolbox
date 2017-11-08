@@ -68,15 +68,24 @@ def is_layer_gml_xml(layer):
 #
 
 def _swap_qgs_geometry(qgsgeom):
-    if qgsgeom and qgsgeom.type() == QgsWkbTypes.PointGeometry:
+    if qgsgeom.wkbType() == QgsWkbTypes.Point:
         p = qgsgeom.asPoint()
         qgsgeom = QgsGeometry.fromPointXY(QgsPointXY(p[1], p[0]))
-    elif qgsgeom and qgsgeom.type() == QgsWkbTypes.LineGeometry:
+    elif qgsgeom.wkbType() == QgsWkbTypes.MultiPoint:
+        mp = qgsgeom.asMultiPoint()
+        qgsgeom = QgsGeometry.fromMultiPointXY([QgsPointXY(p[1], p[0]) for p in mp])
+    elif qgsgeom.wkbType() == QgsWkbTypes.LineString:
         pl = qgsgeom.asPolyline()
         qgsgeom = QgsGeometry.fromPolylineXY([QgsPointXY(p[1],p[0]) for p in pl])
-    elif qgsgeom and qgsgeom.type() == QgsWkbTypes.PolygonGeometry:
+    elif qgsgeom.wkbType() == QgsWkbTypes.MultiLineString:
+        mls = qgsgeom.asMultiPolyline()
+        qgsgeom = QgsGeometry.fromMultiPolylineXY([[QgsPointXY(p[1],p[0]) for p in pl] for pl in mls])
+    elif qgsgeom.wkbType() == QgsWkbTypes.Polygon:
         pl = qgsgeom.asPolygon()
         qgsgeom = QgsGeometry.fromPolygonXY([[QgsPointXY(p[1],p[0]) for p in r] for r in pl])
+    elif qgsgeom.wkbType() == QgsWkbTypes.MultiPolygon:
+        mp = qgsgeom.asMultiPolygon()
+        qgsgeom = QgsGeometry.fromMultiPolygonXY([[[QgsPointXY(p[1],p[0]) for p in r] for r in pl] for pl in mp])
     return qgsgeom
 
 def _get_srs_name(tree):
@@ -126,7 +135,8 @@ def _wkbFromGml(tree, swap_xy):
         return None, None
 
     qgsgeom = QgsGeometry()
-    qgsgeom.fromWkb(g.ExportToWkb())
+    wkb = g.ExportToWkb()
+    qgsgeom.fromWkb(wkb)
 
     if swap_xy:
         qgsgeom = _swap_qgs_geometry(qgsgeom)
