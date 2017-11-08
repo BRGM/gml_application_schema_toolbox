@@ -40,6 +40,8 @@ class ImportXmlPanel(BASE, WIDGET):
         self.attributeTable.selectionModel().selectionChanged.connect(self.onSelectMapping)
         self.geometryColumnCheck.stateChanged.connect(self.geometryColumnEdit.setEnabled)
 
+        self.optionsGroupBox.setCollapsed(True)
+
     @pyqtSlot()
     def on_gmlPathButton_clicked(self):
         gml_path = settings.value("gml_path", "")
