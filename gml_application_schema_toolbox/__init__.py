@@ -24,7 +24,7 @@ def name():
 def description():
     return u"QGIS GML Application Schema Toolbox"
 def version():
-    return u"1.1.4"
+    return u"1.1.5"
 def icon():
     return "icon.png"
 def qgisMinimumVersion():
