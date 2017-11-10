@@ -25,7 +25,6 @@ import os
 from qgis.PyQt import uic
 from gml_application_schema_toolbox.gui.download_wfs2_panel import DownloadWfs2Panel
 from gml_application_schema_toolbox.gui.import_panel import ImportPanel
-from gml_application_schema_toolbox.gui.help_panel import HelpPanel
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'dockwidget.ui'))
@@ -42,9 +41,6 @@ class DockWidget(BASE, WIDGET):
 
         self.import_panel = ImportPanel()
         self.tabWidget.addTab(self.import_panel, self.tr('Convert'))
-
-        self.help_panel = HelpPanel()
-        self.tabWidget.addTab(self.help_panel, self.tr('Help'))
 
         self.download_panel.file_downloaded.connect(self.on_fileDownloaded)
 
