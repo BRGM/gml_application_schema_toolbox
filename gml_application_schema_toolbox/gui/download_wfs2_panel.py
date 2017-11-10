@@ -46,6 +46,15 @@ class DownloadWfs2Panel(BASE, WIDGET):
         self.uriComboBox.addItems(settings.value('wfs2_services') or [])
         self.uriComboBox.setCurrentText(settings.value('default_wfs2_service'))
 
+        def safeSetChecked(obj, state):
+            # avoid infinite recursion
+            obj.blockSignals(True)
+            obj.setChecked(state)
+            obj.blockSignals(False)
+
+        self.fromUrlGroup.toggled.connect(lambda enabled: safeSetChecked(self.fromWfsGroup, not enabled))
+        self.fromWfsGroup.toggled.connect(lambda enabled: safeSetChecked(self.fromUrlGroup, not enabled))
+
     def wfs(self):
         uri = self.uriComboBox.currentText()
         with qgis_proxy_settings():
