@@ -156,8 +156,9 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         }
         return params
 
-    @pyqtSlot()
-    def on_exportButton_clicked(self):
+    #@pyqtSlot()
+    #def on_exportButton_clicked(self):
+    def accept(self):
         gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
         with NamedTemporaryFile(mode="w+t", suffix='.sqlite', delete=True) as out:
             temp_datasource_path = out.name
@@ -166,3 +167,5 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             self.translate(self.export_params(temp_datasource_path))
         except InputError as e:
             e.show()
+
+        return QDialog.accept()

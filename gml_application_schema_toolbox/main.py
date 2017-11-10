@@ -43,6 +43,7 @@ from . import version as plugin_version
 
 from .gui.dockwidget import DockWidget
 from .gui.settings_dialog import SettingsDialog
+from .gui.export_gmlas_panel import ExportGmlasPanel
 
 class MainPlugin(object):
 
@@ -59,6 +60,10 @@ class MainPlugin(object):
         self.helpAction = QAction("Help", self.iface.mainWindow())
         self.helpAction.triggered.connect(self.onHelp)
 
+        self.exportAction = QAction("Export a GMLAS database", self.iface.mainWindow())
+        self.exportAction.triggered.connect(self.onExport)
+
+        self.iface.addPluginToMenu(plugin_name(), self.exportAction)
         self.iface.addPluginToMenu(plugin_name(), self.settingsAction)
         self.iface.addPluginToMenu(plugin_name(), self.aboutAction)
         self.iface.addPluginToMenu(plugin_name(), self.helpAction)
@@ -71,6 +76,7 @@ class MainPlugin(object):
 
     def unload(self):
         # Remove the plugin menu item and icon
+        self.iface.removePluginMenu(plugin_name(), self.exportAction)
         self.iface.removePluginMenu(plugin_name(), self.settingsAction)
         self.iface.removePluginMenu(plugin_name(), self.aboutAction)
         self.iface.removePluginMenu(plugin_name(), self.helpAction)
@@ -120,4 +126,7 @@ class MainPlugin(object):
     def onHelp(self):
         url = 'https://github.com/BRGM/gml_application_schema_toolbox/blob/master/README.md'
         QDesktopServices.openUrl(QUrl(url))
-        
+
+    def onExport(self):
+        w = ExportGmlasPanel(self.iface.mainWindow())
+        w.exec_()
