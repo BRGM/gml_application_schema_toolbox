@@ -20,26 +20,21 @@ class ImportPanel(BASE, WIDGET):
         super(ImportPanel, self).__init__(parent)
         self.setupUi(self)
 
-        self.gmlas_panel = self.addImportPanel(
-            self.tr("Import using GMLAS driver"),
-            ImportGmlasPanel())
+        self.xml_panel = ImportXmlPanel()
+        self.gmlas_panel = ImportGmlasPanel()
+        self.stackedWidget.addWidget(self.xml_panel)
+        self.stackedWidget.addWidget(self.gmlas_panel)
 
-        self.xml_panel = self.addImportPanel(
-            self.tr("Import as XML"),
-            ImportXmlPanel())
+        self.xmlModeRadio.toggled.connect(self.on_xml)
+        self.relationalModeRadio.toggled.connect(self.on_gmlas)
 
-        if settings.value('default_import_method') == 'gmlas':
-            self.importTypeCombo.setCurrentIndex(
-                self.importTypeCombo.findData(self.gmlas_panel))
-        if settings.value('default_import_method') == 'xml':
-            self.importTypeCombo.setCurrentIndex(
-                self.importTypeCombo.findData(self.xml_panel))
+        v = settings.value("default_import_method")
+        self.xmlModeRadio.setChecked(v == 'xml')
+        self.relationalModeRadio.setChecked(v == 'gmlas')
 
-    def addImportPanel(self, text, panel):
-        self.stackedWidget.addWidget(panel)
-        self.importTypeCombo.addItem(text, panel)
-        return panel
-
-    @pyqtSlot(int)
-    def on_importTypeCombo_currentIndexChanged(self, index):
-        self.stackedWidget.setCurrentWidget(self.importTypeCombo.currentData())
+    def on_xml(self, enabled):
+        if enabled:
+            self.stackedWidget.setCurrentWidget(self.xml_panel)
+    def on_gmlas(self, enabled):
+        if enabled:
+            self.stackedWidget.setCurrentWidget(self.gmlas_panel)

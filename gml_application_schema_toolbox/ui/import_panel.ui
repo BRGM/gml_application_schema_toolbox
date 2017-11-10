@@ -14,7 +14,16 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item>
@@ -36,24 +45,47 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <layout class="QFormLayout" name="formLayout">
-         <property name="fieldGrowthPolicy">
-          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-         </property>
-         <item row="0" column="0">
-          <widget class="QLabel" name="ImportTypeLabel">
+        <layout class="QHBoxLayout" name="formLayout">
+         <item>
+          <widget class="QLabel" name="label">
            <property name="text">
-            <string>Method</string>
+            <string>Open method</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QComboBox" name="importTypeCombo"/>
+         <item>
+          <widget class="QRadioButton" name="xmlModeRadio">
+           <property name="text">
+            <string>&amp;XML mode</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="relationalModeRadio">
+           <property name="text">
+            <string>Relational mode (GMLAS)</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="lineWidth">
+          <number>1</number>
+         </property>
+         <property name="midLineWidth">
+          <number>0</number>
+         </property>
          <property name="currentIndex">
           <number>0</number>
          </property>
