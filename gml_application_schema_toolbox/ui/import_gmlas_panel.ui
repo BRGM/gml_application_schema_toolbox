@@ -140,18 +140,11 @@ p, li { white-space: pre-wrap; }
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QPushButton" name="validateButton">
-        <property name="text">
-         <string>Load layer list</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="layerList">
+    <widget class="QgsCollapsibleGroupBox" name="layerList">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -159,9 +152,16 @@ p, li { white-space: pre-wrap; }
       </sizepolicy>
      </property>
      <property name="title">
-      <string>Layers</string>
+      <string>Select layers</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_6">
+      <item>
+       <widget class="QPushButton" name="validateButton">
+        <property name="text">
+         <string>Load layer list</string>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QListWidget" name="datasetsListWidget">
         <property name="selectionMode">
@@ -178,7 +178,7 @@ p, li { white-space: pre-wrap; }
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define an area of interest to download data from. The extent can be defined from map canvas.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="title">
-      <string>Filter b&amp;y extent</string>
+      <string>Filter by e&amp;xtent</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -201,7 +201,7 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QgsCollapsibleGroupBox" name="groupBox">
      <property name="title">
       <string>Miscellaneous options</string>
      </property>
@@ -372,7 +372,6 @@ p, li { white-space: pre-wrap; }
             <height>20</height>
            </size>
           </property>
-          <zorder>checkBox</zorder>
          </widget>
         </item>
         <item row="4" column="0">
@@ -510,6 +509,12 @@ p, li { white-space: pre-wrap; }
    <class>DatabaseWidget</class>
    <extends>QWidget</extends>
    <header>gml_application_schema_toolbox.gui.database_widget</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QgsCollapsibleGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>qgis.gui</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
