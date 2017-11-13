@@ -20,10 +20,6 @@ class SettingsDialog(BASE, WIDGET):
         super(SettingsDialog, self).__init__(parent)
         self.setupUi(self)
 
-        self.set_icon(self.addWfs2ServiceButton, '/mActionAdd.svg')
-        self.set_icon(self.removeWfs2ServiceButton, '/mActionRemove.svg')
-        self.set_icon(self.wfs2ServiceBoxRefreshButton, '/mActionRefresh.png')
-
         self.load_settings()
 
     def set_icon(self, button, icon):
@@ -31,8 +27,6 @@ class SettingsDialog(BASE, WIDGET):
 
     def load_settings(self):
         self.featureLimitBox.setValue(int(settings.value('default_maxfeatures')))
-        self.set_wfs2_services(settings.value('wfs2_services'))
-        self.wfs2ServiceBox.setCurrentText(settings.value('default_wfs2_service'))
         self.set_import_method(settings.value('default_import_method'))
         self.gmlasConfigLineEdit.setText(settings.value('default_gmlas_config'))
         self.languageLineEdit.setText(settings.value('default_language'))
@@ -41,54 +35,10 @@ class SettingsDialog(BASE, WIDGET):
 
     def save_settings(self):
         settings.setValue('default_maxfeatures', self.featureLimitBox.value())
-        settings.setValue('wfs2_services', self.wfs2_services())
-        settings.setValue('default_wfs2_service', self.wfs2ServiceBox.currentText())
         settings.setValue('default_import_method', self.import_method())
         settings.setValue('default_language', self.languageLineEdit.text())
         settings.setValue('default_db_type', self.db_type())
         settings.setValue('default_access_mode', self.access_mode())
-
-    def set_wfs2_services(self, values):
-        self.wfs2ServicesList.clear()
-        if values is not None:
-            for service in values:
-                self.add_wfs2_service(service)
-        self.refresh_wfs2ServiceBox()
-
-    def add_wfs2_service(self, text):
-        item = QListWidgetItem(text)
-        item.setFlags(item.flags() | Qt.ItemIsEditable | Qt.ItemIsUserCheckable)
-        self.wfs2ServicesList.addItem(item)
-        return item
-
-    def wfs2_services(self):
-        services = []
-        model = self.wfs2ServicesList.model()
-        for i in range(0, model.rowCount()):
-            services.append(model.data(model.index(i,0)))
-        return services
-
-    @pyqtSlot()
-    def on_addWfs2ServiceButton_clicked(self):
-        item = self.add_wfs2_service(self.tr('Type service URL'))
-        self.wfs2ServicesList.editItem(item)
-
-    @pyqtSlot()
-    def on_removeWfs2ServiceButton_clicked(self):
-        self.wfs2ServicesList.takeItem(self.wfs2ServicesList.currentRow())
-
-    def refresh_wfs2ServiceBox(self):
-        value = self.wfs2ServiceBox.currentText()
-
-        self.wfs2ServiceBox.clear()
-        for service in self.wfs2_services():
-            self.wfs2ServiceBox.addItem(service)
-
-        self.wfs2ServiceBox.setCurrentText(value)
-
-    @pyqtSlot()
-    def on_wfs2ServiceBoxRefreshButton_clicked(self):
-        self.refresh_wfs2ServiceBox()
 
     def set_import_method(self, value):
         if value == 'gmlas':
