@@ -31,6 +31,7 @@ from qgis.gui import *
 
 from .core.load_gmlas_in_qgis import import_in_qgis
 from .gui.database_widget import DatabaseWidget
+from .gui import InputError
 
 import os
 import sqlite3
@@ -142,21 +143,25 @@ class MainPlugin(object):
         button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         button_box.accepted.connect(dlg.accept)
         button_box.rejected.connect(dlg.reject)
-        db_widget = DatabaseWidget()
+        db_widget = DatabaseWidget(dlg, is_input=True)
         layout.addWidget(db_widget)
         layout.addWidget(button_box)
         dlg.setLayout(layout)
         if dlg.exec_() == QDialog.Rejected:
             return
 
-        source = db_widget.datasource_name()
-        if source.startswith('PG'):
-            schema = db_widget.schema()
-        else:
-            schema = None
         try:
+            source = db_widget.datasource_name()
+            if source.startswith('PG:'):
+                schema = db_widget.schema()
+            else:
+                schema = None
             QApplication.setOverrideCursor(Qt.WaitCursor)
             import_in_qgis(source, db_widget.format(), schema)
+        except InputError as e:
+            QMessageBox.warning(None,
+                                "Error during layer loading",
+                                e.args[0])
         except RuntimeError as e:
             QMessageBox.warning(None,
                                 "Error during layer loading",

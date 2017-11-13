@@ -41,6 +41,7 @@ from qgis.PyQt import uic
 from gml_application_schema_toolbox import name as plugin_name
 from gml_application_schema_toolbox.core.logging import log
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
+from gml_application_schema_toolbox.core.load_gmlas_in_qgis import import_in_qgis
 from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
 from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
@@ -237,9 +238,9 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             options.append('-skipfailures')
         return options
 
-    def import_params(self):
+    def import_params(self, dest):
         params = {
-            'destNameOrDestDS': self.databaseWidget.datasource_name(),
+            'destNameOrDestDS': dest,
             'srcDS': self.gmlas_datasource(),
             'format': self.databaseWidget.format(),
             'accessMode': self.access_mode(),
@@ -289,9 +290,22 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
     def on_convertButton_clicked(self):
         gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
         gdal.SetConfigOption('GDAL_HTTP_UNSAFESSL', 'YES')
+
+        dest = self.databaseWidget.datasource_name()
+        if dest == '' and self.databaseWidget.format() == "SQLite":
+            with tempfile.NamedTemporaryFile(suffix='.sqlite') as tmp:
+                dest = tmp.name
+        
+        if dest.startswith('PG:'):
+            schema = self.databaseWidget.schema()
+        else:
+            schema = None
+
         try:
             QApplication.setOverrideCursor(Qt.WaitCursor)
-            self.translate(self.import_params())
+            self.translate(self.import_params(dest))
+            import_in_qgis(dest, self.databaseWidget.format(), schema)
+            
         except InputError as e:
             e.show()
         except RuntimeError as e:

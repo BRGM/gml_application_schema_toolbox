@@ -48,12 +48,15 @@ class PgsqlConnectionsModel(QAbstractItemModel):
 class DatabaseWidget(BASE, WIDGET):
 
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, is_input=False):
         super(DatabaseWidget, self).__init__(parent)
         self.setupUi(self)
         self.set_accept_mode(QFileDialog.AcceptOpen)
 
         self._pgsql_db = None
+        self._is_input = is_input
+        if not is_input:
+            self.sqlitePathLineEdit.setPlaceholderText("Create a temporary file")
 
         self.pgsqlFormWidget.setVisible(False)
         self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
@@ -139,8 +142,9 @@ class DatabaseWidget(BASE, WIDGET):
     def datasource_name(self):
         if self.sqliteRadioButton.isChecked():
             path = self.sqlitePathLineEdit.text()
-            if path == '':
+            if path == '' and self._is_input:
                 raise InputError("You must select a SQLite file")
+
             return path
         if self.pgsqlRadioButton.isChecked():
             if self._pgsql_db is None:
