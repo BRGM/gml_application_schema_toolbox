@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>724</width>
-    <height>737</height>
+    <width>758</width>
+    <height>773</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,70 +27,68 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
-       <layout class="QFormLayout" name="formLayout">
-        <property name="fieldGrowthPolicy">
-         <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-        </property>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>WFS2 server</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="uriComboBox">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;URL of the WFS service to download from.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="editable">
-           <bool>true</bool>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Username</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Optional user name and password if remote download service require authentication (Basic authentication supported only).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Password</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="lineEdit_2"/>
-        </item>
-       </layout>
+       <widget class="QComboBox" name="connectionCombo"/>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
-         <widget class="QPushButton" name="getCapabilitiesButton">
+         <widget class="QPushButton" name="connectBtn">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Request the GetCapabilities document from the download service to retrieve list of feature types and stored queries.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Get capabilities</string>
+           <string>&amp;Connect</string>
           </property>
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="newConnectionBtn">
+          <property name="text">
+           <string>&amp;New</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="editConnectionBtn">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>&amp;Edit</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="removeConnectionBtn">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Remove</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
          <widget class="QPushButton" name="showCapabilitiesButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Display GetCapabilities document using a simple tree view.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -264,6 +262,17 @@
        </widget>
       </item>
      </layout>
+     <zorder>datasetsTabWidget</zorder>
+     <zorder>groupBox</zorder>
+     <zorder>connectionCombo</zorder>
+     <zorder>newConnectionBtn</zorder>
+     <zorder>editConnectionBtn</zorder>
+     <zorder>removeConnectionBtn</zorder>
+     <zorder>connectBtn</zorder>
+     <zorder>showCapabilitiesButton</zorder>
+     <zorder>connectBtn</zorder>
+     <zorder>showCapabilitiesButton</zorder>
+     <zorder>horizontalSpacer_2</zorder>
     </widget>
    </item>
    <item>
@@ -322,15 +331,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>BboxWidget</class>
-   <extends>QWidget</extends>
-   <header>gml_application_schema_toolbox.gui.bbox_widget</header>
+   <class>QgsCollapsibleGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header location="global">qgis.gui</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QgsCollapsibleGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>qgis.gui</header>
+   <class>BboxWidget</class>
+   <extends>QWidget</extends>
+   <header>gml_application_schema_toolbox.gui.bbox_widget</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

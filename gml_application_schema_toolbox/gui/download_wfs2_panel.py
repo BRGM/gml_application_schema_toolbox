@@ -11,7 +11,9 @@ from tempfile import NamedTemporaryFile
 
 import logging
 
-from qgis.core import QgsCoordinateTransform, QgsCoordinateReferenceSystem
+from qgis.core import QgsCoordinateTransform, QgsCoordinateReferenceSystem, \
+    QgsOwsConnection
+from qgis.gui import QgsNewHttpConnection
 from qgis.utils import iface
 
 from qgis.PyQt.QtCore import (
@@ -19,7 +21,7 @@ from qgis.PyQt.QtCore import (
     QSettings,
     QUrl, QFile, QIODevice)
 # from qgis.PyQt.QtGui import QDesktopServices
-from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem
+from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem, QDialog
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
@@ -43,8 +45,6 @@ class DownloadWfs2Panel(BASE, WIDGET):
         self.downloadProgressBar.setVisible(False)
 
         self.featureLimitBox.setValue(int(settings.value('default_maxfeatures')))
-        self.uriComboBox.addItems(settings.value('wfs2_services') or [])
-        self.uriComboBox.setCurrentText(settings.value('default_wfs2_service'))
 
         def safeSetChecked(obj, state):
             # avoid infinite recursion
@@ -55,13 +55,36 @@ class DownloadWfs2Panel(BASE, WIDGET):
         self.fromUrlGroup.toggled.connect(lambda enabled: safeSetChecked(self.fromWfsGroup, not enabled))
         self.fromWfsGroup.toggled.connect(lambda enabled: safeSetChecked(self.fromUrlGroup, not enabled))
 
+        self.refresh_connections()
+        self.connectionCombo.currentTextChanged.connect(self.on_change_connection)
+
+    def refresh_connections(self):
+        # populate connection combo box
+        self.connectionCombo.clear()
+        for name in QgsOwsConnection.connectionList("wfs"):
+            self.connectionCombo.addItem(name)
+
+        self.connectionCombo.setCurrentText(QgsOwsConnection.selectedConnection("wfs"))
+        self.on_change_connection(self.connectionCombo.currentText())
+
     def wfs(self):
-        uri = self.uriComboBox.currentText()
+        conn = QgsOwsConnection("wfs", self.connectionCombo.currentText())
+        uri = conn.uri().param('url')
         with qgis_proxy_settings():
             return WebFeatureService(url=uri, version="2.0.0")
 
+    @pyqtSlot(str)
+    def on_change_connection(self, currentConnection):
+        print("currentConnection", currentConnection)
+        has_selection = currentConnection != ''
+        self.connectBtn.setEnabled(has_selection)
+        self.newConnectionBtn.setEnabled(has_selection)
+        self.editConnectionBtn.setEnabled(has_selection)
+        self.removeConnectionBtn.setEnabled(has_selection)
+        self.showCapabilitiesButton.setEnabled(has_selection)
+
     @pyqtSlot()
-    def on_getCapabilitiesButton_clicked(self):
+    def on_connectBtn_clicked(self):
         wfs = self.wfs()
 
         self.featureTypesListWidget.clear()
@@ -80,6 +103,35 @@ class DownloadWfs2Panel(BASE, WIDGET):
                 self.storedQueriesListWidget.addItem("{}({})".format(stored_query.id, params))
 
         self.storedQueriesListWidget.sortItems()
+
+    @pyqtSlot()
+    def on_editConnectionBtn_clicked(self):
+        conn = self.connectionCombo.currentText()
+        dlg = QgsNewHttpConnection(self,
+                                   QgsNewHttpConnection.ConnectionWfs,
+                                   "qgis/connections-wfs/",
+                                   conn)
+        dlg.setWindowTitle("Edit a WFS connection")
+        if dlg.exec_() == QDialog.Accepted:
+            self.refresh_connections()
+            self.on_change_connection(conn)
+
+    @pyqtSlot()
+    def on_newConnectionBtn_clicked(self):
+        dlg = QgsNewHttpConnection(self,
+                                   QgsNewHttpConnection.ConnectionWfs,
+                                   "qgis/connections-wfs/")
+        if dlg.exec_() == QDialog.Accepted:
+            self.refresh_connections()
+
+    @pyqtSlot()
+    def on_removeConnectionBtn_clicked(self):
+        conn = self.connectionCombo.currentText()
+        r = QMessageBox.information(self, "Confirm removal",
+                                    "Are you sure you want to remove {} connection?".format(conn))
+        if r == QMessageBox.Ok:
+            QgsOwsConnection.deleteConnection("wfs", conn)
+            self.refresh_connections()            
 
     @pyqtSlot()
     def on_showCapabilitiesButton_clicked(self):
