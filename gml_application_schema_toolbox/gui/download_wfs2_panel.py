@@ -21,7 +21,7 @@ from qgis.PyQt.QtCore import (
     QSettings,
     QUrl, QFile, QIODevice)
 # from qgis.PyQt.QtGui import QDesktopServices
-from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem, QDialog
+from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QTableWidgetItem, QDialog
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
@@ -75,25 +75,35 @@ class DownloadWfs2Panel(BASE, WIDGET):
 
     @pyqtSlot(str)
     def on_change_connection(self, currentConnection):
-        print("currentConnection", currentConnection)
         has_selection = currentConnection != ''
         self.connectBtn.setEnabled(has_selection)
         self.newConnectionBtn.setEnabled(has_selection)
         self.editConnectionBtn.setEnabled(has_selection)
         self.removeConnectionBtn.setEnabled(has_selection)
         self.showCapabilitiesButton.setEnabled(has_selection)
+        if has_selection:
+            QgsOwsConnection.setSelectedConnection("wfs", currentConnection)
 
     @pyqtSlot()
     def on_connectBtn_clicked(self):
+        self.setCursor(Qt.WaitCursor)
         wfs = self.wfs()
 
-        self.featureTypesListWidget.clear()
-        for feature_type in list(wfs.contents):
-            item = QListWidgetItem(feature_type)
-            item.setData(Qt.UserRole, feature_type)
-            self.featureTypesListWidget.addItem(item)
+        self.featureTypesTableWidget.clear()
+        self.featureTypesTableWidget.setHorizontalHeaderLabels(["Feature type", "Title"])
+        row = 0
+        for feature_type, md in wfs.contents.items():
+            self.featureTypesTableWidget.insertRow(row)
 
-        self.featureTypesListWidget.sortItems()
+            item = QTableWidgetItem(feature_type)
+            item.setData(Qt.UserRole, feature_type)
+            self.featureTypesTableWidget.setItem(row, 0, item)
+
+            item = QTableWidgetItem(md.title)
+            self.featureTypesTableWidget.setItem(row, 1, item)
+            row += 1
+
+        self.featureTypesTableWidget.sortItems(1)
 
 
         self.storedQueriesListWidget.clear()
@@ -103,6 +113,8 @@ class DownloadWfs2Panel(BASE, WIDGET):
                 self.storedQueriesListWidget.addItem("{}({})".format(stored_query.id, params))
 
         self.storedQueriesListWidget.sortItems()
+
+        self.unsetCursor()
 
     @pyqtSlot()
     def on_editConnectionBtn_clicked(self):
@@ -114,7 +126,7 @@ class DownloadWfs2Panel(BASE, WIDGET):
         dlg.setWindowTitle("Edit a WFS connection")
         if dlg.exec_() == QDialog.Accepted:
             self.refresh_connections()
-            self.on_change_connection(conn)
+            self.connectionCombo.setCurrentText(conn)
 
     @pyqtSlot()
     def on_newConnectionBtn_clicked(self):
@@ -123,13 +135,15 @@ class DownloadWfs2Panel(BASE, WIDGET):
                                    "qgis/connections-wfs/")
         if dlg.exec_() == QDialog.Accepted:
             self.refresh_connections()
+            self.connectionCombo.setCurrentText(dlg.name())
 
     @pyqtSlot()
     def on_removeConnectionBtn_clicked(self):
         conn = self.connectionCombo.currentText()
         r = QMessageBox.information(self, "Confirm removal",
-                                    "Are you sure you want to remove {} connection?".format(conn))
-        if r == QMessageBox.Ok:
+                                    "Are you sure you want to remove {} connection?".format(conn),
+                                    QMessageBox.Yes | QMessageBox.No)
+        if r == QMessageBox.Yes:
             QgsOwsConnection.deleteConnection("wfs", conn)
             self.refresh_connections()            
 
@@ -168,8 +182,9 @@ class DownloadWfs2Panel(BASE, WIDGET):
 
     def selected_typenames(self):
         typenames = []
-        for item in self.featureTypesListWidget.selectedItems():
-            typenames.append(item.data(Qt.UserRole))
+        for item in self.featureTypesTableWidget.selectedItems():
+            if item.column() == 0:
+                typenames.append(item.data(Qt.UserRole))
         return typenames
 
     def _get_bbox(self, wfs):
