@@ -29,6 +29,9 @@ from qgis.PyQt.QtXml import *
 from qgis.core import *
 from qgis.gui import *
 
+from .core.load_gmlas_in_qgis import import_in_qgis
+from .gui.database_widget import DatabaseWidget
+
 import os
 import sqlite3
 
@@ -60,9 +63,13 @@ class MainPlugin(object):
         self.helpAction = QAction("Help", self.iface.mainWindow())
         self.helpAction.triggered.connect(self.onHelp)
 
-        self.exportAction = QAction("Export a GMLAS database", self.iface.mainWindow())
+        self.loadAction = QAction("Load a GMLAS database", self.iface.mainWindow())
+        self.loadAction.triggered.connect(self.onLoad)
+
+        self.exportAction = QAction("Export a GMLAS database to GML", self.iface.mainWindow())
         self.exportAction.triggered.connect(self.onExport)
 
+        self.iface.addPluginToMenu(plugin_name(), self.loadAction)
         self.iface.addPluginToMenu(plugin_name(), self.exportAction)
         self.iface.addPluginToMenu(plugin_name(), self.settingsAction)
         self.iface.addPluginToMenu(plugin_name(), self.aboutAction)
@@ -76,6 +83,7 @@ class MainPlugin(object):
 
     def unload(self):
         # Remove the plugin menu item and icon
+        self.iface.removePluginMenu(plugin_name(), self.loadAction)
         self.iface.removePluginMenu(plugin_name(), self.exportAction)
         self.iface.removePluginMenu(plugin_name(), self.settingsAction)
         self.iface.removePluginMenu(plugin_name(), self.aboutAction)
@@ -126,6 +134,36 @@ class MainPlugin(object):
     def onHelp(self):
         url = 'https://github.com/BRGM/gml_application_schema_toolbox/blob/master/README.md'
         QDesktopServices.openUrl(QUrl(url))
+
+    def onLoad(self):
+        dlg = QDialog(self.iface.mainWindow())
+        dlg.setWindowTitle("Choose the database to load layers from")
+        layout = QVBoxLayout()
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        button_box.accepted.connect(dlg.accept)
+        button_box.rejected.connect(dlg.reject)
+        db_widget = DatabaseWidget()
+        layout.addWidget(db_widget)
+        layout.addWidget(button_box)
+        dlg.setLayout(layout)
+        if dlg.exec_() == QDialog.Rejected:
+            return
+
+        source = db_widget.datasource_name()
+        if source.startswith('PG'):
+            schema = db_widget.schema()
+        else:
+            schema = None
+        try:
+            QApplication.setOverrideCursor(Qt.WaitCursor)
+            import_in_qgis(source, db_widget.format(), schema)
+        except RuntimeError as e:
+            QMessageBox.warning(None,
+                                "Error during layer loading",
+                                e.args[0])
+        finally:
+            QApplication.restoreOverrideCursor()
+        
 
     def onExport(self):
         w = ExportGmlasPanel(self.iface.mainWindow())

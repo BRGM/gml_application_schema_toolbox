@@ -39,7 +39,6 @@ from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import uic
 
 from gml_application_schema_toolbox import name as plugin_name
-from gml_application_schema_toolbox.core.load_gmlas_in_qgis import import_in_qgis
 from gml_application_schema_toolbox.core.logging import log
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 from gml_application_schema_toolbox.core.settings import settings
@@ -295,23 +294,6 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             self.translate(self.import_params())
         except InputError as e:
             e.show()
-        except RuntimeError as e:
-            QMessageBox.warning(None,
-                                plugin_name(),
-                                e.args[0])
-        finally:
-            QApplication.restoreOverrideCursor()
-
-    @pyqtSlot()
-    def on_loadLayersBtn_clicked(self):
-        source = self.databaseWidget.datasource_name()
-        if source.startswith('PG'):
-            schema = self.databaseWidget.schema()
-        else:
-            schema = None
-        try:
-            QApplication.setOverrideCursor(Qt.WaitCursor)
-            import_in_qgis(source, self.databaseWidget.format(), schema)
         except RuntimeError as e:
             QMessageBox.warning(None,
                                 plugin_name(),

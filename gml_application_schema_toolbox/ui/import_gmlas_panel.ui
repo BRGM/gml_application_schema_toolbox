@@ -468,13 +468,6 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="loadLayersBtn">
-     <property name="text">
-      <string>Load and configure layers</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -494,6 +487,12 @@ p, li { white-space: pre-wrap; }
  </widget>
  <customwidgets>
   <customwidget>
+   <class>QgsCollapsibleGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header location="global">qgis.gui</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>QgsProjectionSelectionWidget</class>
    <extends>QWidget</extends>
    <header>qgis.gui</header>
@@ -509,12 +508,6 @@ p, li { white-space: pre-wrap; }
    <class>DatabaseWidget</class>
    <extends>QWidget</extends>
    <header>gml_application_schema_toolbox.gui.database_widget</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>QgsCollapsibleGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>qgis.gui</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
