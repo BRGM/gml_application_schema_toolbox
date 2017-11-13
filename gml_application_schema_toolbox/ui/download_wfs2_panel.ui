@@ -301,7 +301,7 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QLineEdit" name="lineEdit_3"/>
+       <widget class="QLineEdit" name="fromFileLineEdit"/>
       </item>
       <item>
        <widget class="QToolButton" name="toolButton">

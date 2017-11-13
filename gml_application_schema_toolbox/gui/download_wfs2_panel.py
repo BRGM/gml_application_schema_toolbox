@@ -19,7 +19,7 @@ from qgis.utils import iface
 from qgis.PyQt.QtCore import (
     Qt, pyqtSignal, pyqtSlot,
     QSettings,
-    QUrl, QFile, QIODevice)
+    QUrl, QFile, QIODevice, QUrlQuery)
 # from qgis.PyQt.QtGui import QDesktopServices
 from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QTableWidgetItem, QDialog
 from qgis.PyQt.QtXml import QDomDocument
@@ -28,6 +28,8 @@ from qgis.PyQt import uic
 from gml_application_schema_toolbox.core.logging import log
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 from gml_application_schema_toolbox.core.settings import settings
+from gml_application_schema_toolbox.core.xml_utils import xml_parse, no_prefix
+from gml_application_schema_toolbox.core.qgis_urlopener import remote_open_from_qgis
 
 from .xml_dialog import XmlDialog
 
@@ -58,6 +60,8 @@ class DownloadWfs2Panel(BASE, WIDGET):
         self.refresh_connections()
         self.connectionCombo.currentTextChanged.connect(self.on_change_connection)
 
+        self.file_downloaded.connect(self.on_file_downloaded)
+
     def refresh_connections(self):
         # populate connection combo box
         self.connectionCombo.clear()
@@ -70,8 +74,21 @@ class DownloadWfs2Panel(BASE, WIDGET):
     def wfs(self):
         conn = QgsOwsConnection("wfs", self.connectionCombo.currentText())
         uri = conn.uri().param('url')
+        version = conn.uri().param('version')
+        if version == "auto":
+            # detect version
+            u = QUrlQuery(uri)
+            u.addQueryItem("request", "GetCapabilities")
+            u.addQueryItem("acceptversions", "2.0.0,1.1.0,1.0.0")
+
+            xml, ns_map = xml_parse(remote_open_from_qgis(u.query()))
+            root = xml.getroot()
+            versions = [v.text for v in root.findall("./ows:ServiceIdentification/ows:ServiceTypeVersion", ns_map)]
+            # take the greatest version, if more than one
+            version = sorted(versions)[-1]
+            
         with qgis_proxy_settings():
-            return WebFeatureService(url=uri, version="2.0.0")
+            return WebFeatureService(url=uri, version=version)
 
     @pyqtSlot(str)
     def on_change_connection(self, currentConnection):
@@ -90,6 +107,7 @@ class DownloadWfs2Panel(BASE, WIDGET):
         wfs = self.wfs()
 
         self.featureTypesTableWidget.clear()
+        self.featureTypesTableWidget.setRowCount(0)
         self.featureTypesTableWidget.setHorizontalHeaderLabels(["Feature type", "Title"])
         row = 0
         for feature_type, md in wfs.contents.items():
@@ -180,6 +198,10 @@ class DownloadWfs2Panel(BASE, WIDGET):
         if out is not None:
             self.file_downloaded.emit(out)
 
+    @pyqtSlot(str)
+    def on_file_downloaded(self, path):
+        self.fromFileLineEdit.setText(path)
+
     def selected_typenames(self):
         typenames = []
         for item in self.featureTypesTableWidget.selectedItems():
@@ -248,12 +270,10 @@ class DownloadWfs2Panel(BASE, WIDGET):
 
         path = self.outputPathLineEdit.text()
         if path == '':
-            with NamedTemporaryFile(mode="w+t", suffix='.gml', delete=False) as out:
-                out.write(xml)
+            with NamedTemporaryFile(suffix='.gml') as out:
                 path = out.name
-        else:
-            with open(path, 'w') as out:
-                out.write(xml)
+        with open(path, 'w', encoding='utf8') as out:
+            out.write(xml)
 
         return path
 
