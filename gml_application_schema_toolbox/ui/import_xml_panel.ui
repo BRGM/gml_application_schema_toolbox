@@ -144,7 +144,7 @@
    <item>
     <widget class="QPushButton" name="importButton">
      <property name="text">
-      <string>Import</string>
+      <string>Load</string>
      </property>
     </widget>
    </item>
