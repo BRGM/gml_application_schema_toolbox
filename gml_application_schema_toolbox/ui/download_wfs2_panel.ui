@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>758</width>
-    <height>773</height>
+    <width>544</width>
+    <height>674</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,308 +15,270 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="fromWfsGroup">
+    <widget class="QComboBox" name="connectionCombo"/>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QPushButton" name="connectBtn">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Request the GetCapabilities document from the download service to retrieve list of feature types and stored queries.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>&amp;Connect</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="newConnectionBtn">
+       <property name="text">
+        <string>&amp;New</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="editConnectionBtn">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>&amp;Edit</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="removeConnectionBtn">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Remove</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="showCapabilitiesButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Display GetCapabilities document using a simple tree view.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>Show capabitilies</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="datasetsTabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Feature Types</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QTableWidget" name="featureTypesTableWidget">
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>200</number>
+         </attribute>
+         <attribute name="horizontalHeaderMinimumSectionSize">
+          <number>50</number>
+         </attribute>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+         <column>
+          <property name="text">
+           <string>Feature type</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Title</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>Stored Queries</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QListWidget" name="storedQueriesListWidget">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose the stored query to use. Currently, stored query parameters are not supported.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QFormLayout" name="storedQueryFormLayout"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QgsCollapsibleGroupBox" name="groupBox">
      <property name="title">
-      <string>From &amp;WFS</string>
+      <string>Options</string>
      </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QComboBox" name="connectionCombo"/>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="QPushButton" name="connectBtn">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Request the GetCapabilities document from the download service to retrieve list of feature types and stored queries.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>&amp;Connect</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="newConnectionBtn">
-          <property name="text">
-           <string>&amp;New</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="editConnectionBtn">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>&amp;Edit</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="removeConnectionBtn">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Remove</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="showCapabilitiesButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Display GetCapabilities document using a simple tree view.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>Show capabitilies</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QTabWidget" name="datasetsTabWidget">
-        <property name="currentIndex">
-         <number>0</number>
+       <widget class="QGroupBox" name="bboxGroupBox">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define an area of interest to download data from. The extent can be defined from map canvas.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
-        <widget class="QWidget" name="tab">
-         <attribute name="title">
-          <string>Feature Types</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
-          <item>
-           <widget class="QTableWidget" name="featureTypesTableWidget">
-            <property name="selectionBehavior">
-             <enum>QAbstractItemView::SelectRows</enum>
-            </property>
-            <attribute name="horizontalHeaderStretchLastSection">
-             <bool>true</bool>
-            </attribute>
-            <attribute name="verticalHeaderVisible">
-             <bool>false</bool>
-            </attribute>
-            <column>
-             <property name="text">
-              <string>Feature type</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Title</string>
-             </property>
-            </column>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="tab_2">
-         <attribute name="title">
-          <string>Stored Queries</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <widget class="QListWidget" name="storedQueriesListWidget">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose the stored query to use. Currently, stored query parameters are not supported.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="selectionMode">
-             <enum>QAbstractItemView::SingleSelection</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QFormLayout" name="storedQueryFormLayout"/>
-          </item>
-         </layout>
-        </widget>
-       </widget>
-      </item>
-      <item>
-       <widget class="QgsCollapsibleGroupBox" name="groupBox">
         <property name="title">
-         <string>Options</string>
+         <string>Filter b&amp;y extent</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_11">
          <item>
-          <widget class="QGroupBox" name="bboxGroupBox">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define an area of interest to download data from. The extent can be defined from map canvas.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>xmin,ymin,xmax,ymax,EPSG:srs_id</string>
            </property>
-           <property name="title">
-            <string>Filter b&amp;y extent</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_11">
-            <item>
-             <widget class="QLabel" name="label_13">
-              <property name="text">
-               <string>xmin,ymin,xmax,ymax,EPSG:srs_id</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="BboxWidget" name="bboxWidget" native="true"/>
-            </item>
-           </layout>
           </widget>
          </item>
          <item>
-          <layout class="QFormLayout" name="formLayout_3">
-           <item row="0" column="0">
-            <widget class="QCheckBox" name="limitChkBox">
-             <property name="text">
-              <string>Limit to</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <layout class="QHBoxLayout" name="horizontalLayout_5">
-             <item>
-              <widget class="QSpinBox" name="featureLimitBox">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum number of features to download.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="suffix">
-                <string> feature(s)</string>
-               </property>
-               <property name="maximum">
-                <number>100000</number>
-               </property>
-               <property name="value">
-                <number>0</number>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-           <item row="1" column="0">
-            <widget class="QCheckBox" name="downloadChkBox">
-             <property name="text">
-              <string>Download to</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QLineEdit" name="outputPathLineEdit">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The file downloaded will be saved in this location. If not set, a temporary file is created.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="placeholderText">
-                <string>Create temporary file</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QToolButton" name="outputPathButton">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>...</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
+          <widget class="BboxWidget" name="bboxWidget" native="true"/>
          </item>
         </layout>
        </widget>
       </item>
+      <item>
+       <layout class="QFormLayout" name="formLayout_3">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="limitChkBox">
+          <property name="text">
+           <string>Limit to</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QSpinBox" name="featureLimitBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum number of features to download.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="suffix">
+             <string> feature(s)</string>
+            </property>
+            <property name="maximum">
+             <number>100000</number>
+            </property>
+            <property name="value">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
      </layout>
-     <zorder>datasetsTabWidget</zorder>
-     <zorder>groupBox</zorder>
-     <zorder>connectionCombo</zorder>
-     <zorder>newConnectionBtn</zorder>
-     <zorder>editConnectionBtn</zorder>
-     <zorder>removeConnectionBtn</zorder>
-     <zorder>connectBtn</zorder>
-     <zorder>showCapabilitiesButton</zorder>
-     <zorder>connectBtn</zorder>
-     <zorder>showCapabilitiesButton</zorder>
-     <zorder>horizontalSpacer_2</zorder>
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="fromUrlGroup">
-     <property name="title">
-      <string>Fro&amp;m URL/File</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <item>
-       <widget class="QLineEdit" name="fromFileLineEdit"/>
-      </item>
-      <item>
-       <widget class="QToolButton" name="toolButton">
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Download to</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="outputPathLineEdit">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The file downloaded will be saved in this location. If not set, a temporary file is created.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="placeholderText">
+        <string>Create temporary file</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="outputPathButton">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QPushButton" name="downloadButton">
      <property name="text">
       <string>Download</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QProgressBar" name="downloadProgressBar">
+     <property name="value">
+      <number>24</number>
      </property>
     </widget>
    </item>
@@ -333,14 +295,15 @@
      </property>
     </spacer>
    </item>
-   <item>
-    <widget class="QProgressBar" name="downloadProgressBar">
-     <property name="value">
-      <number>24</number>
-     </property>
-    </widget>
-   </item>
   </layout>
+  <zorder>downloadButton</zorder>
+  <zorder>downloadProgressBar</zorder>
+  <zorder>outputPathLineEdit</zorder>
+  <zorder></zorder>
+  <zorder>connectionCombo</zorder>
+  <zorder></zorder>
+  <zorder>datasetsTabWidget</zorder>
+  <zorder>groupBox</zorder>
  </widget>
  <customwidgets>
   <customwidget>
@@ -371,38 +334,6 @@
     <hint type="destinationlabel">
      <x>188</x>
      <y>510</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>downloadChkBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>outputPathButton</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>60</x>
-     <y>538</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>290</x>
-     <y>540</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>downloadChkBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>outputPathLineEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>60</x>
-     <y>538</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>194</x>
-     <y>540</y>
     </hint>
    </hints>
   </connection>

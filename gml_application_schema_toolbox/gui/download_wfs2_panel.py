@@ -48,15 +48,6 @@ class DownloadWfs2Panel(BASE, WIDGET):
 
         self.featureLimitBox.setValue(int(settings.value('default_maxfeatures')))
 
-        def safeSetChecked(obj, state):
-            # avoid infinite recursion
-            obj.blockSignals(True)
-            obj.setChecked(state)
-            obj.blockSignals(False)
-
-        self.fromUrlGroup.toggled.connect(lambda enabled: safeSetChecked(self.fromWfsGroup, not enabled))
-        self.fromWfsGroup.toggled.connect(lambda enabled: safeSetChecked(self.fromUrlGroup, not enabled))
-
         self.refresh_connections()
         self.connectionCombo.currentTextChanged.connect(self.on_change_connection)
 
