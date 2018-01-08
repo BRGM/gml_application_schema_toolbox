@@ -310,6 +310,9 @@ class ComplexFeatureLoader(object):
                     layer = self._create_layer('polygon', srid, attr_list, src.title + " (polygons)")
                 elif qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.MultiPolygon:
                     layer = self._create_layer('multipolygon', srid, attr_list, src.title + " (polygons)")
+                else:
+                    raise RuntimeError("Unsupported geometry type {}".format(qgsgeom.wkbType()))
+                    
 
             # add metadata
             self._add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)
