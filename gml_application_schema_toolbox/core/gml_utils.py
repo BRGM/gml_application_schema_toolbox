@@ -34,6 +34,9 @@ def extract_features(doc):
                 elif no_prefix(child.tag) == 'featureMembers':
                     for cchild in child:
                         features.append(cchild)
+                elif no_prefix(child.tag) == 'featureMember':
+                    for cchild in child:
+                        features.append(cchild)
         elif node.tag.startswith(u'{http://www.opengis.net/sos/2') and node.tag.endswith('GetObservationResponse'):
             # SOS features
             for child in node:
