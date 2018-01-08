@@ -42,20 +42,13 @@ class ImportXmlPanel(BASE, WIDGET):
 
         self.optionsGroupBox.setCollapsed(True)
 
-    @pyqtSlot()
-    def on_gmlPathButton_clicked(self):
-        gml_path = settings.value("gml_path", "")
-        path, filter = QFileDialog.getOpenFileName(self,
-                                                   self.tr("Open GML file"),
-                                                   gml_path,
-                                                   self.tr("GML files (*.gml *.xml)"))
-        if path:
-            settings.setValue("gml_path", os.path.dirname(path))
-            self.gmlPathLineEdit.setText(path)
+        self.parent = parent
 
-    @pyqtSlot()
-    def on_importButton_clicked(self):
-        gml_path = self.gmlPathLineEdit.text()
+    def gml_path(self):
+        return self.parent.gmlPathLineEdit.text()
+
+    def do_load(self):
+        gml_path = self.gml_path()
 
         # get attribute mapping
         mapping = {}

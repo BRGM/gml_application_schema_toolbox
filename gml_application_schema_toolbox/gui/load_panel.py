@@ -31,20 +31,20 @@ from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.core.xml_utils import xml_parse, no_prefix
 from gml_application_schema_toolbox.core.qgis_urlopener import remote_open_from_qgis
 
+from .import_gmlas_panel import ImportGmlasPanel
+from .import_xml_panel import ImportXmlPanel
 from .xml_dialog import XmlDialog
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), '..', 'ui', 'download_wfs2_panel.ui'))
+    os.path.dirname(__file__), '..', 'ui', 'load_panel.ui'))
 
-class DownloadWfs2Panel(BASE, WIDGET):
+class LoadWfs2Panel(BASE, WIDGET):
 
     file_downloaded = pyqtSignal(str)
 
     def __init__(self, parent=None):
-        super(DownloadWfs2Panel, self).__init__(parent)
+        super(LoadWfs2Panel, self).__init__(parent)
         self.setupUi(self)
-
-        self.downloadProgressBar.setVisible(False)
 
         self.featureLimitBox.setValue(int(settings.value('default_maxfeatures')))
 
@@ -52,6 +52,18 @@ class DownloadWfs2Panel(BASE, WIDGET):
         self.connectionCombo.currentTextChanged.connect(self.on_change_connection)
 
         self.file_downloaded.connect(self.on_file_downloaded)
+
+        self.xml_panel = ImportXmlPanel(self)
+        self.gmlas_panel = ImportGmlasPanel(self)
+        self.stackedWidget.addWidget(self.xml_panel)
+        self.stackedWidget.addWidget(self.gmlas_panel)
+
+        self.xmlModeRadio.toggled.connect(self.on_xml)
+        self.relationalModeRadio.toggled.connect(self.on_gmlas)
+
+        v = settings.value("default_import_method")
+        self.xmlModeRadio.setChecked(v == 'xml')
+        self.relationalModeRadio.setChecked(v == 'gmlas')
 
     def refresh_connections(self):
         # populate connection combo box
@@ -80,6 +92,13 @@ class DownloadWfs2Panel(BASE, WIDGET):
             
         with qgis_proxy_settings():
             return WebFeatureService(url=uri, version=version)
+
+    def on_xml(self, enabled):
+        if enabled:
+            self.stackedWidget.setCurrentWidget(self.xml_panel)
+    def on_gmlas(self, enabled):
+        if enabled:
+            self.stackedWidget.setCurrentWidget(self.gmlas_panel)
 
     @pyqtSlot(str)
     def on_change_connection(self, currentConnection):
@@ -175,8 +194,6 @@ class DownloadWfs2Panel(BASE, WIDGET):
 
     @pyqtSlot()
     def on_downloadButton_clicked(self):
-        self.downloadProgressBar.setValue(0)
-        self.downloadProgressBar.setVisible(True)
         self.setCursor(Qt.WaitCursor)
         try:
             if self.datasetsTabWidget.currentIndex() == 0:
@@ -184,14 +201,25 @@ class DownloadWfs2Panel(BASE, WIDGET):
             if self.datasetsTabWidget.currentIndex() == 1:
                 out = self.download_stored_query()
         finally:
-            self.downloadProgressBar.setVisible(False)
             self.unsetCursor()
         if out is not None:
             self.file_downloaded.emit(out)
 
     @pyqtSlot(str)
     def on_file_downloaded(self, path):
-        self.fromFileLineEdit.setText(path)
+        self.gmlPathLineEdit.setText(path)
+        self.gmlPathLineEdit.setText(path)
+
+    @pyqtSlot()
+    def on_gmlPathButton_clicked(self):
+        gml_path = settings.value("gml_path", "")
+        path, filter = QFileDialog.getOpenFileName(self,
+            self.tr("Open GML file"),
+            gml_path,
+            self.tr("GML files or XSD (*.gml *.xml *.xsd)"))
+        if path:
+            settings.setValue("gml_path", os.path.dirname(path))
+            self.gmlPathLineEdit.setText(path)
 
     def selected_typenames(self):
         typenames = []
@@ -270,3 +298,15 @@ class DownloadWfs2Panel(BASE, WIDGET):
 
     def download_stored_query(self):
         pass
+
+    @pyqtSlot()
+    def on_loadFromFileButton_clicked(self):
+        if self.xmlModeRadio.isChecked():
+            self.xml_panel.do_load()
+        else:
+            self.gmlas_panel.do_load()
+
+    @pyqtSlot()
+    def on_loadButton_clicked(self):
+        self.on_downloadButton_clicked()
+        self.on_loadFromFileButton_clicked()

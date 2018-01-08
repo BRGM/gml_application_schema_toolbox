@@ -61,9 +61,12 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         self.databaseWidget.set_accept_mode(QFileDialog.AcceptSave)
 
         self.gmlasConfigLineEdit.setText(settings.value('default_gmlas_config'))
-        self.gmlPathLineEdit.setText(settings.value('gml_path', ''))
         self.acceptLanguageHeaderInput.setText(settings.value('default_language'))
         self.set_access_mode(settings.value('default_access_mode'))
+        self.parent = parent
+
+    def gml_path(self):
+        return self.parent.gmlPathLineEdit.text()
 
     def showEvent(self, event):
         # Cannot do that in the constructor. The project is not fully setup when
@@ -71,20 +74,10 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         if not self.destSrs.crs().isValid():
             self.destSrs.setCrs(iface.mapCanvas().mapSettings().destinationCrs())
         BASE.showEvent(self, event)
-
-    @pyqtSlot()
-    def on_gmlPathButton_clicked(self):
-        path, filter = QFileDialog.getOpenFileName(self,
-            self.tr("Open GML file"),
-            self.gmlPathLineEdit.text(),
-            self.tr("GML files or XSD (*.gml *.xml *.xsd)"))
-        if path:
-            settings.setValue("gml_path", os.path.dirname(path))
-            self.gmlPathLineEdit.setText(path)
-
+        
     # Read XML file and substitute form parameters
     def gmlas_config(self):
-        path = self.gmlasConfigLineEdit.text()
+        path = self.gml_path()
         if path == '':
             raise InputError(self.tr("You must select a GMLAS config file"))
 
@@ -118,7 +111,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     def gmlas_datasource(self):
         gmlasconf = self.gmlas_config()
-        datasourceFile = self.gmlPathLineEdit.text()
+        datasourceFile = self.gml_path()
         if datasourceFile == '':
             raise InputError(self.tr("You must select a input file or URL"))
         isXsd = datasourceFile.endswith(".xsd")
@@ -286,8 +279,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         return params
 
-    @pyqtSlot()
-    def on_convertButton_clicked(self):
+    def do_load(self):
         gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
         gdal.SetConfigOption('GDAL_HTTP_UNSAFESSL', 'YES')
 
