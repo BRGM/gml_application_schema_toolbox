@@ -183,13 +183,17 @@ where
     l = ds.ExecuteSQL(sql)
     if l is not None:
         for f in l:
+            parent_layer = f.GetField("layer_name")
+            child_layer = f.GetField("child_layer")
+            if parent_layer not in layers or child_layer not in layers:
+                continue
             rel = QgsRelation()
             rel.setId('1_n_' + f.GetField('layer_name') + '_' + f.GetField('child_layer') + '_' + f.GetField('parent_pkid') + '_' + f.GetField('child_pkid'))
             rel.setName(f.GetField('child_layer'))
             # parent layer
-            rel.setReferencedLayer(layers[f.GetField('layer_name')]['layer_id'])
+            rel.setReferencedLayer(layers[parent_layer]['layer_id'])
             # child layer
-            rel.setReferencingLayer(layers[f.GetField('child_layer')]['layer_id'])
+            rel.setReferencingLayer(layers[child_layer]['layer_id'])
             # parent, child
             rel.addFieldPair(f.GetField('child_pkid'), f.GetField('parent_pkid'))
             #rel.addFieldPair(f.GetField('child_pkid'), 'ogc_fid')
