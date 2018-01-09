@@ -298,17 +298,18 @@ class ComplexFeatureLoader(object):
             if qgsgeom is None:
                 layer = self._create_layer('none', None, attr_list, src.title)
             else:
-                if qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.Point:
+                type2d = QgsWkbTypes.flatType(qgsgeom.wkbType())
+                if qgsgeom and type2d == QgsWkbTypes.Point:
                     layer = self._create_layer('point', srid, attr_list, src.title + " (points)")
-                elif qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.MultiPoint:
+                elif qgsgeom and type2d == QgsWkbTypes.MultiPoint:
                     layer = self._create_layer('multipoint', srid, attr_list, src.title + " (points)")
-                elif qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.LineString:
+                elif qgsgeom and type2d == QgsWkbTypes.LineString:
                     layer = self._create_layer('linestring', srid, attr_list, src.title + " (lines)")
-                elif qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.MultiLineString:
+                elif qgsgeom and type2d == QgsWkbTypes.MultiLineString:
                     layer = self._create_layer('multilinestring', srid, attr_list, src.title + " (lines)")
-                elif qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.Polygon:
+                elif qgsgeom and type2d == QgsWkbTypes.Polygon:
                     layer = self._create_layer('polygon', srid, attr_list, src.title + " (polygons)")
-                elif qgsgeom and qgsgeom.wkbType() == QgsWkbTypes.MultiPolygon:
+                elif qgsgeom and type2d == QgsWkbTypes.MultiPolygon:
                     layer = self._create_layer('multipolygon', srid, attr_list, src.title + " (polygons)")
                 else:
                     raise RuntimeError("Unsupported geometry type {}".format(qgsgeom.wkbType()))
