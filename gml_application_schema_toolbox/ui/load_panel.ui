@@ -377,16 +377,27 @@
      </property>
     </widget>
    </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
   </layout>
   <zorder>stackedWidget</zorder>
   <zorder></zorder>
   <zorder>datasetsTabWidget</zorder>
   <zorder>groupBox</zorder>
   <zorder>line</zorder>
-  <zorder>loadFromFileButton</zorder>
-  <zorder>gmlPathLineEdit</zorder>
-  <zorder>gmlPathButton</zorder>
   <zorder>loadButton</zorder>
+  <zorder>verticalSpacer</zorder>
  </widget>
  <customwidgets>
   <customwidget>
