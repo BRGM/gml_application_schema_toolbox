@@ -17,6 +17,7 @@
 
 from qgis.core import QgsVectorLayer, QgsProject, QgsCoordinateReferenceSystem, QgsRelation, QgsEditorWidgetSetup
 from qgis.core import QgsEditFormConfig, QgsAttributeEditorField, QgsAttributeEditorRelation, QgsAttributeEditorContainer
+from qgis.core import QgsSettings
 from qgis.PyQt.QtCore import QVariant
 
 from osgeo import ogr
@@ -86,6 +87,14 @@ def import_in_qgis(gmlas_uri, provider, schema = None):
             layers[k]["geometry_column"] = g
     
 
+    # with unknown srid, don't ask for each layer, set to a default
+    settings = QgsSettings()
+    projection_behavior = settings.value("Projections/defaultBehavior")
+    projection_default = settings.value("Projections/layerDefaultCrs")
+    settings.setValue("Projections/defaultBehavior", "useGlobal")
+    settings.setValue("Projections/layerDefaultCrs", "EPSG:4326")
+
+    # add layers
     crs = QgsCoordinateReferenceSystem("EPSG:4326")
     for ln in sorted(layers.keys()):
         lyr = layers[ln]
@@ -93,12 +102,17 @@ def import_in_qgis(gmlas_uri, provider, schema = None):
         l = _qgis_layer(gmlas_uri, schema, lyr["layer_name"], g_column, provider, qgis_layer_name = ln)
         if not l.isValid():
             raise RuntimeError("Problem loading layer {} with {}".format(ln, l.source()))
-        if lyr["srid"]:
-            crs = QgsCoordinateReferenceSystem("EPSG:{}".format(lyr["srid"]))
-        l.setCrs(crs)
+        if g_column is not None:
+            if lyr["srid"]:
+                crs = QgsCoordinateReferenceSystem("EPSG:{}".format(lyr["srid"]))
+            l.setCrs(crs)
         QgsProject.instance().addMapLayer(l)
         layers[ln]['layer_id'] = l.id()
         layers[ln]['layer'] = l
+
+    # restore settings
+    settings.setValue("Projections/defaultBehavior", projection_behavior)
+    settings.setValue("Projections/layerDefaultCrs", projection_default)
 
     # add 1:1 relations
     relations_1_1 = []
