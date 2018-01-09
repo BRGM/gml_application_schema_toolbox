@@ -47,6 +47,8 @@ from gml_application_schema_toolbox.gui import InputError
 from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
 from .xml_dialog import XmlDialog
 
+from qgis.core import QgsMessageLog
+
 WIDGET, BASE = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'import_gmlas_panel.ui'))
 
@@ -283,10 +285,15 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
         gdal.SetConfigOption('GDAL_HTTP_UNSAFESSL', 'YES')
 
+        def error_handler(err, err_no, msg):
+            if err >= gdal.CE_Warning:
+                QgsMessageLog.logMessage("{} {}: {}".format(err, err_no, msg), plugin_name())
+
         dest = self.databaseWidget.datasource_name()
         if dest == '' and self.databaseWidget.format() == "SQLite":
             with tempfile.NamedTemporaryFile(suffix='.sqlite') as tmp:
                 dest = tmp.name
+                QgsMessageLog.logMessage("Temp SQLITE: {}".format(dest), plugin_name())
         
         if dest.startswith('PG:'):
             schema = self.databaseWidget.schema()
@@ -295,6 +302,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         try:
             QApplication.setOverrideCursor(Qt.WaitCursor)
+            gdal.PushErrorHandler(error_handler)
             self.translate(self.import_params(dest))
             import_in_qgis(dest, self.databaseWidget.format(), schema)
             
@@ -306,4 +314,5 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
                                 e.args[0])
         finally:
             QApplication.restoreOverrideCursor()
-        
+            gdal.PopErrorHandler()
+
