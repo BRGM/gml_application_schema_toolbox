@@ -38,15 +38,14 @@ class GeologyLogViewer(QWidget):
     @classmethod
     def xml_tag(cls):
         # the XML tag (with namespace) this widget is meant for
-        # the second element of the tuple is an XPath filter
-        return ("{http://www.opengis.net/om/2.0}OM_Observation", "./om:type[@xlink:href='http://www.opengis.net/def/observationType/OGC-GWML/2.2/GW_GeologyLog']")
+        return "{http://www.opengis.net/gwml-well/2.2}GW_GeologyLogCoverage"
 
     @classmethod
     def init_from_xml(cls, xml_tree):
         # parse data
         data = []
-        description = resolve_xpath(xml_tree, "description/text()")
-        logs = resolve_xpath(xml_tree, "result/GW_GeologyLogCoverage/element/LogValue")
+        #description = resolve_xpath(xml_tree, "element/value/description/text()")
+        logs = resolve_xpath(xml_tree, "element/LogValue")
         data = []
         for log in logs:
             fromDepth = float(resolve_xpath(log, "fromDepth/Quantity/value/text()"))
@@ -55,7 +54,7 @@ class GeologyLogViewer(QWidget):
             value_cat = resolve_xpath(log, "value/DataRecord/field/Category/value/text()")
             value = value_text if value_text is not None else value_cat
             data.append((fromDepth, toDepth, value))
-        return cls(description, data)
+        return cls("GeologyLogCoverage", data)
 
     @classmethod
     def init_from_model(cls, model, sqlite3_conn, id, parent_widget = None):
