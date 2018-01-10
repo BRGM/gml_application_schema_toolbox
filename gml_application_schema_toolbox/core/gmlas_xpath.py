@@ -5,9 +5,9 @@ def lstartswith(l1, l2):
     return len([(a,b) for (a,b) in zip(l1,l2) if a==b]) == len(l2)
 
 def no_ns(s):
-    """Remove namespace prefix"""
+    """Remove namespace prefix, except on attributes"""
     i=s.find(':')
-    if i != -1:
+    if i != -1 and '@' not in s[:i]:
         return s[i+1:]
     return s
 
@@ -66,7 +66,7 @@ where layer_name='{}'""".format(self._schema, ogr_layer_name)):
                 if lstartswith(field_xpath, layer_xpath):
                     # remove the layer_xpath
                     field_xpath = field_xpath[len(layer_xpath):]
-                    #print("field_xpath2", field_xpath)
+                    #print("field_xpath2", [no_ns(x) for x in field_xpath])
                     if lstartswith(lxpath, [no_ns(x) for x in field_xpath]):
                         field_name = f.GetField("field_name")
                         field_category = f.GetField("field_category")
