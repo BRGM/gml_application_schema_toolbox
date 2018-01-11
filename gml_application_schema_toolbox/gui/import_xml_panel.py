@@ -40,8 +40,6 @@ class ImportXmlPanel(BASE, WIDGET):
         self.attributeTable.selectionModel().selectionChanged.connect(self.onSelectMapping)
         self.geometryColumnCheck.stateChanged.connect(self.geometryColumnEdit.setEnabled)
 
-        self.optionsGroupBox.setCollapsed(True)
-
         self.parent = parent
 
     def gml_path(self):
