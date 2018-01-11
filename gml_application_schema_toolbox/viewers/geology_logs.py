@@ -90,22 +90,21 @@ class GeologyLogViewer(QWidget):
 
 
 class PlotView(QGraphicsView):
-    def __init__( self, parent = None ):
-        QGraphicsView.__init__( self, parent )
-        self.setScene( PlotScene(parent) )
+    def __init__(self, parent = None):
+        QGraphicsView.__init__(self, parent)
+        self.setScene(PlotScene(parent))
         # set fixed height and scrollbat policies
-        self.setVerticalScrollBarPolicy( Qt.ScrollBarAlwaysOff )
-        self.setHorizontalScrollBarPolicy( Qt.ScrollBarAlwaysOff )
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-    def clear( self ):
+    def clear(self):
         self.scene().clear()
 
     # sceneRect is always set to the resize event size
     # this way, 1 pixel in the scene is 1 pixel on screen
-    def resizeEvent( self, event ):
-        QGraphicsView.resizeEvent( self, event )
-        r = self.scene().sceneRect()
-        self.scene().setSceneRect( QRectF( 0, 0, event.size().width(), event.size().height() ) )
+    def resizeEvent(self, event):
+        QGraphicsView.resizeEvent(self, event)
+        self.scene().setSceneRect(QRectF(0, 0, event.size().width(), event.size().height()))
         self.displayPlot()
 
     def setData(self, data):
@@ -116,8 +115,8 @@ class PlotView(QGraphicsView):
 
 class PlotScene(QGraphicsScene):
 
-    def __init__( self, parent ):
-        QGraphicsScene.__init__( self, parent )
+    def __init__(self, parent):
+        QGraphicsScene.__init__(self, parent)
 
         self.zScale = 100.0
         # width (in pixels) of the bar
@@ -127,8 +126,8 @@ class PlotScene(QGraphicsScene):
         
         self.clear()
 
-    def clear( self ):
-        QGraphicsScene.clear( self )
+    def clear(self):
+        QGraphicsScene.clear(self)
         self.data = []
         self.zMin = 0
         self.zMax = 0
@@ -160,16 +159,16 @@ class PlotScene(QGraphicsScene):
         # update ratio and offset
         self.setSceneRect(self.sceneRect())
 
-    def setSceneRect( self, rect ):
-        QGraphicsScene.setSceneRect( self, rect )
+    def setSceneRect(self, rect):
+        QGraphicsScene.setSceneRect(self, rect)
         h = rect.height() - self.yOffset * 2
         if self.zMax != self.zMin:
             self.zScale = h / (self.zMax-self.zMin)
         else:
             self.zScale = 1.0
 
-    def displayPlot( self ):
-        QGraphicsScene.clear( self )
+    def displayPlot(self):
+        QGraphicsScene.clear(self)
         r = self.sceneRect();
         fm = QFontMetrics(QFont())
 
