@@ -134,8 +134,14 @@ def _wkbFromGml(tree, swap_xy):
     if g is None:
         return None, None
 
-    qgsgeom = QgsGeometry()
     wkb = g.ExportToWkb()
+    if g.GetGeometryType() == ogr.wkbPolyhedralSurface or g.GetGeometryType() == ogr.wkbTIN:
+        # Polyhedral and TIN are not supported by QGIS
+        # So we convert them to multipolygon by poking the geometry type
+        # It works only because the memory structure is the same
+        wkb = wkb[:4] + b"\x06" + wkb[5:]
+
+    qgsgeom = QgsGeometry()
     qgsgeom.fromWkb(wkb)
 
     if swap_xy:
@@ -145,7 +151,7 @@ def _wkbFromGml(tree, swap_xy):
 def _extractGmlGeometry(tree, swap_xy):
     ns, tag = split_tag(tree.tag)
     if ns.startswith('http://www.opengis.net/gml'):
-        if tag in ["Point", "LineString", "Polygon",
+        if tag in ["Point", "LineString", "Polygon", "PolyhedralSurface", "Tin",
                    "MultiPoint", "MultiCurve", "MultiSurface",
                    "Curve", "OrientableCurve", "Surface", 
                    "CompositeCurve", "CompositeSurface", "MultiGeometry"]:
@@ -311,6 +317,14 @@ class ComplexFeatureLoader(object):
                     layer = self._create_layer('polygon', srid, attr_list, src.title + " (polygons)")
                 elif qgsgeom and type2d == QgsWkbTypes.MultiPolygon:
                     layer = self._create_layer('multipolygon', srid, attr_list, src.title + " (polygons)")
+                elif qgsgeom and (type2d == QgsWkbTypes.CircularString or type2d == QgsWkbTypes.CompoundCurve):
+                    layer = self._create_layer('compoundcurve', srid, attr_list, src.title + " (curves)")
+                elif qgsgeom and type2d == QgsWkbTypes.MultiCurve:
+                    layer = self._create_layer('multicurve', srid, attr_list, src.title + " (curves)")
+                elif qgsgeom and type2d == QgsWkbTypes.CurvePolygon:
+                    layer = self._create_layer('curvepolygon', srid, attr_list, src.title + " (curve polygons)")
+                elif qgsgeom and type2d == QgsWkbTypes.MultiSurface:
+                    layer = self._create_layer('multisurface', srid, attr_list, src.title + " (curve polygons)")
                 else:
                     raise RuntimeError("Unsupported geometry type {}".format(qgsgeom.wkbType()))
                     
@@ -410,7 +424,11 @@ class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
                         'linestring': ogr.wkbLineString,
                         'multilinestring': ogr.wkbMultiLineString,
                         'polygon': ogr.wkbPolygon,
-                        'multipolygon': ogr.wkbMultiPolygon
+                        'multipolygon': ogr.wkbMultiPolygon,
+                        'compoundcurve': ogr.wkbCompoundCurve,
+                        'curvepolygon': ogr.wkbCurvePolygon,
+                        'multicurve': ogr.wkbMultiCurve,
+                        'multisurface': ogr.wkbMultiSurface
             }[type]
             srs = osr.SpatialReference()
             srs.ImportFromEPSGA(int(srid))
