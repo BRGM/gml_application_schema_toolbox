@@ -30,11 +30,6 @@ class GeologyLogViewer(QWidget):
     @classmethod
     def name(cls):
         return "GW Geology log"
-    
-    @classmethod
-    def table_name(cls):
-        # the table name for the relational model
-        return "?"
 
     @classmethod
     def xml_tag(cls):
@@ -67,11 +62,6 @@ class GeologyLogViewer(QWidget):
         data = [(float(f), float(t), cat) for (f, t, cat) in zip(froms, tos, cats)]
         return cls("GeologyLogCoverage", data, parent)
 
-    @classmethod
-    def init_from_model(cls, model, sqlite3_conn, id, parent_widget = None):
-        pass
-        
-    
     def __init__(self, title, data, parent = None):
         QWidget.__init__(self, parent)
 

@@ -23,12 +23,109 @@ from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtWidgets import *
 from ..core.xml_utils import no_prefix, split_tag
+from ..core.gmlas_xpath import GmlAsXPathResolver
 
 from . import viewers_utils
 
 from datetime import datetime
 import time
 import os
+
+class WML2TimeSeriesViewer(QWidget):
+    @classmethod
+    def name(cls):
+        return "WML2 Time series"
+    
+    @classmethod
+    def xml_tag(cls):
+        # the XML tag (with namespace) this widget is meant for
+        return "{http://www.opengis.net/waterml/2.0}MeasurementTimeseries"
+
+    @classmethod
+    def init_from_xml(cls, xml_tree):
+        # parse data
+        data = []
+        yTitle = 'value'
+        title = ''
+        for k, v in xml_tree.attrib.items():
+            ns, tag = split_tag(k)
+            if ns.startswith('http://www.opengis.net/gml') and tag == "id":
+                title = v
+        for child in xml_tree:
+            tag = no_prefix(child.tag)
+            if tag == 'point':
+                tm = time.mktime(datetime.strptime(child[0][0].text, "%Y-%m-%dT%H:%M:%S.000Z").timetuple())
+                value = float(child[0][1].text)
+                data.append((tm, value, child[0][0].text))
+            elif tag == 'defaultPointMetadata':
+                for c in child[0]:
+                    if c.tag == '{http://www.opengis.net/waterml/2.0}uom':
+                        yTitle = c.attrib['code']
+        return cls(title, yTitle, data)
+
+    @classmethod
+    def init_from_db(cls, db_uri, provider, schema, layer_name, pkid_name, pkid_value, parent):
+        resolver = GmlAsXPathResolver(db_uri, provider, schema)
+
+        ytitle = resolver.resolve_xpath(layer_name, pkid_name, pkid_value, "defaultPointMetadata/DefaultTVPMeasurementMetadata/uom/@code") or [""]
+        times = resolver.resolve_xpath(layer_name, pkid_name, pkid_value, "point/MeasurementTVP/time/text()")
+        ys = resolver.resolve_xpath(layer_name, pkid_name, pkid_value, "point/MeasurementTVP/value/text()")
+        data = [(time.mktime(datetime.strptime(t, "%Y-%m-%dT%H:%M:%S.000Z").timetuple()), float(y), t) for (t, y) in zip(times, ys)]
+        return cls(pkid_value, ytitle[0], data, parent)
+    
+    def __init__(self, title, yTitle, data, parent = None):
+        QWidget.__init__(self, parent)
+
+        self.setWindowTitle("TimeSeries viewer")
+
+        # sort data by x
+        data.sort(key = lambda x: x[0])
+
+        formLayout = QFormLayout()
+        # id
+        titleW = QLineEdit(title, self)
+        titleW.setReadOnly(True)
+        formLayout.addRow("ID", titleW)
+
+        # start and end time
+        sdt = QDateTime.fromString(data[0][2], "yyyy-MM-ddTHH:mm:ss.zZ")
+        edt = QDateTime.fromString(data[-1][2], "yyyy-MM-ddTHH:mm:ss.zZ")
+        startTimeW = QDateTimeEdit(sdt)
+        startTimeW.setReadOnly(True)
+        endTimeW = QDateTimeEdit(edt)
+        endTimeW.setReadOnly(True)
+        formLayout.addRow("Start time", startTimeW)
+        formLayout.addRow("End time", endTimeW)
+
+        # unit of measure
+        unitW = QLineEdit(yTitle)
+        unitW.setReadOnly(True)
+        formLayout.addRow("Unit", unitW)
+
+        # min / max value
+        minValue = min([x[1] for x in data])
+        maxValue = max([x[1] for x in data])
+        minValueW = QLineEdit(str(minValue))
+        minValueW.setReadOnly(True)
+        maxValueW = QLineEdit(str(maxValue))
+        maxValueW.setReadOnly(True)
+        formLayout.addRow("Min value", minValueW)
+        formLayout.addRow("Max value", maxValueW)
+
+        # the plot
+        layout = QVBoxLayout()
+        self.plot = PlotView(yTitle, self)
+        layout.addLayout(formLayout)
+        layout.addWidget(self.plot)
+        self.setLayout(layout)
+
+        self.plot.setData(data)
+        self.resize(800,600)
+
+    @classmethod
+    def icon(cls):
+        """Must return a QIcon"""
+        return QIcon(os.path.join(os.path.dirname(__file__), "plot.svg"))
 
 class PlotView(QGraphicsView):
     def __init__( self, yTitle, parent = None ):
@@ -238,109 +335,3 @@ class PointMarker(object):
                 self.rect.setRect(x, y, rw, rh)
                 self.text.setPos(x, y)
 
-class WML2TimeSeriesViewer(QWidget):
-    @classmethod
-    def name(cls):
-        return "WML2 Time series"
-    
-    @classmethod
-    def table_name(cls):
-        # the table name for the relational model
-        return "MeasurementTimeseriesType"
-
-    @classmethod
-    def xml_tag(cls):
-        # the XML tag (with namespace) this widget is meant for
-        return "{http://www.opengis.net/waterml/2.0}MeasurementTimeseries"
-
-    @classmethod
-    def init_from_xml(cls, xml_tree):
-        # parse data
-        data = []
-        yTitle = 'value'
-        title = ''
-        for k, v in xml_tree.attrib.items():
-            ns, tag = split_tag(k)
-            if ns.startswith('http://www.opengis.net/gml') and tag == "id":
-                title = v
-        for child in xml_tree:
-            tag = no_prefix(child.tag)
-            if tag == 'point':
-                tm = time.mktime(datetime.strptime(child[0][0].text, "%Y-%m-%dT%H:%M:%S.000Z").timetuple())
-                value = float(child[0][1].text)
-                data.append((tm, value, child[0][0].text))
-            elif tag == 'defaultPointMetadata':
-                for c in child[0]:
-                    if c.tag == '{http://www.opengis.net/waterml/2.0}uom':
-                        yTitle = c.attrib['code']
-        return cls(title, yTitle, data)
-
-    @classmethod
-    def init_from_model(cls, model, sqlite3_conn, id, parent_widget = None):
-        title = id
-        table = model.tables()[cls.table_name()]
-        ytitle = viewers_utils.xpath_on_db(model, table, "defaultPointMetadata/DefaultTVPMeasurementMetadata/uom/@code", id, sqlite3_conn)[0]
-        times = viewers_utils.xpath_on_db(model, table, "point/MeasurementTVP/time/text()", id, sqlite3_conn)
-        y = viewers_utils.xpath_on_db(model, table, "point/MeasurementTVP/value/text()", id, sqlite3_conn)
-
-        data = []
-        for i in range(len(times)):
-            tm = time.mktime(datetime.strptime(times[i], "%Y-%m-%dT%H:%M:%S.000Z").timetuple())
-            value = float(y[i])
-            data.append((tm, value, times[i]))
-        return cls(title, ytitle, data, parent_widget)
-        
-    
-    def __init__(self, title, yTitle, data, parent = None):
-        QWidget.__init__(self, parent)
-
-        self.setWindowTitle("TimeSeries viewer")
-
-        # sort data by x
-        data.sort(key = lambda x: x[0])
-
-        formLayout = QFormLayout()
-        # id
-        titleW = QLineEdit(title, self)
-        titleW.setReadOnly(True)
-        formLayout.addRow("ID", titleW)
-
-        # start and end time
-        sdt = QDateTime.fromString(data[0][2], "yyyy-MM-ddTHH:mm:ss.zZ")
-        edt = QDateTime.fromString(data[-1][2], "yyyy-MM-ddTHH:mm:ss.zZ")
-        startTimeW = QDateTimeEdit(sdt)
-        startTimeW.setReadOnly(True)
-        endTimeW = QDateTimeEdit(edt)
-        endTimeW.setReadOnly(True)
-        formLayout.addRow("Start time", startTimeW)
-        formLayout.addRow("End time", endTimeW)
-
-        # unit of measure
-        unitW = QLineEdit(yTitle)
-        unitW.setReadOnly(True)
-        formLayout.addRow("Unit", unitW)
-
-        # min / max value
-        minValue = min([x[1] for x in data])
-        maxValue = max([x[1] for x in data])
-        minValueW = QLineEdit(str(minValue))
-        minValueW.setReadOnly(True)
-        maxValueW = QLineEdit(str(maxValue))
-        maxValueW.setReadOnly(True)
-        formLayout.addRow("Min value", minValueW)
-        formLayout.addRow("Max value", maxValueW)
-
-        # the plot
-        layout = QVBoxLayout()
-        self.plot = PlotView(yTitle, self)
-        layout.addLayout(formLayout)
-        layout.addWidget(self.plot)
-        self.setLayout(layout)
-
-        self.plot.setData(data)
-        self.resize(800,600)
-
-    @classmethod
-    def icon(cls):
-        """Must return a QIcon"""
-        return QIcon(os.path.join(os.path.dirname(__file__), "plot.svg"))
