@@ -27,7 +27,7 @@ __all__ = ["install_xml_tree_on_feature_form"]
 
 from qgis.PyQt.QtWidgets import QWidget, QGridLayout, QWidgetItem, QLabel, QPushButton, QTabWidget
 from qgis.PyQt.QtWidgets import QDialog, QVBoxLayout
-from qgis.core import QgsEditFormConfig
+from qgis.core import QgsEditFormConfig, QgsDataSourceUri
 
 from . import xml_tree_widget
 from ..core.xml_utils import no_ns
@@ -94,7 +94,10 @@ def inject_custom_viewer_into_form(dialog, layer, feature):
         layer_name = layer_name.split('=')[1]
     else:
         provider = "PostgreSQL"
-        # TODO QgsDataSourceURI to ogr uri
+        ds = QgsDataSourceUri(layer.source())
+        db_uri = "PG:" + ds.connectionInfo()
+        layer_name = ds.table()
+        schema = ds.schema()
 
     w = viewer_cls.init_from_db(db_uri, provider, schema, layer_name, pkid, id, tab)
     def on_tab_changed(index):

@@ -18,7 +18,10 @@ class GmlAsXPathResolver:
         self._ds = drv.Open(uri)
         if self._ds is None:
             raise RuntimeError("Problem opening {}".format(uri))
-        self._schema = schema
+        if schema != "":
+            self._schema = schema + "."
+        else:
+            self._schema = ""
 
     def resolve_xpath(self, ogr_layer_name, ogr_layer_pkid_name, pkid_value, xpath):
         """Resolve an XPath relative to a current layer
