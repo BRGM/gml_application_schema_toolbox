@@ -31,6 +31,13 @@ def prefix(tag):
         return tag[1:tag.rfind('}')]
     return ""
 
+def no_ns(s):
+    """Remove namespace prefix, except on attributes"""
+    i=s.find(':')
+    if i != -1 and '@' not in s[:i]:
+        return s[i+1:]
+    return s
+
 def split_tag(tag):
     """Return a pair (ns prefix, tag) from a tag name"""
     if tag.startswith('{'):

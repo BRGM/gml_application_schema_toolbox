@@ -1,16 +1,9 @@
 from osgeo import ogr
+from .xml_utils import no_ns
 
 def lstartswith(l1, l2):
     """Return True if l1 starts with elements in l2"""
     return len([(a,b) for (a,b) in zip(l1,l2) if a==b]) == len(l2)
-
-def no_ns(s):
-    """Remove namespace prefix, except on attributes"""
-    i=s.find(':')
-    if i != -1 and '@' not in s[:i]:
-        return s[i+1:]
-    return s
-
 
 class GmlAsXPathResolver:
     def __init__(self, uri, provider, schema):

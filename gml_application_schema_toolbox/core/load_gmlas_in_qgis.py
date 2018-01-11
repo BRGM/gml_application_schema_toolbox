@@ -20,9 +20,11 @@ from qgis.core import QgsEditFormConfig, QgsAttributeEditorField, QgsAttributeEd
 from qgis.core import QgsSettings
 from qgis.PyQt.QtCore import QVariant
 
+from ..gui.qgis_form_custom_widget import install_viewer_on_feature_form
+
 from osgeo import ogr
 
-def _qgis_layer(uri, schema_name, layer_name, geometry_column, provider, qgis_layer_name):
+def _qgis_layer(uri, schema_name, layer_name, geometry_column, provider, qgis_layer_name, layer_xpath, layer_pkid):
     if geometry_column is not None:
         g_column = "({})".format(geometry_column)
     else:
@@ -39,6 +41,10 @@ def _qgis_layer(uri, schema_name, layer_name, geometry_column, provider, qgis_la
         # remove "PG:" in front of the uri
         uri = uri[3:]
         l = QgsVectorLayer("{} table={} {} sql=".format(uri, s_table, g_column), qgis_layer_name, "postgres")
+
+    # sets xpath
+    l.setCustomProperty("xpath", layer_xpath)
+    l.setCustomProperty("pkid", layer_pkid)
     return l
 
 def import_in_qgis(gmlas_uri, provider, schema = None):
@@ -99,7 +105,7 @@ def import_in_qgis(gmlas_uri, provider, schema = None):
     for ln in sorted(layers.keys()):
         lyr = layers[ln]
         g_column = lyr["geometry_column"] or None
-        l = _qgis_layer(gmlas_uri, schema, lyr["layer_name"], g_column, provider, qgis_layer_name = ln)
+        l = _qgis_layer(gmlas_uri, schema, lyr["layer_name"], g_column, provider, ln, lyr["xpath"], lyr["uid"])
         if not l.isValid():
             raise RuntimeError("Problem loading layer {} with {}".format(ln, l.source()))
         if g_column is not None:
@@ -239,4 +245,6 @@ where
             c_1_n.addChildElement(QgsAttributeEditorRelation(rel.name(), rel, c_1_n))
 
         l.setEditFormConfig(fc)
+
+        install_viewer_on_feature_form(l)
 

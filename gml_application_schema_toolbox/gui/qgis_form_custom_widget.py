@@ -25,10 +25,13 @@ This mechanism is used for example to display an XML widget.
 
 __all__ = ["install_xml_tree_on_feature_form"]
 
-from qgis.PyQt.QtWidgets import QWidget, QGridLayout, QWidgetItem, QLabel, QPushButton
+from qgis.PyQt.QtWidgets import QWidget, QGridLayout, QWidgetItem, QLabel, QPushButton, QTabWidget
+from qgis.PyQt.QtWidgets import QDialog, QVBoxLayout
 from qgis.core import QgsEditFormConfig
 
 from . import xml_tree_widget
+from ..core.xml_utils import no_ns
+from .custom_viewers import get_custom_viewers
 
 def install_xml_tree_on_feature_form(lyr):
     """Install an XML tree on feature form of the input layer"""
@@ -41,6 +44,67 @@ def install_xml_tree_on_feature_form(lyr):
     conf.setInitFunction("my_form_open")
     conf.setInitCodeSource(QgsEditFormConfig.CodeSourceDialog)
     lyr.setEditFormConfig(conf)
+
+def install_viewer_on_feature_form(lyr):
+    """Install a custom viewer button on feature form of the input layer"""
+    
+    code = ("def my_form_open(dialog, layer, feature):\n"
+            "    from gml_application_schema_toolbox.gui import qgis_form_custom_widget as qq\n"
+            "    qq.inject_custom_viewer_into_form(dialog, layer, feature)\n")
+    conf = lyr.editFormConfig()
+    conf.setInitCode(code)
+    conf.setInitFunction("my_form_open")
+    conf.setInitCodeSource(QgsEditFormConfig.CodeSourceDialog)
+    lyr.setEditFormConfig(conf)
+
+def inject_custom_viewer_into_form(dialog, layer, feature):
+    """Ass a custom viewer button on a form if needed.
+    Used by the "relational mode" """
+    if feature.attributes() == []:
+        # don't do anything if we don't have a feature
+        return
+
+    tab = dialog.findChildren(QTabWidget)[0]
+    if tab.count() == 3 and tab.tabText(2) == "Custom viewer":
+        # already there
+        return
+
+    xpath = no_ns(layer.customProperty("xpath", ""))
+    viewer = None
+    for viewer_cls, filter in get_custom_viewers().values():
+        tag = viewer_cls.xml_tag()
+        # remove namespace from tag
+        tag = tag[tag.find("}")+1:]
+        if tag == xpath:
+            # found the viewer
+            viewer = viewer_cls
+            break
+    if viewer is None:
+        return
+
+    # get current id
+    pkid = layer.customProperty("pkid")
+    print("pkid", pkid)
+    id = feature[pkid]
+    print("current id", id)
+
+    # get db connection settings
+    if '.sqlite' in layer.source():
+        provider = "SQLite"
+        schema = ""
+        db_uri, layer_name = layer.source().split("|")
+        layer_name = layer_name.split('=')[1]
+    else:
+        provider = "PostgreSQL"
+        # TODO QgsDataSourceURI to ogr uri
+
+    w = viewer_cls.init_from_db(db_uri, provider, schema, layer_name, pkid, id, tab)
+    def on_tab_changed(index):
+        if index == 2:
+            w.resize(400,400)
+    # create a new tab
+    tab.addTab(w, viewer_cls.icon(), "Custom viewer")
+    tab.currentChanged.connect(on_tab_changed)
 
 def inject_xml_tree_into_form(dialog, feature):
     """Function called on form opening to add a custom XML widget"""

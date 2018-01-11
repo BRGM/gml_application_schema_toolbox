@@ -20,6 +20,7 @@ from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtWidgets import *
 from ..core.xml_utils import no_prefix, split_tag, resolve_xpath
+from ..core.gmlas_xpath import GmlAsXPathResolver
 
 from . import viewers_utils
 
@@ -55,6 +56,16 @@ class GeologyLogViewer(QWidget):
             value = value_text if value_text is not None else value_cat
             data.append((fromDepth, toDepth, value))
         return cls("GeologyLogCoverage", data)
+
+    @classmethod
+    def init_from_db(cls, db_uri, provider, schema, layer_name, pkid_name, pkid_value, parent):
+        resolver = GmlAsXPathResolver(db_uri, provider, schema)
+
+        froms = resolver.resolve_xpath(layer_name, pkid_name, pkid_value, "element/LogValue/fromDepth/Quantity/value")
+        tos = resolver.resolve_xpath(layer_name, pkid_name, pkid_value, "element/LogValue/toDepth/Quantity/value")
+        cats = resolver.resolve_xpath(layer_name, pkid_name, pkid_value, "element/LogValue/value/DataRecord/field/Category/value")
+        data = [(float(f), float(t), cat) for (f, t, cat) in zip(froms, tos, cats)]
+        return cls("GeologyLogCoverage", data, parent)
 
     @classmethod
     def init_from_model(cls, model, sqlite3_conn, id, parent_widget = None):
