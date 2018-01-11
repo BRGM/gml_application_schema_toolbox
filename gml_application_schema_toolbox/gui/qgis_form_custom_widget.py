@@ -84,9 +84,7 @@ def inject_custom_viewer_into_form(dialog, layer, feature):
 
     # get current id
     pkid = layer.customProperty("pkid")
-    print("pkid", pkid)
     id = feature[pkid]
-    print("current id", id)
 
     # get db connection settings
     if '.sqlite' in layer.source():
