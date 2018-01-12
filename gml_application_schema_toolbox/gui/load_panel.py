@@ -53,8 +53,8 @@ class LoadWfs2Panel(BASE, WIDGET):
 
         self.file_downloaded.connect(self.on_file_downloaded)
 
-        self.xml_panel = ImportXmlPanel(self)
-        self.gmlas_panel = ImportGmlasPanel(self)
+        self.xml_panel = ImportXmlPanel(self.stackedWidget)
+        self.gmlas_panel = ImportGmlasPanel(self.stackedWidget)
         self.stackedWidget.addWidget(self.xml_panel)
         self.stackedWidget.addWidget(self.gmlas_panel)
 
@@ -66,6 +66,14 @@ class LoadWfs2Panel(BASE, WIDGET):
         self.relationalModeRadio.setChecked(v == 'gmlas')
 
         self.featureTypesTableWidget.itemSelectionChanged.connect(self.on_wfs_layer_selection_changed)
+
+        g = "gml_application_schema_toolbox"
+        self.wfs_options_group.setSettingGroup(g)
+        self.gmlas_panel.layers_group.setSettingGroup(g)
+        self.gmlas_panel.bbox_group.setSettingGroup(g)
+        self.gmlas_panel.gmlas_options_group.setSettingGroup(g)
+        self.gmlas_panel.target_db_group.setSettingGroup(g)
+        self.xml_panel.xml_options_group.setSettingGroup(g)
 
     def refresh_connections(self):
         # populate connection combo box

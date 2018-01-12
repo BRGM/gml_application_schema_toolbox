@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>484</width>
-    <height>816</height>
+    <width>458</width>
+    <height>98</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QgsCollapsibleGroupBox" name="layerList">
+    <widget class="QgsCollapsibleGroupBox" name="layers_group">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -36,6 +36,9 @@
      </property>
      <property name="title">
       <string>Select layers</string>
+     </property>
+     <property name="collapsed">
+      <bool>true</bool>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_6">
       <item>
@@ -56,18 +59,21 @@
     </widget>
    </item>
    <item>
-    <widget class="QgsCollapsibleGroupBox" name="bboxGroupBox">
+    <widget class="QgsCollapsibleGroupBox" name="bbox_group">
      <property name="toolTip">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define an area of interest to download data from. The extent can be defined from map canvas.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="title">
-      <string>Filter by e&amp;xtent</string>
+      <string>Filter b&amp;y extent</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
      </property>
      <property name="checked">
       <bool>false</bool>
+     </property>
+     <property name="collapsed">
+      <bool>true</bool>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_7">
       <item>
@@ -84,9 +90,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QgsCollapsibleGroupBox" name="groupBox">
+    <widget class="QgsCollapsibleGroupBox" name="gmlas_options_group">
      <property name="title">
       <string>GMLAS options</string>
+     </property>
+     <property name="collapsed">
+      <bool>true</bool>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
@@ -305,7 +314,7 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
-    <widget class="QgsCollapsibleGroupBox" name="groupBox_6">
+    <widget class="QgsCollapsibleGroupBox" name="target_db_group">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
        <horstretch>0</horstretch>
@@ -314,6 +323,9 @@ p, li { white-space: pre-wrap; }
      </property>
      <property name="title">
       <string>Target database</string>
+     </property>
+     <property name="collapsed">
+      <bool>true</bool>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_8">
       <item>
@@ -325,7 +337,7 @@ p, li { white-space: pre-wrap; }
          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
         </property>
         <item row="3" column="1">
-         <widget class="QgsProjectionSelectionWidget" name="destSrs" native="true">
+         <widget class="QgsProjectionSelectionWidget" name="destSrs">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -412,26 +424,13 @@ p, li { white-space: pre-wrap; }
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QgsProjectionSelectionWidget" name="sourceSrs" native="true">
+         <widget class="QgsProjectionSelectionWidget" name="sourceSrs">
           <property name="enabled">
            <bool>false</bool>
           </property>
          </widget>
         </item>
        </layout>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </widget>
@@ -442,19 +441,19 @@ p, li { white-space: pre-wrap; }
   <customwidget>
    <class>QgsCollapsibleGroupBox</class>
    <extends>QGroupBox</extends>
-   <header location="global">qgis.gui</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BboxWidget</class>
-   <extends>QWidget</extends>
-   <header>gml_application_schema_toolbox.gui.bbox_widget</header>
+   <header>qgis.gui</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QgsProjectionSelectionWidget</class>
    <extends>QWidget</extends>
    <header>qgis.gui</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BboxWidget</class>
+   <extends>QWidget</extends>
+   <header>gml_application_schema_toolbox.gui.bbox_widget</header>
    <container>1</container>
   </customwidget>
   <customwidget>

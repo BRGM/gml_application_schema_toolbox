@@ -169,9 +169,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QgsCollapsibleGroupBox" name="groupBox">
+    <widget class="QgsCollapsibleGroupBox" name="wfs_options_group">
      <property name="title">
       <string>WFS Options</string>
+     </property>
+     <property name="collapsed">
+      <bool>true</bool>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
@@ -372,6 +375,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="loadButton">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="text">
       <string>Load from WFS layer</string>
      </property>
@@ -394,16 +400,17 @@
   <zorder>stackedWidget</zorder>
   <zorder></zorder>
   <zorder>datasetsTabWidget</zorder>
-  <zorder>groupBox</zorder>
+  <zorder>wfs_options_group</zorder>
   <zorder>line</zorder>
   <zorder>loadButton</zorder>
   <zorder>verticalSpacer</zorder>
+  <zorder></zorder>
  </widget>
  <customwidgets>
   <customwidget>
    <class>QgsCollapsibleGroupBox</class>
    <extends>QGroupBox</extends>
-   <header location="global">qgis.gui</header>
+   <header>qgis.gui</header>
    <container>1</container>
   </customwidget>
   <customwidget>
