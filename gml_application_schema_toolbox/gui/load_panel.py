@@ -65,6 +65,8 @@ class LoadWfs2Panel(BASE, WIDGET):
         self.xmlModeRadio.setChecked(v == 'xml')
         self.relationalModeRadio.setChecked(v == 'gmlas')
 
+        self.featureTypesTableWidget.itemSelectionChanged.connect(self.on_wfs_layer_selection_changed)
+
     def refresh_connections(self):
         # populate connection combo box
         self.connectionCombo.clear()
@@ -99,6 +101,9 @@ class LoadWfs2Panel(BASE, WIDGET):
     def on_gmlas(self, enabled):
         if enabled:
             self.stackedWidget.setCurrentWidget(self.gmlas_panel)
+
+    def on_wfs_layer_selection_changed(self):
+        self.loadButton.setEnabled(self.featureTypesTableWidget.selectedItems() != [])
 
     @pyqtSlot(str)
     def on_change_connection(self, currentConnection):
