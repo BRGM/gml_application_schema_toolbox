@@ -63,23 +63,24 @@ class ImportXmlPanel(BASE, WIDGET):
             gmapping = self.geometryColumnEdit.text()
 
         # add a progress bar during import
-        lyr = load_as_xml_layer(gml_path,
+        lyrs = load_as_xml_layer(gml_path,
                                 is_remote = gml_path.startswith('http://') or gml_path.startswith('https://'),
                                 attributes = mapping,
                                 geometry_mapping = gmapping,
                                 logger = ProgressBarLogger("Importing features ..."),
                                 swap_xy = self.swapXYCheck.isChecked())
 
-        # install an XML tree widget
-        qgis_form_custom_widget.install_xml_tree_on_feature_form(lyr)
+        for lyr in lyrs.values():
+            # install an XML tree widget
+            qgis_form_custom_widget.install_xml_tree_on_feature_form(lyr)
 
-        # id column
-        lyr.setEditorWidgetSetup(0, QgsEditorWidgetSetup("Hidden", {}))
-        # _xml_ column
-        lyr.setEditorWidgetSetup(2, QgsEditorWidgetSetup("Hidden", {}))
-        lyr.setDisplayExpression("fid")
+            # id column
+            lyr.setEditorWidgetSetup(0, QgsEditorWidgetSetup("Hidden", {}))
+            # _xml_ column
+            lyr.setEditorWidgetSetup(2, QgsEditorWidgetSetup("Hidden", {}))
+            lyr.setDisplayExpression("fid")
         
-        QgsProject.instance().addMapLayer(lyr)
+        QgsProject.instance().addMapLayers(lyrs.values())
 
     @pyqtSlot()
     def on_addMappingBtn_clicked(self):

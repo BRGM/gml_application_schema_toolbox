@@ -24,10 +24,12 @@ from builtins import object
 import xml.etree.ElementTree as ET
 from osgeo import ogr, osr
 import re
+import os
 
 from qgis.PyQt.QtCore import QVariant, QDateTime
 
 from qgis.core import QgsWkbTypes, QgsGeometry, QgsVectorLayer, QgsField, QgsFeature, QgsMapLayer, QgsDataSourceUri, QgsPointXY
+from qgis.core import QgsVectorDataProvider
 
 from .qgis_urlopener import remote_open_from_qgis
 from .xml_utils import no_prefix, split_tag, resolve_xpath, xml_parse
@@ -132,10 +134,10 @@ def _wkbFromGml(tree, swap_xy):
     s = ET.tostring(tree, encoding="unicode")
     g = ogr.CreateGeometryFromGML(s)
     if g is None:
-        return None, None
+        return None
 
     wkb = g.ExportToWkb()
-    if g.GetGeometryType() == ogr.wkbPolyhedralSurface or g.GetGeometryType() == ogr.wkbTIN:
+    if g.GetGeometryType() in (ogr.wkbPolyhedralSurface, ogr.wkbTIN):
         # Polyhedral and TIN are not supported by QGIS
         # So we convert them to multipolygon by poking the geometry type
         # It works only because the memory structure is the same
@@ -148,26 +150,30 @@ def _wkbFromGml(tree, swap_xy):
         qgsgeom = _swap_qgs_geometry(qgsgeom)
     return qgsgeom, srid
 
-def _extractGmlGeometry(tree, swap_xy):
+def _extractGmlGeometries(tree, swap_xy, parent = None):
+    geoms = []
     ns, tag = split_tag(tree.tag)
     if ns.startswith('http://www.opengis.net/gml'):
         if tag in ["Point", "LineString", "Polygon", "PolyhedralSurface", "Tin",
                    "MultiPoint", "MultiCurve", "MultiSurface",
                    "Curve", "OrientableCurve", "Surface", 
                    "CompositeCurve", "CompositeSurface", "MultiGeometry"]:
-            return _wkbFromGml(tree, swap_xy)
+            g = _wkbFromGml(tree, swap_xy)
+            if g is not None:
+                return [(g, parent.tag)]
         
     for child in tree:
-        g = _extractGmlGeometry(child, swap_xy)
-        if g is not None:
-            return g
-    return None
+        geoms += _extractGmlGeometries(child, swap_xy, tree)
+    return geoms
 
 def _extractGmlFromXPath(tree, xpath, swap_xy):
     #r = tree.xpath("./" + xpath, namespaces = tree.nsmap)
     r = resolve_xpath(tree, xpath)
-    if len(r) > 0:
-        return _wkbFromGml(r[0], swap_xy)
+    if r is not None:
+        if isinstance(r, list):
+            return [(_wkbFromGml(x, swap_xy), "") for x in r]
+        else:
+            return [(_wkbFromGml(r, swap_xy), "")]
     return None
 
 class ComplexFeatureSource(object):
@@ -219,9 +225,9 @@ class ComplexFeatureSource(object):
 
             # get the geometry
             if self.geometry_mapping:
-                qgs_geom, srid = _extractGmlFromXPath(feature, self.geometry_mapping, swap_xy)
+                qgs_geoms = _extractGmlFromXPath(feature, self.geometry_mapping, swap_xy)
             else:
-                qgs_geom, srid = _extractGmlGeometry(feature, swap_xy)
+                qgs_geoms = _extractGmlGeometries(feature, swap_xy)
 
             # get attribute values
             attrvalues = {}
@@ -257,14 +263,14 @@ class ComplexFeatureSource(object):
                         value = None
                 attrvalues[attr] = value
 
-            yield i, fid, qgs_geom, srid, feature, attrvalues
+            yield i, fid, qgs_geoms, feature, attrvalues
             i += 1
 
 
 class ComplexFeatureLoader(object):
     """Allows to load a complex feature source and put features in a QGIS layer"""
 
-    def _create_layer(self, geometry_type, srid, attributes, title):
+    def _create_layer(self, geometry_type, srid, attributes, title, tag):
         raise RuntimeError("No default implementation, use a derived class")
 
     def _add_properties_to_layer(self, layer, xml_uri, is_remote, attributes, geom_mapping):
@@ -299,63 +305,74 @@ class ComplexFeatureLoader(object):
 
             attr_list = [ (k, v[1]) for k, v in attributes.items() ]
 
-            # first feature
-            id, fid, qgsgeom, srid, xml, attrs = next(src.getFeatures())
-            if qgsgeom is None:
-                layer = self._create_layer('none', None, attr_list, src.title)
-            else:
-                type2d = QgsWkbTypes.flatType(qgsgeom.wkbType())
-                if qgsgeom and type2d == QgsWkbTypes.Point:
-                    layer = self._create_layer('point', srid, attr_list, src.title + " (points)")
-                elif qgsgeom and type2d == QgsWkbTypes.MultiPoint:
-                    layer = self._create_layer('multipoint', srid, attr_list, src.title + " (points)")
-                elif qgsgeom and type2d == QgsWkbTypes.LineString:
-                    layer = self._create_layer('linestring', srid, attr_list, src.title + " (lines)")
-                elif qgsgeom and type2d == QgsWkbTypes.MultiLineString:
-                    layer = self._create_layer('multilinestring', srid, attr_list, src.title + " (lines)")
-                elif qgsgeom and type2d == QgsWkbTypes.Polygon:
-                    layer = self._create_layer('polygon', srid, attr_list, src.title + " (polygons)")
-                elif qgsgeom and type2d == QgsWkbTypes.MultiPolygon:
-                    layer = self._create_layer('multipolygon', srid, attr_list, src.title + " (polygons)")
-                elif qgsgeom and (type2d == QgsWkbTypes.CircularString or type2d == QgsWkbTypes.CompoundCurve):
-                    layer = self._create_layer('compoundcurve', srid, attr_list, src.title + " (curves)")
-                elif qgsgeom and type2d == QgsWkbTypes.MultiCurve:
-                    layer = self._create_layer('multicurve', srid, attr_list, src.title + " (curves)")
-                elif qgsgeom and type2d == QgsWkbTypes.CurvePolygon:
-                    layer = self._create_layer('curvepolygon', srid, attr_list, src.title + " (curve polygons)")
-                elif qgsgeom and type2d == QgsWkbTypes.MultiSurface:
-                    layer = self._create_layer('multisurface', srid, attr_list, src.title + " (curve polygons)")
+            layers = {}
+            features = {}
+            layer_geom_type = {}
+            for id, fid, qgsgeoms, xml, attrs in src.getFeatures(swap_xy):
+                # layer creation
+                if qgsgeoms == []:
+                    if "" not in layers:
+                        layer = self._create_layer('none', None, attr_list, src.title, "nogeom")
+                        self._add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)
+                        layers["nogeom"] = layer
                 else:
-                    raise RuntimeError("Unsupported geometry type {}".format(qgsgeom.wkbType()))
-                    
+                    for (qgsgeom, srid), tag in qgsgeoms:
+                        if tag in layers:
+                            continue
+                        type2d = QgsWkbTypes.flatType(qgsgeom.wkbType())
+                        typemap = {QgsWkbTypes.Point: 'point',
+                                   QgsWkbTypes.MultiPoint: 'multipoint',
+                                   QgsWkbTypes.LineString: 'linestring',
+                                   QgsWkbTypes.MultiLineString: 'multilinestring',
+                                   QgsWkbTypes.Polygon: 'polygon',
+                                   QgsWkbTypes.MultiPolygon: 'multipolygon',
+                                   QgsWkbTypes.CompoundCurve: 'compoundcurve',
+                                   QgsWkbTypes.CircularString: 'compoundcurve',
+                                   QgsWkbTypes.MultiCurve: 'multicurve',
+                                   QgsWkbTypes.CurvePolygon: 'curvepolygon',
+                                   QgsWkbTypes.MultiSurface: 'multisurface'}
+                        if qgsgeom and type2d in typemap:
+                            title = "{} ({})".format(src.title, no_prefix(tag))
+                            layer = self._create_layer(typemap[QgsWkbTypes.multiType(type2d)], srid, attr_list, title, no_prefix(tag))
+                        else:
+                            raise RuntimeError("Unsupported geometry type {}".format(qgsgeom.wkbType()))
+                        self._add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)                        
+                        layers[tag] = layer
 
-            # add metadata
-            self._add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)
-
-            # collect features
-            features = []
-            for id, fid, qgsgeom, srid, xml, attrs in src.getFeatures(swap_xy):
+                # collect features
                 f = QgsFeature(layer.dataProvider().fields(), id)
-                if qgsgeom:
-                    f.setGeometry(qgsgeom)
                 f.setAttribute("id", str(id))
                 f.setAttribute("fid", fid)
                 f.setAttribute("_xml_", ET.tostring(xml).decode('utf8'))
                 for k, v in attrs.items():
                     r = f.setAttribute(k, v)
-                features.append(f)
+                for g, tag in qgsgeoms:
+                    if tag not in features:
+                        features[tag] = []
+                    fcopy = QgsFeature(f)
+                    if g:
+                        qgsgeom, _ = g
+                        if QgsWkbTypes.isMultiType(layers[tag].wkbType()) and QgsWkbTypes.isSingleType(qgsgeom.wkbType()):
+                            # force multi
+                            qgsgeom.convertToMultiType()
+                        fcopy.setGeometry(qgsgeom)
+                    features[tag].append(fcopy)
 
             # write features
-            if len(features) > 0:
-                layer.dataProvider().addFeatures(features)
+            for tag, f in features.items():
+                if len(f) > 0:
+                    layer = layers[tag]
+                    layer.startEditing()
+                    layer.addFeatures(f)
+                    layer.commitChanges()
         finally:
             xml_src.close()
 
-        return layer
+        return layers
 
 class ComplexFeatureLoaderInMemory(ComplexFeatureLoader):
 
-    def _create_layer(self, geometry_type, srid, attributes, title):
+    def _create_layer(self, geometry_type, srid, attributes, title, tag):
         """
         Creates an empty memory layer
         :param geometry_type: 'Point', 'LineString', 'Polygon', etc.
@@ -404,7 +421,7 @@ class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
         """
         self.output_local_file = output_local_file
 
-    def _create_layer(self, type, srid, attributes, title):
+    def _create_layer(self, type, srid, attributes, title, tag):
         """
         Creates an empty spatialite layer
         :param type: 'Point', 'LineString', 'Polygon', etc.
@@ -413,7 +430,8 @@ class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
         :param title: title of the layer
         """
         driver = ogr.GetDriverByName('GPKG')
-        ds = driver.CreateDataSource(self.output_local_file)
+        fn = "{}_{}.gpkg".format(self.output_local_file, tag)
+        ds = driver.CreateDataSource(fn)
         layer = ds.CreateLayer("meta", geom_type = ogr.wkbNone)
         layer.CreateField(ogr.FieldDefn('key', ogr.OFTString))
         layer.CreateField(ogr.FieldDefn('value', ogr.OFTString))
@@ -450,12 +468,18 @@ class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
         # update fields
         layer.ResetReading()
 
-        qgs_layer = QgsVectorLayer("{}|layername=data".format(self.output_local_file), title, "ogr")
+        del layer
+        del ds
+
+        qgs_layer = QgsVectorLayer("{}|layername=data".format(fn), title, "ogr")
+        qgs_layer.setCustomProperty("tag", tag)
         return qgs_layer
 
     def _add_properties_to_layer(self, layer, xml_uri, is_remote, attributes, geom_mapping):
         import json
-        qgs_layer = QgsVectorLayer("{}|layername=meta".format(self.output_local_file), "meta", "ogr")
+        tag = layer.customProperty("tag")
+        fn = "{}_{}.gpkg".format(self.output_local_file, tag)
+        qgs_layer = QgsVectorLayer("{}|layername=meta".format(fn), "meta", "ogr")
         pr = qgs_layer.dataProvider()
         metas = (('complex_features','1'),
              ('xml_uri', xml_uri),
@@ -479,7 +503,8 @@ class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
             return nil
         if layer.providerType() != "ogr":
             return nil
-        if not layer.source().endswith('|layername=data'):
+        tag = layer.customProperty("tag", None)
+        if not tag:
             return nil
         pkg_file = layer.source()[:layer.source().find('|')]
         qgs_layer = QgsVectorLayer("{}|layername=meta".format(pkg_file), "meta", "ogr")
@@ -505,7 +530,8 @@ class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
             return False
         if layer.providerType() != "ogr":
             return False
-        if not layer.source().endswith('|layername=data'):
+        tag = layer.customProperty("tag", None)
+        if not tag:
             return False
         pkg_file = layer.source()[:layer.source().find('|')]
         qgs_layer = QgsVectorLayer("{}|layername=meta".format(pkg_file), "meta", "ogr")
