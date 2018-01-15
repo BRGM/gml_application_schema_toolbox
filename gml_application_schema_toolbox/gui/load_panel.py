@@ -53,8 +53,8 @@ class LoadWfs2Panel(BASE, WIDGET):
 
         self.file_downloaded.connect(self.on_file_downloaded)
 
-        self.xml_panel = ImportXmlPanel(self.stackedWidget)
-        self.gmlas_panel = ImportGmlasPanel(self.stackedWidget)
+        self.xml_panel = ImportXmlPanel(self)
+        self.gmlas_panel = ImportGmlasPanel(self)
         self.stackedWidget.addWidget(self.xml_panel)
         self.stackedWidget.addWidget(self.gmlas_panel)
 
