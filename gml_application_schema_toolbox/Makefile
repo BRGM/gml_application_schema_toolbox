@@ -4,7 +4,7 @@ PLUGINNAME = gml_application_schema_toolbox
 
 PY_FILES = main.py __init__.py model_dialog.py core/*.py gui/*.py
 
-EXTRAS = Changelog *.svg metadata.txt extlibs gml2relational/*.py gml2relational/testdata/* viewers/*.py viewers/*.svg conf/*.xml logo_oslandia.png
+EXTRAS = Changelog *.svg metadata.txt extlibs viewers/*.py viewers/*.svg conf/*.xml logo_oslandia.png
 
 UI_FILES = ui/*.ui
 
