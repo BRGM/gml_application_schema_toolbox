@@ -264,7 +264,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
                     '_ogr_layers_metadata',
                     '_ogr_other_metadata']
 
-        if self.bboxGroupBox.isChecked():
+        if self.gmlas_bbox_group.isChecked():
             if self.bboxWidget.value() == '':
                 raise InputError("Extent is empty")
             if not self.bboxWidget.isValid():

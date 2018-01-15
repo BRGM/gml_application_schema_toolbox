@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>458</width>
-    <height>98</height>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,7 +59,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QgsCollapsibleGroupBox" name="bbox_group">
+    <widget class="QgsCollapsibleGroupBox" name="gmlas_bbox_group">
      <property name="toolTip">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define an area of interest to download data from. The extent can be defined from map canvas.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
