@@ -91,7 +91,17 @@ def import_in_qgis(gmlas_uri, provider, schema = None):
             k = "{} ({})".format(ln, g)
             layers[k] = dict(layers[ln])
             layers[k]["geometry_column"] = g
-    
+
+    # collect fields with xlink:href
+    href_fields = {}
+    for ln, layer in layers.items():
+        layer_name = layer["layer_name"]
+        for f in ds.ExecuteSQL("select field_name, field_xpath from {}_ogr_fields_metadata where layer_name='{}'".format(schema_s, layer_name)):
+            field_name, field_xpath = f.GetField("field_name"), f.GetField("field_xpath")
+            if field_xpath.endswith("@xlink:href"):
+                if ln not in href_fields:
+                    href_fields[ln] = []
+                href_fields[ln].append(field_name)
 
     # with unknown srid, don't ask for each layer, set to a default
     settings = QgsSettings()
@@ -115,6 +125,12 @@ def import_in_qgis(gmlas_uri, provider, schema = None):
         QgsProject.instance().addMapLayer(l)
         layers[ln]['layer_id'] = l.id()
         layers[ln]['layer'] = l
+        # save fields which represent a xlink:href
+        if ln in href_fields:
+            l.setCustomProperty("href_fields", href_fields[ln])
+        # save gmlas_uri
+        l.setCustomProperty("ogr_uri", gmlas_uri)
+        l.setCustomProperty("ogr_schema", schema)
 
     # restore settings
     settings.setValue("Projections/defaultBehavior", projection_behavior)
@@ -207,8 +223,9 @@ where
                 relations_1_n.append(rel)
                 # add relation to layer
                 layers[f.GetField('layer_name')]['1_n'].append(rel)
-            
-    QgsProject.instance().relationManager().setRelations(relations_1_1 + relations_1_n)
+
+    for rel in relations_1_1 + relations_1_n:
+        QgsProject.instance().relationManager().addRelation(rel)
 
     # add "show form" option to 1:1 relations
     for rel in relations_1_1:
@@ -247,4 +264,3 @@ where
         l.setEditFormConfig(fc)
 
         install_viewer_on_feature_form(l)
-

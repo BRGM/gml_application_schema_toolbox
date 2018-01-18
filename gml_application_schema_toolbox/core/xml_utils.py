@@ -93,6 +93,15 @@ def resolve_xpath(node, xpath):
     else:
         return nodes
 
+def xml_root_tag(xml_file):
+    """
+    Return the root tag of an XML file
+    :param xml_file: the input XML file
+    :returns: root tag, as a string
+    """
+    for event, elem in ET.iterparse(xml_file, ['start']):
+        return elem.tag
+
 def xml_parse(xml_file):
     """
     Parse an XML file, returns a tree of nodes and a dict of namespaces

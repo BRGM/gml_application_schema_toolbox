@@ -49,10 +49,18 @@ from .gui.dockwidget import DockWidget
 from .gui.settings_dialog import SettingsDialog
 from .gui.export_gmlas_panel import ExportGmlasPanel
 
+# global iface
+g_iface = None
+
+def get_iface():
+    return g_iface
+
 class MainPlugin(object):
 
     def __init__(self, iface):
         self.iface = iface
+        global g_iface
+        g_iface = iface
 
     def initGui(self):
         self.settingsAction = QAction("Settings", self.iface.mainWindow())

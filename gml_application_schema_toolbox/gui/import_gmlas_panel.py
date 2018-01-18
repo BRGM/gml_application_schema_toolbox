@@ -41,7 +41,7 @@ from qgis.PyQt import uic
 from gml_application_schema_toolbox import name as plugin_name
 from gml_application_schema_toolbox.core.logging import log
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
-from gml_application_schema_toolbox.core.load_gmlas_in_qgis import import_in_qgis
+from ..core.load_gmlas_in_qgis import import_in_qgis
 from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
 from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
@@ -57,7 +57,7 @@ gdal.UseExceptions()
 
 class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, gml_path=None):
         super(ImportGmlasPanel, self).__init__(parent)
         self.setupUi(self)
         self.databaseWidget.set_accept_mode(QFileDialog.AcceptSave)
@@ -66,8 +66,11 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         self.acceptLanguageHeaderInput.setText(settings.value('default_language'))
         self.set_access_mode(settings.value('default_access_mode'))
         self.parent = parent
+        self._gml_path = gml_path
 
     def gml_path(self):
+        if self._gml_path:
+            return self._gml_path
         return self.parent.gmlPathLineEdit.text()
 
     def showEvent(self, event):
@@ -281,7 +284,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         return params
 
-    def do_load(self):
+    def do_load(self, append_to_db = None, append_to_schema = None):
         gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
         gdal.SetConfigOption('GDAL_HTTP_UNSAFESSL', 'YES')
 
@@ -289,22 +292,32 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             if err >= gdal.CE_Warning:
                 QgsMessageLog.logMessage("{} {}: {}".format(err, err_no, msg), plugin_name())
 
-        dest = self.databaseWidget.datasource_name()
-        if dest == '' and self.databaseWidget.format() == "SQLite":
-            with tempfile.NamedTemporaryFile(suffix='.sqlite') as tmp:
-                dest = tmp.name
-                QgsMessageLog.logMessage("Temp SQLITE: {}".format(dest), plugin_name())
-        
-        if dest.startswith('PG:'):
-            schema = self.databaseWidget.schema()
+        if append_to_db is None:
+            dest = self.databaseWidget.datasource_name()
+            if dest == '' and self.databaseWidget.format() == "SQLite":
+                with tempfile.NamedTemporaryFile(suffix='.sqlite') as tmp:
+                    dest = tmp.name
+                    QgsMessageLog.logMessage("Temp SQLITE: {}".format(dest), plugin_name())
+
+            if dest.startswith('PG:'):
+                schema = self.databaseWidget.schema()
+            else:
+                schema = None
+            db_format = self.databaseWidget.format()
+            params = self.import_params(dest)
         else:
-            schema = None
+            schema = append_to_schema
+            db_format = "PostgreSQL" if append_to_db.startswith("PG:") else "SQLite"
+            params = self.import_params(append_to_db)
+            # force append
+            params["accessMode"] = "append"
 
         try:
             QApplication.setOverrideCursor(Qt.WaitCursor)
             gdal.PushErrorHandler(error_handler)
-            self.translate(self.import_params(dest))
-            import_in_qgis(dest, self.databaseWidget.format(), schema)
+            self.translate(params)
+            if append_to_db is None:
+                import_in_qgis(dest, db_format, schema)
             
         except InputError as e:
             e.show()
