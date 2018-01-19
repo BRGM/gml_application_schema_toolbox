@@ -101,31 +101,37 @@ def _get_srs_name(tree):
             return n
     return None
 
-def _wkbFromGml(tree, swap_xy):
+def _get_srid_from_name(srs_name):
+    sr = osr.SpatialReference()
+    # EPSG:4326
+    # urn:EPSG:geographicCRS:4326
+    # urn:ogc:def:crs:EPSG:4326
+    # urn:ogc:def:crs:EPSG::4326
+    # urn:ogc:def:crs:EPSG:6.6:4326
+    # urn:x-ogc:def:crs:EPSG:6.6:4326
+    # http://www.opengis.net/gml/srs/epsg.xml#4326
+    # http://www.epsg.org/6.11.2/4326
+    # get the last number
+    m = re.search('([0-9]+)/?$', srs_name)
+    srid = int(m.group(1))
+    sr.ImportFromEPSGA(srid)
+    srid_axis_swapped = sr.EPSGTreatsAsLatLong() or sr.EPSGTreatsAsNorthingEasting()
+    return (srid, srid_axis_swapped)
+
+
+def _wkbFromGml(tree, swap_xy, default_srs = None):
     # extract the srid
     srid = None
     srid_axis_swapped = False
 
     srs_name = _get_srs_name(tree)
-    if srs_name is None:
-        # No SRID found, force to 4326
-        srid = 4326
-        srid_axis_swapped = True
+    if srs_name is None and default_srs is not None:
+        srid, srid_axis_swapped = _get_srid_from_name(default_srs)
+    elif srs_name is not None:
+        srid, srid_axis_swapped = _get_srid_from_name(srs_name)
     else:
-        sr = osr.SpatialReference()
-        # EPSG:4326
-		# urn:EPSG:geographicCRS:4326
-		# urn:ogc:def:crs:EPSG:4326
-		# urn:ogc:def:crs:EPSG::4326
-		# urn:ogc:def:crs:EPSG:6.6:4326
-		# urn:x-ogc:def:crs:EPSG:6.6:4326
-		# http://www.opengis.net/gml/srs/epsg.xml#4326
-		# http://www.epsg.org/6.11.2/4326
-        # get the last number
-        m = re.search('([0-9]+)/?$', srs_name)
-        srid = int(m.group(1))
-        sr.ImportFromEPSGA(srid)
-        srid_axis_swapped = sr.EPSGTreatsAsLatLong() or sr.EPSGTreatsAsNorthingEasting()
+        # No SRID found, force to 4326
+        srid, srid_axis_swapped = 4326, True
 
 	# inversion
     swap_xy = swap_xy ^ srid_axis_swapped
@@ -150,7 +156,7 @@ def _wkbFromGml(tree, swap_xy):
         qgsgeom = _swap_qgs_geometry(qgsgeom)
     return qgsgeom, srid
 
-def _extractGmlGeometries(tree, swap_xy, parent = None):
+def _extractGmlGeometries(tree, swap_xy, default_srs = None, parent = None):
     geoms = []
     ns, tag = split_tag(tree.tag)
     if ns.startswith('http://www.opengis.net/gml'):
@@ -158,22 +164,22 @@ def _extractGmlGeometries(tree, swap_xy, parent = None):
                    "MultiPoint", "MultiCurve", "MultiSurface",
                    "Curve", "OrientableCurve", "Surface", 
                    "CompositeCurve", "CompositeSurface", "MultiGeometry"]:
-            g = _wkbFromGml(tree, swap_xy)
+            g = _wkbFromGml(tree, swap_xy, default_srs)
             if g is not None:
                 return [(g, parent.tag)]
         
     for child in tree:
-        geoms += _extractGmlGeometries(child, swap_xy, tree)
+        geoms += _extractGmlGeometries(child, swap_xy, default_srs, tree)
     return geoms
 
-def _extractGmlFromXPath(tree, xpath, swap_xy):
+def _extractGmlFromXPath(tree, xpath, swap_xy, default_srs = None):
     #r = tree.xpath("./" + xpath, namespaces = tree.nsmap)
     r = resolve_xpath(tree, xpath)
     if r is not None:
         if isinstance(r, list):
-            return [(_wkbFromGml(x, swap_xy), "") for x in r]
+            return [(_wkbFromGml(x, swap_xy, default_srs), "") for x in r]
         else:
-            return [(_wkbFromGml(r, swap_xy), "")]
+            return [(_wkbFromGml(r, swap_xy, default_srs), "")]
     return None
 
 class ComplexFeatureSource(object):
@@ -187,7 +193,7 @@ class ComplexFeatureSource(object):
         :param logger: a logger function
         """
         doc, _ = xml_parse(xml)
-        self.features = extract_features(doc)
+        self.bbox, self.bbox_srs, self.features = extract_features(doc)
         self.title = no_prefix(self.features[0].tag)
 
         self.xpath_mapping = xpath_mapping
@@ -225,9 +231,9 @@ class ComplexFeatureSource(object):
 
             # get the geometry
             if self.geometry_mapping:
-                qgs_geoms = _extractGmlFromXPath(feature, self.geometry_mapping, swap_xy)
+                qgs_geoms = _extractGmlFromXPath(feature, self.geometry_mapping, swap_xy, default_srs=self.bbox_srs)
             else:
-                qgs_geoms = _extractGmlGeometries(feature, swap_xy)
+                qgs_geoms = _extractGmlGeometries(feature, swap_xy, default_srs=self.bbox_srs)
 
             # get attribute values
             attrvalues = {}
