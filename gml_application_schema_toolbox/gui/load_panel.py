@@ -12,7 +12,7 @@ from tempfile import NamedTemporaryFile
 import logging
 
 from qgis.core import QgsCoordinateTransform, QgsCoordinateReferenceSystem, \
-    QgsOwsConnection
+    QgsOwsConnection, QgsProject
 from qgis.gui import QgsNewHttpConnection
 from qgis.utils import iface
 
@@ -248,7 +248,7 @@ class LoadWfs2Panel(BASE, WIDGET):
         default_crs_name = wfs.contents[self.selected_typenames()[0]].crsOptions[0]
         default_crs = QgsCoordinateReferenceSystem.fromOgcWmsCrs(str(default_crs_name))
         assert default_crs.isValid()
-        transform = QgsCoordinateTransform(self.bboxWidget.crs(), default_crs)
+        transform = QgsCoordinateTransform(self.bboxWidget.crs(), default_crs, QgsProject.instance())
         bbox = transform.transformBoundingBox(self.bboxWidget.rectangle())
         return [bbox.xMinimum(),
                 bbox.yMinimum(),

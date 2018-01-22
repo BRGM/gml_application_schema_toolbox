@@ -9,7 +9,7 @@ Note that this depends on some processing plugin classes
 import os
 
 from qgis.core import QgsRasterLayer, QgsVectorLayer, QgsRectangle, \
-    QgsCoordinateReferenceSystem
+    QgsCoordinateReferenceSystem, QgsProject
 from qgis.gui import QgsMessageBar
 from qgis.utils import iface
 
@@ -19,7 +19,6 @@ from qgis.PyQt.QtGui import QCursor
 
 from processing.gui.RectangleMapTool import RectangleMapTool
 from processing.core.ProcessingConfig import ProcessingConfig
-from processing.tools import dataobjects
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'bbox_widget.ui'))
@@ -64,8 +63,7 @@ class BboxWidget(BASE, WIDGET):
         extentsDict[CANVAS_KEY] = {"extent": iface.mapCanvas().extent(),
                                    "authid": iface.mapCanvas().mapSettings().destinationCrs().authid()}
         extents = [CANVAS_KEY]
-        layers = dataobjects.getAllLayers()
-        for layer in layers:
+        for layer in QgsProject.instance().mapLayers().values():
             authid = layer.crs().authid()
             layerName = layer.name()
             extents.append(layerName)
