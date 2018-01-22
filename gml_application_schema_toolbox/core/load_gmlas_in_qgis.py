@@ -21,6 +21,8 @@ from qgis.core import QgsSettings
 from qgis.PyQt.QtCore import QVariant
 
 from ..gui.qgis_form_custom_widget import install_viewer_on_feature_form
+from ..gui.custom_viewers import get_custom_viewers
+from .xml_utils import no_prefix, no_ns
 
 from osgeo import ogr
 
@@ -46,6 +48,18 @@ def _qgis_layer(uri, schema_name, layer_name, geometry_column, provider, qgis_la
     l.setCustomProperty("xpath", layer_xpath)
     l.setCustomProperty("pkid", layer_pkid)
     return l
+
+from qgis.core import QgsMapLayerLegend, QgsSimpleLegendNode
+from PyQt5.QtGui import QIcon
+
+class CustomViewerLegend(QgsMapLayerLegend):
+    def __init__(self, text, icon, parent=None):
+        QgsMapLayerLegend.__init__(self, parent)
+        self.text = text
+        self.icon = icon
+
+    def createLayerTreeModelLegendNodes(self, layer_tree_layer):
+        return [QgsSimpleLegendNode(layer_tree_layer, self.text, self.icon, self)]
 
 def import_in_qgis(gmlas_uri, provider, schema = None):
     """Imports layers from a GMLAS file in QGIS with relations and editor widgets
@@ -131,6 +145,14 @@ def import_in_qgis(gmlas_uri, provider, schema = None):
         # save gmlas_uri
         l.setCustomProperty("ogr_uri", gmlas_uri)
         l.setCustomProperty("ogr_schema", schema)
+
+        # change icon the layer has a custom viewer
+        xpath = no_ns(l.customProperty("xpath", ""))
+        for viewer_cls, _ in get_custom_viewers().values():
+            tag = no_prefix(viewer_cls.xml_tag())
+            if tag == xpath:
+                lg = CustomViewerLegend(viewer_cls.name(), viewer_cls.icon())
+                l.setLegend(lg)
 
     # restore settings
     settings.setValue("Projections/defaultBehavior", projection_behavior)
