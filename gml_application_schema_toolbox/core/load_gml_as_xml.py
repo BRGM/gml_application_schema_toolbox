@@ -194,7 +194,11 @@ class ComplexFeatureSource(object):
         """
         doc, _ = xml_parse(xml)
         self.bbox, self.bbox_srs, self.features = extract_features(doc)
-        self.title = no_prefix(self.features[0].tag)
+        print(self.features, self.features[0])
+        if self.features:
+            self.title = no_prefix(self.features[0].tag)
+        else:
+            self.title = ""
 
         self.xpath_mapping = xpath_mapping
         self.geometry_mapping = geometry_mapping

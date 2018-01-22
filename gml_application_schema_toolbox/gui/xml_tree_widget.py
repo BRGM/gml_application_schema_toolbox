@@ -269,8 +269,8 @@ class XMLTreeWidget(QTreeWidget):
     def onResolveNewLayer(self):
         item = self.currentItem()
         uri = item.data(1, Qt.UserRole)
-        new_layer = load_as_xml_layer(uri, True, swap_xy=self.swap_xy)
-        if new_layer:
+        new_layers = load_as_xml_layer(uri, True, swap_xy=self.swap_xy)
+        for new_layer in new_layers.values():
             # install an XML tree widget
             qgis_form_custom_widget.install_xml_tree_on_feature_form(new_layer)
 

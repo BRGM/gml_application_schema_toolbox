@@ -35,7 +35,11 @@ def extract_features(doc):
                 if no_prefix(child.tag) == 'member':
                     # a member may contain another featurecollection => recursive call
                     for cchild in child:
-                        features += _extract(cchild)
+                        nbbox, nbbox_srs, nfeatures = _extract(cchild)
+                        if bbox is None:
+                            bbox = nbbox
+                            bbox_srs = nbbox_srs
+                        features += nfeatures
                 elif no_prefix(child.tag) == 'featureMembers':
                     for cchild in child:
                         features.append(cchild)
