@@ -77,7 +77,7 @@ class ImportXmlPanel(BASE, WIDGET):
             # id column
             lyr.setEditorWidgetSetup(0, QgsEditorWidgetSetup("Hidden", {}))
             # _xml_ column
-            lyr.setEditorWidgetSetup(2, QgsEditorWidgetSetup("Hidden", {}))
+            lyr.setEditorWidgetSetup(2, QgsEditorWidgetSetup("XML", {}))
             lyr.setDisplayExpression("fid")
         
         QgsProject.instance().addMapLayers(lyrs.values())

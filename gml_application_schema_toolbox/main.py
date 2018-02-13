@@ -32,6 +32,7 @@ from qgis.gui import *
 from .core.load_gmlas_in_qgis import import_in_qgis
 from .gui.database_widget import DatabaseWidget
 from .gui import InputError
+from .gui.xml_custom_widget import XMLWidgetFactory, XMLWidgetFormatter
 
 import os
 import sqlite3
@@ -89,6 +90,11 @@ class MainPlugin(object):
 
         self.dock_widget = DockWidget()
         self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock_widget)
+
+        self.xml_widget_factory = XMLWidgetFactory()
+        self.xml_widget_formatter = XMLWidgetFormatter()
+        QgsGui.editorWidgetRegistry().registerWidget("XML", self.xml_widget_factory)
+        QgsApplication.fieldFormatterRegistry().addFieldFormatter(self.xml_widget_formatter)
 
     def unload(self):
         # Remove the plugin menu item and icon
