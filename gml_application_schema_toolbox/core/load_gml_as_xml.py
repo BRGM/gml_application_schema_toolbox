@@ -163,7 +163,7 @@ def _extractGmlGeometries(tree, swap_xy, default_srs = None, parent = None):
     ns, tag = split_tag(tree.tag)
     if ns.startswith('http://www.opengis.net/gml'):
         if tag in ["Point", "LineString", "Polygon", "PolyhedralSurface", "Tin",
-                   "MultiPoint", "MultiCurve", "MultiSurface",
+                   "MultiPoint", "MultiLineString", "MultiPolygon", "MultiCurve", "MultiSurface",
                    "Curve", "OrientableCurve", "Surface", 
                    "CompositeCurve", "CompositeSurface", "MultiGeometry"]:
             g = _wkbFromGml(tree, swap_xy, default_srs)
@@ -355,13 +355,13 @@ class ComplexFeatureLoader(object):
                 f = QgsFeature(layer.dataProvider().fields(), id)
                 f.setAttribute("id", str(id))
                 f.setAttribute("fid", fid)
-                f.setAttribute("_xml_", ET.tostring(xml).decode('utf8'))
                 for k, v in attrs.items():
                     r = f.setAttribute(k, v)
                 for g, tag in qgsgeoms:
                     if tag not in features:
                         features[tag] = []
                     fcopy = QgsFeature(f)
+                    fcopy.setAttribute("_xml_", ET.tostring(xml).decode('utf8'))
                     if g:
                         qgsgeom, _ = g
                         if QgsWkbTypes.isMultiType(layers[tag].wkbType()) and QgsWkbTypes.isSingleType(qgsgeom.wkbType()):
