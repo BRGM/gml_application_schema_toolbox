@@ -47,7 +47,7 @@ def split_tag(tag):
 
 def resolve_xpath(node, xpath):
     path = xpath.split('/')
-    part = path[0]
+    part = no_ns(path[0])
 
     if part == '':
         return node
