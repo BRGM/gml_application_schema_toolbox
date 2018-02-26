@@ -96,7 +96,15 @@ class LoadWfs2Panel(BASE, WIDGET):
 
             xml, ns_map = xml_parse(remote_open_from_qgis(u.query()))
             root = xml.getroot()
-            versions = [v.text for v in root.findall("./ows:ServiceIdentification/ows:ServiceTypeVersion", ns_map)]
+            if 'ows' in ns_map:
+                versions = [v.text for v in root.findall("./ows:ServiceIdentification/ows:ServiceTypeVersion", ns_map)]
+            else:
+                versions = [v.text for v in root.findall("./ServiceIdentification/ServiceTypeVersion", ns_map)]
+            if not versions:
+                if 'version' in root.attrib:
+                    versions = [root.attrib['version']]
+            if not versions:
+                raise RuntimeError("Cannot determine WFS version")
             # take the greatest version, if more than one
             version = sorted(versions)[-1]
             
