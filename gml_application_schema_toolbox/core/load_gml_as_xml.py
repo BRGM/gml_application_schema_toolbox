@@ -32,8 +32,10 @@ from qgis.core import QgsWkbTypes, QgsGeometry, QgsVectorLayer, QgsField, QgsFea
 from qgis.core import QgsVectorDataProvider
 
 from .qgis_urlopener import remote_open_from_qgis
-from .xml_utils import no_prefix, split_tag, resolve_xpath, xml_parse
+from .xml_utils import no_prefix, split_tag, resolve_xpath, xml_parse, remove_prefix
 from .gml_utils import extract_features
+
+import copy
 
 __all__ = ['load_as_xml_layer', 'properties_from_layer', 'is_layer_gml_xml']
 
@@ -240,17 +242,18 @@ class ComplexFeatureSource(object):
 
             # get attribute values
             attrvalues = {}
+            feature2 = copy.deepcopy(feature)
+            remove_prefix(feature2)
             for attr, xpath_t in self.xpath_mapping.items():
                 xpath, type = xpath_t
                 # resolve xpath
-                #r = feature.xpath("./" + xpath, namespaces = feature.nsmap)
-                r = resolve_xpath(feature, xpath)
+                r = resolve_xpath(feature2, xpath)
                 v = None
                 value = None
                 if isinstance(r, str):
                     v = r
-                if isinstance(r, str):
-                    v = str(r)
+                elif isinstance(r, list):
+                    v = "[" + ";".join([n.text for n in r]) + "]"
                 elif isinstance(r, ET.Element):
                     v = r.text
                 else:

@@ -45,47 +45,18 @@ def split_tag(tag):
         return (tag[1:i], tag[i+1:])
     return ("", tag)
 
-def resolve_xpath(node, xpath):
-    path = xpath.split('/')
-    part = no_ns(path[0])
-
-    if part == '':
-        return node
-
-    if part == "text()":
-        if node.text is None:
-            return ""
-        return node.text
-
-    if part == "geometry()":
-        return node
-
-    if part.startswith("@"):
-        for an, av in node.attrib.items():
-            if no_prefix(an) == part[1:]:
-                return av
-
-    if part == no_prefix(node.tag):
-        return resolve_xpath(node, '/'.join(path[1:]))
-    
-    found = []
+def remove_prefix(node):
+    node.tag = no_prefix(node.tag)
+    n = {}
+    for k, v in node.attrib.items():
+        n[no_prefix(k)] = v
+    node.attrib = n
     for child in node:
-        n_child_tag = no_prefix(child.tag)
-        if n_child_tag == part:
-            found.append(child)
-        elif part.endswith("[0]") and n_child_tag == part[0:-3]:
-            found.append(child)
-            # only retain the first child
-            break
-    nodes = []
-    for child in found:
-        p = resolve_xpath(child, '/'.join(path[1:]))
-        if p is not None:
-            if isinstance(p, list):
-                nodes.extend(p)
-            else:
-                nodes.append(p)
+        remove_prefix(child)
 
+def resolve_xpath(node, xpath):
+    nodes = node.findall(xpath)
+    print("xpath resolved", nodes)
     if len(nodes) == 0:
         return None
     elif len(nodes) == 1:
