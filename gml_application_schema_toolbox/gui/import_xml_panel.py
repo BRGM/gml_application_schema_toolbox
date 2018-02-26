@@ -17,8 +17,9 @@
 
 import os
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import pyqtSlot, QVariant
-from qgis.PyQt.QtWidgets import QFileDialog, QComboBox, QTableWidgetItem
+from qgis.PyQt.QtCore import pyqtSlot, QVariant, QRegExp
+from qgis.PyQt.QtWidgets import QFileDialog, QComboBox, QTableWidgetItem, QLineEdit
+from qgis.PyQt.QtGui import QRegExpValidator
 
 from qgis.core import QgsProject, QgsEditFormConfig, QgsEditorWidgetSetup
 
@@ -51,7 +52,7 @@ class ImportXmlPanel(BASE, WIDGET):
         # get attribute mapping
         mapping = {}
         for i in range(self.attributeTable.rowCount()):
-            attr = self.attributeTable.item(i, 0).text()
+            attr = self.attributeTable.cellWidget(i, 0).text()
             xpath = self.attributeTable.item(i, 2).text()
             combo = self.attributeTable.cellWidget(i, 1)
             type = combo.itemData(combo.currentIndex())
@@ -92,7 +93,12 @@ class ImportXmlPanel(BASE, WIDGET):
         combo.addItem("Real", QVariant.Double)
         combo.addItem("Date/Time", QVariant.DateTime)
         self.attributeTable.setCellWidget(lastRow, 1, combo)
-        self.attributeTable.setItem(lastRow, 0, QTableWidgetItem())
+
+        lineEdit = QLineEdit(self.attributeTable)
+        # exclude id, fid and _xml from allowed field names
+        lineEdit.setValidator(QRegExpValidator(QRegExp("(?!(id|fid|_xml_)).*")))
+        self.attributeTable.setCellWidget(lastRow, 0, lineEdit)
+        
         self.attributeTable.setItem(lastRow, 2, QTableWidgetItem())
 
     @pyqtSlot()
