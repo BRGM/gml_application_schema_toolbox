@@ -12,7 +12,7 @@ from tempfile import NamedTemporaryFile
 import logging
 
 from qgis.core import QgsCoordinateTransform, QgsCoordinateReferenceSystem, \
-    QgsOwsConnection, QgsProject
+    QgsOwsConnection, QgsProject, QgsMessageLog, QgsSettings
 from qgis.gui import QgsNewHttpConnection
 from qgis.utils import iface
 
@@ -85,14 +85,20 @@ class LoadWfs2Panel(BASE, WIDGET):
         self.on_change_connection(self.connectionCombo.currentText())
 
     def wfs(self):
-        conn = QgsOwsConnection("wfs", self.connectionCombo.currentText())
+        name = self.connectionCombo.currentText()
+        conn = QgsOwsConnection("wfs", name)
         uri = conn.uri().param('url')
-        version = conn.uri().param('version')
-        if version == "auto":
+        req_version = conn.uri().param('version')
+        s = QgsSettings()
+        checked_version = s.value("qgis/connections-wfs/{}/checked_version".format(name), False)
+        if req_version == "auto" or not checked_version:
             # detect version
             u = QUrlQuery()
             u.addQueryItem("request", "GetCapabilities")
-            u.addQueryItem("acceptversions", "2.0.0,1.1.0,1.0.0")
+            if req_version == "auto":
+                u.addQueryItem("acceptversions", "2.0.0,1.1.0,1.0.0")
+            elif not checked_version:
+                u.addQueryItem("version", req_version)
             final_url = QUrl(uri)
             final_url.setQuery(u)
 
@@ -109,6 +115,13 @@ class LoadWfs2Panel(BASE, WIDGET):
                 raise RuntimeError("Cannot determine WFS version")
             # take the greatest version, if more than one
             version = sorted(versions)[-1]
+
+            if version != req_version:
+                QgsMessageLog.logMessage("Requested WFS version {}, got {}".format(req_version, version))
+            else:
+                s.setValue("qgis/connections-wfs/{}/checked_version".format(name), True)
+        else:
+            version = req_version
             
         with qgis_proxy_settings():
             return WebFeatureService(url=uri, version=version)
