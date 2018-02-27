@@ -9,7 +9,7 @@ from owslib.feature.wfs200 import WebFeatureService_2_0_0
 
 def getGETGetFeatureRequest_2_0_0(self, typename=None, filter=None, bbox=None, featureid=None,
                    featureversion=None, propertyname=None, maxfeatures=None,storedQueryID=None, storedQueryParams=None,
-                   outputFormat=None, method='Get', startindex=None):
+                                  outputFormat=None, method='Get', startindex=None, sortby=None):
     storedQueryParams = storedQueryParams or {}
 
     base_url = next((m.get('url') for m in self.getOperationByName('GetFeature').methods if m.get('type').lower() == method.lower()))
@@ -32,6 +32,8 @@ def getGETGetFeatureRequest_2_0_0(self, typename=None, filter=None, bbox=None, f
             request['typename'] = ','.join(typename)
     if propertyname: 
         request['propertyname'] = ','.join(propertyname)
+    if sortby:
+        request['sortby'] = ','.join(sortby)
     if featureversion: 
         request['featureversion'] = str(featureversion)
     if maxfeatures:
@@ -48,7 +50,7 @@ def getGETGetFeatureRequest_2_0_0(self, typename=None, filter=None, bbox=None, f
     if outputFormat is not None:
         request["outputFormat"] = outputFormat
 
-    data = urlencode(request)
+    data = urlencode(request, doseq=True)
 
     return base_url+data
 
