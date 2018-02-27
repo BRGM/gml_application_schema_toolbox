@@ -449,16 +449,16 @@ class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
         layer.CreateField(ogr.FieldDefn('value', ogr.OFTString))
 
         if srid:
-            wkbType = { 'point': ogr.wkbPoint,
-                        'multipoint': ogr.wkbMultiPoint,
-                        'linestring': ogr.wkbLineString,
-                        'multilinestring': ogr.wkbMultiLineString,
-                        'polygon': ogr.wkbPolygon,
-                        'multipolygon': ogr.wkbMultiPolygon,
-                        'compoundcurve': ogr.wkbCompoundCurve,
-                        'curvepolygon': ogr.wkbCurvePolygon,
-                        'multicurve': ogr.wkbMultiCurve,
-                        'multisurface': ogr.wkbMultiSurface
+            wkbType = { 'point': ogr.wkbPoint25D,
+                        'multipoint': ogr.wkbMultiPoint25D,
+                        'linestring': ogr.wkbLineString25D,
+                        'multilinestring': ogr.wkbMultiLineString25D,
+                        'polygon': ogr.wkbPolygon25D,
+                        'multipolygon': ogr.wkbMultiPolygon25D,
+                        'compoundcurve': ogr.wkbCompoundCurveZ,
+                        'curvepolygon': ogr.wkbCurvePolygonZ,
+                        'multicurve': ogr.wkbMultiCurveZ,
+                        'multisurface': ogr.wkbMultiSurfaceZ
             }[type]
             srs = osr.SpatialReference()
             srs.ImportFromEPSGA(int(srid))
