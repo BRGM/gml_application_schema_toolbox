@@ -56,7 +56,6 @@ def remove_prefix(node):
 
 def resolve_xpath(node, xpath):
     nodes = node.findall(xpath)
-    print("xpath resolved", nodes)
     if len(nodes) == 0:
         return None
     elif len(nodes) == 1:

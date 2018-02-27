@@ -90,11 +90,13 @@ class LoadWfs2Panel(BASE, WIDGET):
         version = conn.uri().param('version')
         if version == "auto":
             # detect version
-            u = QUrlQuery(uri)
+            u = QUrlQuery()
             u.addQueryItem("request", "GetCapabilities")
             u.addQueryItem("acceptversions", "2.0.0,1.1.0,1.0.0")
+            final_url = QUrl(uri)
+            final_url.setQuery(u)
 
-            xml, ns_map = xml_parse(remote_open_from_qgis(u.query()))
+            xml, ns_map = xml_parse(remote_open_from_qgis(final_url.toString()))
             root = xml.getroot()
             if 'ows' in ns_map:
                 versions = [v.text for v in root.findall("./ows:ServiceIdentification/ows:ServiceTypeVersion", ns_map)]
