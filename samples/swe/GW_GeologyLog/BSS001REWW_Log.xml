@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:GetObservationResponse xmlns:sos="http://www.opengis.net/sos/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:om="http://www.opengis.net/om/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:swe="http://www.opengis.net/swe/2.0" xsi:schemaLocation="http://www.opengis.net/sos/2.0 http://schemas.opengis.net/sos/2.0/sosGetObservation.xsd http://www.opengis.net/swes/2.0 http://schemas.opengis.net/swes/2.0/swes.xsd http://www.opengis.net/gwml/2.2 http://schemas.opengis.net/gwml/2.2/gwml2.xsd http://www.opengis.net/om/2.0 http://schemas.opengis.net/om/2.0/observation.xsd http://www.opengis.net/gwml-well/2.2 http://schemas.opengis.net/gwml/2.2/gwml2-well.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+  <sos:observationData>
+    <om:OM_Observation gml:id="o_9C452EB31E8B03A4F54AE257B3A20A4B8206CC98">
+      <gml:description>Lithologic observation for this level of borehole BSS001REWW</gml:description>
+      <gml:identifier codeSpace="http://www.ietf.org/rfc/rfc2616">http://ressource.brgm-rec.fr/obs/RawEarthMaterialLogObservation/BSS001REWW.1596478</gml:identifier>
+      <gml:name codeSpace="http://www.ietf.org/rfc/rfc2616">RawEarthMaterialLogObservation BSS001REWW</gml:name>
+      <om:type xlink:href="http://www.opengis.net/def/observationType/OGC-GWML/2.2/GW_GeologyLog"/>
+      <om:phenomenonTime>
+        <gml:TimeInstant gml:id="phenomenonTime_1596478">
+          <gml:timePosition>1974-12-01T00:00:00.000Z</gml:timePosition>
+        </gml:TimeInstant>
+      </om:phenomenonTime>
+      <om:resultTime xlink:href="#phenomenonTime_1596478"/>
+      <om:procedure xlink:href="http://ressource.brgm-rec.fr/methode/GeologicLog" xlink:title="Log realised by the driller"/>
+      <om:parameter>
+        <om:NamedValue>
+          <om:name xlink:href="fromDepth"/>
+          <om:value xmlns:ns="http://www.opengis.net/gml/3.2" uom="m" xsi:type="ns:MeasureType">0.0</om:value>
+        </om:NamedValue>
+      </om:parameter>
+      <om:parameter>
+        <om:NamedValue>
+          <om:name xlink:href="http://www.opengis.net/def/param-name/OGC-OM/2.0/samplingGeometry"/>
+          <om:value xmlns:ns="http://www.opengis.net/gml/3.2" xsi:type="ns:GeometryPropertyType">
+            <ns:Point ns:id="Point_sp_8F0F3A5F8E6E7C93EE6D71FA203770AAF114F90B">
+              <ns:pos srsName="http://www.opengis.net/def/crs/EPSG/0/4326">46.1909541655103 5.18713262971692</ns:pos>
+            </ns:Point>
+          </om:value>
+        </om:NamedValue>
+      </om:parameter>
+      <om:parameter>
+        <om:NamedValue>
+          <om:name xlink:href="toDepth"/>
+          <om:value xmlns:ns="http://www.opengis.net/gml/3.2" uom="m" xsi:type="ns:MeasureType">23.0</om:value>
+        </om:NamedValue>
+      </om:parameter>
+      <om:observedProperty xlink:href="http://www.opengis.net/def/gwml/2.0/observedProperty/earthMaterial" xlink:title="Earth Material"/>
+      <om:featureOfInterest xlink:href="http://ressource.brgm-rec.fr/data/Borehole/BSS001REWW"/>
+      <om:result xmlns:ns="http://www.opengis.net/gwml-well/2.2" xsi:type="ns:GW_GeologyLogCoveragePropertyType">
+        <ns:GW_GeologyLogCoverage gml:id="gwglc_pv1596478">
+          <ns:element>
+            <ns:LogValue>
+              <ns:fromDepth>
+                <swe:Quantity definition="fromDepth">
+                  <swe:label>fromDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>0.0</swe:value>
+                </swe:Quantity>
+              </ns:fromDepth>
+              <ns:toDepth>
+                <swe:Quantity definition="toDepth">
+                  <swe:label>toDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>0.6</swe:value>
+                </swe:Quantity>
+              </ns:toDepth>
+              <ns:value>
+                <swe:DataRecord>
+                  <swe:field name="earthMaterial">
+                    <swe:Text definition="http://www.opengis.net/def/gwml/2.0/observedProperty/earthMaterial">
+                      <swe:label>earthMaterial</swe:label>
+                      <swe:description>Lithology of the observed level</swe:description>
+                      <swe:value>SUPERF: TERRE</swe:value>
+                    </swe:Text>
+                  </swe:field>
+                </swe:DataRecord>
+              </ns:value>
+            </ns:LogValue>
+          </ns:element>
+          <ns:element>
+            <ns:LogValue>
+              <ns:fromDepth>
+                <swe:Quantity definition="fromDepth">
+                  <swe:label>fromDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>0.6</swe:value>
+                </swe:Quantity>
+              </ns:fromDepth>
+              <ns:toDepth>
+                <swe:Quantity definition="toDepth">
+                  <swe:label>toDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>2.1</swe:value>
+                </swe:Quantity>
+              </ns:toDepth>
+              <ns:value>
+                <swe:DataRecord>
+                  <swe:field name="earthMaterial">
+                    <swe:Text definition="http://www.opengis.net/def/gwml/2.0/observedProperty/earthMaterial">
+                      <swe:label>earthMaterial</swe:label>
+                      <swe:description>Lithology of the observed level</swe:description>
+                      <swe:value>LIMON, ARGILEUX</swe:value>
+                    </swe:Text>
+                  </swe:field>
+                </swe:DataRecord>
+              </ns:value>
+            </ns:LogValue>
+          </ns:element>
+          <ns:element>
+            <ns:LogValue>
+              <ns:fromDepth>
+                <swe:Quantity definition="fromDepth">
+                  <swe:label>fromDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>2.1</swe:value>
+                </swe:Quantity>
+              </ns:fromDepth>
+              <ns:toDepth>
+                <swe:Quantity definition="toDepth">
+                  <swe:label>toDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>19.0</swe:value>
+                </swe:Quantity>
+              </ns:toDepth>
+              <ns:value>
+                <swe:DataRecord>
+                  <swe:field name="earthMaterial">
+                    <swe:Text definition="http://www.opengis.net/def/gwml/2.0/observedProperty/earthMaterial">
+                      <swe:label>earthMaterial</swe:label>
+                      <swe:description>Lithology of the observed level</swe:description>
+                      <swe:value>MEL/GALET/GRAVIER/SABLE, ARGILEUX/</swe:value>
+                    </swe:Text>
+                  </swe:field>
+                </swe:DataRecord>
+              </ns:value>
+            </ns:LogValue>
+          </ns:element>
+          <ns:element>
+            <ns:LogValue>
+              <ns:fromDepth>
+                <swe:Quantity definition="fromDepth">
+                  <swe:label>fromDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>19.0</swe:value>
+                </swe:Quantity>
+              </ns:fromDepth>
+              <ns:toDepth>
+                <swe:Quantity definition="toDepth">
+                  <swe:label>toDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>19.3</swe:value>
+                </swe:Quantity>
+              </ns:toDepth>
+              <ns:value>
+                <swe:DataRecord>
+                  <swe:field name="earthMaterial">
+                    <swe:Text definition="http://www.opengis.net/def/gwml/2.0/observedProperty/earthMaterial">
+                      <swe:label>earthMaterial</swe:label>
+                      <swe:description>Lithology of the observed level</swe:description>
+                      <swe:value>ARGILE, JAUNE COMPACT</swe:value>
+                    </swe:Text>
+                  </swe:field>
+                </swe:DataRecord>
+              </ns:value>
+            </ns:LogValue>
+          </ns:element>
+          <ns:element>
+            <ns:LogValue>
+              <ns:fromDepth>
+                <swe:Quantity definition="fromDepth">
+                  <swe:label>fromDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>19.3</swe:value>
+                </swe:Quantity>
+              </ns:fromDepth>
+              <ns:toDepth>
+                <swe:Quantity definition="toDepth">
+                  <swe:label>toDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>21.0</swe:value>
+                </swe:Quantity>
+              </ns:toDepth>
+              <ns:value>
+                <swe:DataRecord>
+                  <swe:field name="earthMaterial">
+                    <swe:Text definition="http://www.opengis.net/def/gwml/2.0/observedProperty/earthMaterial">
+                      <swe:label>earthMaterial</swe:label>
+                      <swe:description>Lithology of the observed level</swe:description>
+                      <swe:value>ARGILE, GRIS COMPACT</swe:value>
+                    </swe:Text>
+                  </swe:field>
+                </swe:DataRecord>
+              </ns:value>
+            </ns:LogValue>
+          </ns:element>
+          <ns:element>
+            <ns:LogValue>
+              <ns:fromDepth>
+                <swe:Quantity definition="fromDepth">
+                  <swe:label>fromDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>21.0</swe:value>
+                </swe:Quantity>
+              </ns:fromDepth>
+              <ns:toDepth>
+                <swe:Quantity definition="toDepth">
+                  <swe:label>toDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>23.0</swe:value>
+                </swe:Quantity>
+              </ns:toDepth>
+              <ns:value>
+                <swe:DataRecord>
+                  <swe:field name="earthMaterial">
+                    <swe:Text definition="http://www.opengis.net/def/gwml/2.0/observedProperty/earthMaterial">
+                      <swe:label>earthMaterial</swe:label>
+                      <swe:description>Lithology of the observed level</swe:description>
+                      <swe:value>ARGILE, BLEU</swe:value>
+                    </swe:Text>
+                  </swe:field>
+                </swe:DataRecord>
+              </ns:value>
+            </ns:LogValue>
+          </ns:element>
+        </ns:GW_GeologyLogCoverage>
+      </om:result>
+    </om:OM_Observation>
+  </sos:observationData>
+  <sos:observationData>
+    <om:OM_Observation gml:id="o_0974BAFB7E23E74C54D04679D5C275588E196640">
+      <gml:description>Chronostratigraphic observation for this level of borehole BSS001REWW</gml:description>
+      <gml:identifier codeSpace="http://www.ietf.org/rfc/rfc2616">http://ressource.brgm-rec.fr/obs/RawGeologicAgeLogObservation/BSS001REWW.1596479</gml:identifier>
+      <gml:name codeSpace="http://www.ietf.org/rfc/rfc2616">RawGeologicAgeLogObservation BSS001REWW</gml:name>
+      <om:type xlink:href="http://www.opengis.net/def/observationType/OGC-GWML/2.2/GW_GeologyLog"/>
+      <om:phenomenonTime>
+        <gml:TimeInstant gml:id="phenomenonTime_1596479">
+          <gml:timePosition>1974-12-01T00:00:00.000Z</gml:timePosition>
+        </gml:TimeInstant>
+      </om:phenomenonTime>
+      <om:resultTime xlink:href="#phenomenonTime_1596479"/>
+      <om:procedure xlink:href="http://ressource.brgm-rec.fr/methode/GeologicLog" xlink:title="Log realised by the driller"/>
+      <om:parameter>
+        <om:NamedValue>
+          <om:name xlink:href="fromDepth"/>
+          <om:value xmlns:ns="http://www.opengis.net/gml/3.2" uom="m" xsi:type="ns:MeasureType">0.0</om:value>
+        </om:NamedValue>
+      </om:parameter>
+      <om:parameter>
+        <om:NamedValue>
+          <om:name xlink:href="http://www.opengis.net/def/param-name/OGC-OM/2.0/samplingGeometry"/>
+          <om:value xmlns:ns="http://www.opengis.net/gml/3.2" xsi:type="ns:GeometryPropertyType">
+            <ns:Point ns:id="Point_sp_A065FBF45B57BA6EABC2EF8F2ABACEC19A7DDC68">
+              <ns:pos srsName="http://www.opengis.net/def/crs/EPSG/0/4326">46.1909541655103 5.18713262971692</ns:pos>
+            </ns:Point>
+          </om:value>
+        </om:NamedValue>
+      </om:parameter>
+      <om:parameter>
+        <om:NamedValue>
+          <om:name xlink:href="toDepth"/>
+          <om:value xmlns:ns="http://www.opengis.net/gml/3.2" uom="m" xsi:type="ns:MeasureType">23.0</om:value>
+        </om:NamedValue>
+      </om:parameter>
+      <om:observedProperty xlink:href="http://www.opengis.net/def/gwml/2.0/observedProperty/geologicAge" xlink:title="Geologic Age"/>
+      <om:featureOfInterest xlink:href="http://ressource.brgm-rec.fr/data/Borehole/BSS001REWW"/>
+      <om:result xmlns:ns="http://www.opengis.net/gwml-well/2.2" xsi:type="ns:GW_GeologyLogCoveragePropertyType">
+        <ns:GW_GeologyLogCoverage gml:id="gwglc_pv1596479">
+          <ns:element>
+            <ns:LogValue>
+              <ns:fromDepth>
+                <swe:Quantity definition="fromDepth">
+                  <swe:label>fromDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>0.0</swe:value>
+                </swe:Quantity>
+              </ns:fromDepth>
+              <ns:toDepth>
+                <swe:Quantity definition="toDepth">
+                  <swe:label>toDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>0.6</swe:value>
+                </swe:Quantity>
+              </ns:toDepth>
+              <ns:value>
+                <swe:DataRecord>
+                  <swe:field name="geologicAge">
+                    <swe:Category definition="http://www.opengis.net/def/gwml/2.0/observedProperty/geologicAge">
+                      <swe:label>geologicAge</swe:label>
+                      <swe:description>Chronostratigraphy of the observed level</swe:description>
+                      <swe:codeSpace xlink:href="m"/>
+                      <swe:value>QUATERNAIRE</swe:value>
+                    </swe:Category>
+                  </swe:field>
+                </swe:DataRecord>
+              </ns:value>
+            </ns:LogValue>
+          </ns:element>
+          <ns:element>
+            <ns:LogValue>
+              <ns:fromDepth>
+                <swe:Quantity definition="fromDepth">
+                  <swe:label>fromDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>0.6</swe:value>
+                </swe:Quantity>
+              </ns:fromDepth>
+              <ns:toDepth>
+                <swe:Quantity definition="toDepth">
+                  <swe:label>toDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>2.1</swe:value>
+                </swe:Quantity>
+              </ns:toDepth>
+              <ns:value>
+                <swe:DataRecord>
+                  <swe:field name="geologicAge">
+                    <swe:Category definition="http://www.opengis.net/def/gwml/2.0/observedProperty/geologicAge">
+                      <swe:label>geologicAge</swe:label>
+                      <swe:description>Chronostratigraphy of the observed level</swe:description>
+                      <swe:codeSpace xlink:href="m"/>
+                      <swe:value>GLACIAIRE</swe:value>
+                    </swe:Category>
+                  </swe:field>
+                </swe:DataRecord>
+              </ns:value>
+            </ns:LogValue>
+          </ns:element>
+          <ns:element>
+            <ns:LogValue>
+              <ns:fromDepth>
+                <swe:Quantity definition="fromDepth">
+                  <swe:label>fromDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>2.1</swe:value>
+                </swe:Quantity>
+              </ns:fromDepth>
+              <ns:toDepth>
+                <swe:Quantity definition="toDepth">
+                  <swe:label>toDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>19.0</swe:value>
+                </swe:Quantity>
+              </ns:toDepth>
+              <ns:value>
+                <swe:DataRecord>
+                  <swe:field name="geologicAge">
+                    <swe:Category definition="http://www.opengis.net/def/gwml/2.0/observedProperty/geologicAge">
+                      <swe:label>geologicAge</swe:label>
+                      <swe:description>Chronostratigraphy of the observed level</swe:description>
+                      <swe:codeSpace xlink:href="m"/>
+                      <swe:value>GLACIAIRE</swe:value>
+                    </swe:Category>
+                  </swe:field>
+                </swe:DataRecord>
+              </ns:value>
+            </ns:LogValue>
+          </ns:element>
+          <ns:element>
+            <ns:LogValue>
+              <ns:fromDepth>
+                <swe:Quantity definition="fromDepth">
+                  <swe:label>fromDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>19.0</swe:value>
+                </swe:Quantity>
+              </ns:fromDepth>
+              <ns:toDepth>
+                <swe:Quantity definition="toDepth">
+                  <swe:label>toDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>19.3</swe:value>
+                </swe:Quantity>
+              </ns:toDepth>
+              <ns:value>
+                <swe:DataRecord>
+                  <swe:field name="geologicAge">
+                    <swe:Category definition="http://www.opengis.net/def/gwml/2.0/observedProperty/geologicAge">
+                      <swe:label>geologicAge</swe:label>
+                      <swe:description>Chronostratigraphy of the observed level</swe:description>
+                      <swe:codeSpace xlink:href="m"/>
+                      <swe:value>PLIOCENE</swe:value>
+                    </swe:Category>
+                  </swe:field>
+                </swe:DataRecord>
+              </ns:value>
+            </ns:LogValue>
+          </ns:element>
+          <ns:element>
+            <ns:LogValue>
+              <ns:fromDepth>
+                <swe:Quantity definition="fromDepth">
+                  <swe:label>fromDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>19.3</swe:value>
+                </swe:Quantity>
+              </ns:fromDepth>
+              <ns:toDepth>
+                <swe:Quantity definition="toDepth">
+                  <swe:label>toDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>21.0</swe:value>
+                </swe:Quantity>
+              </ns:toDepth>
+              <ns:value>
+                <swe:DataRecord>
+                  <swe:field name="geologicAge">
+                    <swe:Category definition="http://www.opengis.net/def/gwml/2.0/observedProperty/geologicAge">
+                      <swe:label>geologicAge</swe:label>
+                      <swe:description>Chronostratigraphy of the observed level</swe:description>
+                      <swe:codeSpace xlink:href="m"/>
+                      <swe:value>PLIOCENE</swe:value>
+                    </swe:Category>
+                  </swe:field>
+                </swe:DataRecord>
+              </ns:value>
+            </ns:LogValue>
+          </ns:element>
+          <ns:element>
+            <ns:LogValue>
+              <ns:fromDepth>
+                <swe:Quantity definition="fromDepth">
+                  <swe:label>fromDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>21.0</swe:value>
+                </swe:Quantity>
+              </ns:fromDepth>
+              <ns:toDepth>
+                <swe:Quantity definition="toDepth">
+                  <swe:label>toDepth</swe:label>
+                  <swe:uom code="m" xlink:title="metre" xlink:href="http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#Meter"/>
+                  <swe:value>23.0</swe:value>
+                </swe:Quantity>
+              </ns:toDepth>
+              <ns:value>
+                <swe:DataRecord>
+                  <swe:field name="geologicAge">
+                    <swe:Category definition="http://www.opengis.net/def/gwml/2.0/observedProperty/geologicAge">
+                      <swe:label>geologicAge</swe:label>
+                      <swe:description>Chronostratigraphy of the observed level</swe:description>
+                      <swe:codeSpace xlink:href="m"/>
+                      <swe:value>PLIOCENE</swe:value>
+                    </swe:Category>
+                  </swe:field>
+                </swe:DataRecord>
+              </ns:value>
+            </ns:LogValue>
+          </ns:element>
+        </ns:GW_GeologyLogCoverage>
+      </om:result>
+    </om:OM_Observation>
+  </sos:observationData>
+</sos:GetObservationResponse>
