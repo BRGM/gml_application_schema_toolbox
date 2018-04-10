@@ -82,7 +82,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         
     # Read XML file and substitute form parameters
     def gmlas_config(self):
-        path = self.gml_path()
+        path = self.gmlasConfigLineEdit.text()
         if path == '':
             raise InputError(self.tr("You must select a GMLAS config file"))
 
@@ -141,6 +141,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     @pyqtSlot()
     def on_validateButton_clicked(self):
+        self.parent.on_downloadButton_clicked()
         self.setCursor(Qt.WaitCursor)
         try:
             self.validate()
@@ -150,7 +151,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             self.unsetCursor()
 
     def validate(self):
-        self.layerList.setTitle('Layers')
+        #self.layerList.setTitle('Layers')
         data_source = self.gmlas_datasource() 
 
         if data_source is None:
@@ -174,7 +175,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         self.datasetsListWidget.sortItems()
         self.datasetsListWidget.selectAll()
-        self.layerList.setTitle('{} layer(s) found:'.format(self.datasetsListWidget.count()))
+        #self.layerList.setTitle('{} layer(s) found:'.format(self.datasetsListWidget.count()))
 
 
     def selected_layers(self):

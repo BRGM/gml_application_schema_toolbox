@@ -245,7 +245,6 @@ class LoadWfs2Panel(BASE, WIDGET):
     @pyqtSlot(str)
     def on_file_downloaded(self, path):
         self.gmlPathLineEdit.setText(path)
-        self.gmlPathLineEdit.setText(path)
 
     @pyqtSlot()
     def on_gmlPathButton_clicked(self):
@@ -345,5 +344,5 @@ class LoadWfs2Panel(BASE, WIDGET):
 
     @pyqtSlot()
     def on_loadButton_clicked(self):
-        self.on_downloadButton_clicked()
+        self.on_downloadButton_clicked()        
         self.on_loadFromFileButton_clicked()
