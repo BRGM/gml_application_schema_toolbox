@@ -95,6 +95,7 @@ class LoadWfs2Panel(BASE, WIDGET):
             # detect version
             u = QUrlQuery()
             u.addQueryItem("request", "GetCapabilities")
+            u.addQueryItem("service", "WFS")
             if req_version == "auto":
                 u.addQueryItem("acceptversions", "2.0.0,1.1.0,1.0.0")
             elif not checked_version:
