@@ -1,49 +1,41 @@
-# -*- coding: utf-8 -*-
-
 import os
-import owslib_hacks
+from PyQt5 import uic
+
+from ..extlibs import owslib_hacks
 import owslib
 
 from owslib.wfs import WebFeatureService
 from owslib.feature.wfs200 import WFSCapabilitiesReader
 
-from tempfile import NamedTemporaryFile
-
-import logging
-
-from qgis.core import QgsCoordinateTransform, QgsCoordinateReferenceSystem, \
-    QgsOwsConnection, QgsProject, QgsMessageLog, QgsSettings
-from qgis.gui import QgsNewHttpConnection
-from qgis.utils import iface
+from qgis.PyQt.QtWidgets import (
+    QDialog, QWizard, QWizardPage, QMessageBox, QTableWidgetItem
+)
 
 from qgis.PyQt.QtCore import (
-    Qt, pyqtSignal, pyqtSlot,
-    QSettings,
-    QUrl, QFile, QIODevice, QUrlQuery)
-# from qgis.PyQt.QtGui import QDesktopServices
-from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QTableWidgetItem, QDialog
+    Qt, QUrlQuery, pyqtSlot, QUrl
+)
 from qgis.PyQt.QtXml import QDomDocument
-from qgis.PyQt import uic
 
-from gml_application_schema_toolbox.core.logging import log
-from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
-from gml_application_schema_toolbox.core.settings import settings
-from gml_application_schema_toolbox.core.xml_utils import xml_parse, no_prefix
-from gml_application_schema_toolbox.core.qgis_urlopener import remote_open_from_qgis
+from qgis.core import (
+    QgsOwsConnection, QgsSettings, QgsMessageLog,
+    QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject
+)
+from qgis.gui import (
+    QgsNewHttpConnection
+)
 
-from .import_gmlas_panel import ImportGmlasPanel
-from .import_xml_panel import ImportXmlPanel
+from ..core.xml_utils import xml_parse, no_prefix
+from ..core.settings import settings
+from ..core.qgis_urlopener import remote_open_from_qgis
+from ..core.proxy import qgis_proxy_settings
 from .xml_dialog import XmlDialog
 
-WIDGET, BASE = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), '..', 'ui', 'load_panel.ui'))
+PAGE_1A_W, _ = uic.loadUiType(os.path.join(
+    os.path.dirname(__file__), '..', 'ui', 'load_wizard_wfs.ui'))
 
-class LoadWfs2Panel(BASE, WIDGET):
-
-    file_downloaded = pyqtSignal(str)
-
-    def __init__(self, parent=None):
-        super(LoadWfs2Panel, self).__init__(parent)
+class LoadWizardWFS(QWizardPage, PAGE_1A_W):
+    def __init__(self, parent, next_id):
+        super().__init__(parent)
         self.setupUi(self)
 
         self.featureLimitBox.setValue(int(settings.value('default_maxfeatures')))
@@ -51,22 +43,12 @@ class LoadWfs2Panel(BASE, WIDGET):
         self.refresh_connections()
         self.connectionCombo.currentTextChanged.connect(self.on_change_connection)
 
-        self.file_downloaded.connect(self.on_file_downloaded)
+        #self.file_downloaded.connect(self.on_file_downloaded)
 
-        self.xml_panel = ImportXmlPanel(self)
-        self.gmlas_panel = ImportGmlasPanel(self)
-        self.stackedWidget.addWidget(self.xml_panel)
-        self.stackedWidget.addWidget(self.gmlas_panel)
-
-        self.xmlModeRadio.toggled.connect(self.on_xml)
-        self.relationalModeRadio.toggled.connect(self.on_gmlas)
-
-        v = settings.value("default_import_method")
-        self.xmlModeRadio.setChecked(v == 'xml')
-        self.relationalModeRadio.setChecked(v == 'gmlas')
-
+        self._is_complete = False
         self.featureTypesTableWidget.itemSelectionChanged.connect(self.on_wfs_layer_selection_changed)
 
+        """
         g = "gml_application_schema_toolbox"
         self.wfs_options_group.setSettingGroup(g)
         self.gmlas_panel.layers_group.setSettingGroup(g)
@@ -74,6 +56,21 @@ class LoadWfs2Panel(BASE, WIDGET):
         self.gmlas_panel.gmlas_options_group.setSettingGroup(g)
         self.gmlas_panel.target_db_group.setSettingGroup(g)
         self.xml_panel.xml_options_group.setSettingGroup(g)
+        """
+
+        # gml_path cache
+        self._gml_path = None
+
+        self._next_id = next_id
+
+    def on_wfs_layer_selection_changed(self):
+        self._is_complete = self.featureTypesTableWidget.selectedItems() != []
+        self.completeChanged.emit()
+    def isComplete(self):
+        return  self._is_complete
+
+    def nextId(self):
+        return self._next_id
 
     def refresh_connections(self):
         # populate connection combo box
@@ -123,19 +120,9 @@ class LoadWfs2Panel(BASE, WIDGET):
                 s.setValue("qgis/connections-wfs/{}/checked_version".format(name), True)
         else:
             version = req_version
-            
+
         with qgis_proxy_settings():
             return WebFeatureService(url=uri, version=version)
-
-    def on_xml(self, enabled):
-        if enabled:
-            self.stackedWidget.setCurrentWidget(self.xml_panel)
-    def on_gmlas(self, enabled):
-        if enabled:
-            self.stackedWidget.setCurrentWidget(self.gmlas_panel)
-
-    def on_wfs_layer_selection_changed(self):
-        self.loadButton.setEnabled(self.featureTypesTableWidget.selectedItems() != [])
 
     @pyqtSlot(str)
     def on_change_connection(self, currentConnection):
@@ -210,52 +197,13 @@ class LoadWfs2Panel(BASE, WIDGET):
                                     QMessageBox.Yes | QMessageBox.No)
         if r == QMessageBox.Yes:
             QgsOwsConnection.deleteConnection("wfs", conn)
-            self.refresh_connections()            
+            self.refresh_connections()
 
     @pyqtSlot()
     def on_showCapabilitiesButton_clicked(self):
         XmlDialog(self, self.wfs().getcapabilities().read()).exec_()
         # url = WFSCapabilitiesReader().capabilities_url(self.uri())
         # QDesktopServices.openUrl(QUrl(url))
-
-    @pyqtSlot()
-    def on_outputPathButton_clicked(self):
-        path, filter = QFileDialog.getSaveFileName(self,
-            self.tr("Select output file"),
-            self.outputPathLineEdit.text(),
-            self.tr("GML Files (*.gml *.xml)"))
-        if path:
-            if os.path.splitext(path)[1] == '':
-                path = '{}.gml'.format(path)
-            self.outputPathLineEdit.setText(path)
-
-    @pyqtSlot()
-    def on_downloadButton_clicked(self):
-        self.setCursor(Qt.WaitCursor)
-        try:
-            if self.datasetsTabWidget.currentIndex() == 0:
-                out = self.download()
-            if self.datasetsTabWidget.currentIndex() == 1:
-                out = self.download_stored_query()
-        finally:
-            self.unsetCursor()
-        if out is not None:
-            self.file_downloaded.emit(out)
-
-    @pyqtSlot(str)
-    def on_file_downloaded(self, path):
-        self.gmlPathLineEdit.setText(path)
-
-    @pyqtSlot()
-    def on_gmlPathButton_clicked(self):
-        gml_path = settings.value("gml_path", "")
-        path, filter = QFileDialog.getOpenFileName(self,
-            self.tr("Open GML file"),
-            gml_path,
-            self.tr("GML files or XSD (*.gml *.xml *.xsd)"))
-        if path:
-            settings.setValue("gml_path", os.path.dirname(path))
-            self.gmlPathLineEdit.setText(path)
 
     def selected_typenames(self):
         typenames = []
@@ -279,7 +227,17 @@ class LoadWfs2Panel(BASE, WIDGET):
                 bbox.yMaximum(),
                 default_crs_name]
 
-    def download(self):
+    def download(self, output_path):
+        self.setCursor(Qt.WaitCursor)
+        try:
+            if self.datasetsTabWidget.currentIndex() == 0:
+                self.download_features(output_path)
+            if self.datasetsTabWidget.currentIndex() == 1:
+                self.download_stored_query(output_path)
+        finally:
+            self.unsetCursor()
+
+    def download_features(self, output_path):
         wfs = self.wfs()
 
         typenames = self.selected_typenames()
@@ -323,26 +281,8 @@ class LoadWfs2Panel(BASE, WIDGET):
                                  exception.text())
             return
 
-        path = self.outputPathLineEdit.text()
-        if path == '':
-            with NamedTemporaryFile(suffix='.gml') as out:
-                path = out.name
-        with open(path, 'w', encoding='utf8') as out:
+        with open(output_path, 'w', encoding='utf8') as out:
             out.write(xml)
 
-        return path
-
-    def download_stored_query(self):
+    def download_stored_query(self, output_path):
         pass
-
-    @pyqtSlot()
-    def on_loadFromFileButton_clicked(self):
-        if self.xmlModeRadio.isChecked():
-            self.xml_panel.do_load()
-        else:
-            self.gmlas_panel.do_load()
-
-    @pyqtSlot()
-    def on_loadButton_clicked(self):
-        self.on_downloadButton_clicked()        
-        self.on_loadFromFileButton_clicked()

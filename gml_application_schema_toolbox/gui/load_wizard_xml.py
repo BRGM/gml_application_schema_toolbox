@@ -1,53 +1,39 @@
-# -*- coding: utf-8 -*-
-
-#   Copyright (C) 2017 BRGM (http:///brgm.fr)
-#   Copyright (C) 2017 Oslandia <infos@oslandia.com>
-#
-#   This library is free software; you can redistribute it and/or
-#   modify it under the terms of the GNU Library General Public
-#   License as published by the Free Software Foundation; either
-#   version 2 of the License, or (at your option) any later version.
-#
-#   This library is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#   Library General Public License for more details.
-#   You should have received a copy of the GNU Library General Public
-#   License along with this library; if not, see <http://www.gnu.org/licenses/>.
-
 import os
-from qgis.PyQt import uic
-from qgis.PyQt.QtCore import pyqtSlot, QVariant, QRegExp
-from qgis.PyQt.QtWidgets import QFileDialog, QComboBox, QTableWidgetItem, QLineEdit
+from PyQt5 import uic
+
+from qgis.PyQt.QtCore import (
+    pyqtSlot, QRegExp, QVariant
+)
+from qgis.PyQt.QtWidgets import (
+    QWizardPage, QComboBox, QLineEdit, QTableWidgetItem
+)
 from qgis.PyQt.QtGui import QRegExpValidator
 
-from qgis.core import QgsProject, QgsEditFormConfig, QgsEditorWidgetSetup
+from qgis.core import (
+    QgsProject, QgsEditorWidgetSetup
+)
 
-from ..core.settings import settings
 from ..core.load_gml_as_xml import load_as_xml_layer
-from ..gui import qgis_form_custom_widget
 from ..gui.progress_bar import ProgressBarLogger
+from ..gui import qgis_form_custom_widget
 
-WIDGET, BASE = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), '..', 'ui', 'import_xml_panel.ui'))
+PAGE_3_W, _ = uic.loadUiType(os.path.join(
+    os.path.dirname(__file__), '..', 'ui', 'load_wizard_xml_options.ui'))
 
-
-class ImportXmlPanel(BASE, WIDGET):
-
+class LoadWizardXML(QWizardPage, PAGE_3_W):
     def __init__(self, parent=None):
-        super(ImportXmlPanel, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
+        self.setFinalPage(True)
 
         self.attributeTable.selectionModel().selectionChanged.connect(self.onSelectMapping)
         self.geometryColumnCheck.stateChanged.connect(self.geometryColumnEdit.setEnabled)
 
-        self.parent = parent
+    def nextId(self):
+        return -1
 
-    def gml_path(self):
-        return self.parent.gmlPathLineEdit.text()
-
-    def do_load(self):
-        gml_path = self.gml_path()
+    def validatePage(self):
+        gml_path = self.wizard().gml_path()
 
         # get attribute mapping
         mapping = {}
@@ -65,11 +51,11 @@ class ImportXmlPanel(BASE, WIDGET):
 
         # add a progress bar during import
         lyrs = load_as_xml_layer(gml_path,
-                                is_remote = gml_path.startswith('http://') or gml_path.startswith('https://'),
-                                attributes = mapping,
-                                geometry_mapping = gmapping,
-                                logger = ProgressBarLogger("Importing features ..."),
-                                swap_xy = self.swapXYCheck.isChecked())
+                                 is_remote=gml_path.startswith('http://') or gml_path.startswith('https://'),
+                                 attributes=mapping,
+                                 geometry_mapping=gmapping,
+                                 logger=ProgressBarLogger("Importing features ..."),
+                                 swap_xy=self.swapXYCheck.isChecked())
 
         for lyr in lyrs.values():
             # install an XML tree widget
@@ -80,8 +66,10 @@ class ImportXmlPanel(BASE, WIDGET):
             # _xml_ column
             lyr.setEditorWidgetSetup(2, QgsEditorWidgetSetup("XML", {}))
             lyr.setDisplayExpression("fid")
-        
+
         QgsProject.instance().addMapLayers(lyrs.values())
+
+        return True
 
     @pyqtSlot()
     def on_addMappingBtn_clicked(self):
@@ -98,7 +86,7 @@ class ImportXmlPanel(BASE, WIDGET):
         # exclude id, fid and _xml from allowed field names
         lineEdit.setValidator(QRegExpValidator(QRegExp("(?!(id|fid|_xml_)).*")))
         self.attributeTable.setCellWidget(lastRow, 0, lineEdit)
-        
+
         self.attributeTable.setItem(lastRow, 2, QTableWidgetItem())
 
     @pyqtSlot()
@@ -108,4 +96,3 @@ class ImportXmlPanel(BASE, WIDGET):
 
     def onSelectMapping(self, selected, deselected):
         self.removeMappingBtn.setEnabled(selected != -1)
-

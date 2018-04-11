@@ -46,9 +46,11 @@ if not set(package_path).issubset(set(sys.path)):
 from . import name as plugin_name
 from . import version as plugin_version
 
-from .gui.dockwidget import DockWidget
+#from .gui.dockwidget import DockWidget
 from .gui.settings_dialog import SettingsDialog
 from .gui.export_gmlas_panel import ExportGmlasPanel
+
+from .gui.load_wizard import LoadWizard
 
 # global iface
 g_iface = None
@@ -79,6 +81,10 @@ class MainPlugin(object):
         self.exportAction = QAction("Export a GMLAS database to GML", self.iface.mainWindow())
         self.exportAction.triggered.connect(self.onExport)
 
+        self.wizardAction = QAction("Load (wizard)", self.iface.mainWindow())
+        self.wizardAction.triggered.connect(self.onWizardLoad)
+
+        self.iface.addPluginToMenu(plugin_name(), self.wizardAction)
         self.iface.addPluginToMenu(plugin_name(), self.loadAction)
         self.iface.addPluginToMenu(plugin_name(), self.exportAction)
         self.iface.addPluginToMenu(plugin_name(), self.settingsAction)
@@ -88,9 +94,6 @@ class MainPlugin(object):
         self.model_dlg = None
         self.model = None
 
-        self.dock_widget = DockWidget()
-        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock_widget)
-
         self.xml_widget_factory = XMLWidgetFactory()
         self.xml_widget_formatter = XMLWidgetFormatter()
         QgsGui.editorWidgetRegistry().registerWidget("XML", self.xml_widget_factory)
@@ -98,14 +101,12 @@ class MainPlugin(object):
 
     def unload(self):
         # Remove the plugin menu item and icon
+        self.iface.removePluginMenu(plugin_name(), self.wizardAction)
         self.iface.removePluginMenu(plugin_name(), self.loadAction)
         self.iface.removePluginMenu(plugin_name(), self.exportAction)
         self.iface.removePluginMenu(plugin_name(), self.settingsAction)
         self.iface.removePluginMenu(plugin_name(), self.aboutAction)
         self.iface.removePluginMenu(plugin_name(), self.helpAction)
-
-        self.dock_widget.setVisible(False)
-        self.iface.removeDockWidget(self.dock_widget)
 
     def onAbout(self):
         self.about_dlg = QWidget()
@@ -184,6 +185,12 @@ class MainPlugin(object):
             QApplication.restoreOverrideCursor()
         
 
+    def onWizardLoad(self):
+        self.wizard = LoadWizard(self.iface.mainWindow())
+        self.wizard.setModal(False)
+        self.wizard.setMinimumSize(400, 600)
+        self.wizard.show()
+        
     def onExport(self):
         w = ExportGmlasPanel(self.iface.mainWindow())
         w.exec_()

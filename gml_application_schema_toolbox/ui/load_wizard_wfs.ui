@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Wfs2DownloadPanel</class>
- <widget class="QWidget" name="Wfs2DownloadPanel">
+ <widget class="QWizardPage" name="Wfs2DownloadPanel">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>688</width>
-    <height>842</height>
+    <width>655</width>
+    <height>477</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
+  </property>
+  <property name="title">
+   <string>WFS Options</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -174,7 +177,7 @@
       <string>WFS Options</string>
      </property>
      <property name="collapsed">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
@@ -252,158 +255,13 @@
         </item>
        </layout>
       </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Download to</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="outputPathLineEdit">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The file downloaded will be saved in this location. If not set, a temporary file is created.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="placeholderText">
-           <string>Create temporary file</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="outputPathButton">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="downloadButton">
-          <property name="text">
-           <string>Download</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
      </layout>
     </widget>
    </item>
-   <item>
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="formLayout">
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Open method</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="xmlModeRadio">
-       <property name="text">
-        <string>&amp;XML mode</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="relationalModeRadio">
-       <property name="text">
-        <string>Relational &amp;mode (GMLAS)</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <widget class="QStackedWidget" name="stackedWidget">
-     <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Plain</enum>
-     </property>
-     <property name="lineWidth">
-      <number>1</number>
-     </property>
-     <property name="midLineWidth">
-      <number>0</number>
-     </property>
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
-     <widget class="QWidget" name="page"/>
-     <widget class="QWidget" name="page_2"/>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QPushButton" name="loadFromFileButton">
-       <property name="text">
-        <string>Load from file or URL</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="gmlPathLineEdit"/>
-     </item>
-     <item>
-      <widget class="QToolButton" name="gmlPathButton">
-       <property name="text">
-        <string>...</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <widget class="QPushButton" name="loadButton">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="text">
-      <string>Load from WFS layer</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
   </layout>
-  <zorder>stackedWidget</zorder>
   <zorder></zorder>
   <zorder>datasetsTabWidget</zorder>
   <zorder>wfs_options_group</zorder>
-  <zorder>line</zorder>
-  <zorder>loadButton</zorder>
-  <zorder>verticalSpacer</zorder>
   <zorder></zorder>
  </widget>
  <customwidgets>

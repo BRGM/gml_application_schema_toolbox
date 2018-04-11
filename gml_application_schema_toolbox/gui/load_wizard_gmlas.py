@@ -8,7 +8,9 @@
         begin                : 2016-09-21
         git sha              : $Format:%H$
         copyright            : (C) 2016 by Arnaud Morvan - www.camptocamp.com
+                             : (C) 2018 by Oslandia
         email                : arnaud.morvan@camptocamp.com
+                             : hugo.mercier@oslandia.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -23,63 +25,54 @@
 
 import os
 import tempfile
-
 from io import BytesIO
 
 from owslib.etree import etree
 
 from osgeo import gdal, osr
 
-from qgis.utils import iface
-from qgis.PyQt.QtCore import (
-    Qt, QUrl, pyqtSlot, QFile,  QIODevice,
-    QEventLoop)
-from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem, QApplication
-from qgis.PyQt.QtXml import QDomDocument
-from qgis.PyQt import uic
+from PyQt5 import uic
 
-from gml_application_schema_toolbox import name as plugin_name
-from gml_application_schema_toolbox.core.logging import log
-from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
-from ..core.load_gmlas_in_qgis import import_in_qgis
-from gml_application_schema_toolbox.core.settings import settings
-from gml_application_schema_toolbox.gui import InputError
-from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
-from .xml_dialog import XmlDialog
+from qgis.PyQt.QtCore import (
+    pyqtSlot, Qt
+)
+from qgis.PyQt.QtWidgets import (
+    QWizardPage, QFileDialog, QMessageBox, QListWidgetItem, QApplication
+)
 
 from qgis.core import QgsMessageLog
+from qgis.utils import iface
 
-WIDGET, BASE = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), '..', 'ui', 'import_gmlas_panel.ui'))
+from .. import name as plugin_name
+from ..core.settings import settings
+from ..core.proxy import qgis_proxy_settings
+from ..core.logging import log
+from ..core.load_gmlas_in_qgis import import_in_qgis
+from . import InputError
 
+# FIXME move elsewhere ?
 gdal.UseExceptions()
 
+PAGE_4_W, _ = uic.loadUiType(os.path.join(
+    os.path.dirname(__file__), '..', 'ui', 'load_wizard_gmlas_options.ui'))
 
-class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
-
-    def __init__(self, parent=None, gml_path=None):
-        super(ImportGmlasPanel, self).__init__(parent)
+class LoadWizardGMLAS(QWizardPage, PAGE_4_W):
+    def __init__(self, parent):
+        super().__init__(parent)
         self.setupUi(self)
+        self.setFinalPage(True)
+
         self.databaseWidget.set_accept_mode(QFileDialog.AcceptSave)
 
         self.gmlasConfigLineEdit.setText(settings.value('default_gmlas_config'))
         self.acceptLanguageHeaderInput.setText(settings.value('default_language'))
         self.set_access_mode(settings.value('default_access_mode'))
-        self.parent = parent
-        self._gml_path = gml_path
 
-    def gml_path(self):
-        if self._gml_path:
-            return self._gml_path
-        return self.parent.gml_path()
+        self.destSrs.setCrs(iface.mapCanvas().mapSettings().destinationCrs())
 
-    def showEvent(self, event):
-        # Cannot do that in the constructor. The project is not fully setup when
-        # it is called
-        if not self.destSrs.crs().isValid():
-            self.destSrs.setCrs(iface.mapCanvas().mapSettings().destinationCrs())
-        BASE.showEvent(self, event)
-        
+    def nextId(self):
+        return -1
+
     # Read XML file and substitute form parameters
     def gmlas_config(self):
         path = self.gmlasConfigLineEdit.text()
@@ -116,7 +109,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     def gmlas_datasource(self):
         gmlasconf = self.gmlas_config()
-        datasourceFile = self.gml_path()
+        datasourceFile = self.wizard().gml_path()
         if datasourceFile == '':
             raise InputError(self.tr("You must select a input file or URL"))
         isXsd = datasourceFile.endswith(".xsd")
@@ -139,20 +132,20 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             return gdal.OpenEx(driverConnection,
                                open_options=openOptions)
 
-    @pyqtSlot()
-    def on_loadLayersButton_clicked(self):
-        #self.parent.on_downloadButton_clicked()
+    def validatePage(self):
+        has_error = False
         self.setCursor(Qt.WaitCursor)
         try:
             self.validate()
         except InputError as e:
             e.show()
+            has_error = True
         finally:
             self.unsetCursor()
+        return not has_error
 
     def validate(self):
-        #self.layerList.setTitle('Layers')
-        data_source = self.gmlas_datasource() 
+        data_source = self.gmlas_datasource()
 
         if data_source is None:
             QMessageBox.critical(self,
@@ -166,17 +159,14 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         for i in range(0, data_source.GetLayerCount()):
             layer = data_source.GetLayer(i)
             layer_name = layer.GetName()
-            if not layer_name.startswith(ogrMetadataLayerPrefix): 
-              feature_count = layer.GetFeatureCount()
-
-              item = QListWidgetItem("{} ({})".format(layer_name, feature_count))
-              item.setData(Qt.UserRole, layer_name)
-              self.datasetsListWidget.addItem(item)
+            if not layer_name.startswith(ogrMetadataLayerPrefix):
+                feature_count = layer.GetFeatureCount()
+                item = QListWidgetItem("{} ({})".format(layer_name, feature_count))
+                item.setData(Qt.UserRole, layer_name)
+                self.datasetsListWidget.addItem(item)
 
         self.datasetsListWidget.sortItems()
         self.datasetsListWidget.selectAll()
-        #self.layerList.setTitle('{} layer(s) found:'.format(self.datasetsListWidget.count()))
-
 
     def selected_layers(self):
         layers = []
@@ -254,9 +244,9 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             params['reproject'] = False
         if self.sourceSrsCheck.isChecked():
             params['srcSRS'] = self.src_srs()
-            
+
         if self.convertToLinearCheckbox.isChecked():
-             params['geometryType'] = 'CONVERT_TO_LINEAR'
+            params['geometryType'] = 'CONVERT_TO_LINEAR'
 
         layers = self.selected_layers()
         if len(layers) > 0:
@@ -285,7 +275,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         return params
 
-    def do_load(self, append_to_db = None, append_to_schema = None):
+    def do_load(self, append_to_db=None, append_to_schema=None):
         gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
         gdal.SetConfigOption('GDAL_HTTP_UNSAFESSL', 'YES')
 
@@ -319,7 +309,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             self.translate(params)
             if append_to_db is None:
                 import_in_qgis(dest, db_format, schema)
-            
+
         except InputError as e:
             e.show()
         except RuntimeError as e:
@@ -329,4 +319,3 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         finally:
             QApplication.restoreOverrideCursor()
             gdal.PopErrorHandler()
-
