@@ -246,8 +246,9 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
 
         params = {
             'typename': typenames,
-            'maxfeatures': self.featureLimitBox.value(),
         }
+        if self.limitChkBox.isChecked():
+            params['maxfeatures'] = self.featureLimitBox.value()
 
         if self.bbox_group.isChecked():
             if self.bboxWidget.value() == '':
