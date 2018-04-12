@@ -65,6 +65,13 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         self.gmlasConfigLineEdit.setText(settings.value('default_gmlas_config'))
         self.acceptLanguageHeaderInput.setText(settings.value('default_language'))
         self.set_access_mode(settings.value('default_access_mode'))
+
+        g = "gml_application_schema_toolbox"
+        self.layers_group.setSettingGroup(g)
+        self.gmlas_bbox_group.setSettingGroup(g)
+        self.gmlas_options_group.setSettingGroup(g)
+        self.target_db_group.setSettingGroup(g)
+
         self.parent = parent
         self._gml_path = gml_path
 
