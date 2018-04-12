@@ -48,6 +48,7 @@ class LoadWizardDataSource(QWizardPage, PAGE_1_W):
     def validatePage(self):
         settings.setValue("last_source",
                           "WFS" if self.sourceFromWFS.isChecked() else "File")
+        settings.setValue("last_file", self.gmlPathLineEdit.text())
         return super().validatePage()
 
     @pyqtSlot()
