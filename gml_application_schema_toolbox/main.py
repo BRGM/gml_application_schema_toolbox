@@ -188,8 +188,14 @@ class MainPlugin(object):
     def onWizardLoad(self):
         self.wizard = LoadWizard(self.iface.mainWindow())
         self.wizard.setModal(False)
-        self.wizard.setMinimumSize(400, 600)
         self.wizard.show()
+        self.wizard.adjustSize()
+        self.wizard.finished.connect(self.onWizardEnd)
+    def onWizardEnd(self, result):
+        # destruct the object
+        # (this makes sure collapsible states are correctly saved)
+        self.wizard.setParent(None)
+        self.wizard.deleteLater()
         
     def onExport(self):
         w = ExportGmlasPanel(self.iface.mainWindow())

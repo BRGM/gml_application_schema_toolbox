@@ -7,7 +7,7 @@ from qgis.PyQt.QtCore import (
     pyqtSlot, Qt
 )
 from qgis.PyQt.QtWidgets import (
-    QWizardPage, QWizard, QFileDialog, QVBoxLayout
+    QWizardPage, QWizard, QFileDialog, QVBoxLayout, QSizePolicy
 )
 
 from ..core.proxy import qgis_proxy_settings
@@ -164,6 +164,9 @@ class LoadWizard(QWizard):
         self.setPage(PAGE_ID_GMLAS, self._gmlas_page)
 
         self._gml_path = None
+
+    def sizeHint(self):
+        return self._gmlas_page._layout.minimumSize()
 
     def gml_path(self):
         if self._gml_path is None:
