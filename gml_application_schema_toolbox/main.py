@@ -189,7 +189,7 @@ class MainPlugin(object):
         self.wizard = LoadWizard(self.iface.mainWindow())
         self.wizard.setModal(False)
         self.wizard.show()
-        self.wizard.adjustSize()
+        self.wizard.resize(500,500)
         self.wizard.finished.connect(self.onWizardEnd)
     def onWizardEnd(self, result):
         # destruct the object
