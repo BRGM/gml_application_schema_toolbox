@@ -14,7 +14,7 @@
    <string>Form</string>
   </property>
   <property name="title">
-   <string>&amp;XML options</string>
+   <string>XML options</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
