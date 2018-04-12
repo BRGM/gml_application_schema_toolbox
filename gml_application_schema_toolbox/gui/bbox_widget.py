@@ -94,8 +94,8 @@ class BboxWidget(BASE, WIDGET):
     def setValue(self, value, crs_authid):
         if isinstance(value, QgsRectangle):
             s = '{},{},{},{}'.format(value.xMinimum(),
-                                         value.xMaximum(),
                                          value.yMinimum(),
+                                         value.xMaximum(),
                                          value.yMaximum())
         elif isinstance(value, str):
             s = value
