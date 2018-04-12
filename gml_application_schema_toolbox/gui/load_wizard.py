@@ -69,12 +69,12 @@ class LoadWizardDataSource(QWizardPage, PAGE_1_W):
             with qgis_proxy_settings():
                 import urllib.request
                 response = urllib.request.urlopen(input_path)
-                with open(output_path, 'w', encoding='utf8') as out:
-                    out.write(response.data())
+                with open(output_path, 'wb') as out:
+                    out.write(response.read())
         else:
             # copy file
-            with open(input_path, "r") as inp:
-                with open(output_path, 'w', encoding='utf8') as out:
+            with open(input_path, "rb") as inp:
+                with open(output_path, 'wb') as out:
                     out.write(inp.read())
 
 class LoadWizardLoading(QWizardPage, PAGE_2_W):
