@@ -276,6 +276,9 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
                                  exception.text())
             return
 
+        # depending on WFS versions, we get either a str or bytes
+        if isinstance(xml, str):
+            xml = xml.encode('utf8')
         with open(output_path, 'wb') as out:
             out.write(xml)
 
