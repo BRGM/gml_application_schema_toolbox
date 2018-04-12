@@ -114,34 +114,59 @@ class MainPlugin(object):
         l = QLabel(u"""
         <h1>QGIS GML Application Schema Toolbox</h1>
         <h3>Version: {}</h3>
-        <p>This plugin is a prototype aiming at experimenting with the manipulation of "Complex Features" streams.</p>
+        <p>This plugin is a prototype aiming at experimenting with the manipulation of <b>Complex Features</b> streams.</p>
         <p>Two modes are available:
-        <ul><li>A mode where the initial XML hierarchical view is preserved. In this mode, an XML instance
+        <ul><li>A mode where the <b>initial XML hierarchical view</b> is preserved. In this mode, an XML instance
         is represented by a unique QGIS vector layer with a column that stores the XML subtree for each feature.
-        Augmented tools are available to identify a feature or display the attribute table of the layer.
-        Custom QT-based viewers can be run on XML elements of given types.</li>
-        <li>A mode where the XML hierarchical data is first converted to a relational database (SQlite).
+        Augmented tools are available to identify a feature or display the attribute table of the layer.</li>
+        <li>A mode where the XML hierarchical data is first <b>converted to a relational database</b>.
         In this mode, the data is spread accross different QGIS layers. Links between tables are declared
         as QGIS relations and "relation reference" widgets. It then allows to use the standard QGIS attribute
         table (in "forms" mode) to navigate the relationel model.</li>
         </ul>
-        <p>This plugin has been funded by BRGM and developed by Oslandia.</p>
+        <p>Custom Qt-based viewers can be run on XML elements of given types.</p>
+
+        <p>Teams involved in the development of the current plugin:
+        <ul>
+        <li><a href="http://www.oslandia.com">Oslandia</a> (current version of the QGIS plugin, and first proof of concept)</li>
+        <li><a href="http://www.spatialys.com">Spatialys</a> (GMLAS driver in OGR)</li>
+        <li><a href="http://www.camptocamp.com">camptocamp</a> (former version of the plugin)</li>
+        </ul>
+        </p>
+        <p>Funders involved:
+        <ul>
+        <li><a href="http://www.brgm.fr">BRGM</a></li>
+        <li><a href="https://www.eea.europa.eu/">European Environment Agency</a> (Copernicus funding)</li>
+        <li><b>The Association of Finnish Local and Regional Authorities</b> (through <a href="http://www.gispo.fi">Gispo.fi</a>)</li>
+        </ul>
+        </p>
         """.format(plugin_version()))
         l.setWordWrap(True)
         vlayout.addWidget(l)
         hlayout = QHBoxLayout()
+        hlayout2 = QHBoxLayout()
         l2 = QLabel()
         l2.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "logo_brgm.svg")).scaledToWidth(200, Qt.SmoothTransformation))
         l3 = QLabel()
-        l3.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "logo_oslandia.png")).scaledToWidth(200, Qt.SmoothTransformation))
+        l3.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "logo_eea.png")).scaledToWidth(200, Qt.SmoothTransformation))
+        l4 = QLabel()
+        l4.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "logo_oslandia.png")).scaledToWidth(150, Qt.SmoothTransformation))
+        l5 = QLabel()
+        l5.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "logo_spatialys.png")).scaledToWidth(100, Qt.SmoothTransformation))
+        l6 = QLabel()
+        l6.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "logo_c2c.svg")).scaledToWidth(100, Qt.SmoothTransformation))
         hlayout.addWidget(l2)
         hlayout.addWidget(l3)
         vlayout.addLayout(hlayout)
+        hlayout2.addWidget(l4)
+        hlayout2.addWidget(l5)
+        hlayout2.addWidget(l6)
+        vlayout.addLayout(hlayout2)
         self.about_dlg.setLayout(vlayout)
         self.about_dlg.setWindowTitle(plugin_name())
         self.about_dlg.setWindowModality(Qt.WindowModal)
         self.about_dlg.show()
-        self.about_dlg.resize(600,600)
+        self.about_dlg.resize(600,800)
         
     def onSettings(self):
         dlg = SettingsDialog()
