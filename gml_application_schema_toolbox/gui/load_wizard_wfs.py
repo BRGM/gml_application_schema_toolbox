@@ -48,15 +48,8 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
         self._is_complete = False
         self.featureTypesTableWidget.itemSelectionChanged.connect(self.on_wfs_layer_selection_changed)
 
-        """
         g = "gml_application_schema_toolbox"
         self.wfs_options_group.setSettingGroup(g)
-        self.gmlas_panel.layers_group.setSettingGroup(g)
-        self.gmlas_panel.gmlas_bbox_group.setSettingGroup(g)
-        self.gmlas_panel.gmlas_options_group.setSettingGroup(g)
-        self.gmlas_panel.target_db_group.setSettingGroup(g)
-        self.xml_panel.xml_options_group.setSettingGroup(g)
-        """
 
         # gml_path cache
         self._gml_path = None
@@ -265,6 +258,7 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
 
         try:
             with qgis_proxy_settings():
+                print("params", params)
                 response = wfs.getfeature(**params)
         except owslib.util.ServiceException as e:
             QMessageBox.critical(self, 'ServiceException', str(e))

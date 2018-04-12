@@ -70,6 +70,12 @@ class LoadWizardGMLAS(QWizardPage, PAGE_4_W):
 
         self.destSrs.setCrs(iface.mapCanvas().mapSettings().destinationCrs())
 
+        g = "gml_application_schema_toolbox"
+        self.layers_group.setSettingGroup(g)
+        self.gmlas_bbox_group.setSettingGroup(g)
+        self.gmlas_options_group.setSettingGroup(g)
+        self.target_db_group.setSettingGroup(g)
+
     def nextId(self):
         return -1
 
