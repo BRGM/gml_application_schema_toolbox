@@ -276,7 +276,7 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
                                  exception.text())
             return
 
-        with open(output_path, 'w', encoding='utf8') as out:
+        with open(output_path, 'wb') as out:
             out.write(xml)
 
     def download_stored_query(self, output_path):
