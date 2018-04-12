@@ -120,7 +120,7 @@ class LoadWizardLoading(QWizardPage, PAGE_2_W):
                 path = '{}.gml'.format(path)
             self.outputPathLineEdit.setText(path)
             settings.setValue("last_downloaded_file", path)
-            settings.setValue("ladt_downloaded_path", os.path.dirname(path))
+            settings.setValue("last_downloaded_path", os.path.dirname(path))
 
     @pyqtSlot()
     def on_downloadButton_clicked(self):
