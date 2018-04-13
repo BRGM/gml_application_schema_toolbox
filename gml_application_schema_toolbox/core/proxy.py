@@ -17,7 +17,7 @@ class qgis_proxy_settings():
 
         # apply QGIS proxy settings
         settings = QSettings()
-        enabled = bool(settings.value("proxy/proxyEnabled", False))
+        enabled = settings.value("proxy/proxyEnabled", 'false').lower() == "true"
         type = settings.value("proxy/proxyType", "")
         host = settings.value("proxy/proxyHost", "")
         port = settings.value("proxy/proxyPort", "")
