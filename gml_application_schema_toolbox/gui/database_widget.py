@@ -61,7 +61,7 @@ class DatabaseWidget(BASE, WIDGET):
         self.pgsqlFormWidget.setVisible(False)
         self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
         self.pgsqlConnectionsRefreshButton.setIcon(
-            QgsApplication.getThemeIcon('/mActionRefresh.png'))
+            QgsApplication.getThemeIcon('/mActionRefresh.svg'))
         self.addFkeysButton.setIcon(
             QgsApplication.getThemeIcon('/mActionAdd.svg'))
         self.dropFkeysButton.setIcon(
