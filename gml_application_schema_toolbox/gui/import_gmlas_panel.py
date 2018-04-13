@@ -141,6 +141,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             driverConnection = "GMLAS:/vsicurl_streaming/{}".format(datasourceFile)
         else:
             driverConnection = "GMLAS:{}".format(datasourceFile)
+        gdal.SetConfigOption('GDAL_HTTP_UNSAFESSL', 'YES')
 
         with qgis_proxy_settings():
             return gdal.OpenEx(driverConnection,
