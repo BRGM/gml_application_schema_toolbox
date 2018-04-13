@@ -162,8 +162,13 @@ class LoadWizard(QWizard):
         self.setPage(PAGE_ID_LOADING, self._loading_page)
         self.setPage(PAGE_ID_XML, self._xml_page)
         self.setPage(PAGE_ID_GMLAS, self._gmlas_page)
-
         self._gml_path = None
+
+    def initializePage(self, page_id):
+        # reset gml_path when on the "loading" page
+        if page_id == PAGE_ID_LOADING:
+            print("reset gml_path")
+            self._gml_path = None
 
     def sizeHint(self):
         return self._gmlas_page._layout.minimumSize()
