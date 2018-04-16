@@ -45,7 +45,8 @@ def _qgis_layer(uri, schema_name, layer_name, geometry_column, provider, qgis_la
         l = QgsVectorLayer("{} table={} {} sql=".format(uri, s_table, g_column), qgis_layer_name, "postgres")
 
     # sets xpath
-    l.setCustomProperty("xpath", layer_xpath)
+    if layer_xpath:
+        l.setCustomProperty("xpath", layer_xpath)
     l.setCustomProperty("pkid", layer_pkid)
     return l
 
@@ -112,7 +113,7 @@ def import_in_qgis(gmlas_uri, provider, schema = None):
         layer_name = layer["layer_name"]
         for f in ds.ExecuteSQL("select field_name, field_xpath from {}_ogr_fields_metadata where layer_name='{}'".format(schema_s, layer_name)):
             field_name, field_xpath = f.GetField("field_name"), f.GetField("field_xpath")
-            if field_xpath.endswith("@xlink:href"):
+            if field_xpath and field_xpath.endswith("@xlink:href"):
                 if ln not in href_fields:
                     href_fields[ln] = []
                 href_fields[ln].append(field_name)
