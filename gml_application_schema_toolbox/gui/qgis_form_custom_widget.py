@@ -116,6 +116,8 @@ def inject_href_buttons_into_form(dialog, layer, feature):
         return
     # find the layout
     pkid = layer.customProperty("pkid")
+    if pkid is None:
+        return
     # list of fields that are a xlink:href
     href_fields = layer.customProperty("href_fields", [])
     # list of href URL that have been resolved
