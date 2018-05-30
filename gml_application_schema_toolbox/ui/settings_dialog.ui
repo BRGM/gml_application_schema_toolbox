@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>581</width>
-    <height>293</height>
+    <height>347</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -47,6 +47,16 @@
            <number>0</number>
           </property>
          </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>HTTP User-Agent</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="httpUserAgentEdit"/>
         </item>
        </layout>
       </item>

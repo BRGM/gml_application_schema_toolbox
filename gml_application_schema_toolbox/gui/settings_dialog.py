@@ -8,6 +8,7 @@ from qgis.PyQt.QtCore import pyqtSlot, Qt
 from qgis.PyQt.QtWidgets import QFileDialog, QListWidgetItem
 
 from gml_application_schema_toolbox.core.settings import settings
+from gml_application_schema_toolbox import name as plugin_name
 
 
 WIDGET, BASE = uic.loadUiType(os.path.join(
@@ -32,6 +33,7 @@ class SettingsDialog(BASE, WIDGET):
         self.languageLineEdit.setText(settings.value('default_language'))
         self.set_db_type(settings.value('default_db_type'))
         self.set_access_mode(settings.value('default_access_mode'))
+        self.httpUserAgentEdit.setText(settings.value('http_user_agent', plugin_name()))
 
     def save_settings(self):
         settings.setValue('default_maxfeatures', self.featureLimitBox.value())
@@ -39,6 +41,7 @@ class SettingsDialog(BASE, WIDGET):
         settings.setValue('default_language', self.languageLineEdit.text())
         settings.setValue('default_db_type', self.db_type())
         settings.setValue('default_access_mode', self.access_mode())
+        settings.setValue('http_user_agent', self.http_user_agent())
 
     def set_import_method(self, value):
         if value == 'gmlas':
@@ -51,6 +54,9 @@ class SettingsDialog(BASE, WIDGET):
             return 'gmlas'
         if self.xmlRadioButton.isChecked():
             return 'xml'
+
+    def http_user_agent(self):
+        return httpUserAgentEdit.text()
 
     @pyqtSlot()
     def on_gmlasConfigButton_clicked(self):

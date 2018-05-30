@@ -148,6 +148,8 @@ def on_resolve_href(dialog, layer, feature, field):
     """
     from .import_gmlas_panel import ImportGmlasPanel
     path = feature[field]
+    if not path:
+        return
 
     # if parent is a Dialog, we are in a feature form
     # else in a attribute table

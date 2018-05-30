@@ -142,6 +142,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         else:
             driverConnection = "GMLAS:{}".format(datasourceFile)
         gdal.SetConfigOption('GDAL_HTTP_UNSAFESSL', 'YES')
+        gdal.SetConfigOption('GDAL_HTTP_USERAGENT', settings.value('http_user_agent', plugin_name()))
 
         with qgis_proxy_settings():
             return gdal.OpenEx(driverConnection,
@@ -296,6 +297,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
     def do_load(self, append_to_db = None, append_to_schema = None):
         gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
         gdal.SetConfigOption('GDAL_HTTP_UNSAFESSL', 'YES')
+        gdal.SetConfigOption('GDAL_HTTP_USERAGENT', settings.value('http_user_agent', plugin_name()))
 
         def error_handler(err, err_no, msg):
             if err >= gdal.CE_Warning:

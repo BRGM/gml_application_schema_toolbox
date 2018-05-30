@@ -22,6 +22,9 @@ from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkAccessManager
 from io import BytesIO
 from qgis.core import QgsNetworkAccessManager
 
+from gml_application_schema_toolbox.core.settings import settings
+from gml_application_schema_toolbox import name as plugin_name
+
 __network_manager = None
 
 def _sync_get(url):
@@ -32,7 +35,8 @@ def _sync_get(url):
     pause = QEventLoop()
     req = QNetworkRequest(url)
     req.setRawHeader(b"Accept", b"application/xml")
-    req.setRawHeader(b"Accept-Language", b"fr")
+    req.setRawHeader(b"Accept-Language", bytes(settings.value("default_language", "fr"), "utf8"))
+    req.setRawHeader(b"User-Agent", bytes(settings.value('http_user_agent', plugin_name()), "utf8"))
     reply = __network_manager.get(req)
     reply.finished.connect(pause.quit)
     is_ok = [True]

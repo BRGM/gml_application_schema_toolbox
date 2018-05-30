@@ -10,8 +10,8 @@ from qgis.PyQt.QtWidgets import (
     QWizardPage, QWizard, QFileDialog, QVBoxLayout, QSizePolicy
 )
 
-from ..core.proxy import qgis_proxy_settings
 from ..core.settings import settings
+from ..core.qgis_urlopener import remote_open_from_qgis
 
 from .load_wizard_wfs import LoadWizardWFS
 from .load_wizard_xml import LoadWizardXML
@@ -67,11 +67,8 @@ class LoadWizardDataSource(QWizardPage, PAGE_1_W):
         input_path = self.gmlPathLineEdit.text()
         if input_path.startswith("http://") or input_path.startswith("https://"):
             # URL
-            with qgis_proxy_settings():
-                import urllib.request
-                response = urllib.request.urlopen(input_path)
-                with open(output_path, 'wb') as out:
-                    out.write(response.read())
+            with open(output_path, 'wb') as out:
+                out.write(remote_open_from_qgis(input_path).read())
         else:
             # copy file
             with open(input_path, "rb") as inp:
