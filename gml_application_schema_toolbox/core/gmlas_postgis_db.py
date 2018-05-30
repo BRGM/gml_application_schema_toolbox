@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from processing.tools.postgis import GeoDB, DbError
+from processing.tools.postgis import GeoDB
+
+try:
+    from qgis.core import QgsProcessingException as DbError
+except ImportError:
+    from processing.tools.postgis import DbError
 
 from gml_application_schema_toolbox.core.logging import log
 
