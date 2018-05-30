@@ -41,13 +41,15 @@ class GeologyLogViewer(QWidget):
         # parse data
         data = []
         #description = resolve_xpath(xml_tree, "element/value/description/text()")
-        logs = resolve_xpath(xml_tree, "element/LogValue")
+        ns_map = { "swe" : "http://www.opengis.net/swe/2.0",
+                   "ns" : "http://www.opengis.net/gwml-well/2.2" }
+        logs = resolve_xpath(xml_tree, "ns:element/ns:LogValue", ns_map)
         data = []
         for log in logs:
-            fromDepth = float(resolve_xpath(log, "fromDepth/Quantity/value/text()"))
-            toDepth = float(resolve_xpath(log, "toDepth/Quantity/value/text()"))
-            value_text = resolve_xpath(log, "value/DataRecord/field/Text/value/text()")
-            value_cat = resolve_xpath(log, "value/DataRecord/field/Category/value/text()")
+            fromDepth = float(resolve_xpath(log, "ns:fromDepth/swe:Quantity/swe:value/text()", ns_map))
+            toDepth = float(resolve_xpath(log, "ns:toDepth/swe:Quantity/swe:value/text()", ns_map))
+            value_text = resolve_xpath(log, "ns:value/swe:DataRecord/swe:field/swe:Text/swe:value/text()", ns_map)
+            value_cat = resolve_xpath(log, "ns:value/swe:DataRecord/swe:field/swe:Category/swe:value/text()", ns_map)
             value = value_text if value_text is not None else value_cat
             data.append((fromDepth, toDepth, value))
         return cls("GeologyLogCoverage", data)

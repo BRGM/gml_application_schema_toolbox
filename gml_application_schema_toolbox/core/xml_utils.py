@@ -52,10 +52,15 @@ def remove_prefix(node):
     for child in node:
         remove_prefix(child)
 
-def resolve_xpath(node, xpath):
-    nodes = node.findall(xpath)
+def resolve_xpath(node, xpath, ns_map=None):
+    get_text = xpath.endswith("/text()")
+    if get_text:
+        xpath = xpath[0:-7]
+    nodes = node.findall(xpath, ns_map)
+    if get_text:
+        nodes = [node.text if node is not None and node.text is not None else "" for node in nodes]
     if len(nodes) == 0:
-        return None
+        return None if not get_text else ""
     elif len(nodes) == 1:
         return nodes[0]
     else:
