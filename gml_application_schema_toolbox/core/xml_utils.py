@@ -13,8 +13,6 @@
 #   You should have received a copy of the GNU Library General Public
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
-from future import standard_library
-standard_library.install_aliases()
 # -*- coding: utf-8 -*-
 import xml.etree.ElementTree as ET
 import io
