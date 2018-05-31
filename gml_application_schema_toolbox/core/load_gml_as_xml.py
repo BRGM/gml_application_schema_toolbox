@@ -165,7 +165,8 @@ def _extractGmlGeometries(tree, swap_xy, default_srs = None, parent = None):
         if tag in ["Point", "LineString", "Polygon", "PolyhedralSurface", "Tin",
                    "MultiPoint", "MultiLineString", "MultiPolygon", "MultiCurve", "MultiSurface",
                    "Curve", "OrientableCurve", "Surface", 
-                   "CompositeCurve", "CompositeSurface", "MultiGeometry"]:
+                   "CompositeCurve", "CompositeSurface", "MultiGeometry",
+                   "Envelope"]:
             g = _wkbFromGml(tree, swap_xy, default_srs)
             if g is not None:
                 return [(g, parent.tag)]
@@ -380,6 +381,10 @@ class ComplexFeatureLoader(object):
         finally:
             xml_src.close()
 
+        # Set the styl for polygons coming from boundedBy
+        for tag_name, layer in layers.items():
+            if tag_name.endswith("boundedBy"):
+                layer.loadNamedStyle(os.path.join(os.path.dirname(__file__), "..", "gui", "bounded_by_style.qml"))
         return layers
 
 class ComplexFeatureLoaderInMemory(ComplexFeatureLoader):
