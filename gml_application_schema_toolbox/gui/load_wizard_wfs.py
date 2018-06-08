@@ -29,6 +29,7 @@ from ..core.settings import settings
 from ..core.qgis_urlopener import remote_open_from_qgis
 from ..core.proxy import qgis_proxy_settings
 from .xml_dialog import XmlDialog
+from .wait_cursor_context import WaitCursor
 
 PAGE_1A_W, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'load_wizard_wfs.ui'))
@@ -130,7 +131,9 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
 
     @pyqtSlot()
     def on_connectBtn_clicked(self):
-        self.setCursor(Qt.WaitCursor)
+        with WaitCursor():
+            return self.on_connectBtn_clicked_()
+    def on_connectBtn_clicked_(self):
         wfs = self.wfs()
 
         self.featureTypesTableWidget.clear()
@@ -158,8 +161,6 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
                 self.storedQueriesListWidget.addItem("{}({})".format(stored_query.id, params))
 
         self.storedQueriesListWidget.sortItems()
-
-        self.unsetCursor()
 
     @pyqtSlot()
     def on_editConnectionBtn_clicked(self):
@@ -221,14 +222,11 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
                 default_crs_name]
 
     def download(self, output_path):
-        self.setCursor(Qt.WaitCursor)
-        try:
+        with WaitCursor():
             if self.datasetsTabWidget.currentIndex() == 0:
                 self.download_features(output_path)
             if self.datasetsTabWidget.currentIndex() == 1:
                 self.download_stored_query(output_path)
-        finally:
-            self.unsetCursor()
 
     def download_features(self, output_path):
         wfs = self.wfs()

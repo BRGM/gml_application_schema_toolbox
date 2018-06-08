@@ -16,6 +16,8 @@ from ..core.qgis_urlopener import remote_open_from_qgis
 from .load_wizard_wfs import LoadWizardWFS
 from .load_wizard_xml import LoadWizardXML
 
+from .wait_cursor_context import WaitCursor
+
 PAGE_1_W, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), '..', 'ui', 'load_wizard_data_source.ui'))
 
@@ -121,9 +123,8 @@ class LoadWizardLoading(QWizardPage, PAGE_2_W):
 
     @pyqtSlot()
     def on_downloadButton_clicked(self):
-        self.setCursor(Qt.WaitCursor)
-        self.wizard().download_to(self.outputPathLineEdit.text())
-        self.unsetCursor()
+        with WaitCursor():
+            self.wizard().download_to(self.outputPathLineEdit.text())
 
 
 from .import_gmlas_panel import ImportGmlasPanel
@@ -173,12 +174,11 @@ class LoadWizard(QWizard):
     def gml_path(self):
         if self._gml_path is None:
             if self._data_source_page.nextId() == PAGE_ID_WFS:
-                self.setCursor(Qt.WaitCursor)
-                # if WFS features, download them first
-                with NamedTemporaryFile(suffix='.gml') as out:
-                    gml_path = out.name
-                self._wfs_page.download(gml_path)
-                self.unsetCursor()
+                with WaitCursor():
+                    # if WFS features, download them first
+                    with NamedTemporaryFile(suffix='.gml') as out:
+                        gml_path = out.name
+                    self._wfs_page.download(gml_path)
 
                 self._gml_path = gml_path
             elif self._data_source_page.nextId() == PAGE_ID_LOADING:

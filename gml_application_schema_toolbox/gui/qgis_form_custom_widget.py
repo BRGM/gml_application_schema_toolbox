@@ -25,16 +25,15 @@ This mechanism is used for example to display an XML widget.
 
 __all__ = ["install_xml_tree_on_feature_form"]
 
-from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import QWidget, QGridLayout, QWidgetItem, QLabel, QPushButton, QTabWidget
 from qgis.PyQt.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QSpacerItem, QSizePolicy, QLineEdit
-from qgis.PyQt.QtWidgets import QApplication
 from qgis.core import QgsEditFormConfig, QgsDataSourceUri, QgsProject, QgsField, QgsRelation
 from qgis.core import QgsAttributeEditorField, QgsAttributeEditorRelation, QgsEditorWidgetSetup
 
 from . import xml_tree_widget
 from ..core.xml_utils import no_ns
 from .custom_viewers import get_custom_viewers
+from .wait_cursor_context import WaitCursor
 
 def install_xml_tree_on_feature_form(lyr):
     """Install an XML tree on feature form of the input layer"""
@@ -143,6 +142,10 @@ def inject_href_buttons_into_form(dialog, layer, feature):
                 w.layout().insertWidget(0, btn)
 
 def on_resolve_href(dialog, layer, feature, field):
+    with WaitCursor():
+        return on_resolve_href_(dialog, layer, feature, field)
+
+def on_resolve_href_(dialog, layer, feature, field):
     """
     @param dialog the dialog where the feature form is opened
     @param layer the layer on which the href link stands
@@ -174,8 +177,6 @@ def on_resolve_href(dialog, layer, feature, field):
     from ..core.gml_utils import extract_features_from_file
     from ..core.xml_utils import no_ns, no_prefix
     import tempfile
-
-    QApplication.setOverrideCursor(Qt.WaitCursor)
 
     with remote_open_from_qgis(path) as fi:
         with tempfile.NamedTemporaryFile(delete=False) as fo:
@@ -291,8 +292,6 @@ def on_resolve_href(dialog, layer, feature, field):
         get_iface().openFeatureForm(layer, feature)
     else:
         get_iface().showAttributeTable(layer)
-
-    QApplication.restoreOverrideCursor()
 
 def inject_xml_tree_into_form(dialog, feature):
     """Function called on form opening to add a custom XML widget"""
