@@ -25,8 +25,10 @@ This mechanism is used for example to display an XML widget.
 
 __all__ = ["install_xml_tree_on_feature_form"]
 
+from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import QWidget, QGridLayout, QWidgetItem, QLabel, QPushButton, QTabWidget
 from qgis.PyQt.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QSpacerItem, QSizePolicy, QLineEdit
+from qgis.PyQt.QtWidgets import QApplication
 from qgis.core import QgsEditFormConfig, QgsDataSourceUri, QgsProject, QgsField, QgsRelation
 from qgis.core import QgsAttributeEditorField, QgsAttributeEditorRelation, QgsEditorWidgetSetup
 
@@ -169,17 +171,21 @@ def on_resolve_href(dialog, layer, feature, field):
     # Download the file so that it is used for XML parsing
     # and for GMLAS loading
     from ..core.qgis_urlopener import remote_open_from_qgis
-    from ..core.gml_utils import extract_features
-    from ..core.xml_utils import xml_root_tag, no_ns, no_prefix
+    from ..core.gml_utils import extract_features_from_file
+    from ..core.xml_utils import no_ns, no_prefix
     import tempfile
+
+    QApplication.setOverrideCursor(Qt.WaitCursor)
 
     with remote_open_from_qgis(path) as fi:
         with tempfile.NamedTemporaryFile(delete=False) as fo:
             fo.write(fi.read())
             tmp_file = fo.name
 
-    with open(tmp_file, 'r') as file_io:
-        root_tag = xml_root_tag(file_io)
+    _, _, nodes = extract_features_from_file(tmp_file)
+    if not nodes:
+        raise RuntimeError("No feature found in linked document")
+    root_tag = nodes[0].tag
 
     # reuse the GMLAS import panel widget
     dlg = QDialog()
@@ -285,6 +291,8 @@ def on_resolve_href(dialog, layer, feature, field):
         get_iface().openFeatureForm(layer, feature)
     else:
         get_iface().showAttributeTable(layer)
+
+    QApplication.restoreOverrideCursor()
 
 def inject_xml_tree_into_form(dialog, feature):
     """Function called on form opening to add a custom XML widget"""

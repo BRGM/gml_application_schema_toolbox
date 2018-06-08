@@ -16,6 +16,7 @@
 from __future__ import absolute_import
 # -*- coding: utf-8 -*-
 from .xml_utils import no_prefix
+import xml.etree.ElementTree as ET
 
 def extract_features(doc):
     """Extract (Complex) features from a XML doc
@@ -74,3 +75,6 @@ def extract_features(doc):
             features.append(node)
         return (bbox, bbox_srs, features)
     return _extract(doc.getroot())
+
+def extract_features_from_file(file_path):
+    return extract_features(ET.parse(file_path))
