@@ -50,7 +50,7 @@ class GeologyLogViewer(QWidget):
             toDepth = float(resolve_xpath(log, "ns:toDepth/swe:Quantity/swe:value/text()", ns_map))
             value_text = resolve_xpath(log, "ns:value/swe:DataRecord/swe:field/swe:Text/swe:value/text()", ns_map)
             value_cat = resolve_xpath(log, "ns:value/swe:DataRecord/swe:field/swe:Category/swe:value/text()", ns_map)
-            value = value_text if value_text is not None else value_cat
+            value = value_text if value_text else value_cat
             data.append((fromDepth, toDepth, value))
         return cls("GeologyLogCoverage", data)
 
