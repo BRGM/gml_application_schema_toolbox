@@ -56,7 +56,7 @@ class SettingsDialog(BASE, WIDGET):
             return 'xml'
 
     def http_user_agent(self):
-        return httpUserAgentEdit.text()
+        return self.httpUserAgentEdit.text()
 
     @pyqtSlot()
     def on_gmlasConfigButton_clicked(self):
