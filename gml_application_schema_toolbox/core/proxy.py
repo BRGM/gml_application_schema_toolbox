@@ -24,7 +24,7 @@ class qgis_proxy_settings():
         user = settings.value("proxy/proxyUser", "")
         password = settings.value("proxy/proxyPassword", "")
         excludes = settings.value("proxy/proxyExcludedUrls", "")
-        if hasattr(excludes, 'isNull') and excludes.isNull():
+        if not excludes or (hasattr(excludes, 'isNull') and excludes.isNull()):
             excludes = []
         else:
             excludes = excludes.split("|")
