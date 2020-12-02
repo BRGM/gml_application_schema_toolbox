@@ -1,0 +1,7 @@
+ci-cd:
+    - .github/**/*.yml
+
+dependencies:
+    - ./**/requirements.txt
+    - requirements.txt
+
