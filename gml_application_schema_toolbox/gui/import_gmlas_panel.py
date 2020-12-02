@@ -339,4 +339,3 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         finally:
             QApplication.restoreOverrideCursor()
             gdal.PopErrorHandler()
-

@@ -4,4 +4,3 @@ ci-cd:
 dependencies:
     - ./**/requirements.txt
     - requirements.txt
-

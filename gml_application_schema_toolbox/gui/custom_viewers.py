@@ -48,5 +48,3 @@ def get_custom_viewers():
             __custom_viewers[tag] = (k, filter)
 
     return __custom_viewers
-
-

@@ -62,4 +62,3 @@ transclean:
 
 clean:
 	rm $(UI_FILES) $(RESOURCE_FILES)
-

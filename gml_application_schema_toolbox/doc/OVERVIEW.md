@@ -27,4 +27,3 @@ To open the plugin panel, right click on the toolbars to add the ```GML App Sche
  * [Read in database (relational) mode](READ-DB-MODE.md)
  * [Browse custom elements](READ-CUSTOM.md)
 * [Write](WRITE-FROM-DB.md)
-

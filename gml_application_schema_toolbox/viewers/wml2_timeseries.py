@@ -334,4 +334,3 @@ class PointMarker(object):
             else:
                 self.rect.setRect(x, y, rw, rh)
                 self.text.setPos(x, y)
-

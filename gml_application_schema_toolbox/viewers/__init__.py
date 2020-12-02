@@ -23,4 +23,3 @@ from __future__ import absolute_import
 
 from .wml2_timeseries import WML2TimeSeriesViewer
 from .geology_logs import GeologyLogViewer
-

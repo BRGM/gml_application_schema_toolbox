@@ -293,4 +293,3 @@ class XMLTreeWidget(QTreeWidget):
             # FIXME test layer compatibility ?
             pr.addFeatures([f_in])
             
-
