@@ -20,9 +20,7 @@
  ***************************************************************************/
 """
 
-import os
-
-from osgeo import gdal, osr
+from osgeo import gdal
 from qgis.core import QgsApplication
 from qgis.PyQt.QtCore import QEventLoop, Qt, pyqtSlot
 from qgis.PyQt.QtWidgets import QFileDialog, QProgressDialog

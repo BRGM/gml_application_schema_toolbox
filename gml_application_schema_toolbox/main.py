@@ -15,26 +15,36 @@
 #   You should have received a copy of the GNU Library General Public
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import, print_function
 
 import os
-import sqlite3
-from builtins import object, range, str
+import sys
 
-from qgis.core import *
-from qgis.gui import *
-from qgis.PyQt.QtCore import *
-from qgis.PyQt.QtGui import *
-from qgis.PyQt.QtWidgets import *
-from qgis.PyQt.QtXml import *
+from qgis.core import QgsApplication
+from qgis.gui import QgsGui
+
+from qgis.PyQt.QtCore import Qt, QUrl
+from qgis.PyQt.QtGui import QDesktopServices, QPixmap
+from qgis.PyQt.QtWidgets import (
+    QAction,
+    QApplication,
+    QDialog,
+    QDialogButtonBox,
+    QHBoxLayout,
+    QLabel,
+    QMessageBox,
+    QVBoxLayout,
+    QWidget,
+)
 
 from .core.load_gmlas_in_qgis import import_in_qgis
 from .gui import InputError
 from .gui.database_widget import DatabaseWidget
 from .gui.xml_custom_widget import XMLWidgetFactory, XMLWidgetFormatter
 
+# from qgis.PyQt.QtXml import *
+
+
 package_path = [os.path.join(os.path.dirname(__file__), "extlibs")]
-import sys
 
 if not set(package_path).issubset(set(sys.path)):
     sys.path = package_path + sys.path

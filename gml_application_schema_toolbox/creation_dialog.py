@@ -22,9 +22,10 @@ import os
 from builtins import range, str
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import *
-from qgis.PyQt.QtGui import *
-from qgis.PyQt.QtWidgets import *
+
+from qgis.PyQt.QtCore import QSettings, QDir, QVariant
+from qgis.PyQt.QtGui import Qt
+from qgis.PyQt.QtWidgets import QDialog, QFileDialog, QTableWidgetItem, QComboBox
 
 FORM_CLASS, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "creation_dialog.ui")

@@ -26,7 +26,7 @@ from tempfile import NamedTemporaryFile
 from osgeo import gdal, osr
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import pyqtSlot
-from qgis.PyQt.QtWidgets import QFileDialog
+from qgis.PyQt.QtWidgets import QDialog, QFileDialog
 from qgis.utils import iface
 
 from gml_application_schema_toolbox.core.settings import settings

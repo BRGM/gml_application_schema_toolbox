@@ -20,9 +20,26 @@ import math
 import os
 from builtins import next, range
 
-from qgis.PyQt.QtCore import *
-from qgis.PyQt.QtGui import *
-from qgis.PyQt.QtWidgets import *
+from qgis.PyQt.QtCore import QLineF, QPointF, pyqtSignal
+from qgis.PyQt.QtGui import (
+    QBrush,
+    QColor,
+    QFontMetricsF,
+    QIcon,
+    QPainter,
+    QPen,
+    QPolygonF,
+)
+from qgis.PyQt.QtWidgets import (
+    QFrame,
+    QGraphicsScene,
+    QGraphicsView,
+    QHBoxLayout,
+    QLabel,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 
 class ModelDialog(QGraphicsView):
@@ -217,8 +234,8 @@ class ModelDialogScene(QGraphicsScene):
             if wsize.height() > hmax or hmax is None:
                 row_height[grid_y] = wsize.height()
 
-        total_width = sum(column_width.values())
-        total_height = sum(row_height.values())
+        # total_width = sum(column_width.values())
+        # total_height = sum(row_height.values())
 
         # resolve coordinates
         column_x = {}
