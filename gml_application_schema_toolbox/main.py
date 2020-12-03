@@ -15,51 +15,47 @@
 #   You should have received a copy of the GNU Library General Public
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
-from __future__ import absolute_import
-from builtins import str
-from builtins import range
-from builtins import object
+from __future__ import absolute_import, print_function
 
+import os
+import sqlite3
+from builtins import object, range, str
 
+from qgis.core import *
+from qgis.gui import *
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtWidgets import *
 from qgis.PyQt.QtXml import *
-from qgis.core import *
-from qgis.gui import *
 
 from .core.load_gmlas_in_qgis import import_in_qgis
-from .gui.database_widget import DatabaseWidget
 from .gui import InputError
+from .gui.database_widget import DatabaseWidget
 from .gui.xml_custom_widget import XMLWidgetFactory, XMLWidgetFormatter
-
-import os
-import sqlite3
-
 
 package_path = [os.path.join(os.path.dirname(__file__), "extlibs")]
 import sys
+
 if not set(package_path).issubset(set(sys.path)):
     sys.path = package_path + sys.path
 
 from . import name as plugin_name
 from . import version as plugin_version
-
-#from .gui.dockwidget import DockWidget
-from .gui.settings_dialog import SettingsDialog
 from .gui.export_gmlas_panel import ExportGmlasPanel
-
 from .gui.load_wizard import LoadWizard
+
+# from .gui.dockwidget import DockWidget
+from .gui.settings_dialog import SettingsDialog
 
 # global iface
 g_iface = None
 
+
 def get_iface():
     return g_iface
 
-class MainPlugin(object):
 
+class MainPlugin(object):
     def __init__(self, iface):
         self.iface = iface
         global g_iface
@@ -78,7 +74,9 @@ class MainPlugin(object):
         self.loadAction = QAction("Load a GMLAS database", self.iface.mainWindow())
         self.loadAction.triggered.connect(self.onLoad)
 
-        self.exportAction = QAction("Export a GMLAS database to GML", self.iface.mainWindow())
+        self.exportAction = QAction(
+            "Export a GMLAS database to GML", self.iface.mainWindow()
+        )
         self.exportAction.triggered.connect(self.onExport)
 
         self.wizardAction = QAction("Load (wizard)", self.iface.mainWindow())
@@ -97,7 +95,9 @@ class MainPlugin(object):
         self.xml_widget_factory = XMLWidgetFactory()
         self.xml_widget_formatter = XMLWidgetFormatter()
         QgsGui.editorWidgetRegistry().registerWidget("XML", self.xml_widget_factory)
-        QgsApplication.fieldFormatterRegistry().addFieldFormatter(self.xml_widget_formatter)
+        QgsApplication.fieldFormatterRegistry().addFieldFormatter(
+            self.xml_widget_formatter
+        )
 
     def unload(self):
         # Remove the plugin menu item and icon
@@ -111,7 +111,8 @@ class MainPlugin(object):
     def onAbout(self):
         self.about_dlg = QWidget()
         vlayout = QVBoxLayout()
-        l = QLabel(u"""
+        l = QLabel(
+            """
         <h1>QGIS GML Application Schema Toolbox</h1>
         <h3>Version: {}</h3>
         <p>This plugin is a prototype aiming at experimenting with the manipulation of <b>Complex Features</b> streams.</p>
@@ -140,21 +141,44 @@ class MainPlugin(object):
         <li><b>The Association of Finnish Local and Regional Authorities</b> (through <a href="http://www.gispo.fi">Gispo.fi</a>)</li>
         </ul>
         </p>
-        """.format(plugin_version()))
+        """.format(
+                plugin_version()
+            )
+        )
         l.setWordWrap(True)
         vlayout.addWidget(l)
         hlayout = QHBoxLayout()
         hlayout2 = QHBoxLayout()
         l2 = QLabel()
-        l2.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "logo_brgm.svg")).scaledToWidth(200, Qt.SmoothTransformation))
+        l2.setPixmap(
+            QPixmap(
+                os.path.join(os.path.dirname(__file__), "logo_brgm.svg")
+            ).scaledToWidth(200, Qt.SmoothTransformation)
+        )
         l3 = QLabel()
-        l3.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "logo_eea.png")).scaledToWidth(200, Qt.SmoothTransformation))
+        l3.setPixmap(
+            QPixmap(
+                os.path.join(os.path.dirname(__file__), "logo_eea.png")
+            ).scaledToWidth(200, Qt.SmoothTransformation)
+        )
         l4 = QLabel()
-        l4.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "logo_oslandia.png")).scaledToWidth(150, Qt.SmoothTransformation))
+        l4.setPixmap(
+            QPixmap(
+                os.path.join(os.path.dirname(__file__), "logo_oslandia.png")
+            ).scaledToWidth(150, Qt.SmoothTransformation)
+        )
         l5 = QLabel()
-        l5.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "logo_spatialys.png")).scaledToWidth(100, Qt.SmoothTransformation))
+        l5.setPixmap(
+            QPixmap(
+                os.path.join(os.path.dirname(__file__), "logo_spatialys.png")
+            ).scaledToWidth(100, Qt.SmoothTransformation)
+        )
         l6 = QLabel()
-        l6.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "logo_c2c.svg")).scaledToWidth(100, Qt.SmoothTransformation))
+        l6.setPixmap(
+            QPixmap(
+                os.path.join(os.path.dirname(__file__), "logo_c2c.svg")
+            ).scaledToWidth(100, Qt.SmoothTransformation)
+        )
         hlayout.addWidget(l2)
         hlayout.addWidget(l3)
         vlayout.addLayout(hlayout)
@@ -166,14 +190,14 @@ class MainPlugin(object):
         self.about_dlg.setWindowTitle(plugin_name())
         self.about_dlg.setWindowModality(Qt.WindowModal)
         self.about_dlg.show()
-        self.about_dlg.resize(600,800)
+        self.about_dlg.resize(600, 800)
 
     def onSettings(self):
         dlg = SettingsDialog()
         dlg.exec_()
 
     def onHelp(self):
-        url = 'https://github.com/BRGM/gml_application_schema_toolbox/blob/master/README.md'
+        url = "https://github.com/BRGM/gml_application_schema_toolbox/blob/master/README.md"
         QDesktopServices.openUrl(QUrl(url))
 
     def onLoad(self):
@@ -192,30 +216,26 @@ class MainPlugin(object):
 
         try:
             source = db_widget.datasource_name()
-            if source.startswith('PG:'):
+            if source.startswith("PG:"):
                 schema = db_widget.schema()
             else:
                 schema = None
             QApplication.setOverrideCursor(Qt.WaitCursor)
             import_in_qgis(source, db_widget.format(), schema)
         except InputError as e:
-            QMessageBox.warning(None,
-                                "Error during layer loading",
-                                e.args[0])
+            QMessageBox.warning(None, "Error during layer loading", e.args[0])
         except RuntimeError as e:
-            QMessageBox.warning(None,
-                                "Error during layer loading",
-                                e.args[0])
+            QMessageBox.warning(None, "Error during layer loading", e.args[0])
         finally:
             QApplication.restoreOverrideCursor()
-
 
     def onWizardLoad(self):
         self.wizard = LoadWizard(self.iface.mainWindow())
         self.wizard.setModal(False)
         self.wizard.show()
-        self.wizard.resize(500,500)
+        self.wizard.resize(500, 500)
         self.wizard.finished.connect(self.onWizardEnd)
+
     def onWizardEnd(self, result):
         # destruct the object
         # (this makes sure collapsible states are correctly saved)

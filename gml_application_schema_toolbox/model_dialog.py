@@ -16,22 +16,20 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
-from builtins import next
-from builtins import range
-
+import math
+import os
+from builtins import next, range
 
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtWidgets import *
 
-import os
-import math
 
 class ModelDialog(QGraphicsView):
 
     tableSelected = pyqtSignal(str)
 
-    def __init__(self, model, parent = None):
+    def __init__(self, model, parent=None):
         QGraphicsView.__init__(self, parent)
 
         scene = ModelDialogScene(model, parent)
@@ -41,6 +39,7 @@ class ModelDialog(QGraphicsView):
 
     def mouseMoveEvent(self, event):
         self.scene().mouseMoveEvent(self.mapToScene(event.pos()))
+
 
 def spiral_iterator():
     # current vector
@@ -69,6 +68,7 @@ def spiral_iterator():
             if dy == 0:
                 segment_length += 1
 
+
 class TableWidget(QWidget):
 
     linkActivated = pyqtSignal(str)
@@ -89,7 +89,9 @@ class TableWidget(QWidget):
         icon = QIcon(os.path.dirname(__file__) + "/mActionOpenTableGML.svg")
         open_table_btn.setIcon(icon)
         open_table_btn.resize(32, 32)
-        open_table_btn.clicked.connect(lambda checked: self.linkActivated.emit(table.name()))
+        open_table_btn.clicked.connect(
+            lambda checked: self.linkActivated.emit(table.name())
+        )
         hlayout.addWidget(open_table_btn)
 
         f = QFrame()
@@ -133,6 +135,7 @@ class TableWidget(QWidget):
         h = self.__font_height
         return (x, y, w, h)
 
+
 def horizontal_intersection(line, y, xmin, xmax):
     p = QPointF()
     r = line.intersect(QLineF(xmin, y, xmax, y), p)
@@ -140,12 +143,14 @@ def horizontal_intersection(line, y, xmin, xmax):
         return p
     return None
 
+
 def vertical_intersection(line, x, ymin, ymax):
     p = QPointF()
     r = line.intersect(QLineF(x, ymin, x, ymax), p)
     if r != 0 and ymin <= p.y() and p.y() <= ymax:
         return p
     return None
+
 
 def disable_link_item(item):
     p = item.pen()
@@ -156,6 +161,8 @@ def disable_link_item(item):
         b.setColor(QColor(200, 200, 200))
         item.setBrush(b)
     item.setZValue(-1)
+
+
 def enable_link_item(item):
     p = item.pen()
     p.setColor(QColor(0, 0, 0))
@@ -165,6 +172,7 @@ def enable_link_item(item):
         b.setColor(QColor(0, 0, 0))
         item.setBrush(b)
     item.setZValue(1)
+
 
 class ModelDialogScene(QGraphicsScene):
 
@@ -216,11 +224,11 @@ class ModelDialogScene(QGraphicsScene):
         column_x = {}
         row_y = {}
         w = 0
-        for x in range(min_grid_x, max_grid_x+1):
+        for x in range(min_grid_x, max_grid_x + 1):
             column_x[x] = w
             w += column_width[x]
         h = 0
-        for y in range(min_grid_y, max_grid_y+1):
+        for y in range(min_grid_y, max_grid_y + 1):
             row_y[y] = h
             h += row_height[y]
 
@@ -243,7 +251,7 @@ class ModelDialogScene(QGraphicsScene):
             tx, ty, tw, th, table = table_pos[table_name]
             tx2, ty2, tw2, th2, _ = table_pos[table_name2]
             (ax, ay, aw, ah) = table.widget().attributeCoords(y_idx)
-            l1 = QLineF(ax - 3,      ay + ah / 2.0, tx2 + tw2 / 2.0, ty2 + th2 / 2.0)
+            l1 = QLineF(ax - 3, ay + ah / 2.0, tx2 + tw2 / 2.0, ty2 + th2 / 2.0)
             l2 = QLineF(ax + aw + 3, ay + ah / 2.0, tx2 + tw2 / 2.0, ty2 + th2 / 2.0)
             if l1.length() < l2.length():
                 p1 = l1.p1()
@@ -255,20 +263,30 @@ class ModelDialogScene(QGraphicsScene):
             # add a diamond
             ds = 6
             dbrush = QBrush(QColor("black"))
-            diamond = QPolygonF([p1 + QPointF(0, ds), p1 + QPointF(ds, 0), p1 + QPointF(0, -ds), p1 + QPointF(-ds, 0), p1 + QPointF(0,ds)])
+            diamond = QPolygonF(
+                [
+                    p1 + QPointF(0, ds),
+                    p1 + QPointF(ds, 0),
+                    p1 + QPointF(0, -ds),
+                    p1 + QPointF(-ds, 0),
+                    p1 + QPointF(0, ds),
+                ]
+            )
             i1 = self.addPolygon(diamond, QPen(), dbrush)
 
             # cross with the second table widget
-            points = [horizontal_intersection(l, ty2,       tx2, tx2 + tw2),
-                      horizontal_intersection(l, ty2 + th2, tx2, tx2 + tw2),
-                      vertical_intersection(l, tx2,       ty2, ty2 + th2),
-                      vertical_intersection(l, tx2 + tw2, ty2, ty2 + th2)]
+            points = [
+                horizontal_intersection(l, ty2, tx2, tx2 + tw2),
+                horizontal_intersection(l, ty2 + th2, tx2, tx2 + tw2),
+                vertical_intersection(l, tx2, ty2, ty2 + th2),
+                vertical_intersection(l, tx2 + tw2, ty2, ty2 + th2),
+            ]
             pp = [p for p in points if p is not None]
-            p2 = min(pp, key = lambda p: distance(p1, p))
+            p2 = min(pp, key=lambda p: distance(p1, p))
             l = QLineF(p1, p2)
             i2 = self.addLine(l)
             i2.setZValue(1)
-            alpha = math.atan2( p2.y() - p1.y(), p2.x() - p1.x())
+            alpha = math.atan2(p2.y() - p1.y(), p2.x() - p1.x())
             alpha1 = alpha + 30.0 / 180.0 * math.pi
             alpha2 = alpha - 30.0 / 180.0 * math.pi
             r = -10
@@ -296,16 +314,18 @@ class ModelDialogScene(QGraphicsScene):
             for item in items[1:]:
                 disable_link_item(item)
 
-        #self.marker = self.addRect(0, 0, 2, 2)
+        # self.marker = self.addRect(0, 0, 2, 2)
 
     def mouseMoveEvent(self, pos):
         x = pos.x()
         y = pos.y()
-        #self.marker.setPos(x, y)
+        # self.marker.setPos(x, y)
         for table_name, items in self.table_items.items():
             table_item = items[0]
-            if 0 <= x - table_item.x() <= table_item.widget().width() and \
-               0 <= y - table_item.y() <= table_item.widget().height():
+            if (
+                0 <= x - table_item.x() <= table_item.widget().width()
+                and 0 <= y - table_item.y() <= table_item.widget().height()
+            ):
                 show = True
             else:
                 show = False

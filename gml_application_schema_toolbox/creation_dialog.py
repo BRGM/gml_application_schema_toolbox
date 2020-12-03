@@ -17,22 +17,30 @@
  */
 """
 from __future__ import print_function
-from builtins import str
-from builtins import range
 
 import os
+from builtins import range, str
 
+from qgis.PyQt import uic
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtWidgets import *
-from qgis.PyQt import uic
 
-FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'creation_dialog.ui'))
+FORM_CLASS, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "creation_dialog.ui")
+)
 
 
 class CreationDialog(QDialog, FORM_CLASS):
-    def __init__(self, xml_uri=None, is_remote = False, attributes = {}, geometry_mapping = None, output_filename = None, parent=None):
+    def __init__(
+        self,
+        xml_uri=None,
+        is_remote=False,
+        attributes={},
+        geometry_mapping=None,
+        output_filename=None,
+        parent=None,
+    ):
         """Constructor."""
         super(CreationDialog, self).__init__(parent)
         # Set up the user interface from Designer.
@@ -55,10 +63,17 @@ class CreationDialog(QDialog, FORM_CLASS):
 
             for aname, v in attributes.items():
                 xpath, type = v
-                self.onAddMapping() # add a row
+                self.onAddMapping()  # add a row
                 last = self.attributeTable.rowCount() - 1
                 self.attributeTable.item(last, 0).setText(aname)
-                self.attributeTable.cellWidget(last, 1).setCurrentIndex([QVariant.String, QVariant.Int, QVariant.Double, QVariant.DateTime].index(type))
+                self.attributeTable.cellWidget(last, 1).setCurrentIndex(
+                    [
+                        QVariant.String,
+                        QVariant.Int,
+                        QVariant.Double,
+                        QVariant.DateTime,
+                    ].index(type)
+                )
                 self.attributeTable.item(last, 2).setText(xpath)
 
             self.geometryColumnCheck.setChecked(True)
@@ -68,7 +83,9 @@ class CreationDialog(QDialog, FORM_CLASS):
 
         else:
             # new dialog
-            is_remote = QSettings("complex_features").value("is_remote", "false") == "true"
+            is_remote = (
+                QSettings("complex_features").value("is_remote", "false") == "true"
+            )
             source_url = QSettings("complex_features").value("source_url", "")
             if is_remote:
                 self.urlRadio.setChecked(True)
@@ -79,6 +96,7 @@ class CreationDialog(QDialog, FORM_CLASS):
 
             # output file name
             import tempfile
+
             f = tempfile.NamedTemporaryFile()
             self.outFilenameText.setText(QDir.fromNativeSeparators(f.name))
             f.close()
@@ -90,22 +108,31 @@ class CreationDialog(QDialog, FORM_CLASS):
         self.browseButton.clicked.connect(self.onBrowse)
         self.addMappingBtn.clicked.connect(self.onAddMapping)
         self.removeMappingBtn.clicked.connect(self.onRemoveMapping)
-        self.attributeTable.selectionModel().selectionChanged.connect(self.onSelectMapping)
+        self.attributeTable.selectionModel().selectionChanged.connect(
+            self.onSelectMapping
+        )
         self.browseOutButton.clicked.connect(self.onBrowseOut)
-
 
     def onBrowse(self):
         openDir = QSettings("complex_features").value("xml_file_location", "")
-        xml_file, __ = QFileDialog.getOpenFileName (None, "Select XML File", openDir, "*.xml;;*.gml")
+        xml_file, __ = QFileDialog.getOpenFileName(
+            None, "Select XML File", openDir, "*.xml;;*.gml"
+        )
         if xml_file:
-            QSettings("complex_features").setValue("xml_file_location", os.path.dirname(xml_file))
+            QSettings("complex_features").setValue(
+                "xml_file_location", os.path.dirname(xml_file)
+            )
             self.filenameText.setText(xml_file)
 
     def onBrowseOut(self):
         openDir = QSettings("complex_features").value("out_file_location", "")
-        sqlite_file, __ = QFileDialog.getSaveFileName (None, "Select Sqlite File", openDir, "*.sqlite")
+        sqlite_file, __ = QFileDialog.getSaveFileName(
+            None, "Select Sqlite File", openDir, "*.sqlite"
+        )
         if sqlite_file:
-            QSettings("complex_features").setValue("out_file_location", os.path.dirname(sqlite_file))
+            QSettings("complex_features").setValue(
+                "out_file_location", os.path.dirname(sqlite_file)
+            )
             self.outFilenameText.setText(sqlite_file)
 
     def onSelectMapping(self, selected, deselected):
@@ -131,9 +158,13 @@ class CreationDialog(QDialog, FORM_CLASS):
         is_remote, src = self.source()
         # fix_print_with_import
         print((is_remote, src))
-        QSettings("complex_features").setValue("is_remote", "true" if is_remote else "false")
+        QSettings("complex_features").setValue(
+            "is_remote", "true" if is_remote else "false"
+        )
         QSettings("complex_features").setValue("source_url", src)
-        QSettings("complex_features").setValue("import_type", str(self.mImportTypeCombo.currentIndex()))
+        QSettings("complex_features").setValue(
+            "import_type", str(self.mImportTypeCombo.currentIndex())
+        )
 
         QDialog.accept(self)
 
@@ -163,7 +194,7 @@ class CreationDialog(QDialog, FORM_CLASS):
         """Returns a pair (isRemote:bool, url:str)"""
         if self.filenameRadio.isChecked():
             return (False, QDir.toNativeSeparators(self.filenameText.text()))
-        #else
+        # else
         return (True, self.urlText.text())
 
     def replace_current_layer(self):
