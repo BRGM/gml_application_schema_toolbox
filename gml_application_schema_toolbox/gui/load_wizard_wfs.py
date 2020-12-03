@@ -1,53 +1,57 @@
 import os
-from PyQt5 import uic
 
-from ..extlibs import owslib_hacks
 import owslib
-
-from owslib.wfs import WebFeatureService
 from owslib.feature.wfs200 import WFSCapabilitiesReader
-
-from qgis.PyQt.QtWidgets import (
-    QDialog, QWizard, QWizardPage, QMessageBox, QTableWidgetItem
+from owslib.wfs import WebFeatureService
+from PyQt5 import uic
+from qgis.core import (
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsMessageLog,
+    QgsOwsConnection,
+    QgsProject,
+    QgsSettings,
 )
-
-from qgis.PyQt.QtCore import (
-    Qt, QUrlQuery, pyqtSlot, QUrl
+from qgis.gui import QgsNewHttpConnection
+from qgis.PyQt.QtCore import Qt, QUrl, QUrlQuery, pyqtSlot
+from qgis.PyQt.QtWidgets import (
+    QDialog,
+    QMessageBox,
+    QTableWidgetItem,
+    QWizard,
+    QWizardPage,
 )
 from qgis.PyQt.QtXml import QDomDocument
 
-from qgis.core import (
-    QgsOwsConnection, QgsSettings, QgsMessageLog,
-    QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject
-)
-from qgis.gui import (
-    QgsNewHttpConnection
-)
-
-from ..core.xml_utils import xml_parse, no_prefix
-from ..core.settings import settings
-from ..core.qgis_urlopener import remote_open_from_qgis
 from ..core.proxy import qgis_proxy_settings
-from .xml_dialog import XmlDialog
+from ..core.qgis_urlopener import remote_open_from_qgis
+from ..core.settings import settings
+from ..core.xml_utils import no_prefix, xml_parse
+from ..extlibs import owslib_hacks
 from .wait_cursor_context import WaitCursor
+from .xml_dialog import XmlDialog
 
-PAGE_1A_W, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), '..', 'ui', 'load_wizard_wfs.ui'))
+PAGE_1A_W, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "..", "ui", "load_wizard_wfs.ui")
+)
+
 
 class LoadWizardWFS(QWizardPage, PAGE_1A_W):
     def __init__(self, parent, next_id):
         super().__init__(parent)
         self.setupUi(self)
 
-        self.featureLimitBox.setValue(int(settings.value('default_maxfeatures')))
+        self.featureLimitBox.setValue(int(settings.value("default_maxfeatures")))
 
         self.refresh_connections()
         self.connectionCombo.currentTextChanged.connect(self.on_change_connection)
 
-        #self.file_downloaded.connect(self.on_file_downloaded)
+        # self.file_downloaded.connect(self.on_file_downloaded)
 
         self._is_complete = False
-        self.featureTypesTableWidget.itemSelectionChanged.connect(self.on_wfs_layer_selection_changed)
+        self.featureTypesTableWidget.itemSelectionChanged.connect(
+            self.on_wfs_layer_selection_changed
+        )
 
         g = "gml_application_schema_toolbox"
         self.wfs_options_group.setSettingGroup(g)
@@ -60,8 +64,9 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
     def on_wfs_layer_selection_changed(self):
         self._is_complete = self.featureTypesTableWidget.selectedItems() != []
         self.completeChanged.emit()
+
     def isComplete(self):
-        return  self._is_complete
+        return self._is_complete
 
     def nextId(self):
         return self._next_id
@@ -78,10 +83,12 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
     def wfs(self):
         name = self.connectionCombo.currentText()
         conn = QgsOwsConnection("wfs", name)
-        uri = conn.uri().param('url')
-        req_version = conn.uri().param('version')
+        uri = conn.uri().param("url")
+        req_version = conn.uri().param("version")
         s = QgsSettings()
-        checked_version = s.value("qgis/connections-wfs/{}/checked_version".format(name), False)
+        checked_version = s.value(
+            "qgis/connections-wfs/{}/checked_version".format(name), False
+        )
         if req_version == "auto" or not checked_version:
             # detect version
             u = QUrlQuery()
@@ -96,20 +103,32 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
 
             xml, ns_map = xml_parse(remote_open_from_qgis(final_url.toString()))
             root = xml.getroot()
-            if 'ows' in ns_map:
-                versions = [v.text for v in root.findall("./ows:ServiceIdentification/ows:ServiceTypeVersion", ns_map)]
+            if "ows" in ns_map:
+                versions = [
+                    v.text
+                    for v in root.findall(
+                        "./ows:ServiceIdentification/ows:ServiceTypeVersion", ns_map
+                    )
+                ]
             else:
-                versions = [v.text for v in root.findall("./ServiceIdentification/ServiceTypeVersion", ns_map)]
+                versions = [
+                    v.text
+                    for v in root.findall(
+                        "./ServiceIdentification/ServiceTypeVersion", ns_map
+                    )
+                ]
             if not versions:
-                if 'version' in root.attrib:
-                    versions = [root.attrib['version']]
+                if "version" in root.attrib:
+                    versions = [root.attrib["version"]]
             if not versions:
                 raise RuntimeError("Cannot determine WFS version")
             # take the greatest version, if more than one
             version = sorted(versions)[-1]
 
             if version != req_version:
-                QgsMessageLog.logMessage("Requested WFS version {}, got {}".format(req_version, version))
+                QgsMessageLog.logMessage(
+                    "Requested WFS version {}, got {}".format(req_version, version)
+                )
             else:
                 s.setValue("qgis/connections-wfs/{}/checked_version".format(name), True)
         else:
@@ -120,7 +139,7 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
 
     @pyqtSlot(str)
     def on_change_connection(self, currentConnection):
-        has_selection = currentConnection != ''
+        has_selection = currentConnection != ""
         self.connectBtn.setEnabled(has_selection)
         self.newConnectionBtn.setEnabled(has_selection)
         self.editConnectionBtn.setEnabled(has_selection)
@@ -133,12 +152,15 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
     def on_connectBtn_clicked(self):
         with WaitCursor():
             return self.on_connectBtn_clicked_()
+
     def on_connectBtn_clicked_(self):
         wfs = self.wfs()
 
         self.featureTypesTableWidget.clear()
         self.featureTypesTableWidget.setRowCount(0)
-        self.featureTypesTableWidget.setHorizontalHeaderLabels(["Feature type", "Title"])
+        self.featureTypesTableWidget.setHorizontalHeaderLabels(
+            ["Feature type", "Title"]
+        )
         row = 0
         for feature_type, md in wfs.contents.items():
             self.featureTypesTableWidget.insertRow(row)
@@ -153,22 +175,24 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
 
         self.featureTypesTableWidget.sortItems(1)
 
-
         self.storedQueriesListWidget.clear()
         if hasattr(wfs, "storedqueries"):
             for stored_query in list(wfs.storedqueries):
-                params = ', '.join(["{}: {}".format(p.name, p.type) for p in stored_query.parameters])
-                self.storedQueriesListWidget.addItem("{}({})".format(stored_query.id, params))
+                params = ", ".join(
+                    ["{}: {}".format(p.name, p.type) for p in stored_query.parameters]
+                )
+                self.storedQueriesListWidget.addItem(
+                    "{}({})".format(stored_query.id, params)
+                )
 
         self.storedQueriesListWidget.sortItems()
 
     @pyqtSlot()
     def on_editConnectionBtn_clicked(self):
         conn = self.connectionCombo.currentText()
-        dlg = QgsNewHttpConnection(self,
-                                   QgsNewHttpConnection.ConnectionWfs,
-                                   "qgis/connections-wfs/",
-                                   conn)
+        dlg = QgsNewHttpConnection(
+            self, QgsNewHttpConnection.ConnectionWfs, "qgis/connections-wfs/", conn
+        )
         dlg.setWindowTitle("Edit a WFS connection")
         if dlg.exec_() == QDialog.Accepted:
             self.refresh_connections()
@@ -176,9 +200,9 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
 
     @pyqtSlot()
     def on_newConnectionBtn_clicked(self):
-        dlg = QgsNewHttpConnection(self,
-                                   QgsNewHttpConnection.ConnectionWfs,
-                                   "qgis/connections-wfs/")
+        dlg = QgsNewHttpConnection(
+            self, QgsNewHttpConnection.ConnectionWfs, "qgis/connections-wfs/"
+        )
         if dlg.exec_() == QDialog.Accepted:
             self.refresh_connections()
             self.connectionCombo.setCurrentText(dlg.name())
@@ -186,9 +210,12 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
     @pyqtSlot()
     def on_removeConnectionBtn_clicked(self):
         conn = self.connectionCombo.currentText()
-        r = QMessageBox.information(self, "Confirm removal",
-                                    "Are you sure you want to remove {} connection?".format(conn),
-                                    QMessageBox.Yes | QMessageBox.No)
+        r = QMessageBox.information(
+            self,
+            "Confirm removal",
+            "Are you sure you want to remove {} connection?".format(conn),
+            QMessageBox.Yes | QMessageBox.No,
+        )
         if r == QMessageBox.Yes:
             QgsOwsConnection.deleteConnection("wfs", conn)
             self.refresh_connections()
@@ -213,13 +240,17 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
         default_crs_name = wfs.contents[self.selected_typenames()[0]].crsOptions[0]
         default_crs = QgsCoordinateReferenceSystem.fromOgcWmsCrs(str(default_crs_name))
         assert default_crs.isValid()
-        transform = QgsCoordinateTransform(self.bboxWidget.crs(), default_crs, QgsProject.instance())
+        transform = QgsCoordinateTransform(
+            self.bboxWidget.crs(), default_crs, QgsProject.instance()
+        )
         bbox = transform.transformBoundingBox(self.bboxWidget.rectangle())
-        return [bbox.xMinimum(),
-                bbox.yMinimum(),
-                bbox.xMaximum(),
-                bbox.yMaximum(),
-                default_crs_name]
+        return [
+            bbox.xMinimum(),
+            bbox.yMinimum(),
+            bbox.xMaximum(),
+            bbox.yMaximum(),
+            default_crs_name,
+        ]
 
     def download(self, output_path):
         with WaitCursor():
@@ -236,30 +267,26 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
             return
 
         params = {
-            'typename': typenames,
+            "typename": typenames,
         }
         if self.limitChkBox.isChecked():
-            params['maxfeatures'] = self.featureLimitBox.value()
+            params["maxfeatures"] = self.featureLimitBox.value()
 
         if self.bbox_group.isChecked():
-            if self.bboxWidget.value() == '':
-                QMessageBox.warning(self,
-                                    self.windowTitle(),
-                                    "Extent is empty")
+            if self.bboxWidget.value() == "":
+                QMessageBox.warning(self, self.windowTitle(), "Extent is empty")
                 return
             if not self.bboxWidget.isValid():
-                QMessageBox.warning(self,
-                                    self.windowTitle(),
-                                    "Extent is invalid")
+                QMessageBox.warning(self, self.windowTitle(), "Extent is invalid")
                 return
-            params['bbox'] = self._get_bbox(wfs)
+            params["bbox"] = self._get_bbox(wfs)
 
         try:
             with qgis_proxy_settings():
                 print("params", params)
                 response = wfs.getfeature(**params)
         except owslib.util.ServiceException as e:
-            QMessageBox.critical(self, 'ServiceException', str(e))
+            QMessageBox.critical(self, "ServiceException", str(e))
             return
         xml = response.read()
 
@@ -267,17 +294,15 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
         if not doc.setContent(xml):
             return
         root = doc.documentElement()
-        exception = root.firstChildElement('ows:Exception')
+        exception = root.firstChildElement("ows:Exception")
         if not exception.isNull():
-            QMessageBox.critical(self,
-                                 'ows:Exception',
-                                 exception.text())
+            QMessageBox.critical(self, "ows:Exception", exception.text())
             return
 
         # depending on WFS versions, we get either a str or bytes
         if isinstance(xml, str):
-            xml = xml.encode('utf8')
-        with open(output_path, 'wb') as out:
+            xml = xml.encode("utf8")
+        with open(output_path, "wb") as out:
             out.write(xml)
 
     def download_stored_query(self, output_path):

@@ -21,16 +21,17 @@
 """
 
 import os
+
 from qgis.PyQt import uic
-from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem
+from qgis.PyQt.QtGui import QStandardItem, QStandardItemModel
 from qgis.PyQt.QtXml import QDomDocument, QDomNode
 
-WIDGET, BASE = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), '..', 'ui', 'xml_dialog.ui'))
+WIDGET, BASE = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "..", "ui", "xml_dialog.ui")
+)
 
 
 class DomNodeItem(QStandardItem):
-
     def __init__(self, node):
         super(DomNodeItem, self).__init__()
         self._node = node
@@ -49,7 +50,9 @@ class DomNodeItem(QStandardItem):
             return self._node.nodeValue()
 
         if self._node.nodeType() == QDomNode.AttributeNode:
-            return "attribute: {}: {}".format(self._node.nodeName(), self._node.nodeValue())
+            return "attribute: {}: {}".format(
+                self._node.nodeName(), self._node.nodeValue()
+            )
 
         if self._node.nodeValue():
             return "{}: {}".format(self._node.nodeName(), self._node.nodeValue())
@@ -57,7 +60,6 @@ class DomNodeItem(QStandardItem):
 
 
 class DomDocumentModel(QStandardItemModel):
-
     def __init__(self, document, parent=None):
         super(DomDocumentModel, self).__init__(parent)
         self._document = document
@@ -70,7 +72,6 @@ class DomDocumentModel(QStandardItemModel):
 
 
 class XmlDialog(BASE, WIDGET):
-
     def __init__(self, parent=None, xml=None):
         super(XmlDialog, self).__init__(parent)
         self.setupUi(self)

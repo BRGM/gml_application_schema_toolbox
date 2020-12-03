@@ -14,11 +14,13 @@
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
 from qgis.PyQt.QtCore import QCoreApplication
-from qgis.PyQt.QtWidgets import QDialog, QProgressBar, QLabel, QVBoxLayout
+from qgis.PyQt.QtWidgets import QDialog, QLabel, QProgressBar, QVBoxLayout
+
 
 class ProgressBarLogger(QDialog):
     """A simple dialog with a progress bar and a label"""
-    def __init__(self, title = None):
+
+    def __init__(self, title=None):
         QDialog.__init__(self, None)
         if title is not None:
             self.setWindowTitle(title)

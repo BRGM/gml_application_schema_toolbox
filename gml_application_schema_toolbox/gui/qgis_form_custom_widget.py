@@ -1,4 +1,3 @@
-
 #   Copyright (C) 2017 BRGM (http:///brgm.fr)
 #   Copyright (C) 2017 Oslandia <infos@oslandia.com>
 #
@@ -24,41 +23,67 @@ This mechanism is used for example to display an XML widget.
 
 __all__ = ["install_xml_tree_on_feature_form"]
 
-from qgis.PyQt.QtWidgets import QWidget, QGridLayout, QWidgetItem, QLabel, QPushButton, QTabWidget
-from qgis.PyQt.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QSpacerItem, QSizePolicy, QLineEdit
-from qgis.core import QgsEditFormConfig, QgsDataSourceUri, QgsProject, QgsField, QgsRelation
-from qgis.core import QgsAttributeEditorField, QgsAttributeEditorRelation, QgsEditorWidgetSetup
+from qgis.core import (
+    QgsAttributeEditorField,
+    QgsAttributeEditorRelation,
+    QgsDataSourceUri,
+    QgsEditFormConfig,
+    QgsEditorWidgetSetup,
+    QgsField,
+    QgsProject,
+    QgsRelation,
+)
+from qgis.PyQt.QtWidgets import (
+    QDialog,
+    QDialogButtonBox,
+    QGridLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+    QWidgetItem,
+)
 
-from . import xml_tree_widget
 from ..core.xml_utils import no_ns
+from . import xml_tree_widget
 from .custom_viewers import get_custom_viewers
 from .wait_cursor_context import WaitCursor
+
 
 def install_xml_tree_on_feature_form(lyr):
     """Install an XML tree on feature form of the input layer"""
 
-    code = ("def my_form_open(dialog, layer, feature):\n"
-            "    from gml_application_schema_toolbox.gui import qgis_form_custom_widget as qq\n"
-            "    qq.inject_xml_tree_into_form(dialog, feature)\n")
-    conf = lyr.editFormConfig()
-    conf.setInitCode(code)
-    conf.setInitFunction("my_form_open")
-    conf.setInitCodeSource(QgsEditFormConfig.CodeSourceDialog)
-    lyr.setEditFormConfig(conf)
-
-def install_viewer_on_feature_form(lyr):
-    """Install a custom viewer button on feature form of the input layer"""
-
-    code = ("def my_form_open(dialog, layer, feature):\n"
-            "    from gml_application_schema_toolbox.gui import qgis_form_custom_widget as qq\n"
-            "    qq.inject_custom_viewer_into_form(dialog, layer, feature)\n"
-            "    qq.inject_href_buttons_into_form(dialog, layer, feature)\n"
+    code = (
+        "def my_form_open(dialog, layer, feature):\n"
+        "    from gml_application_schema_toolbox.gui import qgis_form_custom_widget as qq\n"
+        "    qq.inject_xml_tree_into_form(dialog, feature)\n"
     )
     conf = lyr.editFormConfig()
     conf.setInitCode(code)
     conf.setInitFunction("my_form_open")
     conf.setInitCodeSource(QgsEditFormConfig.CodeSourceDialog)
     lyr.setEditFormConfig(conf)
+
+
+def install_viewer_on_feature_form(lyr):
+    """Install a custom viewer button on feature form of the input layer"""
+
+    code = (
+        "def my_form_open(dialog, layer, feature):\n"
+        "    from gml_application_schema_toolbox.gui import qgis_form_custom_widget as qq\n"
+        "    qq.inject_custom_viewer_into_form(dialog, layer, feature)\n"
+        "    qq.inject_href_buttons_into_form(dialog, layer, feature)\n"
+    )
+    conf = lyr.editFormConfig()
+    conf.setInitCode(code)
+    conf.setInitFunction("my_form_open")
+    conf.setInitCodeSource(QgsEditFormConfig.CodeSourceDialog)
+    lyr.setEditFormConfig(conf)
+
 
 def inject_custom_viewer_into_form(dialog, layer, feature):
     """Ass a custom viewer button on a form if needed.
@@ -77,7 +102,7 @@ def inject_custom_viewer_into_form(dialog, layer, feature):
     for viewer_cls, filter in get_custom_viewers().values():
         tag = viewer_cls.xml_tag()
         # remove namespace from tag
-        tag = tag[tag.find("}")+1:]
+        tag = tag[tag.find("}") + 1 :]
         if tag == xpath:
             # found the viewer
             viewer = viewer_cls
@@ -90,11 +115,11 @@ def inject_custom_viewer_into_form(dialog, layer, feature):
     id = feature[pkid]
 
     # get db connection settings
-    if '.sqlite' in layer.source():
+    if ".sqlite" in layer.source():
         provider = "SQLite"
         schema = ""
         db_uri, layer_name = layer.source().split("|")
-        layer_name = layer_name.split('=')[1]
+        layer_name = layer_name.split("=")[1]
     else:
         provider = "PostgreSQL"
         ds = QgsDataSourceUri(layer.source())
@@ -103,12 +128,15 @@ def inject_custom_viewer_into_form(dialog, layer, feature):
         schema = ds.schema()
 
     w = viewer_cls.init_from_db(db_uri, provider, schema, layer_name, pkid, id, tab)
+
     def on_tab_changed(index):
         if index == 2:
-            w.resize(400,400)
+            w.resize(400, 400)
+
     # create a new tab
     tab.addTab(w, viewer_cls.icon(), "Custom viewer")
     tab.currentChanged.connect(on_tab_changed)
+
 
 def inject_href_buttons_into_form(dialog, layer, feature):
     if feature.attributes() == []:
@@ -137,12 +165,18 @@ def inject_href_buttons_into_form(dialog, layer, feature):
             if href not in href_resolved:
                 # add a tool button
                 btn = QPushButton("Load", dialog)
-                btn.clicked.connect(lambda checked, dlg=dialog, l=layer, f=feature, fd=field_name: on_resolve_href(dlg, l, f, fd))
+                btn.clicked.connect(
+                    lambda checked, dlg=dialog, l=layer, f=feature, fd=field_name: on_resolve_href(
+                        dlg, l, f, fd
+                    )
+                )
                 w.layout().insertWidget(0, btn)
+
 
 def on_resolve_href(dialog, layer, feature, field):
     with WaitCursor():
         return on_resolve_href_(dialog, layer, feature, field)
+
 
 def on_resolve_href_(dialog, layer, feature, field):
     """
@@ -153,6 +187,7 @@ def on_resolve_href_(dialog, layer, feature, field):
     @param linked_layer_id the QGIS layer id of the already resolved layer, for update
     """
     from .import_gmlas_panel import ImportGmlasPanel
+
     path = feature[field]
     if not path:
         return
@@ -172,10 +207,11 @@ def on_resolve_href_(dialog, layer, feature, field):
 
     # Download the file so that it is used for XML parsing
     # and for GMLAS loading
-    from ..core.qgis_urlopener import remote_open_from_qgis
-    from ..core.gml_utils import extract_features_from_file
-    from ..core.xml_utils import no_ns, no_prefix
     import tempfile
+
+    from ..core.gml_utils import extract_features_from_file
+    from ..core.qgis_urlopener import remote_open_from_qgis
+    from ..core.xml_utils import no_ns, no_prefix
 
     with remote_open_from_qgis(path) as fi:
         with tempfile.NamedTemporaryFile(delete=False) as fo:
@@ -235,7 +271,7 @@ def on_resolve_href_(dialog, layer, feature, field):
         root_layer.addAttribute(new_field)
 
     # 3. set its value to the id of current feature
-    ids_to_change=[]
+    ids_to_change = []
     for f in root_layer.getFeatures():
         if f["parent_href_pkid"] is None:
             ids_to_change.append(f.id())
@@ -247,7 +283,7 @@ def on_resolve_href_(dialog, layer, feature, field):
     root_layer.commitChanges()
 
     # 4. declare a new QgsRelation
-    rel_name = "1_n_"+layer.name()+"_"+field
+    rel_name = "1_n_" + layer.name() + "_" + field
     rel = QgsProject.instance().relationManager().relations().get(rel_name)
     if rel is None:
         rel = QgsRelation()
@@ -268,13 +304,18 @@ def on_resolve_href_(dialog, layer, feature, field):
     main_tab = fc.tabs()[0]
     main_tab.addChildElement(QgsAttributeEditorField("parent_href_pkid", idx, main_tab))
     # declare as reference relation widget
-    s = QgsEditorWidgetSetup("RelationReference", {'AllowNULL': False,
-                                                   'ReadOnly': True,
-                                                   'Relation': rel.id(),
-                                                   'OrderByValue': False,
-                                                   'MapIdentification': False,
-                                                   'AllowAddFeatures': False,
-                                                   'ShowForm': True})
+    s = QgsEditorWidgetSetup(
+        "RelationReference",
+        {
+            "AllowNULL": False,
+            "ReadOnly": True,
+            "Relation": rel.id(),
+            "OrderByValue": False,
+            "MapIdentification": False,
+            "AllowAddFeatures": False,
+            "ShowForm": True,
+        },
+    )
     root_layer.setEditorWidgetSetup(idx, s)
 
     # write metadata in layers
@@ -287,10 +328,12 @@ def on_resolve_href_(dialog, layer, feature, field):
 
     # 6. reload the current form
     from ..main import get_iface
+
     if is_feature_form:
         get_iface().openFeatureForm(layer, feature)
     else:
         get_iface().showAttributeTable(layer)
+
 
 def inject_xml_tree_into_form(dialog, feature):
     """Function called on form opening to add a custom XML widget"""
@@ -305,23 +348,33 @@ def inject_xml_tree_into_form(dialog, feature):
     w.setObjectName("_xml_widget_")
     w.updateFeature(feature)
     lbl = QLabel("XML", dialog)
-    l.addWidget(lbl, l.rowCount()-1, 0)
-    l.addWidget(w, l.rowCount()-1, 1)
-    l.setRowStretch(l.rowCount()-1, 2)
+    l.addWidget(lbl, l.rowCount() - 1, 0)
+    l.addWidget(w, l.rowCount() - 1, 1)
+    l.setRowStretch(l.rowCount() - 1, 2)
 
     # the tree widget must not be garbage collected yet
     # since we want its Python slots to be called on signals
     # we then transfer its ownership to a C++ object that lives longer
     import sip
+
     sip.transferto(w, dialog)
+
 
 def __find_label_layout(dialog, lbl_text):
     """Find the parent layout of a QLabel in a dialog"""
     ll = dialog.findChildren(QWidget)
-    ll = [l.layout() for l in ll if l.layout() is not None and isinstance(l.layout(), QGridLayout)]
+    ll = [
+        l.layout()
+        for l in ll
+        if l.layout() is not None and isinstance(l.layout(), QGridLayout)
+    ]
     for l in ll:
         for i in range(l.count()):
             it = l.itemAt(i)
-            if isinstance(it, QWidgetItem) and isinstance(it.widget(), QLabel) and it.widget().text().startswith(lbl_text):
+            if (
+                isinstance(it, QWidgetItem)
+                and isinstance(it.widget(), QLabel)
+                and it.widget().text().startswith(lbl_text)
+            ):
                 return l
     return None

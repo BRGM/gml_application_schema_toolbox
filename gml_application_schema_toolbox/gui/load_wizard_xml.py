@@ -1,24 +1,19 @@
 import os
+
 from PyQt5 import uic
-
-from qgis.PyQt.QtCore import (
-    pyqtSlot, QRegExp, QVariant
-)
-from qgis.PyQt.QtWidgets import (
-    QWizardPage, QComboBox, QLineEdit, QTableWidgetItem
-)
+from qgis.core import QgsEditorWidgetSetup, QgsProject
+from qgis.PyQt.QtCore import QRegExp, QVariant, pyqtSlot
 from qgis.PyQt.QtGui import QRegExpValidator
-
-from qgis.core import (
-    QgsProject, QgsEditorWidgetSetup
-)
+from qgis.PyQt.QtWidgets import QComboBox, QLineEdit, QTableWidgetItem, QWizardPage
 
 from ..core.load_gml_as_xml import load_as_xml_layer
-from ..gui.progress_bar import ProgressBarLogger
 from ..gui import qgis_form_custom_widget
+from ..gui.progress_bar import ProgressBarLogger
 
-PAGE_3_W, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), '..', 'ui', 'load_wizard_xml_options.ui'))
+PAGE_3_W, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "..", "ui", "load_wizard_xml_options.ui")
+)
+
 
 class LoadWizardXML(QWizardPage, PAGE_3_W):
     def __init__(self, parent=None):
@@ -26,8 +21,12 @@ class LoadWizardXML(QWizardPage, PAGE_3_W):
         self.setupUi(self)
         self.setFinalPage(True)
 
-        self.attributeTable.selectionModel().selectionChanged.connect(self.onSelectMapping)
-        self.geometryColumnCheck.stateChanged.connect(self.geometryColumnEdit.setEnabled)
+        self.attributeTable.selectionModel().selectionChanged.connect(
+            self.onSelectMapping
+        )
+        self.geometryColumnCheck.stateChanged.connect(
+            self.geometryColumnEdit.setEnabled
+        )
 
     def nextId(self):
         return -1
@@ -50,12 +49,14 @@ class LoadWizardXML(QWizardPage, PAGE_3_W):
             gmapping = self.geometryColumnEdit.text()
 
         # add a progress bar during import
-        lyrs = load_as_xml_layer(gml_path,
-                                 is_remote=gml_path.startswith('http://') or gml_path.startswith('https://'),
-                                 attributes=mapping,
-                                 geometry_mapping=gmapping,
-                                 logger=ProgressBarLogger("Importing features ..."),
-                                 swap_xy=self.swapXYCheck.isChecked())
+        lyrs = load_as_xml_layer(
+            gml_path,
+            is_remote=gml_path.startswith("http://") or gml_path.startswith("https://"),
+            attributes=mapping,
+            geometry_mapping=gmapping,
+            logger=ProgressBarLogger("Importing features ..."),
+            swap_xy=self.swapXYCheck.isChecked(),
+        )
 
         for lyr in lyrs.values():
             # install an XML tree widget

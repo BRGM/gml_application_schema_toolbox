@@ -21,36 +21,37 @@
 """
 
 import os
-from osgeo import gdal, osr
 
+from osgeo import gdal, osr
 from qgis.core import QgsApplication
-from qgis.PyQt.QtCore import Qt, pyqtSlot, QEventLoop
+from qgis.PyQt.QtCore import QEventLoop, Qt, pyqtSlot
 from qgis.PyQt.QtWidgets import QFileDialog, QProgressDialog
 
 from gml_application_schema_toolbox import name as plugin_name
-from gml_application_schema_toolbox.core.logging import log, gdal_error_handler
+from gml_application_schema_toolbox.core.logging import gdal_error_handler, log
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 
 
-class GmlasPanelMixin():
-
+class GmlasPanelMixin:
     @pyqtSlot()
     def on_gmlasConfigButton_clicked(self):
-        path, filter = QFileDialog.getOpenFileName(self,
+        path, filter = QFileDialog.getOpenFileName(
+            self,
             self.tr("Open GMLAS config file"),
             self.gmlasConfigLineEdit.text(),
-            self.tr("XML Files (*.xml)"))
+            self.tr("XML Files (*.xml)"),
+        )
         if path:
             self.gmlasConfigLineEdit.setText(path)
 
     def translate(self, params):
         if params is None:
             return
-        params['callback'] = self.translate_callback
+        params["callback"] = self.translate_callback
 
         dlg = QProgressDialog(self)
         dlg.setWindowTitle(plugin_name())
-        dlg.setLabelText('Operation in progress')
+        dlg.setLabelText("Operation in progress")
         dlg.setMinimum(0)
         dlg.setMaximum(100)
         dlg.setWindowModality(Qt.WindowModal)
@@ -70,7 +71,7 @@ class GmlasPanelMixin():
             self.progress_dlg = None
 
     def translate_callback(self, pct, msg, user_data):
-        self.progress_dlg.setValue(int(100*pct))
+        self.progress_dlg.setValue(int(100 * pct))
         QgsApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
         if self.progress_dlg.wasCanceled():
             return 0

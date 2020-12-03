@@ -1,34 +1,36 @@
 import os
-from PyQt5 import uic
-
 from tempfile import NamedTemporaryFile
 
-from qgis.PyQt.QtCore import (
-    pyqtSlot, Qt
-)
+from PyQt5 import uic
+from qgis.PyQt.QtCore import Qt, pyqtSlot
 from qgis.PyQt.QtWidgets import (
-    QWizardPage, QWizard, QFileDialog, QVBoxLayout, QSizePolicy
+    QFileDialog,
+    QSizePolicy,
+    QVBoxLayout,
+    QWizard,
+    QWizardPage,
 )
 
-from ..core.settings import settings
 from ..core.qgis_urlopener import remote_open_from_qgis
-
+from ..core.settings import settings
 from .load_wizard_wfs import LoadWizardWFS
 from .load_wizard_xml import LoadWizardXML
-
 from .wait_cursor_context import WaitCursor
 
-PAGE_1_W, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), '..', 'ui', 'load_wizard_data_source.ui'))
+PAGE_1_W, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "..", "ui", "load_wizard_data_source.ui")
+)
 
-PAGE_2_W, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), '..', 'ui', 'load_wizard_load.ui'))
+PAGE_2_W, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "..", "ui", "load_wizard_load.ui")
+)
 
 PAGE_ID_DATA_SOURCE = 0
 PAGE_ID_WFS = 1
 PAGE_ID_LOADING = 2
 PAGE_ID_XML = 3
 PAGE_ID_GMLAS = 4
+
 
 class LoadWizardDataSource(QWizardPage, PAGE_1_W):
     def __init__(self, parent=None):
@@ -39,8 +41,9 @@ class LoadWizardDataSource(QWizardPage, PAGE_1_W):
         self.sourceFromWFS.setChecked(last == "WFS")
         self.sourceFromFile.setChecked(last == "File")
 
-        self.gmlPathLineEdit.setText(settings.value("last_file",
-                                                    settings.value("last_downloaded_file", "")))
+        self.gmlPathLineEdit.setText(
+            settings.value("last_file", settings.value("last_downloaded_file", ""))
+        )
 
     def nextId(self):
         if self.sourceFromWFS.isChecked():
@@ -48,18 +51,23 @@ class LoadWizardDataSource(QWizardPage, PAGE_1_W):
         return PAGE_ID_LOADING
 
     def validatePage(self):
-        settings.setValue("last_source",
-                          "WFS" if self.sourceFromWFS.isChecked() else "File")
+        settings.setValue(
+            "last_source", "WFS" if self.sourceFromWFS.isChecked() else "File"
+        )
         settings.setValue("last_file", self.gmlPathLineEdit.text())
         return super().validatePage()
 
     @pyqtSlot()
     def on_gmlPathButton_clicked(self):
-        gml_path = settings.value("last_path", settings.value("last_downloaded_path", ""))
-        path, filter = QFileDialog.getOpenFileName(self,
-                                                   self.tr("Open GML file"),
-                                                   gml_path,
-                                                   self.tr("GML files or XSD (*.gml *.xml *.xsd)"))
+        gml_path = settings.value(
+            "last_path", settings.value("last_downloaded_path", "")
+        )
+        path, filter = QFileDialog.getOpenFileName(
+            self,
+            self.tr("Open GML file"),
+            gml_path,
+            self.tr("GML files or XSD (*.gml *.xml *.xsd)"),
+        )
         if path:
             settings.setValue("last_path", os.path.dirname(path))
             settings.setValue("last_file", path)
@@ -69,29 +77,32 @@ class LoadWizardDataSource(QWizardPage, PAGE_1_W):
         input_path = self.gmlPathLineEdit.text()
         if input_path.startswith("http://") or input_path.startswith("https://"):
             # URL
-            with open(output_path, 'wb') as out:
+            with open(output_path, "wb") as out:
                 out.write(remote_open_from_qgis(input_path).read())
         else:
             # copy file
             with open(input_path, "rb") as inp:
-                with open(output_path, 'wb') as out:
+                with open(output_path, "wb") as out:
                     out.write(inp.read())
+
 
 class LoadWizardLoading(QWizardPage, PAGE_2_W):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
 
-        method = settings.value("last_import_method",
-                                settings.value("default_import_method", "xml"))
+        method = settings.value(
+            "last_import_method", settings.value("default_import_method", "xml")
+        )
         self.loadInXMLRadio.setChecked(method == "xml")
         self.loadInRelationalRadio.setChecked(method == "gmlas")
 
         # download to a temporary file by default
-        last_path = settings.value("last_downloaded_file",
-                                   settings.value("last_downloaded_path"))
+        last_path = settings.value(
+            "last_downloaded_file", settings.value("last_downloaded_path")
+        )
         if last_path is None:
-            with NamedTemporaryFile(suffix='.gml') as out:
+            with NamedTemporaryFile(suffix=".gml") as out:
                 last_path = out.name
 
         self.outputPathLineEdit.setText(last_path)
@@ -104,19 +115,22 @@ class LoadWizardLoading(QWizardPage, PAGE_2_W):
         return -1
 
     def validatePage(self):
-        settings.setValue("last_import_method",
-                          "xml" if self.loadInXMLRadio.isChecked() else "gmlas")
+        settings.setValue(
+            "last_import_method", "xml" if self.loadInXMLRadio.isChecked() else "gmlas"
+        )
         return super().validatePage()
 
     @pyqtSlot()
     def on_outputPathButton_clicked(self):
-        path, filter = QFileDialog.getSaveFileName(self,
-                                                   self.tr("Select output file"),
-                                                   settings.value("last_downloaded_path", "."),
-                                                   self.tr("GML Files (*.gml *.xml)"))
+        path, filter = QFileDialog.getSaveFileName(
+            self,
+            self.tr("Select output file"),
+            settings.value("last_downloaded_path", "."),
+            self.tr("GML Files (*.gml *.xml)"),
+        )
         if path:
-            if os.path.splitext(path)[1] == '':
-                path = '{}.gml'.format(path)
+            if os.path.splitext(path)[1] == "":
+                path = "{}.gml".format(path)
             self.outputPathLineEdit.setText(path)
             settings.setValue("last_downloaded_file", path)
             settings.setValue("last_downloaded_path", os.path.dirname(path))
@@ -128,6 +142,7 @@ class LoadWizardLoading(QWizardPage, PAGE_2_W):
 
 
 from .import_gmlas_panel import ImportGmlasPanel
+
 
 class LoadWizardGMLAS(QWizardPage):
     def __init__(self, parent):
@@ -144,6 +159,7 @@ class LoadWizardGMLAS(QWizardPage):
     def validatePage(self):
         self._panel.do_load()
         return True
+
 
 class LoadWizard(QWizard):
     def __init__(self, parent=None):
@@ -176,7 +192,7 @@ class LoadWizard(QWizard):
             if self._data_source_page.nextId() == PAGE_ID_WFS:
                 with WaitCursor():
                     # if WFS features, download them first
-                    with NamedTemporaryFile(suffix='.gml') as out:
+                    with NamedTemporaryFile(suffix=".gml") as out:
                         gml_path = out.name
                     self._wfs_page.download(gml_path)
 

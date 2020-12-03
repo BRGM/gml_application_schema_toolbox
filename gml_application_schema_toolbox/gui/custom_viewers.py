@@ -19,9 +19,11 @@
 from __future__ import absolute_import
 
 import sys
+
 from ..viewers import *
 
 __custom_viewers = None
+
 
 def get_custom_viewers():
     global __custom_viewers
@@ -32,13 +34,13 @@ def get_custom_viewers():
     __custom_viewers = {}
 
     # introspect the viewers module
-    #print(sys.modules.keys())
-    module = sys.modules['gml_application_schema_toolbox.viewers']
+    # print(sys.modules.keys())
+    module = sys.modules["gml_application_schema_toolbox.viewers"]
     for klass in dir(module):
-        if klass.startswith('__'):
+        if klass.startswith("__"):
             continue
         k = getattr(module, klass)
-        if hasattr(k, 'xml_tag'):
+        if hasattr(k, "xml_tag"):
             r = k.xml_tag()
             filter = None
             if isinstance(r, tuple):
@@ -48,5 +50,3 @@ def get_custom_viewers():
             __custom_viewers[tag] = (k, filter)
 
     return __custom_viewers
-
-
