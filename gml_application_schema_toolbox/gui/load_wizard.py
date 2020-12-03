@@ -2,17 +2,12 @@ import os
 from tempfile import NamedTemporaryFile
 
 from PyQt5 import uic
-from qgis.PyQt.QtCore import Qt, pyqtSlot
-from qgis.PyQt.QtWidgets import (
-    QFileDialog,
-    QSizePolicy,
-    QVBoxLayout,
-    QWizard,
-    QWizardPage,
-)
+from qgis.PyQt.QtCore import pyqtSlot
+from qgis.PyQt.QtWidgets import QFileDialog, QVBoxLayout, QWizard, QWizardPage
 
 from ..core.qgis_urlopener import remote_open_from_qgis
 from ..core.settings import settings
+from .import_gmlas_panel import ImportGmlasPanel
 from .load_wizard_wfs import LoadWizardWFS
 from .load_wizard_xml import LoadWizardXML
 from .wait_cursor_context import WaitCursor
@@ -139,9 +134,6 @@ class LoadWizardLoading(QWizardPage, PAGE_2_W):
     def on_downloadButton_clicked(self):
         with WaitCursor():
             self.wizard().download_to(self.outputPathLineEdit.text())
-
-
-from .import_gmlas_panel import ImportGmlasPanel
 
 
 class LoadWizardGMLAS(QWizardPage):

@@ -15,14 +15,26 @@
 
 from __future__ import absolute_import
 
-import os
 import xml.etree.ElementTree as ET
 from builtins import next, range
 
 from qgis.core import QgsEditorWidgetSetup, QgsProject
-from qgis.PyQt.QtCore import *
-from qgis.PyQt.QtGui import *
-from qgis.PyQt.QtWidgets import *
+from qgis.PyQt.QtCore import QSize, Qt
+from qgis.PyQt.QtWidgets import (
+    QAbstractItemView,
+    QAction,
+    QApplication,
+    QHBoxLayout,
+    QLabel,
+    QMenu,
+    QMessageBox,
+    QSizePolicy,
+    QSpacerItem,
+    QToolButton,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QWidget,
+)
 
 from ..core.load_gml_as_xml import is_layer_gml_xml, load_as_xml_layer
 from ..core.qgis_urlopener import remote_open_from_qgis
@@ -183,11 +195,11 @@ class XMLTreeWidget(QTreeWidget):
             fill_tree_with_xml(self, x)
 
     def onContextMenu(self, pos):
-        row = self.selectionModel().selectedRows()[0]
+        # row = self.selectionModel().selectedRows()[0]
         menu = QMenu(self)
-        copyAction = QAction(u"Copy value", self)
+        copyAction = QAction("Copy value", self)
         copyAction.triggered.connect(self.onCopyItemValue)
-        copyXPathAction = QAction(u"Copy XPath", self)
+        copyXPathAction = QAction("Copy XPath", self)
         copyXPathAction.triggered.connect(self.onCopyXPath)
         menu.addAction(copyAction)
         menu.addAction(copyXPathAction)
@@ -206,11 +218,11 @@ class XMLTreeWidget(QTreeWidget):
             swap_xy_menu_action.triggered.connect(self.onSwapXY)
             resolveMenu.addAction(swap_xy_menu_action)
 
-            resolveEmbeddedAction = QAction(u"Embedded", self)
+            resolveEmbeddedAction = QAction("Embedded", self)
             resolveEmbeddedAction.triggered.connect(self.onResolveEmbedded)
             resolveMenu.addAction(resolveEmbeddedAction)
 
-            resolveNewLayerAction = QAction(u"As a new layer", self)
+            resolveNewLayerAction = QAction("As a new layer", self)
             resolveNewLayerAction.triggered.connect(self.onResolveNewLayer)
             resolveMenu.addAction(resolveNewLayerAction)
 

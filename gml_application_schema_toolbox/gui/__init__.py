@@ -9,6 +9,6 @@ class InputError(Exception):
         self.parent = parent
 
     def show(self):
-        if self.message == None:
+        if self.message is None:
             return
         QMessageBox.warning(self.parent, plugin_name(), self.message)

@@ -44,7 +44,7 @@ def getGETGetFeatureRequest_2_0_0(
     elif filter:
         request["query"] = str(filter)
     if typename:
-        typename = [typename] if type(typename) == type("") else typename
+        typename = [typename] if isinstance(typename, str) else typename
         if int(self.version.split(".")[0]) >= 2:
             request["typenames"] = ",".join(typename)
         else:

@@ -3,7 +3,6 @@ import os
 from qgis.core import QgsApplication
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QAbstractItemModel, QModelIndex, QSettings, Qt, pyqtSlot
-from qgis.PyQt.QtGui import QStandardItem, QStandardItemModel
 from qgis.PyQt.QtWidgets import QFileDialog, QMessageBox
 
 from gml_application_schema_toolbox import name as plugin_name
@@ -151,7 +150,7 @@ class DatabaseWidget(BASE, WIDGET):
             return schema
         # if self.pgsqlSchemaBox.currentIndex() == -1:
         schemas = [schema[1] for schema in self._pgsql_db.list_schemas()]
-        if not schema in schemas:
+        if schema not in schemas:
             res = QMessageBox.question(
                 self, plugin_name(), self.tr('Create schema "{}" ?').format(schema)
             )

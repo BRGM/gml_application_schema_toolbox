@@ -2,8 +2,8 @@ import os
 
 from qgis.core import QgsApplication
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import Qt, pyqtSlot
-from qgis.PyQt.QtWidgets import QFileDialog, QListWidgetItem
+from qgis.PyQt.QtCore import pyqtSlot
+from qgis.PyQt.QtWidgets import QFileDialog
 
 from gml_application_schema_toolbox import name as plugin_name
 from gml_application_schema_toolbox.core.settings import settings

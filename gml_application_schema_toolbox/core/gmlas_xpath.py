@@ -12,7 +12,8 @@ class GmlAsXPathResolver:
     def __init__(self, uri, provider, schema):
         """
         @param gmlas_uri connection parameters
-        @param provider name of the OGR provider that handles gmlas_uri parameters (PostgreSQL or SQLite)
+        @param provider name of the OGR provider that handles gmlas_uri parameters \
+            (PostgreSQL or SQLite)
         @param schema name of the PostgreSQL schema where tables and metadata tables are
         """
 
@@ -141,10 +142,10 @@ where parent_layer='{}' and parent_element_name='{}'""".format(
 
         where = " and ".join(
             [
-                "{}.{} = {}.{}".format(l[0], l[1], r[0], r[1])
-                if isinstance(r, tuple)
-                else "{}.{} = {}".format(l[0], l[1], r)
-                for l, r in sql_wheres
+                "{}.{} = {}.{}".format(lyr[0], lyr[1], rec[0], rec[1])
+                if isinstance(rec, tuple)
+                else "{}.{} = {}".format(lyr[0], lyr[1], rec)
+                for lyr, rec in sql_wheres
             ]
         )
         sql = "select {} from {} where {}".format(

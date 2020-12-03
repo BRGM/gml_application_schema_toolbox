@@ -17,13 +17,24 @@ from __future__ import absolute_import
 
 import os
 
-from qgis.PyQt.QtCore import *
-from qgis.PyQt.QtGui import *
-from qgis.PyQt.QtWidgets import *
+# from qgis.PyQt.QtCore import
+from qgis.PyQt.QtCore import Qt, QRectF
+from qgis.PyQt.QtGui import QBrush, QColor, QFont, QFontMetrics, QIcon, QPen
+from qgis.PyQt.QtWidgets import (
+    QFormLayout,
+    QGraphicsScene,
+    QGraphicsView,
+    QLineEdit,
+    QVBoxLayout,
+    QWidget,
+)
 
 from ..core.gmlas_xpath import GmlAsXPathResolver
-from ..core.xml_utils import no_prefix, resolve_xpath, split_tag
-from . import viewers_utils
+from ..core.xml_utils import resolve_xpath
+
+# from qgis.PyQt.QtCore import *
+# from qgis.PyQt.QtGui import *
+# from qgis.PyQt.QtWidgets import *
 
 
 class GeologyLogViewer(QWidget):
@@ -202,7 +213,7 @@ class PlotScene(QGraphicsScene):
 
     def displayPlot(self):
         QGraphicsScene.clear(self)
-        r = self.sceneRect()
+        self.sceneRect()
         fm = QFontMetrics(QFont())
 
         # display lines fitting in sceneRect

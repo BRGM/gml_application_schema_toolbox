@@ -21,12 +21,13 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsEditFormConfig,
     QgsEditorWidgetSetup,
+    QgsMapLayerLegend,
     QgsProject,
     QgsRelation,
     QgsSettings,
+    QgsSimpleLegendNode,
     QgsVectorLayer,
 )
-from qgis.PyQt.QtCore import QVariant
 
 from ..gui.custom_viewers import get_custom_viewers
 from ..gui.qgis_form_custom_widget import install_viewer_on_feature_form
@@ -49,12 +50,12 @@ def _qgis_layer(
         g_column = ""
     if provider == "SQLite":
         # use OGR for spatialite loading
-        l = QgsVectorLayer(
+        couche = QgsVectorLayer(
             "{}|layername={}{}".format(uri, layer_name, g_column),
             qgis_layer_name,
             "ogr",
         )
-        l.setProviderEncoding("UTF-8")
+        couche.setProviderEncoding("UTF-8")
     else:
         if schema_name is not None:
             s_table = '"{}"."{}"'.format(schema_name, layer_name)
@@ -62,7 +63,7 @@ def _qgis_layer(
             s_table = '"{}"'.format(layer_name)
         # remove "PG:" in front of the uri
         uri = uri[3:]
-        l = QgsVectorLayer(
+        couche = QgsVectorLayer(
             "{} table={} {} sql=".format(uri, s_table, g_column),
             qgis_layer_name,
             "postgres",
@@ -70,13 +71,9 @@ def _qgis_layer(
 
     # sets xpath
     if layer_xpath:
-        l.setCustomProperty("xpath", layer_xpath)
-    l.setCustomProperty("pkid", layer_pkid)
-    return l
-
-
-from PyQt5.QtGui import QIcon
-from qgis.core import QgsMapLayerLegend, QgsSimpleLegendNode
+        couche.setCustomProperty("xpath", layer_xpath)
+    couche.setCustomProperty("pkid", layer_pkid)
+    return couche
 
 
 class CustomViewerLegend(QgsMapLayerLegend):
@@ -112,9 +109,9 @@ def import_in_qgis(gmlas_uri, provider, schema=None):
         schema_s
     )
 
-    l = ds.ExecuteSQL(sql)
+    couches = ds.ExecuteSQL(sql)
     layers = {}
-    for f in l:
+    for f in couches:
         ln = f.GetField("layer_name")
         if ln not in layers:
             layers[ln] = {
@@ -166,7 +163,7 @@ def import_in_qgis(gmlas_uri, provider, schema=None):
     for ln in sorted(layers.keys()):
         lyr = layers[ln]
         g_column = lyr["geometry_column"] or None
-        l = _qgis_layer(
+        couches = _qgis_layer(
             gmlas_uri,
             schema,
             lyr["layer_name"],
@@ -176,31 +173,31 @@ def import_in_qgis(gmlas_uri, provider, schema=None):
             lyr["xpath"],
             lyr["uid"],
         )
-        if not l.isValid():
+        if not couches.isValid():
             raise RuntimeError(
-                "Problem loading layer {} with {}".format(ln, l.source())
+                "Problem loading layer {} with {}".format(ln, couches.source())
             )
         if g_column is not None:
             if lyr["srid"]:
                 crs = QgsCoordinateReferenceSystem("EPSG:{}".format(lyr["srid"]))
-            l.setCrs(crs)
-        QgsProject.instance().addMapLayer(l)
-        layers[ln]["layer_id"] = l.id()
-        layers[ln]["layer"] = l
+            couches.setCrs(crs)
+        QgsProject.instance().addMapLayer(couches)
+        layers[ln]["layer_id"] = couches.id()
+        layers[ln]["layer"] = couches
         # save fields which represent a xlink:href
         if ln in href_fields:
-            l.setCustomProperty("href_fields", href_fields[ln])
+            couches.setCustomProperty("href_fields", href_fields[ln])
         # save gmlas_uri
-        l.setCustomProperty("ogr_uri", gmlas_uri)
-        l.setCustomProperty("ogr_schema", schema)
+        couches.setCustomProperty("ogr_uri", gmlas_uri)
+        couches.setCustomProperty("ogr_schema", schema)
 
         # change icon the layer has a custom viewer
-        xpath = no_ns(l.customProperty("xpath", ""))
+        xpath = no_ns(couches.customProperty("xpath", ""))
         for viewer_cls, _ in get_custom_viewers().values():
             tag = no_prefix(viewer_cls.xml_tag())
             if tag == xpath:
                 lg = CustomViewerLegend(viewer_cls.name(), viewer_cls.icon())
-                l.setLegend(lg)
+                couches.setLegend(lg)
 
     # restore settings
     settings.setValue("Projections/defaultBehavior", projection_behavior)
@@ -222,9 +219,9 @@ where
 """.format(
         schema_s
     )
-    l = ds.ExecuteSQL(sql)
-    if l is not None:
-        for f in l:
+    couches = ds.ExecuteSQL(sql)
+    if couches is not None:
+        for f in couches:
             rel = QgsRelation()
             rel.setId(
                 "1_1_" + f.GetField("layer_name") + "_" + f.GetField("field_name")
@@ -282,9 +279,9 @@ where
 """.format(
         schema_s
     )
-    l = ds.ExecuteSQL(sql)
-    if l is not None:
-        for f in l:
+    couches = ds.ExecuteSQL(sql)
+    if couches is not None:
+        for f in couches:
             parent_layer = f.GetField("layer_name")
             child_layer = f.GetField("child_layer")
             if parent_layer not in layers or child_layer not in layers:
@@ -318,7 +315,7 @@ where
 
     # add "show form" option to 1:1 relations
     for rel in relations_1_1:
-        l = rel.referencingLayer()
+        couches = rel.referencingLayer()
         idx = rel.referencingFields()[0]
         s = QgsEditorWidgetSetup(
             "RelationReference",
@@ -332,18 +329,18 @@ where
                 "ShowForm": True,
             },
         )
-        l.setEditorWidgetSetup(idx, s)
+        couches.setEditorWidgetSetup(idx, s)
 
     # setup form for layers
     for layer, lyr in layers.items():
-        l = lyr["layer"]
-        fc = l.editFormConfig()
+        couche = lyr["layer"]
+        fc = couche.editFormConfig()
         fc.clearTabs()
         fc.setLayout(QgsEditFormConfig.TabLayout)
         # Add fields
         c = QgsAttributeEditorContainer("Main", fc.invisibleRootContainer())
         c.setIsGroupBox(False)  # a tab
-        for idx, f in enumerate(l.fields()):
+        for idx, f in enumerate(couche.fields()):
             c.addChildElement(QgsAttributeEditorField(f.name(), idx, c))
         fc.addTab(c)
 
@@ -355,6 +352,6 @@ where
         for rel in lyr["1_n"]:
             c_1_n.addChildElement(QgsAttributeEditorRelation(rel.name(), rel, c_1_n))
 
-        l.setEditFormConfig(fc)
+        couche.setEditFormConfig(fc)
 
-        install_viewer_on_feature_form(l)
+        install_viewer_on_feature_form(couche)

@@ -28,9 +28,8 @@ from osgeo import gdal, osr
 from owslib.etree import etree
 from qgis.core import QgsMessageLog
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import QEventLoop, QFile, QIODevice, Qt, QUrl, pyqtSlot
+from qgis.PyQt.QtCore import Qt, pyqtSlot
 from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QListWidgetItem, QMessageBox
-from qgis.PyQt.QtXml import QDomDocument
 from qgis.utils import iface
 
 from gml_application_schema_toolbox import name as plugin_name
@@ -41,7 +40,6 @@ from gml_application_schema_toolbox.gui import InputError
 from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
 
 from ..core.load_gmlas_in_qgis import import_in_qgis
-from .xml_dialog import XmlDialog
 
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "import_gmlas_panel.ui")

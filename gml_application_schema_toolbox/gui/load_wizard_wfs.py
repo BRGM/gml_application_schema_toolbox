@@ -1,7 +1,6 @@
 import os
 
 import owslib
-from owslib.feature.wfs200 import WFSCapabilitiesReader
 from owslib.wfs import WebFeatureService
 from PyQt5 import uic
 from qgis.core import (
@@ -18,7 +17,6 @@ from qgis.PyQt.QtWidgets import (
     QDialog,
     QMessageBox,
     QTableWidgetItem,
-    QWizard,
     QWizardPage,
 )
 from qgis.PyQt.QtXml import QDomDocument
@@ -26,8 +24,7 @@ from qgis.PyQt.QtXml import QDomDocument
 from ..core.proxy import qgis_proxy_settings
 from ..core.qgis_urlopener import remote_open_from_qgis
 from ..core.settings import settings
-from ..core.xml_utils import no_prefix, xml_parse
-from ..extlibs import owslib_hacks
+from ..core.xml_utils import xml_parse
 from .wait_cursor_context import WaitCursor
 from .xml_dialog import XmlDialog
 

@@ -151,7 +151,7 @@ def inject_href_buttons_into_form(dialog, layer, feature):
     # list of href URL that have been resolved
     href_resolved = layer.customProperty("href_resolved", [])
     # dict that stores which layer is the resolved href, for each href field
-    href_linked_layers = layer.customProperty("href_linked_layers", {})
+    # href_linked_layers = layer.customProperty("href_linked_layers", {})
 
     layout = __find_label_layout(dialog, pkid)
     for i in range(layout.rowCount()):

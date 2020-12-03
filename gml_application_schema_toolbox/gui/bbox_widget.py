@@ -6,16 +6,12 @@ Note that this depends on some processing plugin classes
 
 import os
 
-from processing.core.ProcessingConfig import ProcessingConfig
 from processing.gui.RectangleMapTool import RectangleMapTool
 from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsProject,
-    QgsRasterLayer,
     QgsRectangle,
-    QgsVectorLayer,
 )
-from qgis.gui import QgsMessageBar
 from qgis.PyQt import uic
 from qgis.PyQt.QtGui import QCursor
 from qgis.PyQt.QtWidgets import QAction, QInputDialog, QMenu
@@ -130,9 +126,9 @@ class BboxWidget(BASE, WIDGET):
 
     def isValid(self):
         try:
-            rect = self.rectangle()
+            # rect = self.rectangle()
             crs = self.crs()
             assert crs.isValid()
             return True
-        except:
+        except Exception:
             return False

@@ -25,7 +25,8 @@ class QgsMessageLogHandler(logging.Handler):
             self.flush()
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except Exception as err:
+            QgsMessageLog.logMessage(err, self.tag, QgsMessageLog.ERROR)
             self.handleError(record)
 
 

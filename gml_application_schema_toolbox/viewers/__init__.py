@@ -16,7 +16,5 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
-from __future__ import absolute_import
-
-from .geology_logs import GeologyLogViewer
-from .wml2_timeseries import WML2TimeSeriesViewer
+from .geology_logs import GeologyLogViewer  # noqa: F401
+from .wml2_timeseries import WML2TimeSeriesViewer  # noqa: F401

@@ -13,7 +13,6 @@
 #   You should have received a copy of the GNU Library General Public
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
-from builtins import str
 from io import BytesIO
 
 from qgis.core import QgsNetworkAccessManager

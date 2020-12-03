@@ -25,17 +25,15 @@ from builtins import object, str
 
 from osgeo import ogr, osr
 from qgis.core import (
-    QgsDataSourceUri,
     QgsFeature,
     QgsField,
     QgsGeometry,
     QgsMapLayer,
     QgsPointXY,
-    QgsVectorDataProvider,
     QgsVectorLayer,
     QgsWkbTypes,
 )
-from qgis.PyQt.QtCore import QDateTime, QVariant
+from qgis.PyQt.QtCore import QVariant
 
 from .gml_utils import extract_features
 from .qgis_urlopener import remote_open_from_qgis
@@ -235,7 +233,8 @@ class ComplexFeatureSource(object):
         Construct a ComplexFeatureSource
 
         :param xml: The input XML, as file io
-        :param xpath_mapping: A mapping of XPath expressions to attributes. Example: { 'attribute' : ('//xpath/expression', QVariant.Int) }
+        :param xpath_mapping: A mapping of XPath expressions to attributes. \
+            Example: { 'attribute' : ('//xpath/expression', QVariant.Int) }
         :param geometry_mapping: An XPath expression used to extract the geometry
         :param logger: a logger function
         """
@@ -250,10 +249,14 @@ class ComplexFeatureSource(object):
         self.geometry_mapping = geometry_mapping
         self.logger = logger
 
-    def getFeatures(self, swap_xy=False):
+    def getFeatures(self, swap_xy: bool = False):
         """
         The iterator that will yield a new feature.
-        The yielded value is (feature_id, QgsGeometry or None, xml_tree: Element, { 'attr1' : value, 'attr2' : 'value' })
+        The yielded value is \
+            (feature_id, QgsGeometry or None, xml_tree: Element, {
+                'attr1' : value,
+                'attr2' : 'value' }
+            )
 
         @param swap_xy whether to force X/Y coordinate swapping
         """
@@ -378,7 +381,6 @@ class ComplexFeatureLoader(object):
 
             layers = {}
             features = {}
-            layer_geom_type = {}
             for id, fid, qgsgeoms, xml, attrs in src.getFeatures(swap_xy):
                 # layer creation
                 if qgsgeoms == []:
@@ -431,7 +433,7 @@ class ComplexFeatureLoader(object):
                 f.setAttribute("id", str(id))
                 f.setAttribute("fid", fid)
                 for k, v in attrs.items():
-                    r = f.setAttribute(k, v)
+                    f.setAttribute(k, v)
                 for g, tag in qgsgeoms:
                     if tag not in features:
                         features[tag] = []

@@ -20,7 +20,7 @@ from __future__ import absolute_import
 
 import sys
 
-from ..viewers import *
+from ..viewers import GeologyLogViewer, WML2TimeSeriesViewer
 
 __custom_viewers = None
 
