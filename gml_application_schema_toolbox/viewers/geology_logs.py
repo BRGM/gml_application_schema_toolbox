@@ -32,10 +32,6 @@ from qgis.PyQt.QtWidgets import (
 from ..core.gmlas_xpath import GmlAsXPathResolver
 from ..core.xml_utils import resolve_xpath
 
-# from qgis.PyQt.QtCore import *
-# from qgis.PyQt.QtGui import *
-# from qgis.PyQt.QtWidgets import *
-
 
 class GeologyLogViewer(QWidget):
     @classmethod

@@ -41,9 +41,6 @@ from .gui import InputError
 from .gui.database_widget import DatabaseWidget
 from .gui.xml_custom_widget import XMLWidgetFactory, XMLWidgetFormatter
 
-# from qgis.PyQt.QtXml import *
-
-
 package_path = [os.path.join(os.path.dirname(__file__), "extlibs")]
 
 if not set(package_path).issubset(set(sys.path)):
