@@ -36,8 +36,8 @@ class BboxWidget(BASE, WIDGET):
         self.tool = RectangleMapTool(canvas)
         self.tool.rectangleCreated.connect(self.updateExtent)
 
-    def setDialog(self):
-        self._dialog = Dialog
+    # def setDialog(self):
+    #     self._dialog = Dialog
 
     def selectExtent(self):
         popupmenu = QMenu()
