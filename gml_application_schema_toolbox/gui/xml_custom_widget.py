@@ -1,7 +1,11 @@
 from PyQt5.QtWidgets import QWidget
-
-from qgis.gui import QgsEditorConfigWidget, QgsEditorWidgetWrapper, QgsEditorWidgetFactory
 from qgis.core import QgsFieldFormatter
+from qgis.gui import (
+    QgsEditorConfigWidget,
+    QgsEditorWidgetFactory,
+    QgsEditorWidgetWrapper,
+)
+
 
 class XMLCustomWidgetWrapper(QgsEditorWidgetWrapper):
     def __init__(self, vl, fieldIdx, editor, parent):
@@ -25,6 +29,7 @@ class XMLCustomWidgetWrapper(QgsEditorWidgetWrapper):
     def valid(self):
         return isinstance(self._xml_widget, QWidget)
 
+
 class XMLWidgetConfigDlg(QgsEditorConfigWidget):
     def __init__(self, vl, fieldIdx, parent):
         super(XMLWidgetConfigDlg, self).__init__(vl, fieldIdx, parent)
@@ -35,6 +40,7 @@ class XMLWidgetConfigDlg(QgsEditorConfigWidget):
     def setConfig(self, cfg):
         pass
 
+
 class XMLWidgetFactory(QgsEditorWidgetFactory):
     def __init__(self):
         super(XMLWidgetFactory, self).__init__("XML")
@@ -44,9 +50,10 @@ class XMLWidgetFactory(QgsEditorWidgetFactory):
         self.wrapper = XMLCustomWidgetWrapper(vl, fieldIdx, editor, parent)
         return self.wrapper
 
-    def configWidget(self, vl, fieldIdx, parent ):
+    def configWidget(self, vl, fieldIdx, parent):
         self.dlg = XMLWidgetConfigDlg(vl, fieldIdx, parent)
         return self.dlg
+
 
 class XMLWidgetFormatter(QgsFieldFormatter):
     def id(self):

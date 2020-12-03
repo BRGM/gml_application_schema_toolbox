@@ -11,7 +11,7 @@ This part of the plugin is inspired by the work made in [QGIS WFS2 client plugin
 In the ```download``` tab define the target service to download data from:
 
 * ```URL```: Define the service URL (without GetCapabilities). A list of sample services is available by activating the drop down.
-* Authentication: If the service requires user credentials (Basic Authentication), set the following parameters: 
+* Authentication: If the service requires user credentials (Basic Authentication), set the following parameters:
  * ```Username```
  * ```Password```
 
@@ -19,13 +19,13 @@ In the ```download``` tab define the target service to download data from:
 ![Configure target WFS service](img/download-service.png)
 
 
-Once set, connect to the service using the ```Get capabilities``` button. 
-The ```Show capabilities``` provides a simple preview of the 
-GetCapabilities document. After connection, the list of 
+Once set, connect to the service using the ```Get capabilities``` button.
+The ```Show capabilities``` provides a simple preview of the
+GetCapabilities document. After connection, the list of
 ```Feature Types``` and ```Stored Queries``` are populated.
 
 
-In case of error, a notification pops up with information about 
+In case of error, a notification pops up with information about
 the problem. Check also the log panel for more details about the error:
 
 
@@ -50,7 +50,7 @@ After download, the convert panel is activated with the path to the downloaded f
 
 ## Download from URL
 
-The panel can also be used to download file from a URL. This URL 
+The panel can also be used to download file from a URL. This URL
 could point to an existing GML file or could be a ```GetFeature``` request.
 
 ![Download from URL](img/download-from-url.png)

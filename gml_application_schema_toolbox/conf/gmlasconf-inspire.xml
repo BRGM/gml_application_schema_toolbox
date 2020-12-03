@@ -71,7 +71,7 @@
                 <XPath>RE_RegisterItem/definition/gco:CharacterString</XPath>
             </Field>
         </URLSpecificResolution>
-        
+
         <!-- Sandre vocabularies -->
         <URLSpecificResolution>
             <URLPrefix>http://www.sandre.eaufrance.fr/?urn=urn</URLPrefix>

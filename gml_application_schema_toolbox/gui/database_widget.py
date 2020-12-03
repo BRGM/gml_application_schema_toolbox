@@ -1,30 +1,26 @@
-# -*- coding: utf-8 -*-
-
 import os
 
 from qgis.core import QgsApplication
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import Qt, pyqtSlot, QSettings, QAbstractItemModel, QModelIndex
-from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem
-from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog
+from qgis.PyQt.QtCore import QAbstractItemModel, QModelIndex, QSettings, Qt, pyqtSlot
+from qgis.PyQt.QtWidgets import QFileDialog, QMessageBox
 
 from gml_application_schema_toolbox import name as plugin_name
 from gml_application_schema_toolbox.core.gmlas_postgis_db import GmlasPostgisDB
 from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
 
-
-WIDGET, BASE = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), '..', 'ui', 'database_widget.ui'))
+WIDGET, BASE = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "..", "ui", "database_widget.ui")
+)
 
 
 class PgsqlConnectionsModel(QAbstractItemModel):
-
     def __init__(self, parent=None):
         super(PgsqlConnectionsModel, self).__init__(parent)
 
         self._settings = QSettings()
-        self._settings.beginGroup('/PostgreSQL/connections/')
+        self._settings.beginGroup("/PostgreSQL/connections/")
 
     def _groups(self):
         return self._settings.childGroups()
@@ -46,8 +42,6 @@ class PgsqlConnectionsModel(QAbstractItemModel):
 
 
 class DatabaseWidget(BASE, WIDGET):
-
-
     def __init__(self, parent=None, is_input=False):
         super(DatabaseWidget, self).__init__(parent)
         self.setupUi(self)
@@ -61,13 +55,12 @@ class DatabaseWidget(BASE, WIDGET):
         self.pgsqlFormWidget.setVisible(False)
         self.pgsqlConnectionsBox.setModel(PgsqlConnectionsModel())
         self.pgsqlConnectionsRefreshButton.setIcon(
-            QgsApplication.getThemeIcon('/mActionRefresh.svg'))
-        self.addFkeysButton.setIcon(
-            QgsApplication.getThemeIcon('/mActionAdd.svg'))
-        self.dropFkeysButton.setIcon(
-            QgsApplication.getThemeIcon('/mActionRemove.svg'))
+            QgsApplication.getThemeIcon("/mActionRefresh.svg")
+        )
+        self.addFkeysButton.setIcon(QgsApplication.getThemeIcon("/mActionAdd.svg"))
+        self.dropFkeysButton.setIcon(QgsApplication.getThemeIcon("/mActionRemove.svg"))
 
-        self.set_format(settings.value('default_db_type'))
+        self.set_format(settings.value("default_db_type"))
 
     def set_accept_mode(self, accept_mode):
         """QFileDialog.AcceptOpen or QFileDialog.AcceptSave"""
@@ -87,18 +80,16 @@ class DatabaseWidget(BASE, WIDGET):
         current_path = self.sqlitePathLineEdit.text()
         filter = self.tr("SQLite Files (*.sqlite)")
         if self._accept_mode == QFileDialog.AcceptOpen:
-            path, filter = QFileDialog.getOpenFileName(self,
-                self.tr("Open SQLite database"),
-                current_path,
-                filter)
+            path, filter = QFileDialog.getOpenFileName(
+                self, self.tr("Open SQLite database"), current_path, filter
+            )
         else:
-            path, filter = QFileDialog.getSaveFileName(self,
-                self.tr("Save to SQLite database"),
-                current_path,
-                filter)
+            path, filter = QFileDialog.getSaveFileName(
+                self, self.tr("Save to SQLite database"), current_path, filter
+            )
             if path:
-                if os.path.splitext(path)[1] == '':
-                    path = '{}.sqlite'.format(path)
+                if os.path.splitext(path)[1] == "":
+                    path = "{}.sqlite".format(path)
         self.sqlitePathLineEdit.setText(path)
 
     @pyqtSlot(str)
@@ -106,7 +97,9 @@ class DatabaseWidget(BASE, WIDGET):
         if self.pgsqlConnectionsBox.currentIndex() == -1:
             self._pgsql_db = None
         else:
-            self._pgsql_db = GmlasPostgisDB.from_name(self.pgsqlConnectionsBox.currentText())
+            self._pgsql_db = GmlasPostgisDB.from_name(
+                self.pgsqlConnectionsBox.currentText()
+            )
 
         self.pgsqlSchemaBox.clear()
         if self._pgsql_db is None:
@@ -128,40 +121,39 @@ class DatabaseWidget(BASE, WIDGET):
         self._pgsql_db.drop_foreign_key_constraints(self.schema())
 
     def set_format(self, value):
-        if value == 'SQLite':
+        if value == "SQLite":
             self.sqliteRadioButton.setChecked(True)
-        if value == 'PostgreSQL':
+        if value == "PostgreSQL":
             self.pgsqlRadioButton.setChecked(True)
 
     def format(self):
         if self.sqliteRadioButton.isChecked():
-            return 'SQLite'
+            return "SQLite"
         if self.pgsqlRadioButton.isChecked():
             return "PostgreSQL"
 
     def datasource_name(self):
         if self.sqliteRadioButton.isChecked():
             path = self.sqlitePathLineEdit.text()
-            if path == '' and self._is_input:
+            if path == "" and self._is_input:
                 raise InputError("You must select a SQLite file")
 
             return path
         if self.pgsqlRadioButton.isChecked():
             if self._pgsql_db is None:
                 raise InputError("You must select a PostgreSQL connection")
-            return 'PG:{}'.format(self._pgsql_db.uri.connectionInfo(True))
+            return "PG:{}".format(self._pgsql_db.uri.connectionInfo(True))
 
     def schema(self, create=False):
         schema = self.pgsqlSchemaBox.currentText()
         if not create:
             return schema
-        #if self.pgsqlSchemaBox.currentIndex() == -1:
+        # if self.pgsqlSchemaBox.currentIndex() == -1:
         schemas = [schema[1] for schema in self._pgsql_db.list_schemas()]
-        if not schema in schemas:
-            res = QMessageBox.question(self,
-                                       plugin_name(),
-                                       self.tr('Create schema "{}" ?').
-                                       format(schema))
+        if schema not in schemas:
+            res = QMessageBox.question(
+                self, plugin_name(), self.tr('Create schema "{}" ?').format(schema)
+            )
             if res != QMessageBox.Yes:
                 raise InputError()
             self._pgsql_db.create_schema(schema)

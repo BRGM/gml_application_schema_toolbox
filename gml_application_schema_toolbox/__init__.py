@@ -18,19 +18,33 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
-# -*- coding: utf-8 -*-
+
+
 def name():
-    return u"QGIS GML Application Schema Toolbox"
+    return "QGIS GML Application Schema Toolbox"
+
+
 def description():
-    return u"QGIS GML Application Schema Toolbox"
+    return "QGIS GML Application Schema Toolbox"
+
+
 def version():
-    return u"1.2.0"
+    return "1.2.0"
+
+
 def icon():
     return "icon.png"
+
+
 def qgisMinimumVersion():
-    return u"2.99"
+    return "2.99"
+
+
 def qgisMaximumVersion():
-    return u"3.99"
+    return "3.99"
+
+
 def classFactory(iface):
     from .main import MainPlugin
+
     return MainPlugin(iface)

@@ -6,13 +6,13 @@
 * Environmental Facilities
 
 ## Environmental Factilities
-   
+
 * XSD: http://inspire.ec.europa.eu/schemas/ef/4.0/EnvironmentalMonitoringFacilities.xsd
-* Source dataset: PostGIS 
-   
-   
-### Load PostGIS dump: 
-   
+* Source dataset: PostGIS
+
+
+### Load PostGIS dump:
+
 ```
    psql -U qgis -W -f poc_gwml2_20161207.sql inspire
 ```
@@ -21,33 +21,33 @@
 
 ```
    ogr2ogr PG:'host=localhost user=qgis password=qgis dbname=inspire' \
-            GMLAS: \      
+            GMLAS: \  
             -f PostgreSQL \
             -oo XSD=http://inspire.ec.europa.eu/schemas/ef/4.0/EnvironmentalMonitoringFacilities.xsd \
             -nlt CONVERT_TO_LINEAR -lco SCHEMA=poc_gwml2_inspire -lco OVERWRITE=YES
 ```
-   
+
 ### Populate database
-   
+
 In this step, we convert original database model to the INSPIRE one.
-SQL queries are created to do the conversion. An ETL process could 
+SQL queries are created to do the conversion. An ETL process could
 also be an option.
-   
-   
+
+
 ```
    INSERT INTO poc_gwml2_inspire.environmentalmonitoringfacility (
-   ogc_fid, id, identifier, identifier_codespace, location_location_pkid, inspireid_pkid, 
-   representativepoint) SELECT 
+   ogc_fid, id, identifier, identifier_codespace, location_location_pkid, inspireid_pkid,
+   representativepoint) SELECT
    cid, gml_id, code_bss_sans_slash, 'BSS', gml_id, inspire_id,
    geom_wgs84
    FROM poc_gwml2.ef_environmentalmonitoringfacility_2;
-   
-   
+
+
    INSERT INTO poc_gwml2_inspire.environmentalmonitoringfacility_ef_name (
-   ogc_fid, ogr_pkid, parent_id, value) SELECT 
+   ogc_fid, ogr_pkid, parent_id, value) SELECT
    cid, cid, cid, libelle
    FROM poc_gwml2.ef_environmentalmonitoringfacility_2 WHERE libelle is not null;
-   
+
 ```
 
 ### Export to GML
@@ -55,13 +55,13 @@ also be an option.
 
 ```
  ogr2ogr -f GMLAS ef.gml PG:'host=localhost user=qgis password=qgis dbname=inspire' \
-            environmentalmonitoringfacility 
+            environmentalmonitoringfacility
  ```
 
 ## Geological Unit
 
 * XSD: http://inspire.ec.europa.eu/schemas/ge-core/3.0/GeologyCore.xsd
-* Source dataset format: PostGIS 
+* Source dataset format: PostGIS
 
 
 ### Create ge-core schema in PostGIS
@@ -92,7 +92,7 @@ List of updated tables :
 
 
 In this step, we convert original database model to the INSPIRE one.
-SQL queries are created to do the conversion. An ETL process could 
+SQL queries are created to do the conversion. An ETL process could
 also be an option.
 
 
@@ -119,7 +119,7 @@ FROM "ge".geologicevent_eventprocess
 
 -- geologichistory
 INSERT INTO "ge-core".geologichistory(ogc_fid, ogr_pkid, geologicevent_pkid)
- 
+
 SELECT ogc_fid, ogr_pkid, geologicevent_pkid
 FROM "ge".geologichistory
 

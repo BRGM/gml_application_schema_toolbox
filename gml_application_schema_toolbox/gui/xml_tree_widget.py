@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 #   Copyright (C) 2017 BRGM (http:///brgm.fr)
 #   Copyright (C) 2017 Oslandia <infos@oslandia.com>
 #
@@ -16,24 +14,38 @@
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import
-from builtins import next
-from builtins import range
-import os
-
-from qgis.PyQt.QtCore import *
-from qgis.PyQt.QtGui import *
-from qgis.PyQt.QtWidgets import *
-from qgis.core import QgsProject, QgsEditorWidgetSetup
 
 import xml.etree.ElementTree as ET
+from builtins import next, range
 
+from qgis.core import QgsEditorWidgetSetup, QgsProject
+from qgis.PyQt.QtCore import QSize, Qt
+from qgis.PyQt.QtWidgets import (
+    QAbstractItemView,
+    QAction,
+    QApplication,
+    QHBoxLayout,
+    QLabel,
+    QMenu,
+    QMessageBox,
+    QSizePolicy,
+    QSpacerItem,
+    QToolButton,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QWidget,
+)
+
+from ..core.load_gml_as_xml import is_layer_gml_xml, load_as_xml_layer
 from ..core.qgis_urlopener import remote_open_from_qgis
-from ..core.load_gml_as_xml import load_as_xml_layer, is_layer_gml_xml
 from ..core.xml_utils import no_prefix, split_tag, xml_parse, xml_parse_from_string
-from .custom_viewers import get_custom_viewers
 from . import qgis_form_custom_widget
+from .custom_viewers import get_custom_viewers
 
-def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers = {}, ns_map = {}):
+
+def fill_tree_with_element(
+    widget, treeItem, elt, ns_imap={}, custom_viewers={}, ns_map={}
+):
     """
     :param widget: the QTreeWidget
     :param treeItem: a QTreeWidgetItem to fill
@@ -51,7 +63,7 @@ def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers =
         treeItem.setText(0, tag)
     f = treeItem.font(0)
     f.setBold(True)
-    treeItem.setFont(0,f)
+    treeItem.setFont(0, f)
 
     # custom viewer
     if elt.tag in custom_viewers:
@@ -59,11 +71,13 @@ def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers =
         if filter is None or elt.find(filter, ns_map) is not None:
             btn = QToolButton(widget)
             btn.setIcon(custom_viewer_widget.icon())
-            btn.setIconSize(QSize(32,32))
+            btn.setIconSize(QSize(32, 32))
+
             def show_viewer(btn):
                 widget.w = custom_viewer_widget.init_from_xml(elt)
                 widget.w.setWindowModality(Qt.WindowModal)
                 widget.w.show()
+
             btn.clicked.connect(show_viewer)
 
             w = QWidget(widget)
@@ -83,19 +97,19 @@ def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers =
     for k, v in elt.attrib.items():
         child = QTreeWidgetItem()
         treeItem.addChild(child)
-        if '}' in k:
-            i = k.index('}')
+        if "}" in k:
+            i = k.index("}")
             ns = k[1:i]
             # get ns prefix from ns uri
             p = ns_imap.get(ns)
             if p is not None:
-                n = p + ":" + k[i+1:]
+                n = p + ":" + k[i + 1 :]
             else:
-                n = k[i+1:]
+                n = k[i + 1 :]
         else:
             n = no_prefix(k)
         child.setText(0, "@" + n)
-        if n == 'xlink:href' and v.startswith('http'):
+        if n == "xlink:href" and v.startswith("http"):
             html = QLabel(widget)
             html.setOpenExternalLinks(True)
             html.setTextFormat(Qt.RichText)
@@ -107,17 +121,19 @@ def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers =
     # text
     if elt.text:
         treeItem.setText(1, elt.text)
-        
+
     # children
     for xmlChild in elt:
         child = QTreeWidgetItem()
         treeItem.addChild(child)
         fill_tree_with_element(widget, child, xmlChild, ns_imap, custom_viewers, ns_map)
 
+
 def recurse_expand(treeItem):
     treeItem.setExpanded(True)
     for i in range(treeItem.childCount()):
         recurse_expand(treeItem.child(i))
+
 
 def fill_tree_with_xml(treeWidget, xml):
     """
@@ -132,13 +148,21 @@ def fill_tree_with_xml(treeWidget, xml):
     ns_imap = {}
     for k, v in ns_map.items():
         ns_imap[v] = k
-    fill_tree_with_element(treeWidget, treeWidget.invisibleRootItem(), doc.getroot(), ns_imap, get_custom_viewers(), ns_map)
+    fill_tree_with_element(
+        treeWidget,
+        treeWidget.invisibleRootItem(),
+        doc.getroot(),
+        ns_imap,
+        get_custom_viewers(),
+        ns_map,
+    )
     recurse_expand(treeWidget.invisibleRootItem())
     treeWidget.resizeColumnToContents(0)
     treeWidget.resizeColumnToContents(1)
 
+
 class XMLTreeWidget(QTreeWidget):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         """Constructor.
         :param swap_xy: whether to force X/Y coordinate swapping
         :param parent: a QWidget parent
@@ -164,24 +188,28 @@ class XMLTreeWidget(QTreeWidget):
     def updateFeature(self, feature):
         x = None
         try:
-            x = feature.attribute('_xml_')
+            x = feature.attribute("_xml_")
         except KeyError:
             pass
         if x:
             fill_tree_with_xml(self, x)
 
     def onContextMenu(self, pos):
-        row = self.selectionModel().selectedRows()[0]
+        # row = self.selectionModel().selectedRows()[0]
         menu = QMenu(self)
-        copyAction = QAction(u"Copy value", self)
+        copyAction = QAction("Copy value", self)
         copyAction.triggered.connect(self.onCopyItemValue)
-        copyXPathAction = QAction(u"Copy XPath", self)
+        copyXPathAction = QAction("Copy XPath", self)
         copyXPathAction.triggered.connect(self.onCopyXPath)
         menu.addAction(copyAction)
         menu.addAction(copyXPathAction)
 
         item = self.currentItem()
-        if item.text(0) == '@xlink:href' and item.data(1, Qt.UserRole) and item.data(1, Qt.UserRole).startswith('http'):
+        if (
+            item.text(0) == "@xlink:href"
+            and item.data(1, Qt.UserRole)
+            and item.data(1, Qt.UserRole).startswith("http")
+        ):
             resolveMenu = QMenu("Resolve external", menu)
 
             swap_xy_menu_action = QAction("Swap X/Y", self)
@@ -189,12 +217,12 @@ class XMLTreeWidget(QTreeWidget):
             swap_xy_menu_action.setChecked(self.swap_xy)
             swap_xy_menu_action.triggered.connect(self.onSwapXY)
             resolveMenu.addAction(swap_xy_menu_action)
-            
-            resolveEmbeddedAction = QAction(u"Embedded", self)
+
+            resolveEmbeddedAction = QAction("Embedded", self)
             resolveEmbeddedAction.triggered.connect(self.onResolveEmbedded)
             resolveMenu.addAction(resolveEmbeddedAction)
 
-            resolveNewLayerAction = QAction(u"As a new layer", self)
+            resolveNewLayerAction = QAction("As a new layer", self)
             resolveNewLayerAction.triggered.connect(self.onResolveNewLayer)
             resolveMenu.addAction(resolveNewLayerAction)
 
@@ -203,7 +231,9 @@ class XMLTreeWidget(QTreeWidget):
             for id, l in QgsProject.instance().mapLayers().items():
                 if is_layer_gml_xml(l):
                     action = QAction(l.name(), addToMenu)
-                    action.triggered.connect(lambda checked, layer=l: self.onResolveAddToLayer(layer))
+                    action.triggered.connect(
+                        lambda checked, layer=l: self.onResolveAddToLayer(layer)
+                    )
                     addToMenu.addAction(action)
                     addToEmpty = False
             if not addToEmpty:
@@ -218,17 +248,17 @@ class XMLTreeWidget(QTreeWidget):
 
     def onCopyXPath(self):
         def get_xpath(item):
-            s = ''
+            s = ""
             if item.parent():
                 s = get_xpath(item.parent())
             t = item.text(0)
-            if ':' in t:
-                tt = t.split(':')[1]
+            if ":" in t:
+                tt = t.split(":")[1]
             else:
                 tt = t
-            if t[0] == '@':
-                tt = '@' + tt
-            if s == '':
+            if t[0] == "@":
+                tt = "@" + tt
+            if s == "":
                 return tt
             return s + "/" + tt
 
@@ -252,13 +282,24 @@ class XMLTreeWidget(QTreeWidget):
             except ET.ParseError:
                 # probably not an XML
                 QApplication.restoreOverrideCursor()
-                QMessageBox.warning(self, "XML parsing error", "The external resource is not a well formed XML")
+                QMessageBox.warning(
+                    self,
+                    "XML parsing error",
+                    "The external resource is not a well formed XML",
+                )
                 return
 
             ns_imap = {}
             for k, v in ns_map.items():
                 ns_imap[v] = k
-            fill_tree_with_element(self, item.parent(), doc.getroot(), ns_imap, get_custom_viewers(), ns_map)
+            fill_tree_with_element(
+                self,
+                item.parent(),
+                doc.getroot(),
+                ns_imap,
+                get_custom_viewers(),
+                ns_map,
+            )
         except RuntimeError as e:
             QApplication.restoreOverrideCursor()
             QMessageBox.warning(self, "Network error", e.args[0])
@@ -292,5 +333,3 @@ class XMLTreeWidget(QTreeWidget):
             pr = layer.dataProvider()
             # FIXME test layer compatibility ?
             pr.addFeatures([f_in])
-            
-

@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
-
 import os
+
 from qgis.PyQt.QtCore import QSettings
+
 from gml_application_schema_toolbox import name as plugin_name
 
-DEFAULT_GMLAS_CONFIG = os.path.realpath(os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "conf",
-    "gmlasconf.xml"))
+DEFAULT_GMLAS_CONFIG = os.path.realpath(
+    os.path.join(os.path.dirname(__file__), "..", "conf", "gmlasconf.xml")
+)
 
 defaults = {
     "default_maxfeatures": 100,
@@ -18,7 +16,7 @@ defaults = {
     "default_gmlas_config": DEFAULT_GMLAS_CONFIG,
     "default_language": "en",
     "default_db_type": "SQLite",
-    "default_access_mode": None
+    "default_access_mode": None,
 }
 
 settings = QSettings()
