@@ -48,7 +48,7 @@ Then define the configuration on how to read the GML or XSD file.
 The conversion is made by OGR and its GMLAS driver which provides
 advanced configuration using an XML file. Check the [GMLAS driver XSD](https://svn.osgeo.org/gdal/trunk/gdal/data/gmlasconf.xsd)
 to discover all options available.
- 
+
 The plugin provides 2 configuration files:
 
 * ```gmlasconf.xml```: which is the default
@@ -110,7 +110,7 @@ The plugin also exposes a dialog that allows to display the relational model cre
 On each table, a button allows to directly open the attribute table of the given layer.
 
 
-For the time being only file opened with PyXB mode can use 
-the schema view. By future work, schema view may also 
-support any databases schema (eg. PostGIS & SQLite created by the GMLAS driver). 
+For the time being only file opened with PyXB mode can use
+the schema view. By future work, schema view may also
+support any databases schema (eg. PostGIS & SQLite created by the GMLAS driver).
 

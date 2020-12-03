@@ -9,7 +9,7 @@
 * [Create INSPIRE datasets](UC-create-inspire-data.md)
 
 
-See all video on [this channel](https://www.youtube.com/channel/UCM0-LWeavnqldykLpDUWwNA). 
+See all video on [this channel](https://www.youtube.com/channel/UCM0-LWeavnqldykLpDUWwNA).
 
 ## Testing QGIS
 
@@ -58,7 +58,7 @@ ogrinfo -ro -al GMLAS:cddaDesignatedArea.gml
 ```
 
 
-#### How-to display layer metadata? 
+#### How-to display layer metadata?
 
 ```
 ogrinfo -ro -al GMLAS:cddaDesignatedArea.gml \
@@ -67,7 +67,7 @@ ogrinfo -ro -al GMLAS:cddaDesignatedArea.gml \
 ```
 
 
-#### How-to convert from GML to spatialite? 
+#### How-to convert from GML to spatialite?
 
 ```
 ogr2ogr cdda.sqlite GMLAS:cddaDesignatedArea.gml \
@@ -75,7 +75,7 @@ ogr2ogr cdda.sqlite GMLAS:cddaDesignatedArea.gml \
 ```
 
 
-#### How-to convert from GML to PostGIS? 
+#### How-to convert from GML to PostGIS?
 
 ```
 ogr2ogr PG:'host=localhost user=qgis password=qgis dbname=inspire' GMLAS:cddaDesignatedArea.gml \
@@ -97,7 +97,7 @@ ERROR 1: No schema locations found when analyzing data file: XSD open option mus
 
 In such case use the ```INPUT_XSD``` dataset creation options to customize the schema:
 ```
-ogr2ogr -f GMLAS rtn.gml -dsco INPUT_XSD=xsd/RoadTransportNetwork.xsd rtn.sqlite 
+ogr2ogr -f GMLAS rtn.gml -dsco INPUT_XSD=xsd/RoadTransportNetwork.xsd rtn.sqlite
 ```
 
 
@@ -120,7 +120,7 @@ INFO: Open of `GMLAS:'
 ogr2ogr ps_db.sqlite GMLAS: \
       -f sqlite -dsco SPATIALITE=YES \
       -oo XSD=http://inspire.ec.europa.eu/schemas/ps/4.0/ProtectedSites.xsd
-      
+
 # Create PostGIS database from schema
 ogr2ogr PG:'host=localhost user=qgis password=qgis dbname=inspire' GMLAS: \
       -f PostgreSQL \
@@ -161,7 +161,7 @@ In some cases, the GML may contains only a subset of elements described in the X
 
 ![Database create with or without table cleanup](https://github.com/BRGM/gml_application_schema_toolbox/raw/master/gml_application_schema_toolbox/doc/usecases/img/ogr-options-RemoveUnusedLayers.png "Database create with or without table cleanup")
 
-#### How-to convert from GML to spatialite using python? 
+#### How-to convert from GML to spatialite using python?
 
 ```
 from osgeo import gdal
@@ -297,14 +297,14 @@ Add the ```-nlt CONVERT_TO_LINEAR``` option to fix those types of errors.
 This is usually related to the same XSD imported using 2 differents URL. eg.
 
 ```
-<xsd:import namespace="http://www.opengis.net/gml/3.2" 
+<xsd:import namespace="http://www.opengis.net/gml/3.2"
             schemaLocation="http://geoserv.weichand.de:8080/geoserver/schemas/gml/3.2.1/gml.xsd"/>
 ```
 
 and further during XSD resolution
 
 ```
-<xs:import namespace="http://www.opengis.net/gml/3.2" 
+<xs:import namespace="http://www.opengis.net/gml/3.2"
            schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
 ```
 
@@ -378,14 +378,14 @@ A script is provided for conversion ```convert-samples.sh```.
 * GML App Schema toolbox QGIS plugin installed
 * Layer menu from project QGIS plugin installed
 * Test with samples from BRGM
- 
+
 ### v20160923
 
 * Samples conversion script
 
 ### v20160919
 
-* QGIS3 with array support 
+* QGIS3 with array support
 * GDAL GMLAS driver basic support
 * Sample datasets for landcover, protected sites, biogeographical region
 

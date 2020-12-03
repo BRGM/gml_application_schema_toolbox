@@ -92,7 +92,7 @@ def xml_parse(xml_file):
                 root = elem
     for prefix, uri in ns_map.items():
         ET.register_namespace(prefix, uri)
-        
+
     return (ET.ElementTree(root), ns_map)
 
 def xml_parse_from_string(s):

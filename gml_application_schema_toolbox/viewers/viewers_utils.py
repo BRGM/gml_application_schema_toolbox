@@ -22,7 +22,7 @@ def resolve_xpath_in_model(model, table, xpath):
     for column in table.columns():
         if xpath.startswith(column.xpath()):
             return [table.name()], [], table.name(), column.name()
-        
+
     for link in table.links():
         link_xpath = link.xpath()
         if xpath.startswith(link_xpath):

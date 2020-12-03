@@ -167,7 +167,7 @@ class MainPlugin(object):
         self.about_dlg.setWindowModality(Qt.WindowModal)
         self.about_dlg.show()
         self.about_dlg.resize(600,800)
-        
+
     def onSettings(self):
         dlg = SettingsDialog()
         dlg.exec_()
@@ -208,7 +208,7 @@ class MainPlugin(object):
                                 e.args[0])
         finally:
             QApplication.restoreOverrideCursor()
-        
+
 
     def onWizardLoad(self):
         self.wizard = LoadWizard(self.iface.mainWindow())
@@ -221,7 +221,7 @@ class MainPlugin(object):
         # (this makes sure collapsible states are correctly saved)
         self.wizard.setParent(None)
         self.wizard.deleteLater()
-        
+
     def onExport(self):
         w = ExportGmlasPanel(self.iface.mainWindow())
         w.exec_()

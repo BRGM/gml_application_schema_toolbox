@@ -106,7 +106,7 @@ def fill_tree_with_element(widget, treeItem, elt, ns_imap = {}, custom_viewers =
     # text
     if elt.text:
         treeItem.setText(1, elt.text)
-        
+
     # children
     for xmlChild in elt:
         child = QTreeWidgetItem()
@@ -188,7 +188,7 @@ class XMLTreeWidget(QTreeWidget):
             swap_xy_menu_action.setChecked(self.swap_xy)
             swap_xy_menu_action.triggered.connect(self.onSwapXY)
             resolveMenu.addAction(swap_xy_menu_action)
-            
+
             resolveEmbeddedAction = QAction(u"Embedded", self)
             resolveEmbeddedAction.triggered.connect(self.onResolveEmbedded)
             resolveMenu.addAction(resolveEmbeddedAction)
@@ -291,5 +291,5 @@ class XMLTreeWidget(QTreeWidget):
             pr = layer.dataProvider()
             # FIXME test layer compatibility ?
             pr.addFeatures([f_in])
-            
+
 

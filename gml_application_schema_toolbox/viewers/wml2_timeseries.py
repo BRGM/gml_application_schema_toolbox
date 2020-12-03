@@ -35,7 +35,7 @@ class WML2TimeSeriesViewer(QWidget):
     @classmethod
     def name(cls):
         return "WML2 Time series"
-    
+
     @classmethod
     def xml_tag(cls):
         # the XML tag (with namespace) this widget is meant for
@@ -72,7 +72,7 @@ class WML2TimeSeriesViewer(QWidget):
         ys = resolver.resolve_xpath(layer_name, pkid_name, pkid_value, "point/MeasurementTVP/value/text()")
         data = [(time.mktime(datetime.strptime(t, "%Y-%m-%dT%H:%M:%S.000Z").timetuple()), float(y), t) for (t, y) in zip(times, ys)]
         return cls(pkid_value, ytitle[0], data, parent)
-    
+
     def __init__(self, title, yTitle, data, parent = None):
         QWidget.__init__(self, parent)
 
@@ -150,7 +150,7 @@ class PlotView(QGraphicsView):
 
     def setData(self, data):
         self.scene().setData(data)
-        
+
     def displayPlot(self):
         self.scene().displayPlot()
 
@@ -281,7 +281,7 @@ class PlotScene(QGraphicsScene):
             i += 1
         if i == -1:
             return
-        
+
         self.marker.setText( "x = %s\ny = %.2f" % (xValue, y) )
         self.marker.moveTo( ax, self.yToScene(y) )
 

@@ -137,7 +137,7 @@ def _wkbFromGml(tree, swap_xy, default_srs = None):
 
 	# inversion
     swap_xy = swap_xy ^ srid_axis_swapped
-            
+
     # call ogr for GML parsing
     s = ET.tostring(tree, encoding="unicode")
     g = ogr.CreateGeometryFromGML(s)
@@ -164,13 +164,13 @@ def _extractGmlGeometries(tree, swap_xy, default_srs = None, parent = None):
     if ns.startswith('http://www.opengis.net/gml'):
         if tag in ["Point", "LineString", "Polygon", "PolyhedralSurface", "Tin",
                    "MultiPoint", "MultiLineString", "MultiPolygon", "MultiCurve", "MultiSurface",
-                   "Curve", "OrientableCurve", "Surface", 
+                   "Curve", "OrientableCurve", "Surface",
                    "CompositeCurve", "CompositeSurface", "MultiGeometry",
                    "Envelope"]:
             g = _wkbFromGml(tree, swap_xy, default_srs)
             if g is not None:
                 return [(g, parent.tag)]
-        
+
     for child in tree:
         geoms += _extractGmlGeometries(child, swap_xy, default_srs, tree)
     return geoms
@@ -218,7 +218,7 @@ class ComplexFeatureSource(object):
             if self.logger is not None:
                 self.logger.set_text("Feature {}/{}".format(i, len(self.features)))
                 self.logger.set_progress(i, len(self.features))
-                
+
             # get the id from gml:identifier, then from the "id" attribute
             fid = None
             for child in feature:
@@ -228,7 +228,7 @@ class ComplexFeatureSource(object):
                     break
             if fid is None:
                 for k, v in feature.attrib.items():
-                    f_ns, f_tag = split_tag(k)                    
+                    f_ns, f_tag = split_tag(k)
                     if f_tag == "id":
                         fid = v
                         break
@@ -349,7 +349,7 @@ class ComplexFeatureLoader(object):
                             layer = self._create_layer(typemap[QgsWkbTypes.multiType(type2d)], srid, attr_list, title, no_prefix(tag))
                         else:
                             raise RuntimeError("Unsupported geometry type {}".format(qgsgeom.wkbType()))
-                        self._add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)                        
+                        self._add_properties_to_layer(layer, xml_uri, is_remote, attributes, geometry_mapping)
                         layers[tag] = layer
 
                 # collect features
@@ -415,7 +415,7 @@ class ComplexFeatureLoaderInMemory(ComplexFeatureLoader):
         layer.setCustomProperty("is_remote", is_remote)
         layer.setCustomProperty("attributes", attributes)
         layer.setCustomProperty("geom_mapping", geom_mapping)
-        
+
     @staticmethod
     def properties_from_layer(layer):
         return (layer.customProperty("complex_features", False),

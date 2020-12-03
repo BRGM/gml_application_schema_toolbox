@@ -28,9 +28,9 @@ import os
 import math
 
 class ModelDialog(QGraphicsView):
-    
+
     tableSelected = pyqtSignal(str)
-    
+
     def __init__(self, model, parent = None):
         QGraphicsView.__init__(self, parent)
 
@@ -70,9 +70,9 @@ def spiral_iterator():
                 segment_length += 1
 
 class TableWidget(QWidget):
-    
+
     linkActivated = pyqtSignal(str)
-    
+
     def __init__(self, table):
         QWidget.__init__(self)
 
@@ -83,7 +83,7 @@ class TableWidget(QWidget):
         font = l.font()
         font.setBold(True)
         l.setFont(font)
-        
+
         hlayout.addWidget(l)
         open_table_btn = QToolButton()
         icon = QIcon(os.path.dirname(__file__) + "/mActionOpenTableGML.svg")
@@ -91,7 +91,7 @@ class TableWidget(QWidget):
         open_table_btn.resize(32, 32)
         open_table_btn.clicked.connect(lambda checked: self.linkActivated.emit(table.name()))
         hlayout.addWidget(open_table_btn)
-        
+
         f = QFrame()
         f.setFrameStyle(QFrame.Panel | QFrame.Plain)
         f.setLineWidth(2.0)
@@ -167,9 +167,9 @@ def enable_link_item(item):
     item.setZValue(1)
 
 class ModelDialogScene(QGraphicsScene):
-    
+
     tableSelected = pyqtSignal(str)
-    
+
     def __init__(self, model, parent):
         QGraphicsScene.__init__(self, parent)
 
@@ -265,7 +265,7 @@ class ModelDialogScene(QGraphicsScene):
                       vertical_intersection(l, tx2 + tw2, ty2, ty2 + th2)]
             pp = [p for p in points if p is not None]
             p2 = min(pp, key = lambda p: distance(p1, p))
-            l = QLineF(p1, p2)            
+            l = QLineF(p1, p2)
             i2 = self.addLine(l)
             i2.setZValue(1)
             alpha = math.atan2( p2.y() - p1.y(), p2.x() - p1.x())

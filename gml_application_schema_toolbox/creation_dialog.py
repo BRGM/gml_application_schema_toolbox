@@ -76,7 +76,7 @@ class CreationDialog(QDialog, FORM_CLASS):
             else:
                 self.filenameRadio.setChecked(True)
                 self.filenameText.setText(QDir.fromNativeSeparators(source_url))
-            
+
             # output file name
             import tempfile
             f = tempfile.NamedTemporaryFile()

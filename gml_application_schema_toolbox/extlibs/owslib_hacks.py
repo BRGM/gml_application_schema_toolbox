@@ -30,11 +30,11 @@ def getGETGetFeatureRequest_2_0_0(self, typename=None, filter=None, bbox=None, f
             request['typenames'] = ','.join(typename)
         else:
             request['typename'] = ','.join(typename)
-    if propertyname: 
+    if propertyname:
         request['propertyname'] = ','.join(propertyname)
     if sortby:
         request['sortby'] = ','.join(sortby)
-    if featureversion: 
+    if featureversion:
         request['featureversion'] = str(featureversion)
     if maxfeatures:
         if int(self.version.split('.')[0]) >= 2:
@@ -43,7 +43,7 @@ def getGETGetFeatureRequest_2_0_0(self, typename=None, filter=None, bbox=None, f
             request['maxfeatures'] = str(maxfeatures)
     if startindex:
         request['startindex'] = str(startindex)
-    if storedQueryID: 
+    if storedQueryID:
         request['storedQuery_id']=str(storedQueryID)
         for param in storedQueryParams:
             request[param]=storedQueryParams[param]

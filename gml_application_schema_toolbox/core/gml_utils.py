@@ -64,7 +64,7 @@ def extract_features(doc):
                         lcp = [float(x) for x in lc.split(' ')]
                         ucp = [float(x) for x in uc.split(' ')]
                         bbox = (lcp[0], lcp[1], ucp[0], ucp[1])
-                        
+
         elif node.tag.startswith(u'{http://www.opengis.net/sos/2') and node.tag.endswith('GetObservationResponse'):
             # SOS features
             for child in node:

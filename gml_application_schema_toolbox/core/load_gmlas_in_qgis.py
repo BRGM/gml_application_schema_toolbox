@@ -81,7 +81,7 @@ def import_in_qgis(gmlas_uri, provider, schema = None):
 
     # get list of layers
     sql = "select o.*, g.f_geometry_column, g.srid from {}_ogr_layers_metadata o left join geometry_columns g on g.f_table_name = o.layer_name".format(schema_s)
-    
+
     l = ds.ExecuteSQL(sql)
     layers = {}
     for f in l:
@@ -279,7 +279,7 @@ where
         c_1_n = QgsAttributeEditorContainer("1:N links", fc.invisibleRootContainer())
         c_1_n.setIsGroupBox(False) # a tab
         fc.addTab(c_1_n)
-        
+
         for rel in lyr['1_n']:
             c_1_n.addChildElement(QgsAttributeEditorRelation(rel.name(), rel, c_1_n))
 

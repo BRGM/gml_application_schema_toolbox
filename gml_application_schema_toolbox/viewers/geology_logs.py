@@ -112,7 +112,7 @@ class PlotView(QGraphicsView):
 
     def setData(self, data):
         self.scene().setData(data)
-        
+
     def displayPlot(self):
         self.scene().displayPlot()
 
@@ -126,7 +126,7 @@ class PlotScene(QGraphicsScene):
         self.barWidth = 20
         # offset from the left border
         self.xOffset = 10
-        
+
         self.clear()
 
     def clear(self):

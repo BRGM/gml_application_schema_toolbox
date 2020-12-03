@@ -12,7 +12,7 @@ class GmlAsXPathResolver:
         @param provider name of the OGR provider that handles gmlas_uri parameters (PostgreSQL or SQLite)
         @param schema name of the PostgreSQL schema where tables and metadata tables are
         """
-        
+
         ogr.UseExceptions()
         drv = ogr.GetDriverByName(provider)
         self._ds = drv.Open(uri)
@@ -113,4 +113,4 @@ where parent_layer='{}' and parent_element_name='{}'""".format(self._schema, ogr
 
         # execute SQL
         return [f.GetField(sql_field) for f in self._ds.ExecuteSQL(sql)]
-    
+

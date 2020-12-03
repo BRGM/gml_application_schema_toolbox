@@ -36,7 +36,7 @@ from .wait_cursor_context import WaitCursor
 
 def install_xml_tree_on_feature_form(lyr):
     """Install an XML tree on feature form of the input layer"""
-    
+
     code = ("def my_form_open(dialog, layer, feature):\n"
             "    from gml_application_schema_toolbox.gui import qgis_form_custom_widget as qq\n"
             "    qq.inject_xml_tree_into_form(dialog, feature)\n")
@@ -48,7 +48,7 @@ def install_xml_tree_on_feature_form(lyr):
 
 def install_viewer_on_feature_form(lyr):
     """Install a custom viewer button on feature form of the input layer"""
-    
+
     code = ("def my_form_open(dialog, layer, feature):\n"
             "    from gml_application_schema_toolbox.gui import qgis_form_custom_widget as qq\n"
             "    qq.inject_custom_viewer_into_form(dialog, layer, feature)\n"
@@ -245,7 +245,7 @@ def on_resolve_href_(dialog, layer, feature, field):
         root_layer.changeAttributeValue(fid, idx, pkid_value)
 
     root_layer.commitChanges()
-    
+
     # 4. declare a new QgsRelation
     rel_name = "1_n_"+layer.name()+"_"+field
     rel = QgsProject.instance().relationManager().relations().get(rel_name)
@@ -257,7 +257,7 @@ def on_resolve_href_(dialog, layer, feature, field):
         rel.setReferencingLayer(root_layer.id())
         rel.addFieldPair("parent_href_pkid", pkid)
         QgsProject.instance().relationManager().addRelation(rel)
-    
+
     # 5. declare the new relation in the form widgets
     # new 1:N in the current layer
     fc = layer.editFormConfig()
@@ -276,7 +276,7 @@ def on_resolve_href_(dialog, layer, feature, field):
                                                    'AllowAddFeatures': False,
                                                    'ShowForm': True})
     root_layer.setEditorWidgetSetup(idx, s)
-    
+
     # write metadata in layers
     href_resolved = layer.customProperty("href_resolved", [])
     if path not in href_resolved:
@@ -284,9 +284,9 @@ def on_resolve_href_(dialog, layer, feature, field):
     href_linked_layers = layer.customProperty("href_linked_layers", {})
     href_linked_layers[field] = root_layer.id()
     layer.setCustomProperty("href_linked_layers", href_linked_layers)
-        
+
     # 6. reload the current form
-    from ..main import get_iface    
+    from ..main import get_iface
     if is_feature_form:
         get_iface().openFeatureForm(layer, feature)
     else:

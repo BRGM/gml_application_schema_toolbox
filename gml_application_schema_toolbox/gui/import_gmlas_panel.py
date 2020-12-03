@@ -85,7 +85,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         if not self.destSrs.crs().isValid():
             self.destSrs.setCrs(iface.mapCanvas().mapSettings().destinationCrs())
         BASE.showEvent(self, event)
-        
+
     # Read XML file and substitute form parameters
     def gmlas_config(self):
         path = self.gmlasConfigLineEdit.text()
@@ -160,7 +160,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     def validate(self):
         #self.layerList.setTitle('Layers')
-        data_source = self.gmlas_datasource() 
+        data_source = self.gmlas_datasource()
 
         if data_source is None:
             QMessageBox.critical(self,
@@ -174,7 +174,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         for i in range(0, data_source.GetLayerCount()):
             layer = data_source.GetLayer(i)
             layer_name = layer.GetName()
-            if not layer_name.startswith(ogrMetadataLayerPrefix): 
+            if not layer_name.startswith(ogrMetadataLayerPrefix):
               feature_count = layer.GetFeatureCount()
 
               item = QListWidgetItem("{} ({})".format(layer_name, feature_count))
@@ -262,7 +262,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             params['reproject'] = False
         if self.sourceSrsCheck.isChecked():
             params['srcSRS'] = self.src_srs()
-            
+
         if self.convertToLinearCheckbox.isChecked():
              params['geometryType'] = 'CONVERT_TO_LINEAR'
 
@@ -328,7 +328,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             self.translate(params)
             if append_to_db is None:
                 import_in_qgis(dest, db_format, schema)
-            
+
         except InputError as e:
             e.show()
         except RuntimeError as e:
