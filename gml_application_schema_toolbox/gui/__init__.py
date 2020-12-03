@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from qgis.PyQt.QtWidgets import QMessageBox
 from gml_application_schema_toolbox import name as plugin_name

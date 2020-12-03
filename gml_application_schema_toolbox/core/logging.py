@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import logging
 from qgis.core import QgsMessageLog

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #   Copyright (C) 2017 BRGM (http:///brgm.fr)
 #   Copyright (C) 2017 Oslandia <infos@oslandia.com>

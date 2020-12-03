@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """
 Inspired by processing.gui.ExtentSelectionPanel

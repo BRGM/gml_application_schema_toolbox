@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # launch it with something like
 # QGIS_DEBUG=0 QGIS_PREFIX_PATH=/home/hme/src/QGIS/build/output PYTHONPATH=/home/hme/src/QGIS/build/output/python python3 test_load_as_xml.py
 
