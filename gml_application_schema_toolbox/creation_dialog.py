@@ -16,16 +16,15 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
-from __future__ import print_function
+
 
 import os
 from builtins import range, str
 
 from qgis.PyQt import uic
-
-from qgis.PyQt.QtCore import QSettings, QDir, QVariant
+from qgis.PyQt.QtCore import QDir, QSettings, QVariant
 from qgis.PyQt.QtGui import Qt
-from qgis.PyQt.QtWidgets import QDialog, QFileDialog, QTableWidgetItem, QComboBox
+from qgis.PyQt.QtWidgets import QComboBox, QDialog, QFileDialog, QTableWidgetItem
 
 FORM_CLASS, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "creation_dialog.ui")
@@ -36,7 +35,7 @@ class CreationDialog(QDialog, FORM_CLASS):
     def __init__(
         self,
         xml_uri=None,
-        is_remote=False,
+        is_remote: bool = False,
         attributes={},
         geometry_mapping=None,
         output_filename=None,

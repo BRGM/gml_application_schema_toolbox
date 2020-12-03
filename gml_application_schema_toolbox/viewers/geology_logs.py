@@ -17,8 +17,7 @@ from __future__ import absolute_import
 
 import os
 
-# from qgis.PyQt.QtCore import
-from qgis.PyQt.QtCore import Qt, QRectF
+from qgis.PyQt.QtCore import QRectF, Qt
 from qgis.PyQt.QtGui import QBrush, QColor, QFont, QFontMetrics, QIcon, QPen
 from qgis.PyQt.QtWidgets import (
     QFormLayout,
