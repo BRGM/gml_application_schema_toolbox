@@ -13,35 +13,40 @@
 #   You should have received a copy of the GNU Library General Public
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
-# -*- coding: utf-8 -*-
-import xml.etree.ElementTree as ET
+
 import io
+import xml.etree.ElementTree as ET
+
 
 def no_prefix(tag):
     """Remove the namespace prefix from the given name"""
-    if tag.startswith('{'):
-        return tag[tag.rfind('}')+1:]
+    if tag.startswith("{"):
+        return tag[tag.rfind("}") + 1 :]
     return tag
+
 
 def prefix(tag):
     """Return the namespace prefix from the given name"""
-    if tag.startswith('{'):
-        return tag[1:tag.rfind('}')]
+    if tag.startswith("{"):
+        return tag[1 : tag.rfind("}")]
     return ""
+
 
 def no_ns(s):
     """Remove namespace prefix, except on attributes"""
-    i=s.find(':')
-    if i != -1 and '@' not in s[:i]:
-        return s[i+1:]
+    i = s.find(":")
+    if i != -1 and "@" not in s[:i]:
+        return s[i + 1 :]
     return s
+
 
 def split_tag(tag):
     """Return a pair (ns prefix, tag) from a tag name"""
-    if tag.startswith('{'):
-        i = tag.rfind('}')
-        return (tag[1:i], tag[i+1:])
+    if tag.startswith("{"):
+        i = tag.rfind("}")
+        return (tag[1:i], tag[i + 1 :])
     return ("", tag)
+
 
 def remove_prefix(node):
     node.tag = no_prefix(node.tag)
@@ -52,13 +57,17 @@ def remove_prefix(node):
     for child in node:
         remove_prefix(child)
 
+
 def resolve_xpath(node, xpath, ns_map=None):
     get_text = xpath.endswith("/text()")
     if get_text:
         xpath = xpath[0:-7]
     nodes = node.findall(xpath, ns_map)
     if get_text:
-        nodes = [node.text if node is not None and node.text is not None else "" for node in nodes]
+        nodes = [
+            node.text if node is not None and node.text is not None else ""
+            for node in nodes
+        ]
     if len(nodes) == 0:
         return None if not get_text else ""
     elif len(nodes) == 1:
@@ -66,14 +75,16 @@ def resolve_xpath(node, xpath, ns_map=None):
     else:
         return nodes
 
+
 def xml_root_tag(xml_file):
     """
     Return the root tag of an XML file
     :param xml_file: the input XML file
     :returns: root tag, as a string
     """
-    for event, elem in ET.iterparse(xml_file, ['start']):
+    for event, elem in ET.iterparse(xml_file, ["start"]):
         return elem.tag
+
 
 def xml_parse(xml_file):
     """
@@ -82,18 +93,19 @@ def xml_parse(xml_file):
     :returns: (doc, ns_map)
     """
     root = None
-    ns_map = {} # prefix -> ns_uri
-    for event, elem in ET.iterparse(xml_file, ['start-ns', 'start', 'end']):
-        if event == 'start-ns':
+    ns_map = {}  # prefix -> ns_uri
+    for event, elem in ET.iterparse(xml_file, ["start-ns", "start", "end"]):
+        if event == "start-ns":
             # elem = (prefix, ns_uri)
             ns_map[elem[0]] = elem[1]
-        elif event == 'start':
+        elif event == "start":
             if root is None:
                 root = elem
     for prefix, uri in ns_map.items():
         ET.register_namespace(prefix, uri)
 
     return (ET.ElementTree(root), ns_map)
+
 
 def xml_parse_from_string(s):
     return xml_parse(io.StringIO(s))

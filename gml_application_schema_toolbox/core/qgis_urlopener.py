@@ -1,4 +1,3 @@
-
 #   Copyright (C) 2016 BRGM (http:///brgm.fr)
 #   Copyright (C) 2016 Oslandia <infos@oslandia.com>
 #
@@ -15,16 +14,17 @@
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
 from builtins import str
-
-from qgis.PyQt.QtCore import QUrl, QEventLoop
-from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkAccessManager
 from io import BytesIO
-from qgis.core import QgsNetworkAccessManager
 
-from gml_application_schema_toolbox.core.settings import settings
+from qgis.core import QgsNetworkAccessManager
+from qgis.PyQt.QtCore import QEventLoop, QUrl
+from qgis.PyQt.QtNetwork import QNetworkAccessManager, QNetworkRequest
+
 from gml_application_schema_toolbox import name as plugin_name
+from gml_application_schema_toolbox.core.settings import settings
 
 __network_manager = None
+
 
 def _sync_get(url):
     global __network_manager
@@ -34,17 +34,24 @@ def _sync_get(url):
     pause = QEventLoop()
     req = QNetworkRequest(url)
     req.setRawHeader(b"Accept", b"application/xml")
-    req.setRawHeader(b"Accept-Language", bytes(settings.value("default_language", "fr"), "utf8"))
-    req.setRawHeader(b"User-Agent", bytes(settings.value('http_user_agent', plugin_name()), "utf8"))
+    req.setRawHeader(
+        b"Accept-Language", bytes(settings.value("default_language", "fr"), "utf8")
+    )
+    req.setRawHeader(
+        b"User-Agent", bytes(settings.value("http_user_agent", plugin_name()), "utf8")
+    )
     reply = __network_manager.get(req)
     reply.finished.connect(pause.quit)
     is_ok = [True]
+
     def onError(self):
         is_ok[0] = False
         pause.quit()
+
     reply.error.connect(onError)
     pause.exec_()
     return reply, is_ok[0]
+
 
 def remote_open_from_qgis(uri):
     """Opens a remote URL using QGIS proxy preferences"""

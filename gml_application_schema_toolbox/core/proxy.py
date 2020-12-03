@@ -1,11 +1,10 @@
-
 import os
-from qgis.PyQt.QtCore import QSettings
+
 from osgeo import gdal
+from qgis.PyQt.QtCore import QSettings
 
 
-class qgis_proxy_settings():
-
+class qgis_proxy_settings:
     def __enter__(self):
         # keep previous config
         self.http_proxy = os.environ.get("http_proxy")
@@ -16,14 +15,14 @@ class qgis_proxy_settings():
 
         # apply QGIS proxy settings
         settings = QSettings()
-        enabled = settings.value("proxy/proxyEnabled", 'false').lower() == "true"
+        enabled = settings.value("proxy/proxyEnabled", "false").lower() == "true"
         type = settings.value("proxy/proxyType", "")
         host = settings.value("proxy/proxyHost", "")
         port = settings.value("proxy/proxyPort", "")
         user = settings.value("proxy/proxyUser", "")
         password = settings.value("proxy/proxyPassword", "")
         excludes = settings.value("proxy/proxyExcludedUrls", "")
-        if not excludes or (hasattr(excludes, 'isNull') and excludes.isNull()):
+        if not excludes or (hasattr(excludes, "isNull") and excludes.isNull()):
             excludes = []
         else:
             excludes = excludes.split("|")
@@ -46,22 +45,22 @@ class qgis_proxy_settings():
             os.environ["no_proxy"] = no_proxy
 
             gdal_http_proxy = "{}:{}".format(host, port)
-            gdal.SetConfigOption('GDAL_HTTP_PROXY', gdal_http_proxy)
+            gdal.SetConfigOption("GDAL_HTTP_PROXY", gdal_http_proxy)
             if user != "":
                 gdal_http_proxyuserpwd = "{}:{}".format(user, password)
-                gdal.SetConfigOption('GDAL_HTTP_PROXYUSERPWD', gdal_http_proxyuserpwd)
+                gdal.SetConfigOption("GDAL_HTTP_PROXYUSERPWD", gdal_http_proxyuserpwd)
 
     def __exit__(self, type, value, tb):
         # restore previous settings
         if self.http_proxy is not None:
-            os.environ['http_proxy'] = self.http_proxy
-            os.environ['http_proxy'] = self.http_proxy
+            os.environ["http_proxy"] = self.http_proxy
+            os.environ["http_proxy"] = self.http_proxy
         else:
-            os.environ.pop('http_proxy', None)
-            os.environ.pop('https_proxy', None)
+            os.environ.pop("http_proxy", None)
+            os.environ.pop("https_proxy", None)
         if self.no_proxy is not None:
-            os.environ['no_proxy'] = self.no_proxy
+            os.environ["no_proxy"] = self.no_proxy
         else:
-            os.environ.pop('no_proxy', None)
+            os.environ.pop("no_proxy", None)
         gdal.SetConfigOption("GDAL_HTTP_PROXY", self.gdal_http_proxy)
         gdal.SetConfigOption("GDAL_HTTP_PROXYUSERPWD", self.gdal_http_proxyuserpwd)
