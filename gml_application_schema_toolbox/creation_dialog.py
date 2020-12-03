@@ -19,7 +19,7 @@
 from __future__ import print_function
 from builtins import str
 from builtins import range
-# -*- coding: utf-8 -*-
+
 import os
 
 from qgis.PyQt.QtCore import *

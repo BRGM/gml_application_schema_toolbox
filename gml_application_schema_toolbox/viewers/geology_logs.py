@@ -14,7 +14,7 @@
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import
-# -*- coding: utf-8 -*-
+
 
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
