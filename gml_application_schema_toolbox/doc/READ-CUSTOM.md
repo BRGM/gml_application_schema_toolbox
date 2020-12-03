@@ -4,7 +4,7 @@ Accessing the information contained in XML elements, either thanks to the native
 We have tested the idea here of custom element viewers for certain known types.
 
 
-In particular, we have developed a custom viewer for the **time series of measurements** that can be found in the WaterML2 – part I : TimeSeries application schema. Such time series are represented by XML sequences of values. Plotting them as a curve should be a better representation than a raw list of time instants and values. 
+In particular, we have developed a custom viewer for the **time series of measurements** that can be found in the WaterML2 – part I : TimeSeries application schema. Such time series are represented by XML sequences of values. Plotting them as a curve should be a better representation than a raw list of time instants and values.
 
 
 The idea behind this custom viewer is to offer an API that could be used by third party developers to provide custom viewer widgets for some complex types. This API is developed so that it works regardless of the value passed for the ```Maximum table merging depth```.

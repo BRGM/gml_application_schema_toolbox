@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
-
 import logging
+
 from qgis.core import QgsMessageLog
+
 from gml_application_schema_toolbox import name
 
 
@@ -10,11 +10,10 @@ def log(msg):
 
 
 def gdal_error_handler(eErrClass, err_no, msg):
-    log('{} {}: {}'.format(eErrClass, err_no, msg))
+    log("{} {}: {}".format(eErrClass, err_no, msg))
 
 
 class QgsMessageLogHandler(logging.Handler):
-
     def __init__(self, tag=None):
         super(QgsMessageLogHandler, self).__init__()
         self.tag = tag
@@ -26,11 +25,12 @@ class QgsMessageLogHandler(logging.Handler):
             self.flush()
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except Exception as err:
+            QgsMessageLog.logMessage(err, self.tag, QgsMessageLog.ERROR)
             self.handleError(record)
 
 
-owslib_logger = logging.getLogger('owslib')
+owslib_logger = logging.getLogger("owslib")
 owslib_logger.setLevel(logging.DEBUG)
 
 owslib_handler = None

@@ -14,9 +14,11 @@
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import
-# -*- coding: utf-8 -*-
-from .xml_utils import no_prefix
+
 import xml.etree.ElementTree as ET
+
+from .xml_utils import no_prefix
+
 
 def extract_features(doc):
     """Extract (Complex) features from a XML doc
@@ -26,14 +28,17 @@ def extract_features(doc):
                     bbox_srs is the srsName of the bbox
                     nodes is a list of nodes for each feature
     """
+
     def _extract(node):
         features = []
         bbox = None
         bbox_srs = None
-        if node.tag.startswith(u'{http://www.opengis.net/wfs') and node.tag.endswith('FeatureCollection'):
+        if node.tag.startswith(u"{http://www.opengis.net/wfs") and node.tag.endswith(
+            "FeatureCollection"
+        ):
             # WFS features
             for child in node:
-                if no_prefix(child.tag) == 'member':
+                if no_prefix(child.tag) == "member":
                     # a member may contain another featurecollection => recursive call
                     for cchild in child:
                         nbbox, nbbox_srs, nfeatures = _extract(cchild)
@@ -41,31 +46,33 @@ def extract_features(doc):
                             bbox = nbbox
                             bbox_srs = nbbox_srs
                         features += nfeatures
-                elif no_prefix(child.tag) == 'featureMembers':
+                elif no_prefix(child.tag) == "featureMembers":
                     for cchild in child:
                         features.append(cchild)
-                elif no_prefix(child.tag) == 'featureMember':
+                elif no_prefix(child.tag) == "featureMember":
                     for cchild in child:
                         features.append(cchild)
-                elif no_prefix(child.tag) == 'boundedBy':
+                elif no_prefix(child.tag) == "boundedBy":
                     lc = None
                     uc = None
                     for cchild in child:
-                        if no_prefix(cchild.tag) == 'Envelope':
+                        if no_prefix(cchild.tag) == "Envelope":
                             for k, v in cchild.attrib.items():
-                                if no_prefix(k) == 'srsName':
+                                if no_prefix(k) == "srsName":
                                     bbox_srs = v
                             for ccchild in cchild:
-                                if no_prefix(ccchild.tag) == 'lowerCorner':
+                                if no_prefix(ccchild.tag) == "lowerCorner":
                                     lc = ccchild.text
-                                elif no_prefix(ccchild.tag) == 'upperCorner':
+                                elif no_prefix(ccchild.tag) == "upperCorner":
                                     uc = ccchild.text
                     if lc is not None and uc is not None:
-                        lcp = [float(x) for x in lc.split(' ')]
-                        ucp = [float(x) for x in uc.split(' ')]
+                        lcp = [float(x) for x in lc.split(" ")]
+                        ucp = [float(x) for x in uc.split(" ")]
                         bbox = (lcp[0], lcp[1], ucp[0], ucp[1])
-                        
-        elif node.tag.startswith(u'{http://www.opengis.net/sos/2') and node.tag.endswith('GetObservationResponse'):
+
+        elif node.tag.startswith(
+            u"{http://www.opengis.net/sos/2"
+        ) and node.tag.endswith("GetObservationResponse"):
             # SOS features
             for child in node:
                 if no_prefix(child.tag) == "observationData":
@@ -74,7 +81,9 @@ def extract_features(doc):
             # it seems to be an isolated feature
             features.append(node)
         return (bbox, bbox_srs, features)
+
     return _extract(doc.getroot())
+
 
 def extract_features_from_file(file_path):
     return extract_features(ET.parse(file_path))

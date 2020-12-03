@@ -75,7 +75,7 @@ Besides, some application schemas also return collections of features. This is t
 
 Different kinds of identifiers may be found in a Complex Features stream. The XML instance will contain a ```gml:id``` attribute and may contain a ```gml:identifier``` element.
 
-Those two types of identifier serve different purposes : 
+Those two types of identifier serve different purposes :
 
 * mandatory ```gml:id``` provides a unique identifier within a given flow (or file)
 * ```gml:identifier``` is not mandatory per se but is more and more used to provide an externally unique and stable identifier for a given feature (linked open data)

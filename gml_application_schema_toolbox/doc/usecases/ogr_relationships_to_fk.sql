@@ -1,5 +1,5 @@
 
-CREATE OR REPLACE FUNCTION ogr_add_fk_from_relationships(schema TEXT) 
+CREATE OR REPLACE FUNCTION ogr_add_fk_from_relationships(schema TEXT)
 RETURNS integer AS
 $BODY$
 DECLARE
@@ -9,7 +9,7 @@ DECLARE
     aq TEXT;
 BEGIN
     RAISE NOTICE 'Converting OGR relationships to database foreign keys ...';
-    FOR t IN 
+    FOR t IN
 	SELECT table_schema, table_name
 	FROM information_schema.tables
 	WHERE table_name = '_ogr_layer_relationships' AND
@@ -26,7 +26,7 @@ BEGIN
                 BEGIN
 		  RAISE NOTICE 'Creating FK on %.%', r.parent_layer, r.parent_pkid;
                   aq := (
-		    'ALTER TABLE ' || t.table_schema || '.' || r.parent_layer || 
+		    'ALTER TABLE ' || t.table_schema || '.' || r.parent_layer ||
 		    ' ADD CONSTRAINT ' || r.parent_layer || r.parent_pkid || '_uk ' ||
 		    ' UNIQUE (' || r.parent_pkid || ')'
 		    );
@@ -38,9 +38,9 @@ BEGIN
                 -- Create FK
 		BEGIN
                   aq := (
-		    'ALTER TABLE ' || t.table_schema || '.' || r.child_layer || 
-		    ' ADD CONSTRAINT ' || r.parent_layer || r.parent_pkid || 
-		    ' FOREIGN KEY (' || r.child_pkid || ') ' || 
+		    'ALTER TABLE ' || t.table_schema || '.' || r.child_layer ||
+		    ' ADD CONSTRAINT ' || r.parent_layer || r.parent_pkid ||
+		    ' FOREIGN KEY (' || r.child_pkid || ') ' ||
 		    ' REFERENCES ' || t.table_schema || '.' || r.parent_layer || ' (' || r.parent_pkid || ')'
 		  );
 		  EXECUTE aq;
@@ -57,7 +57,7 @@ $BODY$
 LANGUAGE 'plpgsql' ;
 
 
-CREATE OR REPLACE FUNCTION ogr_drop_fk_from_relationships(schema TEXT) 
+CREATE OR REPLACE FUNCTION ogr_drop_fk_from_relationships(schema TEXT)
 RETURNS integer AS
 $BODY$
 DECLARE
@@ -67,7 +67,7 @@ DECLARE
     aq TEXT;
 BEGIN
     RAISE NOTICE 'Converting OGR relationships to database foreign keys ...';
-    FOR t IN 
+    FOR t IN
 	SELECT table_schema, table_name
 	FROM information_schema.tables
 	WHERE table_name = '_ogr_layer_relationships' AND
@@ -83,13 +83,13 @@ BEGIN
 	    LOOP
 		RAISE NOTICE 'Drop UK/FK on %.%', r.parent_layer, r.parent_pkid;
 		aq := (
-		  'ALTER TABLE ' || t.table_schema || '.' || r.child_layer || 
+		  'ALTER TABLE ' || t.table_schema || '.' || r.child_layer ||
 		  ' DROP CONSTRAINT ' || r.parent_layer || r.parent_pkid
 		);
 		EXECUTE aq;
 
 		aq := (
-		  'ALTER TABLE ' || t.table_schema || '.' || r.parent_layer || 
+		  'ALTER TABLE ' || t.table_schema || '.' || r.parent_layer ||
 		  ' DROP CONSTRAINT ' || r.parent_layer || r.parent_pkid || '_pk '
 		);
 		EXECUTE aq;
