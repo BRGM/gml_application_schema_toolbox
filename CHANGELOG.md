@@ -1,5 +1,28 @@
 # CHANGELOG
 
+### 1.2.1 - 18/12/2020
+
+- fix compatibility with QGIS >= 3.13 ([#94](https://github.com/BRGM/gml_application_schema_toolbox/issues/94))
+- start using GitHub Actions for continuous integration and deployment
+- bump development guidelines using black, flake8, isort and precommit [#95](https://github.com/BRGM/gml_application_schema_toolbox/pull/95)
+- add template for issues [#97](https://github.com/BRGM/gml_application_schema_toolbox/pull/97)
+- bump codebase to Python 3 only [#98](https://github.com/BRGM/gml_application_schema_toolbox/pull/98)
+- automate release workflow using qgis-plugin-ci [#101](https://github.com/BRGM/gml_application_schema_toolbox/pull/101)
+
+### 1.2.0 - 08/06/2018
+
+New major version, with the following main changes:
+
+- XML mode: support for multiple geometries
+- XML mode: support for polyhedral / curves
+- UI refactor using a Wizard
+- GMLAS mode: handle custom viewers
+- GMLAS mode: add href resolution
+- WFS version negotiation
+- Lots of bug fixes
+
+This work has been funded by [BRGM](http://www.brgm.fr) and [the Association of Finnish Local and Regional Authorities](https://www.localfinland.fi/) (via [Gispo](http://www.gispo.fi/))
+
 ### 1.1.4 - 06/11/2017
 
 - Handle multi geometries (#30)
