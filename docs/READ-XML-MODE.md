@@ -104,8 +104,3 @@ Using a label based on an expression with something like the following would do 
 
 The expression relies on regular expression parsing to extract useful data from the raw XML content.
 Regular expressions are not always easy to design and the text parsing required could lead to performance issues. New functions to manipulate XML streams, like XPATH resolution could be of great help here, especially since the XML tree widget allows the user to copy the Xpath of a given XML element, this can be reused easily in QGIS expressions.
-
-
-
-
-
