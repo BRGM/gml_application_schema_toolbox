@@ -15,5 +15,4 @@ coverage.xml
 htmlcov/
 
 # project
-samples
 *.zip
