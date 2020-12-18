@@ -14,5 +14,8 @@ coverage.xml
 # docs
 htmlcov/
 
+# qt stuff
+*_rc.py
+
 # project
 *.zip
