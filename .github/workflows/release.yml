@@ -1,0 +1,54 @@
+name: Release 🚀
+
+env:
+  PROJECT_FOLDER: "gml_application_schema_toolbox"
+  PYTHON_VERSION: 3.8
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Qt lrelease
+      run: sudo apt install qt5-default qttools5-dev-tools
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Get tag name as version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+
+    - name: Install project requirements
+      run: |
+        python -m pip install -U pip setuptools wheel
+        python -m pip install -U 'qgis-plugin-ci>=1.8,<1.9'
+
+    - name : Get current changelog for ${VERSION}
+      run: qgis-plugin-ci changelog ${GITHUB_REF/refs\/tags\//} >> release.md
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.BOT_HUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: ${{ github.ref }}
+        body_path: release.md
+
+    # - name: Deploy plugin
+    #   run: >-
+    #     qgis-plugin-ci
+    #     release ${GITHUB_REF/refs\/tags\//}
+    #     --github-token ${{ secrets.BOT_HUB_TOKEN }}
+    #     --transifex-token ${{ secrets.TRANSIFEX_TOKEN }}
