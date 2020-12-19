@@ -54,4 +54,3 @@ The panel can also be used to download file from a URL. This URL
 could point to an existing GML file or could be a ```GetFeature``` request.
 
 ![Download from URL](img/download-from-url.png)
-

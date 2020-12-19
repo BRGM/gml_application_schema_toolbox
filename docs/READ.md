@@ -9,4 +9,3 @@ each having a dominating data representation mode:
 
 
 * a [database (relational) approach](READ-DB-MODE.md), where XML data are first stored in a database with relations between tables. The user then relies on native mechanisms found in QGIS to manipulate these data (joins, relations, form widgets).
-

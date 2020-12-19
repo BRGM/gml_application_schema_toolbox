@@ -113,4 +113,3 @@ On each table, a button allows to directly open the attribute table of the given
 For the time being only file opened with PyXB mode can use
 the schema view. By future work, schema view may also
 support any databases schema (eg. PostGIS & SQLite created by the GMLAS driver).
-

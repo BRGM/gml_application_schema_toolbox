@@ -1,8 +1,22 @@
+# python
 __pycache__
-samples
-*.zip
+*.pyc
+
+# virtual environment
+venv
 .venv
-htmlcov/
+
+# tooling
 junit/
 .coverage
 coverage.xml
+*.log
+
+# docs
+htmlcov/
+
+# qt stuff
+*_rc.py
+
+# project
+*.zip

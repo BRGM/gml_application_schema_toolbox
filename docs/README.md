@@ -62,4 +62,3 @@ Thanks to all [contributors](graphs/contributors).
 ## License
 
 The project license is GPLv2+.
-

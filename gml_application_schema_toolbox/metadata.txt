@@ -10,8 +10,8 @@
 
 [general]
 name=QGIS GML Application Schema Toolbox
-qgisMinimumVersion=2.99
-qgisMaximumVersion=3.99
+qgisMinimumVersion=3.4
+qgisMaximumVersion=3.16
 description=Consumption and use of GML complex features like INSPIRE harmonised data (vector), GeoSciML within QGIS
 about=This plugins allows to import Complex Features streams in QGIS either through a native XML mode or through a conversion to a relational database model.
 
@@ -36,4 +36,4 @@ deprecated=False
 author=BRGM, Oslandia, Copernicus, Camptocamp, Spatialys, titellus
 
 # email of the plugin administrator
-email=hugo.mercier@oslandia.com
+email=julienm@oslandia.com

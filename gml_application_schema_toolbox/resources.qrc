@@ -1,0 +1,12 @@
+<RCC>
+  <qresource prefix="/plugins/gmlas_toolbox">
+    <file>logo_brgm.svg</file>
+    <file>logo_c2c.svg</file>
+    <file>logo_eea.png</file>
+    <file>logo_oslandia.png</file>
+    <file>logo_spatialys.png</file>
+    <file>mActionAddGMLLayer.svg</file>
+    <file>mActionOpenTableGML.svg</file>
+    <file>mActionShowSchema.svg</file>
+  </qresource>
+</RCC>
