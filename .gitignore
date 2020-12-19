@@ -10,6 +10,7 @@ venv
 junit/
 .coverage
 coverage.xml
+*.log
 
 # docs
 htmlcov/
