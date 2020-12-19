@@ -16,8 +16,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install Qt lrelease
-      run: sudo apt install qt5-default qttools5-dev-tools
+    # - name: Install Qt lrelease
+    #   run: sudo apt install qt5-default qttools5-dev-tools
 
     - name: Setup Python
       uses: actions/setup-python@v2
