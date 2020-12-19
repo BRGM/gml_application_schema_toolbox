@@ -33,7 +33,7 @@ jobs:
       - name: Install project requirements
         run: |
           python -m pip install -U pip setuptools wheel
-          python -m pip install -U qgis-plugin-ci>=1.8,<1.9
+          python -m pip install -U 'qgis-plugin-ci>=1.8,<1.9'
 
       - name: Package the latest version
         run: |
