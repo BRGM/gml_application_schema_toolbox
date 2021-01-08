@@ -2,7 +2,7 @@ import os
 
 from qgis.PyQt.QtCore import QSettings
 
-from gml_application_schema_toolbox import name as plugin_name
+from gml_application_schema_toolbox.__about__ import __title__
 
 DEFAULT_GMLAS_CONFIG = os.path.realpath(
     os.path.join(os.path.dirname(__file__), "..", "conf", "gmlasconf.xml")
@@ -20,7 +20,7 @@ defaults = {
 }
 
 settings = QSettings()
-settings.beginGroup(plugin_name())
+settings.beginGroup(__title__)
 for key, value in defaults.items():
     if not settings.contains(key):
         settings.setValue(key, value)

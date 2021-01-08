@@ -5,7 +5,7 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QAbstractItemModel, QModelIndex, QSettings, Qt, pyqtSlot
 from qgis.PyQt.QtWidgets import QFileDialog, QMessageBox
 
-from gml_application_schema_toolbox import name as plugin_name
+from gml_application_schema_toolbox.__about__ import __title__
 from gml_application_schema_toolbox.core.gmlas_postgis_db import GmlasPostgisDB
 from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
@@ -152,7 +152,7 @@ class DatabaseWidget(BASE, WIDGET):
         schemas = [schema[1] for schema in self._pgsql_db.list_schemas()]
         if schema not in schemas:
             res = QMessageBox.question(
-                self, plugin_name(), self.tr('Create schema "{}" ?').format(schema)
+                self, __title__, self.tr('Create schema "{}" ?').format(schema)
             )
             if res != QMessageBox.Yes:
                 raise InputError()

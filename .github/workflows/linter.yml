@@ -1,4 +1,4 @@
-name: Linter
+name: Linter 🐍
 
 env:
   PROJECT_FOLDER: "gml_application_schema_toolbox"

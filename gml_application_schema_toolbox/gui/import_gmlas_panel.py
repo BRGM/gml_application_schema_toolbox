@@ -32,7 +32,7 @@ from qgis.PyQt.QtCore import Qt, pyqtSlot
 from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QListWidgetItem, QMessageBox
 from qgis.utils import iface
 
-from gml_application_schema_toolbox import name as plugin_name
+from gml_application_schema_toolbox.__about__ import __title__
 from gml_application_schema_toolbox.core.logging import log
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 from gml_application_schema_toolbox.core.settings import settings
@@ -141,7 +141,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             driverConnection = "GMLAS:{}".format(datasourceFile)
         gdal.SetConfigOption("GDAL_HTTP_UNSAFESSL", "YES")
         gdal.SetConfigOption(
-            "GDAL_HTTP_USERAGENT", settings.value("http_user_agent", plugin_name())
+            "GDAL_HTTP_USERAGENT", settings.value("http_user_agent", __title__)
         )
 
         with qgis_proxy_settings():
@@ -165,7 +165,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         if data_source is None:
             QMessageBox.critical(
                 self,
-                plugin_name(),
+                __title__,
                 self.tr("Failed to open file using OGR GMLAS driver"),
             )
             return
@@ -301,13 +301,13 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
         gdal.SetConfigOption("GDAL_HTTP_UNSAFESSL", "YES")
         gdal.SetConfigOption(
-            "GDAL_HTTP_USERAGENT", settings.value("http_user_agent", plugin_name())
+            "GDAL_HTTP_USERAGENT", settings.value("http_user_agent", __title__)
         )
 
         def error_handler(err, err_no, msg):
             if err >= gdal.CE_Warning:
                 QgsMessageLog.logMessage(
-                    "{} {}: {}".format(err, err_no, msg), plugin_name()
+                    "{} {}: {}".format(err, err_no, msg), __title__
                 )
 
         if append_to_db is None:
@@ -315,9 +315,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             if dest == "" and self.databaseWidget.format() == "SQLite":
                 with tempfile.NamedTemporaryFile(suffix=".sqlite") as tmp:
                     dest = tmp.name
-                    QgsMessageLog.logMessage(
-                        "Temp SQLITE: {}".format(dest), plugin_name()
-                    )
+                    QgsMessageLog.logMessage("Temp SQLITE: {}".format(dest), __title__)
 
             if dest.startswith("PG:"):
                 schema = self.databaseWidget.schema()
@@ -342,7 +340,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         except InputError as e:
             e.show()
         except RuntimeError as e:
-            QMessageBox.warning(None, plugin_name(), e.args[0])
+            QMessageBox.warning(None, __title__, e.args[0])
         finally:
             QApplication.restoreOverrideCursor()
             gdal.PopErrorHandler()

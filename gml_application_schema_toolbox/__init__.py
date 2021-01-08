@@ -20,30 +20,6 @@
 """
 
 
-def name():
-    return "QGIS GML Application Schema Toolbox"
-
-
-def description():
-    return "QGIS GML Application Schema Toolbox"
-
-
-def version():
-    return "1.2.0"
-
-
-def icon():
-    return "icon.png"
-
-
-def qgisMinimumVersion():
-    return "2.99"
-
-
-def qgisMaximumVersion():
-    return "3.99"
-
-
 def classFactory(iface):
     from .main import MainPlugin
 
