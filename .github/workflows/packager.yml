@@ -1,4 +1,4 @@
-name: Packager
+name: Packager 📦
 
 env:
   PROJECT_FOLDER: "gml_application_schema_toolbox"
