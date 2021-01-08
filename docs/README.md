@@ -47,6 +47,7 @@ Most of the example below are based on:
 * GroundWaterML2.0 WFS flow on French aquifer reference dataset (BD LISA),
 * SOS flows on the groundwater level measurements acquired by the piezometers monitoring those aquifers.
 
+<<<<<<< Updated upstream:docs/README.md
 
 ## Authors
 
@@ -62,3 +63,53 @@ Thanks to all [contributors](graphs/contributors).
 ## License
 
 The project license is GPLv2+.
+=======
+----
+
+## Documentation contents
+
+```{toctree}
+---
+caption: Use the plugin
+maxdepth: 1
+---
+usage/quickstart
+usage/download
+usage/read_files
+usage/read_custom
+usage/read_mode_db
+usage/read_mode_xml
+usage/write_from_db
+```
+
+```{toctree}
+---
+caption: Use cases
+maxdepth: 1
+---
+usecases/index
+usecases/UC_vbox.md
+usecases/UC_overlap.md
+usecases/UC_codelist.md
+usecases/UC_create_inspire_data.md
+```
+
+```{toctree}
+---
+caption: Contribute to the plugin
+maxdepth: 1
+---
+development/contributing
+development/environment
+development/documentation
+development/history
+```
+
+```{toctree}
+---
+caption: Testing
+maxdepth: 1
+---
+testing/scenario_basic
+```
+>>>>>>> Stashed changes:docs/index.md
