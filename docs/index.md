@@ -23,26 +23,6 @@ Most of the example below are based on:
 * GroundWaterML2.0 WFS flow on French aquifer reference dataset (BD LISA),
 * SOS flows on the groundwater level measurements acquired by the piezometers monitoring those aquifers.
 
-<<<<<<< HEAD:docs/README.md
-<<<<<<< Updated upstream:docs/README.md
-
-## Authors
-
-The plugin has been funded by:
-* [BRGM](http://www.brgm.fr/) - BRGM is involved for a long time in the definition of interoperability standards especially linked to OGC and the European INSPIRE directive initiatives.
-* [European Union's Earth observation programme Copernicus](http://www.copernicus.eu/), as part of the tasks delegated to the European Environment Agency
-
-The plugin has been developed by [Oslandia](http://www.oslandia.com/), [Camptocamp](http://www.camptocamp.com/) and rely on [OGR GMLAS driver](http://www.gdal.org/drv_gmlas.html) developed by [Spatialys](http://www.spatialys.com/).
-
-Thanks to all [contributors](graphs/contributors).
-
-
-## License
-
-The project license is GPLv2+.
-=======
-=======
->>>>>>> a15ea4ddfbea39c71631580ff17e6fe3175a4dc1:docs/index.md
 ----
 
 ## Documentation contents
@@ -83,7 +63,6 @@ development/environment
 development/documentation
 development/history
 ```
-<<<<<<< HEAD:docs/README.md
 
 ```{toctree}
 ---
@@ -92,6 +71,3 @@ maxdepth: 1
 ---
 testing/scenario_basic
 ```
->>>>>>> Stashed changes:docs/index.md
-=======
->>>>>>> a15ea4ddfbea39c71631580ff17e6fe3175a4dc1:docs/index.md
