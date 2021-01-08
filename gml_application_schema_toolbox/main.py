@@ -21,9 +21,8 @@ import sys
 
 from qgis.core import QgsApplication
 from qgis.gui import QgsGui
-
-from qgis.PyQt.QtCore import Qt, QUrl
-from qgis.PyQt.QtGui import QDesktopServices, QPixmap
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtGui import QIcon, QPixmap
 from qgis.PyQt.QtWidgets import (
     QAction,
     QApplication,
@@ -35,6 +34,7 @@ from qgis.PyQt.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from qgis.utils import showPluginHelp
 
 from .core.load_gmlas_in_qgis import import_in_qgis
 from .gui import InputError
@@ -46,8 +46,7 @@ package_path = [os.path.join(os.path.dirname(__file__), "extlibs")]
 if not set(package_path).issubset(set(sys.path)):
     sys.path = package_path + sys.path
 
-from . import name as plugin_name
-from . import version as plugin_version
+from .__about__ import __title__, __version__
 from .gui.export_gmlas_panel import ExportGmlasPanel
 from .gui.load_wizard import LoadWizard
 
@@ -75,8 +74,12 @@ class MainPlugin(object):
         self.aboutAction = QAction("About", self.iface.mainWindow())
         self.aboutAction.triggered.connect(self.onAbout)
 
-        self.helpAction = QAction("Help", self.iface.mainWindow())
-        self.helpAction.triggered.connect(self.onHelp)
+        self.helpAction = QAction(
+            QIcon(":/images/themes/default/mActionHelpContents.svg"),
+            "Help",
+            self.iface.mainWindow(),
+        )
+        self.helpAction.triggered.connect(lambda: showPluginHelp(filename="doc/index"))
 
         self.loadAction = QAction("Load a GMLAS database", self.iface.mainWindow())
         self.loadAction.triggered.connect(self.onLoad)
@@ -89,12 +92,12 @@ class MainPlugin(object):
         self.wizardAction = QAction("Load (wizard)", self.iface.mainWindow())
         self.wizardAction.triggered.connect(self.onWizardLoad)
 
-        self.iface.addPluginToMenu(plugin_name(), self.wizardAction)
-        self.iface.addPluginToMenu(plugin_name(), self.loadAction)
-        self.iface.addPluginToMenu(plugin_name(), self.exportAction)
-        self.iface.addPluginToMenu(plugin_name(), self.settingsAction)
-        self.iface.addPluginToMenu(plugin_name(), self.aboutAction)
-        self.iface.addPluginToMenu(plugin_name(), self.helpAction)
+        self.iface.addPluginToMenu(__title__, self.wizardAction)
+        self.iface.addPluginToMenu(__title__, self.loadAction)
+        self.iface.addPluginToMenu(__title__, self.exportAction)
+        self.iface.addPluginToMenu(__title__, self.settingsAction)
+        self.iface.addPluginToMenu(__title__, self.aboutAction)
+        self.iface.addPluginToMenu(__title__, self.helpAction)
 
         self.model_dlg = None
         self.model = None
@@ -108,19 +111,19 @@ class MainPlugin(object):
 
     def unload(self):
         # Remove the plugin menu item and icon
-        self.iface.removePluginMenu(plugin_name(), self.wizardAction)
-        self.iface.removePluginMenu(plugin_name(), self.loadAction)
-        self.iface.removePluginMenu(plugin_name(), self.exportAction)
-        self.iface.removePluginMenu(plugin_name(), self.settingsAction)
-        self.iface.removePluginMenu(plugin_name(), self.aboutAction)
-        self.iface.removePluginMenu(plugin_name(), self.helpAction)
+        self.iface.removePluginMenu(__title__, self.wizardAction)
+        self.iface.removePluginMenu(__title__, self.loadAction)
+        self.iface.removePluginMenu(__title__, self.exportAction)
+        self.iface.removePluginMenu(__title__, self.settingsAction)
+        self.iface.removePluginMenu(__title__, self.aboutAction)
+        self.iface.removePluginMenu(__title__, self.helpAction)
 
     def onAbout(self):
         self.about_dlg = QWidget()
         vlayout = QVBoxLayout()
         l = QLabel(
             """
-        <h1>QGIS GML Application Schema Toolbox</h1>
+        <h1>{}</h1>
         <h3>Version: {}</h3>
         <p>This plugin is a prototype aiming at experimenting with the manipulation of <b>Complex Features</b> streams.</p>
         <p>Two modes are available:
@@ -149,7 +152,7 @@ class MainPlugin(object):
         </ul>
         </p>
         """.format(
-                plugin_version()
+                __title__, __version__
             )
         )
         l.setWordWrap(True)
@@ -194,7 +197,7 @@ class MainPlugin(object):
         hlayout2.addWidget(l6)
         vlayout.addLayout(hlayout2)
         self.about_dlg.setLayout(vlayout)
-        self.about_dlg.setWindowTitle(plugin_name())
+        self.about_dlg.setWindowTitle(__title__)
         self.about_dlg.setWindowModality(Qt.WindowModal)
         self.about_dlg.show()
         self.about_dlg.resize(600, 800)
@@ -202,10 +205,6 @@ class MainPlugin(object):
     def onSettings(self):
         dlg = SettingsDialog()
         dlg.exec_()
-
-    def onHelp(self):
-        url = "https://github.com/BRGM/gml_application_schema_toolbox/blob/master/README.md"
-        QDesktopServices.openUrl(QUrl(url))
 
     def onLoad(self):
         dlg = QDialog(self.iface.mainWindow())
