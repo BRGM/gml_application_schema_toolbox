@@ -2,11 +2,11 @@ import logging
 
 from qgis.core import QgsMessageLog
 
-from gml_application_schema_toolbox import name
+from gml_application_schema_toolbox.__about__ import __title__
 
 
 def log(msg):
-    QgsMessageLog.logMessage(msg, name())
+    QgsMessageLog.logMessage(msg, __title__)
 
 
 def gdal_error_handler(eErrClass, err_no, msg):
@@ -39,6 +39,6 @@ for handler in owslib_logger.handlers:
         owslib_handler = handler
         break
 if owslib_handler is None:
-    owslib_handler = QgsMessageLogHandler(name())
+    owslib_handler = QgsMessageLogHandler(__title__)
     owslib_handler.setLevel(logging.DEBUG)
     owslib_logger.addHandler(owslib_handler)

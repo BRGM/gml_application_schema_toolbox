@@ -1,6 +1,6 @@
 from qgis.PyQt.QtWidgets import QMessageBox
 
-from gml_application_schema_toolbox import name as plugin_name
+from gml_application_schema_toolbox.__about__ import __title__
 
 
 class InputError(Exception):
@@ -11,4 +11,4 @@ class InputError(Exception):
     def show(self):
         if self.message is None:
             return
-        QMessageBox.warning(self.parent, plugin_name(), self.message)
+        QMessageBox.warning(self.parent, __title__, self.message)

@@ -5,7 +5,7 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtCore import pyqtSlot
 from qgis.PyQt.QtWidgets import QFileDialog
 
-from gml_application_schema_toolbox import name as plugin_name
+from gml_application_schema_toolbox.__about__ import __title__
 from gml_application_schema_toolbox.core.settings import settings
 
 WIDGET, BASE = uic.loadUiType(
@@ -30,7 +30,7 @@ class SettingsDialog(BASE, WIDGET):
         self.languageLineEdit.setText(settings.value("default_language"))
         self.set_db_type(settings.value("default_db_type"))
         self.set_access_mode(settings.value("default_access_mode"))
-        self.httpUserAgentEdit.setText(settings.value("http_user_agent", plugin_name()))
+        self.httpUserAgentEdit.setText(settings.value("http_user_agent", __title__))
 
     def save_settings(self):
         settings.setValue("default_maxfeatures", self.featureLimitBox.value())

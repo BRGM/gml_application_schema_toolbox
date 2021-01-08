@@ -25,7 +25,7 @@ from qgis.core import QgsApplication
 from qgis.PyQt.QtCore import QEventLoop, Qt, pyqtSlot
 from qgis.PyQt.QtWidgets import QFileDialog, QProgressDialog
 
-from gml_application_schema_toolbox import name as plugin_name
+from gml_application_schema_toolbox.__about__ import __title__
 from gml_application_schema_toolbox.core.logging import gdal_error_handler, log
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 
@@ -48,7 +48,7 @@ class GmlasPanelMixin:
         params["callback"] = self.translate_callback
 
         dlg = QProgressDialog(self)
-        dlg.setWindowTitle(plugin_name())
+        dlg.setWindowTitle(__title__)
         dlg.setLabelText("Operation in progress")
         dlg.setMinimum(0)
         dlg.setMaximum(100)
