@@ -1,17 +1,19 @@
 # GML Application Schema toolbox QGIS plugin
 
+[![documentation badge](https://img.shields.io/badge/documentation-autobuilt%20with%20Sphinx-blue)](https://brgm.github.io/gml_application_schema_toolbox/)
+
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Flake8](https://img.shields.io/badge/flake8-enabled-yellowgreen)](https://flake8.pycqa.org/)
 
-This QGIS plugin provide the capabilities to:
+This QGIS 3 plugin provide the capabilities to:
 
 * Download GML from WFS 2 services
 * Read GML App Schema files in XML mode
 * Convert GML App Schema files in PostGIS and SQLite format
 * Export PostGIS and SQLite format to GML App Schema files
 
-This plugin works with QGIS3+.
+The technical and user documentation is here: <https://brgm.github.io/gml_application_schema_toolbox/>
 
 ![](docs/static/img/overview.png)![](static/img/overview.png)
 
