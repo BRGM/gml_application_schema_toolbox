@@ -1,0 +1,7 @@
+# Documentation
+# -------------
+
+ghp-import>=1.0,<1.1
+furo==2020.12.30b24
+myst-parser[linkify]>=0.13,<0.14
+sphinx-copybutton>=0.3,<0.4
