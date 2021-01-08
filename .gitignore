@@ -6,17 +6,25 @@ __pycache__
 venv
 .venv
 
-# tooling
+# tests
 junit/
 .coverage
 coverage.xml
+htmlcov/
+
+# tooling
 *.log
 
 # docs
-htmlcov/
+docs/_apidoc/
+docs/_build/
 
 # qt stuff
 *_rc.py
 
 # project
+*~
+*.bak
+*.qgs
+*.qgz
 *.zip
