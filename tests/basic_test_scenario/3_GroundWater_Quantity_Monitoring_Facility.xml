@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:ef="http://inspire.ec.europa.eu/schemas/ef/4.0"
+    xmlns:gco="http://www.isotc211.org/2005/gco"
+    xmlns:base2="http://inspire.ec.europa.eu/schemas/base2/2.0"
+    xmlns:gml="http://www.opengis.net/gml/3.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" numberMatched="unknown" numberReturned="1" timeStamp="2021-01-11T15:46:39.233Z" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 https://geoserverref.brgm-rec.fr/schemas/wfs/2.0/wfs.xsd http://inspire.ec.europa.eu/schemas/ef/4.0 https://schema.datacove.eu/EnvironmentalMonitoringFacilitiesFXX.xsd http://www.opengis.net/gml/3.2 https://geoserverref.brgm-rec.fr/schemas/gml/3.2.1/gml.xsd">
+    <wfs:member>
+        <ef:EnvironmentalMonitoringFacility gml:id="EMF.GroundwaterQuantity.06512X0037">
+            <gml:identifier codeSpace="http://www.ietf.org/rfc/rfc2616">https://data.geoscience.fr/id/EMF/GroundwaterQuantity/06512X0037</gml:identifier>
+            <ef:inspireId>
+                <base:Identifier>
+                    <base:localId>06512X0037</base:localId>
+                    <base:namespace>https://data.geoscience.fr/id/EMF/GroundwaterQuantity/</base:namespace>
+                </base:Identifier>
+            </ef:inspireId>
+            <ef:name>Piezometre - Ruisseau des Poches (St-Remy - BRGM 01)</ef:name>
+            <ef:mediaMonitored xlink:href="http://inspire.ec.europa.eu/codelist/MediaValue/water" xlink:title="water"/>
+            <ef:geometry>
+                <gml:Point gml:id="EMF.GroundwaterQuantity.geom.2.06512X0037-STREMY" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+                    <gml:pos>5.18713263 46.19095417</gml:pos>
+                </gml:Point>
+            </ef:geometry>
+            <ef:onlineResource>http://fichebsseau.brgm.fr/bss_eau/fiche.jsf?code=06512X0037/STREMY</ef:onlineResource>
+            <ef:purpose xlink:href="http://www.sandre.eaufrance.fr/?urn=urn:sandre:donnees:148::CdElement:2:::referentiel:3.1:xml" xlink:title="Ground water level measurement"/>
+            <ef:observingCapability>
+                <ef:ObservingCapability gml:id="40883">
+                    <ef:observingTime>
+                        <gml:TimePeriod gml:id="tpid.40883">
+                            <gml:beginPosition>1977-10-08T23:00:00Z</gml:beginPosition>
+                            <gml:endPosition>2018-07-05T08:00:00Z</gml:endPosition>
+                        </gml:TimePeriod>
+                    </ef:observingTime>
+                    <ef:processType xlink:href="https://inspire.ec.europa.eu/codelist/ProcessTypeValue/process"/>
+                    <ef:resultNature xlink:href="https://inspire.ec.europa.eu/codelist/ResultNatureValue/primary"/>
+                    <ef:procedure xlink:href="https://data.geoscience.fr/ncl/Proc/70" xlink:title="Piezometric depth measurement by electronic probe"/>
+                    <ef:featureOfInterest xlink:href="https://data.geoscience.fr/id/GroundWaterQuantityMonitoringPoint/06512X0037"/>
+                    <ef:ultimateFeatureOfInterest xlink:href="https://data.geoscience.fr/id/hydrogeounit/507AC00"/>
+                    <ef:observedProperty xlink:href="https://data.geoscience.fr/ncl/ObsProp/186" xlink:title="GroundWater depth"/>
+                </ef:ObservingCapability>
+            </ef:observingCapability>
+            <ef:observingCapability>
+                <ef:ObservingCapability gml:id="40888">
+                    <ef:observingTime>
+                        <gml:TimePeriod gml:id="tpid.40888">
+                            <gml:beginPosition>1977-10-08T23:00:00Z</gml:beginPosition>
+                            <gml:endPosition>2018-07-05T08:00:00Z</gml:endPosition>
+                        </gml:TimePeriod>
+                    </ef:observingTime>
+                    <ef:processType xlink:href="https://inspire.ec.europa.eu/codelist/ProcessTypeValue/process"/>
+                    <ef:resultNature xlink:href="https://inspire.ec.europa.eu/codelist/ResultNatureValue/primary"/>
+                    <ef:procedure xlink:href="https://data.geoscience.fr/ncl/Proc/70" xlink:title="Piezometric depth measurement by electronic probe"/>
+                    <ef:featureOfInterest xlink:href="https://data.geoscience.fr/id/GroundWaterQuantityMonitoringPoint/06512X0037"/>
+                    <ef:ultimateFeatureOfInterest xlink:href="https://raw.githubusercontent.com/BRGM/gml_application_schema_toolbox/master/tests/basic_test_scenario/5_HydroGeoUnit.xml"/>
+                    <ef:observedProperty xlink:href="https://data.geoscience.fr/ncl/ObsProp/186" xlink:title="GroundWater depth"/>
+                </ef:ObservingCapability>
+            </ef:observingCapability>
+            <ef:reportedTo xsi:nil="true" nilReason="http://inspire.ec.europa.eu/codelist/VoidReasonValue/Unpopulated"/>
+            <ef:hasObservation xlink:href="https://raw.githubusercontent.com/BRGM/gml_application_schema_toolbox/master/tests/basic_test_scenario/4_SOS_TimeSeries.xml" xlink:title="6512X0037 groundwater quantity observation collection (SOS and WaterML 2.0 format)"/>
+            <ef:hasObservation xlink:href="https://data.geoscience.fr/id/ObservationCollection/GroundwaterQuantity/06512X0037" xlink:title="06512X0037 groundwater quantity observation collection (SensorThings API)"/>
+            <ef:representativePoint>
+                <gml:Point gml:id="EMF.GroundwaterQuantity.reppoint.2.06512X0037-STREMY" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+                    <gml:pos>5.18713263 46.19095417</gml:pos>
+                </gml:Point>
+            </ef:representativePoint>
+            <ef:measurementRegime/>
+            <ef:mobile>false</ef:mobile>
+            <ef:resultAcquisitionSource xlink:href="http://inspire.ec.europa.eu/codelist/ResultAcquisitionSourceValue/inSitu/" xlink:title="in-situ"/>
+            <ef:specialisedEMFType xlink:href="http://www.sandre.eaufrance.fr/urn.php?urn=urn:sandre:dictionnaire:PTE::entite:Piezometre:ressource:2.1:::html" xlink:title="Piezometre"/>
+            <ef:operationalActivityPeriod>
+                <ef:OperationalActivityPeriod gml:id="EMF.GroundwaterQuantity.OperationalActivityPeriod.2.06512X0037-STREMY">
+                    <ef:activityTime>
+                        <gml:TimePeriod gml:id="TimePeriod.2.261651">
+                            <gml:beginPosition>1977-10-08T23:00:00Z</gml:beginPosition>
+                            <gml:endPosition>2018-07-05T08:00:00Z</gml:endPosition>
+                        </gml:TimePeriod>
+                    </ef:activityTime>
+                </ef:OperationalActivityPeriod>
+            </ef:operationalActivityPeriod>
+        </ef:EnvironmentalMonitoringFacility>
+    </wfs:member>
+</wfs:FeatureCollection>
