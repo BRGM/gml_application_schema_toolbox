@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2015 sp1 (http://www.altova.com) by BRGM (BRGM) -->
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:gsmlb="http://xmlns.geosciml.org/GeoSciML-Basic/4.0" xmlns:it.geosolutions="http://www.geo-solutions.it" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:topp="http://www.openplans.org/topp" xmlns:gsmlem="http://xmlns.geosciml.org/EarthMaterial/3.2" xmlns:ge="http://inspire.ec.europa.eu/schemas/ge-core/3.0" xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:gsmlgs="http://xmlns.geosciml.org/GeologicStructure/3.2" xmlns:gsmlp="https://forge.brgm.fr/svnrepository/epos/trunk/schemas" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:gsmlu="http://xmlns.geosciml.org/Utilities/3.2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gsmlga="http://xmlns.geosciml.org/GeologicAge/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" numberMatched="unknown" numberReturned="1" timeStamp="2016-11-14T10:32:03.875Z" xsi:schemaLocation="http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd https://forge.brgm.fr/svnrepository/epos/trunk/schemas https://forge.brgm.fr/svnrepository/epos/trunk/schemas/epos-lite.xsd">
+	<wfs:member>
+		<gsmlp:BoreholeView gml:id="BSS001REWW">
+			<gml:description>Borehole description</gml:description>
+			<gml:identifier codeSpace="http://www.ietf.org/rfc/rfc2616">http://ressource.brgm-rec.fr/data/BoreholeView/BSS001REWW</gml:identifier>
+			<gml:name>Forage BSS001REWW</gml:name>
+			<gsmlp:identifier>http://ressource.brgm-rec.fr/data/Borehole/BSS001REWW</gsmlp:identifier>
+			<gsmlp:purpose xlink:href="http://inspire.ec.europa.eu/codelist/BoreholePurposeValue/hydrogeologicalSurvey" xlink:title="levé hydrogéologique, gestion de l’eau"/>
+			<gsmlp:status xlink:href="http://resource.europe-geology.eu/vocabs/BoreholeStatus/drillingCompleted" xlink:title="drilling completed"/>
+			<gsmlp:drillingMethod xlink:href="http://resource.europe-geology.eu/vocabs/DrillingMethod/hydraulic_rotary_drilling" xlink:title="hydraulic rotary drilling"/>
+			<gsmlp:operator>BRGM (PIEZOMETRIE)</gsmlp:operator>
+			<gsmlp:driller>INTRAFOR-COFOR</gsmlp:driller>
+			<gsmlp:drillEndDate>1974-11-30Z</gsmlp:drillEndDate>
+			<gsmlp:startPoint xlink:href="http://resource.europe-geology.eu/vocabs/StartPoint/naturalLandSurface" xlink:title="natural land surface"/>
+			<gsmlp:inclinationType xlink:href="http://resource.europe-geology.eu/vocabs/BoreholeInclinationType/vertical" xlink:title="vertical"/>
+			<gsmlp:boreholeMaterialCustodian>unknown</gsmlp:boreholeMaterialCustodian>
+			<gsmlp:boreholeLength_m uom="http://qudt.org/vocab/unit/M">23.0</gsmlp:boreholeLength_m>
+			<gsmlp:elevation_m uom="http://qudt.org/vocab/unit/M">223.87</gsmlp:elevation_m>
+			<gsmlp:elevation_srs>http://www.opengis.net/def/crs/EPSG/0/5720</gsmlp:elevation_srs>
+			<gsmlp:source>http://ficheinfoterre.brgm.fr/InfoterreFiche/ficheBss.action?id=06512X0037/STREMY</gsmlp:source>
+			<gsmlp:metadata_uri>http://www.geocatalogue.fr/Detail.do?fileIdentifier=BR_BSS_BAA</gsmlp:metadata_uri>
+			<gsmlp:genericSymbolizer>Not provided</gsmlp:genericSymbolizer>
+			<gsmlp:shape>
+				<gml:Point gml:id="gsmlp.shape.BSS001REWW" srsDimension="2" srsName="urn:ogc:def:crs:EPSG::4326">
+					<gml:pos>46.1909541655103 5.18713262971692</gml:pos>
+				</gml:Point>
+			</gsmlp:shape>
+			<gsmlp:cored>false</gsmlp:cored>
+			<gsmlp:accessToPhysicalDrillCore>false</gsmlp:accessToPhysicalDrillCore>
+			<gsmlp:boreholeUse xlink:href="http://inspire.ec.europa.eu/codelist/BoreholePurposeValue/groundwaterLevelMonitoring" xlink:title="surveillance du niveau de la nappe phréatique"/>
+			<gsmlp:detailedDescription xlink:href="http://www.opengis.net/def/nil/OGC/0/template" xlink:title="template	"/> <!-- GML 3.2.1 gml:NilReasonType term meaning "The value will be available later"-->
+			<gsmlp:geophysicalLogs xlink:href="http://www.opengis.net/def/nil/OGC/0/unknown" xlink:title="unknown"/>
+			<gsmlp:geologicalDescription xlink:href="https://raw.githubusercontent.com/BRGM/gml_application_schema_toolbox/master/tests/basic_test_scenario/1_RawGeologicLogs.xml" xlink:title="Borehole BSS001REWW geologic log available."/>
+			<gsmlp:groundWaterLevel xlink:href="https://raw.githubusercontent.com/BRGM/gml_application_schema_toolbox/master/tests/basic_test_scenario/3_GroundWater_Quantity_Monitoring_Facility.xml" xlink:title="Description of Piezometer attached to BSS001REWW. Provides link to SensorObservationService offering"/> <!-- Resolves-->
+			<gsmlp:groundWaterChemistry xlink:href="http://www.opengis.net/def/nil/OGC/0/unknown" xlink:title="unknown"/>
+			<gsmlp:rockGeochemistry xlink:href="http://www.opengis.net/def/nil/OGC/0/unknown" xlink:title="unknown"/>
+			<gsmlp:poreGasChemistry xlink:href="http://www.opengis.net/def/nil/OGC/0/inapplicable" xlink:title="inapplicable"/>
+			<gsmlp:geoTechnicalInfo xlink:href="http://www.opengis.net/def/nil/OGC/0/unknown" xlink:title="unknown"/>
+		</gsmlp:BoreholeView>
+	</wfs:member>
+</wfs:FeatureCollection>
