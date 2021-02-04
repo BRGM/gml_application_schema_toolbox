@@ -7,7 +7,7 @@
     xmlns:gml="http://www.opengis.net/gml/3.2"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:xlink="http://www.w3.org/1999/xlink"
-    xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" numberMatched="unknown" numberReturned="1" timeStamp="2021-01-11T15:46:39.233Z" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 https://geoserverref.brgm-rec.fr/schemas/wfs/2.0/wfs.xsd http://inspire.ec.europa.eu/schemas/ef/4.0 https://schema.datacove.eu/EnvironmentalMonitoringFacilitiesFXX.xsd http://www.opengis.net/gml/3.2 https://geoserverref.brgm-rec.fr/schemas/gml/3.2.1/gml.xsd">
+    xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" numberMatched="unknown" numberReturned="1" timeStamp="2021-01-11T15:46:39.233Z" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://inspire.ec.europa.eu/schemas/ef/4.0 https://schema.datacove.eu/EnvironmentalMonitoringFacilitiesFXX.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
     <wfs:member>
         <ef:EnvironmentalMonitoringFacility gml:id="EMF.GroundwaterQuantity.06512X0037">
             <gml:identifier codeSpace="http://www.ietf.org/rfc/rfc2616">https://data.geoscience.fr/id/EMF/GroundwaterQuantity/06512X0037</gml:identifier>
@@ -27,7 +27,7 @@
             <ef:onlineResource>http://fichebsseau.brgm.fr/bss_eau/fiche.jsf?code=06512X0037/STREMY</ef:onlineResource>
             <ef:purpose xlink:href="http://www.sandre.eaufrance.fr/?urn=urn:sandre:donnees:148::CdElement:2:::referentiel:3.1:xml" xlink:title="Ground water level measurement"/>
             <ef:observingCapability>
-                <ef:ObservingCapability gml:id="40883">
+                <ef:ObservingCapability gml:id="obscap.40883">
                     <ef:observingTime>
                         <gml:TimePeriod gml:id="tpid.40883">
                             <gml:beginPosition>1977-10-08T23:00:00Z</gml:beginPosition>
@@ -43,7 +43,7 @@
                 </ef:ObservingCapability>
             </ef:observingCapability>
             <ef:observingCapability>
-                <ef:ObservingCapability gml:id="40888">
+                <ef:ObservingCapability gml:id="obscap.40888">
                     <ef:observingTime>
                         <gml:TimePeriod gml:id="tpid.40888">
                             <gml:beginPosition>1977-10-08T23:00:00Z</gml:beginPosition>
