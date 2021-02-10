@@ -13,7 +13,6 @@
 #   You should have received a copy of the GNU Library General Public
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
 
 import xml.etree.ElementTree as ET
 from builtins import next, range
