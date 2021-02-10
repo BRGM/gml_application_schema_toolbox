@@ -13,7 +13,6 @@
 #   You should have received a copy of the GNU Library General Public
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
 
 import xml.etree.ElementTree as ET
 
@@ -33,7 +32,7 @@ def extract_features(doc):
         features = []
         bbox = None
         bbox_srs = None
-        if node.tag.startswith(u"{http://www.opengis.net/wfs") and node.tag.endswith(
+        if node.tag.startswith("{http://www.opengis.net/wfs") and node.tag.endswith(
             "FeatureCollection"
         ):
             # WFS features
@@ -70,9 +69,9 @@ def extract_features(doc):
                         ucp = [float(x) for x in uc.split(" ")]
                         bbox = (lcp[0], lcp[1], ucp[0], ucp[1])
 
-        elif node.tag.startswith(
-            u"{http://www.opengis.net/sos/2"
-        ) and node.tag.endswith("GetObservationResponse"):
+        elif node.tag.startswith("{http://www.opengis.net/sos/2") and node.tag.endswith(
+            "GetObservationResponse"
+        ):
             # SOS features
             for child in node:
                 if no_prefix(child.tag) == "observationData":
