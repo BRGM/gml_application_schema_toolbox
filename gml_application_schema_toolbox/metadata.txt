@@ -24,7 +24,7 @@ tags=complex features, gml, gmlas, application schema, INSPIRE, GeoSciML, WaterM
 homepage=https://brgm.github.io/gml_application_schema_toolbox/
 tracker=https://github.com/BRGM/gml_application_schema_toolbox/issues
 repository=https://github.com/BRGM/gml_application_schema_toolbox
-icon=
+icon=resources/images/mActionAddGMLLayer.svg
 
 # experimental flag
 experimental=True
