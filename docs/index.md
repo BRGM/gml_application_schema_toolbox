@@ -67,8 +67,9 @@ development/history
 ```{toctree}
 ---
 caption: Testing
-glob: true
 maxdepth: 1
 ---
-testing/*
+testing/scenario_mode_xml_local
+testing/scenario_mode_gmlas_local
+testing/scenario_mode_xml_content_negociation
 ```
