@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#! python3  # noqa: E265
+
 
 #   Copyright (C) 2016 BRGM (http:///brgm.fr)
 #   Copyright (C) 2016 Oslandia <infos@oslandia.com>
@@ -16,9 +17,7 @@
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
 
-import os
-import sys
-
+# QGIS
 from qgis.core import QgsApplication
 from qgis.gui import QgsGui
 from qgis.PyQt.QtCore import Qt
@@ -36,22 +35,25 @@ from qgis.PyQt.QtWidgets import (
 )
 from qgis.utils import showPluginHelp
 
-from .core.load_gmlas_in_qgis import import_in_qgis
-from .gui import InputError
-from .gui.database_widget import DatabaseWidget
-from .gui.xml_custom_widget import XMLWidgetFactory, XMLWidgetFormatter
+from gml_application_schema_toolbox.__about__ import (
+    DIR_PLUGIN_ROOT,
+    __title__,
+    __version__,
+)
+from gml_application_schema_toolbox.core.load_gmlas_in_qgis import import_in_qgis
+from gml_application_schema_toolbox.gui import InputError
+from gml_application_schema_toolbox.gui.database_widget import DatabaseWidget
+from gml_application_schema_toolbox.gui.export_gmlas_panel import ExportGmlasPanel
+from gml_application_schema_toolbox.gui.load_wizard import LoadWizard
+from gml_application_schema_toolbox.gui.settings_dialog import SettingsDialog
+from gml_application_schema_toolbox.gui.xml_custom_widget import (
+    XMLWidgetFactory,
+    XMLWidgetFormatter,
+)
 
-package_path = [os.path.join(os.path.dirname(__file__), "extlibs")]
-
-if not set(package_path).issubset(set(sys.path)):
-    sys.path = package_path + sys.path
-
-from .__about__ import __title__, __version__
-from .gui.export_gmlas_panel import ExportGmlasPanel
-from .gui.load_wizard import LoadWizard
-
-# from .gui.dockwidget import DockWidget
-from .gui.settings_dialog import SettingsDialog
+# ############################################################################
+# ########## Globals ###############
+# ##################################
 
 # global iface
 g_iface = None
@@ -59,6 +61,11 @@ g_iface = None
 
 def get_iface():
     return g_iface
+
+
+# ############################################################################
+# ########## Classes ###############
+# ##################################
 
 
 class MainPlugin(object):
@@ -162,31 +169,31 @@ class MainPlugin(object):
         l2 = QLabel()
         l2.setPixmap(
             QPixmap(
-                os.path.join(os.path.dirname(__file__), "logo_brgm.svg")
+                str(DIR_PLUGIN_ROOT / "resources/images/logo_brgm.svg")
             ).scaledToWidth(200, Qt.SmoothTransformation)
         )
         l3 = QLabel()
         l3.setPixmap(
             QPixmap(
-                os.path.join(os.path.dirname(__file__), "logo_eea.png")
+                str(DIR_PLUGIN_ROOT / "resources/images/logo_eea.png")
             ).scaledToWidth(200, Qt.SmoothTransformation)
         )
         l4 = QLabel()
         l4.setPixmap(
             QPixmap(
-                os.path.join(os.path.dirname(__file__), "logo_oslandia.png")
+                str(DIR_PLUGIN_ROOT / "resources/images/logo_oslandia.png")
             ).scaledToWidth(150, Qt.SmoothTransformation)
         )
         l5 = QLabel()
         l5.setPixmap(
             QPixmap(
-                os.path.join(os.path.dirname(__file__), "logo_spatialys.png")
+                str(DIR_PLUGIN_ROOT / "resources/images/logo_spatialys.png")
             ).scaledToWidth(100, Qt.SmoothTransformation)
         )
         l6 = QLabel()
         l6.setPixmap(
             QPixmap(
-                os.path.join(os.path.dirname(__file__), "logo_c2c.svg")
+                str(DIR_PLUGIN_ROOT / "resources/images/logo_c2c.svg")
             ).scaledToWidth(100, Qt.SmoothTransformation)
         )
         hlayout.addWidget(l2)

@@ -30,8 +30,13 @@ from qgis.PyQt.QtWidgets import (
     QWidget,
 )
 
-from ..core.gmlas_xpath import GmlAsXPathResolver
-from ..core.xml_utils import no_prefix, split_tag
+from gml_application_schema_toolbox.__about__ import DIR_PLUGIN_ROOT
+from gml_application_schema_toolbox.core.gmlas_xpath import GmlAsXPathResolver
+from gml_application_schema_toolbox.core.xml_utils import no_prefix, split_tag
+
+# ############################################################################
+# ########## Classes ###############
+# ##################################
 
 
 class WML2TimeSeriesViewer(QWidget):
@@ -77,12 +82,15 @@ class WML2TimeSeriesViewer(QWidget):
     ):
         resolver = GmlAsXPathResolver(db_uri, provider, schema)
 
-        ytitle = resolver.resolve_xpath(
-            layer_name,
-            pkid_name,
-            pkid_value,
-            "defaultPointMetadata/DefaultTVPMeasurementMetadata/uom/@code",
-        ) or [""]
+        ytitle = (
+            resolver.resolve_xpath(
+                layer_name,
+                pkid_name,
+                pkid_value,
+                "defaultPointMetadata/DefaultTVPMeasurementMetadata/uom/@code",
+            )
+            or [""]
+        )
         times = resolver.resolve_xpath(
             layer_name, pkid_name, pkid_value, "point/MeasurementTVP/time/text()"
         )
@@ -151,7 +159,7 @@ class WML2TimeSeriesViewer(QWidget):
     @classmethod
     def icon(cls):
         """Must return a QIcon"""
-        return QIcon(os.path.join(os.path.dirname(__file__), "plot.svg"))
+        return QIcon(str(DIR_PLUGIN_ROOT / "resources/images/plot.svg"))
 
 
 class PlotView(QGraphicsView):

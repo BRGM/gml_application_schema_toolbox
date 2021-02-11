@@ -180,6 +180,7 @@ class XMLTreeWidget(QTreeWidget):
         self.headerItem().setText(0, "Element")
         self.headerItem().setText(1, "Value")
         self.header().setVisible(True)
+        
         self.header().setCascadingSectionResizes(True)
 
         self.customContextMenuRequested.connect(self.onContextMenu)
