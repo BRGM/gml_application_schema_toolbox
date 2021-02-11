@@ -67,7 +67,8 @@ development/history
 ```{toctree}
 ---
 caption: Testing
+glob: true
 maxdepth: 1
 ---
-testing/scenario_basic
+testing/*
 ```
