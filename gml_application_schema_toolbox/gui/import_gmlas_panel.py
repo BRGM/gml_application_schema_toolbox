@@ -33,7 +33,7 @@ from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QListWidgetItem, QMes
 from qgis.utils import iface
 
 from gml_application_schema_toolbox.__about__ import __title__
-from gml_application_schema_toolbox.core.logging import log
+from gml_application_schema_toolbox.core.log_handler import PluginLogHandler
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
@@ -53,6 +53,8 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         super(ImportGmlasPanel, self).__init__(parent)
         self.setupUi(self)
         self.databaseWidget.set_accept_mode(QFileDialog.AcceptSave)
+        # map to the plugin log handler
+        self.plg_logger = PluginLogHandler()
 
         self.gmlasConfigLineEdit.setText(settings.value("default_gmlas_config"))
         self.acceptLanguageHeaderInput.setText(settings.value("default_language"))
@@ -111,7 +113,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         )
         tf.write(textConfig.getvalue())
         tf.close()
-        log(
+        self.plg_logger.log(
             "Temporary configuration file created '{}' for conversion.".format(
                 str(tf.name)
             )

@@ -1,3 +1,5 @@
+#! python3  # noqa: E265
+
 """
 /***************************************************************************
  GmlasPanelMixin
@@ -19,18 +21,29 @@
  *                                                                         *
  ***************************************************************************/
 """
-
+# 3rd party
 from osgeo import gdal
+
+# PyQGIS
 from qgis.core import QgsApplication
 from qgis.PyQt.QtCore import QEventLoop, Qt, pyqtSlot
 from qgis.PyQt.QtWidgets import QFileDialog, QProgressDialog
 
+# project package
 from gml_application_schema_toolbox.__about__ import __title__
-from gml_application_schema_toolbox.core.logging import gdal_error_handler, log
+from gml_application_schema_toolbox.core.log_handler import PluginLogHandler
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
+
+# ############################################################################
+# ########## Classes ###############
+# ##################################
 
 
 class GmlasPanelMixin:
+    def __init__(self):
+        # map to the plugin log handler
+        self.plg_logger = PluginLogHandler()
+
     @pyqtSlot()
     def on_gmlasConfigButton_clicked(self):
         path, filter = QFileDialog.getOpenFileName(
@@ -57,12 +70,12 @@ class GmlasPanelMixin:
 
         self.setCursor(Qt.WaitCursor)
         try:
-            log("gdal.VectorTranslate({})".format(str(params)))
-            gdal.PushErrorHandler(gdal_error_handler)
+            self.plg_logger.log("gdal.VectorTranslate({})".format(str(params)))
+            gdal.PushErrorHandler(self.plg_logger.gdal_error_handler)
             with qgis_proxy_settings():
                 res = gdal.VectorTranslate(**params)
             gdal.PopErrorHandler()
-            log(str(res))
+            self.plg_logger.log(str(res))
         finally:
             self.unsetCursor()
             self.progress_dlg.reset()
