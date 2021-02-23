@@ -58,6 +58,7 @@ usecases/UC_create_inspire_data.md
 caption: Contribute to the plugin
 maxdepth: 1
 ---
+Code documentation <_apidoc/modules>
 development/contributing
 development/environment
 development/documentation
