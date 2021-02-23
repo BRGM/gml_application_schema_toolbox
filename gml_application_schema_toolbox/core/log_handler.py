@@ -18,8 +18,7 @@ from gml_application_schema_toolbox.__about__ import __title__
 
 class PluginLogHandler(logging.Handler):
     def __init__(self):
-        """Python logging handler supercharged with QGIS useful methods.
-        """        
+        """Python logging handler supercharged with QGIS useful methods."""
         pass
 
     @staticmethod
