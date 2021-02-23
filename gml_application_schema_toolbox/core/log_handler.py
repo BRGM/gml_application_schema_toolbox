@@ -93,17 +93,3 @@ class PluginLogHandler(logging.Handler):
         except Exception as err:
             QgsMessageLog.logMessage(err, self.tag, QgsMessageLog.ERROR)
             self.handleError(record)
-
-
-# owslib_logger = logging.getLogger("owslib")
-# owslib_logger.setLevel(logging.DEBUG)
-
-# owslib_handler = None
-# for handler in owslib_logger.handlers:
-#     if handler.__class__.__name__ == QgsMessageLogHandler.__name__:
-#         owslib_handler = handler
-#         break
-# if owslib_handler is None:
-#     owslib_handler = QgsMessageLogHandler(__title__)
-#     owslib_handler.setLevel(logging.DEBUG)
-#     owslib_logger.addHandler(owslib_handler)
