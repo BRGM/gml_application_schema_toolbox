@@ -12,6 +12,8 @@ from .load_wizard_wfs import LoadWizardWFS
 from .load_wizard_xml import LoadWizardXML
 from .wait_cursor_context import WaitCursor
 
+from gml_application_schema_toolbox.toolbelt.download_manager import get_from_http
+
 PAGE_1_W, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "load_wizard_data_source.ui")
 )
@@ -73,8 +75,7 @@ class LoadWizardDataSource(QWizardPage, PAGE_1_W):
         input_path = self.gmlPathLineEdit.text()
         if input_path.startswith("http://") or input_path.startswith("https://"):
             # URL
-            with open(output_path, "wb") as out:
-                out.write(remote_open_from_qgis(input_path).read())
+            get_from_http(uri=input_path, output_path=output_path)
         else:
             # copy file
             with open(input_path, "rb") as inp:

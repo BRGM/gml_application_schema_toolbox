@@ -6,22 +6,12 @@
 
 # Standard library
 import logging
-from functools import lru_cache
 from pathlib import Path
 from urllib.parse import urlparse
 
 # PyQGIS
 from qgis.core import QgsFileDownloader
-from qgis.PyQt.QtCore import (
-    QDir,
-    QEventLoop,
-    QFile,
-    QFileInfo,
-    QIODevice,
-    QTemporaryDir,
-    QTemporaryFile,
-    QUrl,
-)
+from qgis.PyQt.QtCore import QEventLoop, QUrl
 
 # ############################################################################
 # ########## Globals ###############
@@ -34,33 +24,34 @@ logger = logging.getLogger(__name__)
 # ########## Functions #############
 # ##################################
 
-@lru_cache()
-def read_from_http(uri: str, cache_folder: Path):
-    """Read a QGIS project stored into on a remote web server accessible through HTTP.
+
+def get_from_http(uri: str, output_path: str, cache_folder: Path = None):
+    """Download a file from a remote web server accessible through HTTP.
 
     :param uri: web URL to the QGIS project
     :type uri: str
+    :param output_path: [description]
+    :type output_path: str
+    :param cache_folder: [description], defaults to None
+    :type cache_folder: Path, optional
 
     :return: a tuple with XML document and the filepath.
     :rtype: Tuple[QtXml.QDomDocument, str]
     """
     # get filename from URL parts
-    parsed = urlparse(uri)
-    if not parsed.path.rpartition("/")[2].endswith((".qgs", ".qgz")):
-        raise ValueError(
-            "URI doesn't ends with QGIS project extension (.qgs or .qgz): {}".format(
-                uri
-            )
-        )
-    cached_filepath = cache_folder / parsed.path.rpartition("/")[2]
+    # parsed = urlparse(uri)
+    # if cache_folder is not None:
+    #     cached_filepath = cache_folder / parsed.path.rpartition("/")[2]
+    # else:
+    #     cached_filepath = None
 
     # download it
     loop = QEventLoop()
     project_download = QgsFileDownloader(
-        url=QUrl(uri), outputFileName=str(cached_filepath.resolve()), delayStart=True
+        url=QUrl(uri), outputFileName=output_path, delayStart=True
     )
     project_download.downloadExited.connect(loop.quit)
     project_download.startDownload()
     loop.exec_()
 
-    return read_from_file(str(cached_filepath.resolve()))
+    return output_path
