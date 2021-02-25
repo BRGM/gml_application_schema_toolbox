@@ -50,7 +50,8 @@ def fill_tree_with_element(
     :param treeItem: a QTreeWidgetItem to fill
     :param elt: the XML node
     :param ns_imap: an "inverse" namespace map { uri : prefix }
-    :param custom_viewers: a dict giving a custom viewer plugin (QWidget) for some elements {tag : constructor}
+    :param custom_viewers: a dict giving a custom viewer plugin (QWidget) for some \
+        elements {tag : constructor}
     :param ns_map: a namespace map { prefix : uri }
     """
     is_root = treeItem == widget.invisibleRootItem()
@@ -66,8 +67,8 @@ def fill_tree_with_element(
 
     # custom viewer
     if elt.tag in custom_viewers:
-        custom_viewer_widget, filter = custom_viewers[elt.tag]
-        if filter is None or elt.find(filter, ns_map) is not None:
+        custom_viewer_widget, fltr = custom_viewers[elt.tag]
+        if fltr is None or elt.find(fltr, ns_map) is not None:
             btn = QToolButton(widget)
             btn.setIcon(custom_viewer_widget.icon())
             btn.setIconSize(QSize(32, 32))
@@ -80,10 +81,10 @@ def fill_tree_with_element(
             btn.clicked.connect(show_viewer)
 
             w = QWidget(widget)
-            l = QHBoxLayout()
-            l.addWidget(btn)
-            l.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
-            w.setLayout(l)
+            lyt = QHBoxLayout()
+            lyt.addWidget(btn)
+            lyt.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding))
+            w.setLayout(lyt)
             if is_root:
                 # insert an item
                 child = QTreeWidgetItem()
@@ -180,7 +181,7 @@ class XMLTreeWidget(QTreeWidget):
         self.headerItem().setText(0, "Element")
         self.headerItem().setText(1, "Value")
         self.header().setVisible(True)
-        
+
         self.header().setCascadingSectionResizes(True)
 
         self.customContextMenuRequested.connect(self.onContextMenu)
@@ -195,7 +196,6 @@ class XMLTreeWidget(QTreeWidget):
             fill_tree_with_xml(self, x)
 
     def onContextMenu(self, pos):
-        # row = self.selectionModel().selectedRows()[0]
         menu = QMenu(self)
         copyAction = QAction("Copy value", self)
         copyAction.triggered.connect(self.onCopyItemValue)
@@ -228,11 +228,11 @@ class XMLTreeWidget(QTreeWidget):
 
             addToMenu = QMenu("Add to layer", menu)
             addToEmpty = True
-            for id, l in QgsProject.instance().mapLayers().items():
-                if is_layer_gml_xml(l):
-                    action = QAction(l.name(), addToMenu)
+            for lid, lyr in QgsProject.instance().mapLayers().items():
+                if is_layer_gml_xml(lyr):
+                    action = QAction(lyr.name(), addToMenu)
                     action.triggered.connect(
-                        lambda checked, layer=l: self.onResolveAddToLayer(layer)
+                        lambda checked, layer=lyr: self.onResolveAddToLayer(layer)
                     )
                     addToMenu.addAction(action)
                     addToEmpty = False

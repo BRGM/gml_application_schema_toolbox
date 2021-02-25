@@ -57,16 +57,17 @@ class LoadWizardDataSource(QWizardPage, PAGE_1_W):
         gml_path = settings.value(
             "last_path", settings.value("last_downloaded_path", "")
         )
-        path, filter = QFileDialog.getOpenFileName(
-            self,
-            self.tr("Open GML file"),
-            gml_path,
-            self.tr("GML files or XSD (*.gml *.xml *.xsd)"),
+
+        filepath, suffix_filter = QFileDialog.getOpenFileName(
+            parent=self,
+            caption=self.tr("Open GML file"),
+            directory=gml_path,
+            filter=self.tr("GML files or XSD (*.gml *.xml *.xsd)"),
         )
-        if path:
-            settings.setValue("last_path", os.path.dirname(path))
-            settings.setValue("last_file", path)
-            self.gmlPathLineEdit.setText(path)
+        if filepath:
+            settings.setValue("last_path", os.path.dirname(filepath))
+            settings.setValue("last_file", filepath)
+            self.gmlPathLineEdit.setText(filepath)
 
     def download(self, output_path):
         input_path = self.gmlPathLineEdit.text()
@@ -117,7 +118,7 @@ class LoadWizardLoading(QWizardPage, PAGE_2_W):
 
     @pyqtSlot()
     def on_outputPathButton_clicked(self):
-        path, filter = QFileDialog.getSaveFileName(
+        path, suffix_filter = QFileDialog.getSaveFileName(
             self,
             self.tr("Select output file"),
             settings.value("last_downloaded_path", "."),

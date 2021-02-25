@@ -96,7 +96,6 @@ def xml_parse(xml_file):
     ns_map = {}  # prefix -> ns_uri
     for event, elem in ET.iterparse(xml_file, ["start-ns", "start", "end"]):
         if event == "start-ns":
-            # elem = (prefix, ns_uri)
             ns_map[elem[0]] = elem[1]
         elif event == "start":
             if root is None:

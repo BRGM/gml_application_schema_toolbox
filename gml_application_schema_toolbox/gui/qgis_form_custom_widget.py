@@ -99,7 +99,7 @@ def inject_custom_viewer_into_form(dialog, layer, feature):
 
     xpath = no_ns(layer.customProperty("xpath", ""))
     viewer = None
-    for viewer_cls, filter in get_custom_viewers().values():
+    for viewer_cls, fltr in get_custom_viewers().values():
         tag = viewer_cls.xml_tag()
         # remove namespace from tag
         tag = tag[tag.find("}") + 1 :]
@@ -112,7 +112,7 @@ def inject_custom_viewer_into_form(dialog, layer, feature):
 
     # get current id
     pkid = layer.customProperty("pkid")
-    id = feature[pkid]
+    feat_pkid = feature.get(pkid)
 
     # get db connection settings
     if ".sqlite" in layer.source():
@@ -127,7 +127,9 @@ def inject_custom_viewer_into_form(dialog, layer, feature):
         layer_name = ds.table()
         schema = ds.schema()
 
-    w = viewer_cls.init_from_db(db_uri, provider, schema, layer_name, pkid, id, tab)
+    w = viewer_cls.init_from_db(
+        db_uri, provider, schema, layer_name, pkid, feat_pkid, tab
+    )
 
     def on_tab_changed(index):
         if index == 2:
@@ -150,8 +152,6 @@ def inject_href_buttons_into_form(dialog, layer, feature):
     href_fields = layer.customProperty("href_fields", [])
     # list of href URL that have been resolved
     href_resolved = layer.customProperty("href_resolved", [])
-    # dict that stores which layer is the resolved href, for each href field
-    # href_linked_layers = layer.customProperty("href_linked_layers", {})
 
     layout = __find_label_layout(dialog, pkid)
     for i in range(layout.rowCount()):
