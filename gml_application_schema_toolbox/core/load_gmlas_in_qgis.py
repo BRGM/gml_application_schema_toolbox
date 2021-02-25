@@ -86,7 +86,7 @@ class CustomViewerLegend(QgsMapLayerLegend):
         return [QgsSimpleLegendNode(layer_tree_layer, self.text, self.icon, self)]
 
 
-def import_in_qgis(gmlas_uri, provider, schema=None):
+def import_in_qgis(gmlas_uri, provider: str, schema=None):
     """Imports layers from a GMLAS file in QGIS with relations and editor widgets
 
     @param gmlas_uri connection parameters
@@ -237,7 +237,6 @@ where
             )
             # parent, child
             rel.addFieldPair(f.GetField("field_name"), f.GetField("child_pkid"))
-            # rel.generateId()
             if rel.isValid():
                 relations_1_1.append(rel)
 
@@ -304,7 +303,6 @@ where
             rel.setReferencingLayer(layers[child_layer]["layer_id"])
             # parent, child
             rel.addFieldPair(f.GetField("child_pkid"), f.GetField("parent_pkid"))
-            # rel.addFieldPair(f.GetField('child_pkid'), 'ogc_fid')
             if rel.isValid():
                 relations_1_n.append(rel)
                 # add relation to layer

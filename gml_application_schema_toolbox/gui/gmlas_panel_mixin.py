@@ -46,14 +46,14 @@ class GmlasPanelMixin:
 
     @pyqtSlot()
     def on_gmlasConfigButton_clicked(self):
-        path, filter = QFileDialog.getOpenFileName(
-            self,
-            self.tr("Open GMLAS config file"),
-            self.gmlasConfigLineEdit.text(),
-            self.tr("XML Files (*.xml)"),
+        filepath, suffix_filter = QFileDialog.getOpenFileName(
+            parent=self,
+            caption=self.tr("Open GMLAS config file"),
+            directory=self.gmlasConfigLineEdit.text(),
+            filter=self.tr("XML Files (*.xml)"),
         )
-        if path:
-            self.gmlasConfigLineEdit.setText(path)
+        if filepath:
+            self.gmlasConfigLineEdit.setText(filepath)
 
     def translate(self, params):
         if params is None:

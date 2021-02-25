@@ -3,7 +3,6 @@ try:
 except ImportError:
     from urllib.parse import urlencode
 
-# from owslib.feature import WebFeatureService_
 from owslib.feature.wfs200 import WebFeatureService_2_0_0
 
 

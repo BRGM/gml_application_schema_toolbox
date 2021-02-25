@@ -56,11 +56,6 @@ class GmlAsXPathResolver:
                     "Cannot find metadata of the layer '{}'".format(ogr_layer_name)
                 )
 
-            # print("**************")
-            # print("layer", ogr_layer_name, "pkid", ogr_layer_pkid_name)
-            # print("xpath", lxpath)
-            # print("layer_xpath", layer_xpath)
-
             # look for xpath of fields
             field_name = None
             field_category = None
@@ -74,16 +69,14 @@ where layer_name='{}'""".format(
                 )
             ):
                 field_xpath = f.GetField("field_xpath").split("/")
-                # print("field_xpath", field_xpath)
                 if lstartswith(field_xpath, layer_xpath):
                     # remove the layer_xpath
                     field_xpath = field_xpath[len(layer_xpath) :]
-                    # print("field_xpath2", [no_ns(x) for x in field_xpath])
                     if lstartswith(lxpath, [no_ns(x) for x in field_xpath]):
                         field_name = f.GetField("field_name")
                         field_category = f.GetField("field_category")
                         field_max_occurs = f.GetField("field_max_occurs")
-                        # print("field_name =>", field_name, field_category, field_max_occurs)
+
                         # remaining xpath
                         lxpath = lxpath[len(field_xpath) :]
                         break
@@ -124,10 +117,6 @@ where parent_layer='{}' and parent_element_name='{}'""".format(
                 ogr_layer_name = f.GetField("child_layer")
                 ogr_layer_pkid_name = f.GetField("child_pkid")
                 break
-
-        # print("sql_field", sql_field)
-        # print("sql_tables", sql_tables)
-        # print("sql_joins", sql_joins)
 
         # craft the SQL query to resolve XPath
         tables = (

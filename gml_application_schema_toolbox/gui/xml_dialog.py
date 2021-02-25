@@ -76,8 +76,6 @@ class XmlDialog(BASE, WIDGET):
         super(XmlDialog, self).__init__(parent)
         self.setupUi(self)
 
-        # self.setWindowTitle(wfs.identification.title)
-
         document = QDomDocument()
         document.setContent(xml)
         model = DomDocumentModel(document)

@@ -16,7 +16,7 @@ class qgis_proxy_settings:
         # apply QGIS proxy settings
         settings = QSettings()
         enabled = settings.value("proxy/proxyEnabled", "false").lower() == "true"
-        type = settings.value("proxy/proxyType", "")
+        proxytype = settings.value("proxy/proxyType", "")
         host = settings.value("proxy/proxyHost", "")
         port = settings.value("proxy/proxyPort", "")
         user = settings.value("proxy/proxyUser", "")
@@ -33,7 +33,7 @@ class qgis_proxy_settings:
         gdal_http_proxyuserpwd = ""
 
         if enabled:
-            if type == "HttpProxy":
+            if proxytype == "HttpProxy":
                 credentials = ""
                 if user != "":
                     credentials = "{}:{}@".format(user, password)
@@ -50,7 +50,7 @@ class qgis_proxy_settings:
                 gdal_http_proxyuserpwd = "{}:{}".format(user, password)
                 gdal.SetConfigOption("GDAL_HTTP_PROXYUSERPWD", gdal_http_proxyuserpwd)
 
-    def __exit__(self, type, value, tb):
+    def __exit__(self, proxy_type, value, tb):
         # restore previous settings
         if self.http_proxy is not None:
             os.environ["http_proxy"] = self.http_proxy

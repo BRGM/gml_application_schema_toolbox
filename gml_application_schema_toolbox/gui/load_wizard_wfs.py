@@ -1,3 +1,4 @@
+#! python3  # noqa: E265
 import os
 
 import owslib
@@ -13,12 +14,7 @@ from qgis.core import (
 )
 from qgis.gui import QgsNewHttpConnection
 from qgis.PyQt.QtCore import Qt, QUrl, QUrlQuery, pyqtSlot
-from qgis.PyQt.QtWidgets import (
-    QDialog,
-    QMessageBox,
-    QTableWidgetItem,
-    QWizardPage,
-)
+from qgis.PyQt.QtWidgets import QDialog, QMessageBox, QTableWidgetItem, QWizardPage
 from qgis.PyQt.QtXml import QDomDocument
 
 from ..core.proxy import qgis_proxy_settings
@@ -42,8 +38,6 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
 
         self.refresh_connections()
         self.connectionCombo.currentTextChanged.connect(self.on_change_connection)
-
-        # self.file_downloaded.connect(self.on_file_downloaded)
 
         self._is_complete = False
         self.featureTypesTableWidget.itemSelectionChanged.connect(
@@ -220,8 +214,6 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
     @pyqtSlot()
     def on_showCapabilitiesButton_clicked(self):
         XmlDialog(self, self.wfs().getcapabilities().read()).exec_()
-        # url = WFSCapabilitiesReader().capabilities_url(self.uri())
-        # QDesktopServices.openUrl(QUrl(url))
 
     def selected_typenames(self):
         typenames = []

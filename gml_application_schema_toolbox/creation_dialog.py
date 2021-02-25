@@ -62,7 +62,7 @@ class CreationDialog(QDialog, FORM_CLASS):
             self.replaceLayerChck.setCheckState(Qt.Checked)
 
             for aname, v in attributes.items():
-                xpath, type = v
+                xpath, attr_type = v
                 self.onAddMapping()  # add a row
                 last = self.attributeTable.rowCount() - 1
                 self.attributeTable.item(last, 0).setText(aname)
@@ -72,7 +72,7 @@ class CreationDialog(QDialog, FORM_CLASS):
                         QVariant.Int,
                         QVariant.Double,
                         QVariant.DateTime,
-                    ].index(type)
+                    ].index(attr_type)
                 )
                 self.attributeTable.item(last, 2).setText(xpath)
 
@@ -156,7 +156,7 @@ class CreationDialog(QDialog, FORM_CLASS):
 
     def accept(self):
         is_remote, src = self.source()
-        # fix_print_with_import
+        # fix print with import
         print((is_remote, src))
         QSettings("complex_features").setValue(
             "is_remote", "true" if is_remote else "false"
@@ -180,8 +180,8 @@ class CreationDialog(QDialog, FORM_CLASS):
             attr = self.attributeTable.item(i, 0).text()
             xpath = self.attributeTable.item(i, 2).text()
             combo = self.attributeTable.cellWidget(i, 1)
-            type = combo.itemData(combo.currentIndex())
-            mapping[attr] = (xpath, type)
+            attr_type = combo.itemData(combo.currentIndex())
+            mapping[attr] = (xpath, attr_type)
         return mapping
 
     def geometry_mapping(self):
