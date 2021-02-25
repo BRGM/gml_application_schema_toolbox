@@ -34,7 +34,6 @@ def get_custom_viewers():
     __custom_viewers = {}
 
     # introspect the viewers module
-    # print(sys.modules.keys())
     module = sys.modules["gml_application_schema_toolbox.viewers"]
     for klass in dir(module):
         if klass.startswith("__"):
@@ -42,11 +41,11 @@ def get_custom_viewers():
         k = getattr(module, klass)
         if hasattr(k, "xml_tag"):
             r = k.xml_tag()
-            filter = None
+            fltr = None
             if isinstance(r, tuple):
-                tag, filter = r
+                tag, fltr = r
             else:
                 tag = r
-            __custom_viewers[tag] = (k, filter)
+            __custom_viewers[tag] = (k, fltr)
 
     return __custom_viewers

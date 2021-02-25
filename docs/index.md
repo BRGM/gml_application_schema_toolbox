@@ -58,6 +58,7 @@ usecases/UC_create_inspire_data.md
 caption: Contribute to the plugin
 maxdepth: 1
 ---
+Code documentation <_apidoc/modules>
 development/contributing
 development/environment
 development/documentation
@@ -69,5 +70,7 @@ development/history
 caption: Testing
 maxdepth: 1
 ---
-testing/scenario_basic
+testing/scenario_mode_xml_local
+testing/scenario_mode_gmlas_local
+testing/scenario_mode_xml_content_negociation
 ```

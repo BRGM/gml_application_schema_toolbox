@@ -1,3 +1,4 @@
+#! python3  # noqa: E265
 import os
 
 from PyQt5 import uic
@@ -40,8 +41,8 @@ class LoadWizardXML(QWizardPage, PAGE_3_W):
             attr = self.attributeTable.cellWidget(i, 0).text()
             xpath = self.attributeTable.item(i, 2).text()
             combo = self.attributeTable.cellWidget(i, 1)
-            type = combo.itemData(combo.currentIndex())
-            mapping[attr] = (xpath, type)
+            attr_type = combo.itemData(combo.currentIndex())
+            mapping[attr] = (xpath, attr_type)
 
         # get geometry mapping
         gmapping = None

@@ -1,7 +1,12 @@
-#
-from os import environ, path
+#!python3
 
+"""
+    Configuration for project documentation using Sphinx.
+"""
+
+# standard
 import sys
+from os import environ, path
 
 sys.path.insert(0, path.abspath(".."))
 
@@ -34,6 +39,7 @@ myst_url_schemes = ("http", "https", "mailto")
 # ones.
 extensions = [
     # Sphinx included
+    "sphinx.ext.autodoc",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.githubpages",
     "sphinx.ext.intersphinx",
@@ -41,13 +47,14 @@ extensions = [
     "sphinx.ext.viewcode",
     # 3rd party
     "myst_parser",
+    "sphinx_copybutton",
 ]
 
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = {".md": "markdown"}
+source_suffix = {".md": "markdown", ".rst": "restructuredtext"}
 autosectionlabel_prefix_document = True
 # The master toctree document.
 master_doc = "index"
@@ -57,7 +64,7 @@ master_doc = "index"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -98,3 +105,21 @@ myst_enable_extensions = [
 
 # Configuration for intersphinx (refer to others docs).
 intersphinx_mapping = {"python": ("https://docs.python.org/3/", None)}
+
+# -- Options for Sphinx API doc ----------------------------------------------
+
+# run api doc
+def run_apidoc(_):
+    from sphinx.ext.apidoc import main
+
+    cur_dir = path.normpath(path.dirname(__file__))
+    output_path = path.join(cur_dir, "_apidoc")
+    modules = str(__about__.DIR_PLUGIN_ROOT.resolve())
+    exclusions = ["../.venv", "../.github", "../tests"]
+    main(["-e", "-f", "-M", "-o", output_path, modules] + exclusions)
+
+
+# launch setup
+def setup(app):
+    app.connect("builder-inited", run_apidoc)
+

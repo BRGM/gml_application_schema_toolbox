@@ -1,10 +1,18 @@
+#! python3  # noqa: E265
+
+# PyQGIS
 try:
     from qgis.core import QgsProcessingException as DbError
 except ImportError:
     from gml_application_schema_toolbox.extlibs.qgis_processing_postgis import DbError
 
-from gml_application_schema_toolbox.core.logging import log
+# project package
+from gml_application_schema_toolbox.core.log_handler import PluginLogHandler
 from gml_application_schema_toolbox.extlibs.qgis_processing_postgis import GeoDB
+
+# ############################################################################
+# ########## Classes ###############
+# ##################################
 
 
 class ForeignKey:
@@ -24,6 +32,10 @@ class ForeignKey:
 
 
 class GmlasPostgisDB(GeoDB):
+    def __init__(self):
+        # map to the plugin log handler
+        self.plg_logger = PluginLogHandler()
+
     def _add_foreign_key_constraint(self, schema, foreign_key):
         if self._constraint_exists(
             schema=schema, table=foreign_key.table, constraint=foreign_key.name
@@ -84,7 +96,7 @@ ALTER TABLE "{schema}"."{table}"
         self._exec_sql(c, sql)
 
     def _exec_sql(self, c, sql):
-        log(sql)
+        self.plg_logger.log(message=sql)
         super(GmlasPostgisDB, self)._exec_sql(c, sql)
 
     def _foreign_keys(self, schema):

@@ -7,11 +7,7 @@ Note that this depends on some processing plugin classes
 import os
 
 from processing.gui.RectangleMapTool import RectangleMapTool
-from qgis.core import (
-    QgsCoordinateReferenceSystem,
-    QgsProject,
-    QgsRectangle,
-)
+from qgis.core import QgsCoordinateReferenceSystem, QgsProject, QgsRectangle
 from qgis.PyQt import uic
 from qgis.PyQt.QtGui import QCursor
 from qgis.PyQt.QtWidgets import QAction, QInputDialog, QMenu
@@ -35,9 +31,6 @@ class BboxWidget(BASE, WIDGET):
         self.prevMapTool = canvas.mapTool()
         self.tool = RectangleMapTool(canvas)
         self.tool.rectangleCreated.connect(self.updateExtent)
-
-    # def setDialog(self):
-    #     self._dialog = Dialog
 
     def selectExtent(self):
         popupmenu = QMenu()
@@ -126,7 +119,6 @@ class BboxWidget(BASE, WIDGET):
 
     def isValid(self):
         try:
-            # rect = self.rectangle()
             crs = self.crs()
             assert crs.isValid()
             return True

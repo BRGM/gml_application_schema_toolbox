@@ -127,16 +127,26 @@ def _get_srs_name(tree):
     return None
 
 
-def _get_srid_from_name(srs_name):
+def _get_srid_from_name(srs_name: str) -> tuple:
+    """[summary]
+
+    For reference:
+        EPSG:4326
+        urn:EPSG:geographicCRS:4326
+        urn:ogc:def:crs:EPSG:4326
+        urn:ogc:def:crs:EPSG::4326
+        urn:ogc:def:crs:EPSG:6.6:4326
+        urn:x-ogc:def:crs:EPSG:6.6:4326
+        http://www.opengis.net/gml/srs/epsg.xml#4326
+        http://www.epsg.org/6.11.2/4326
+
+    :param srs_name: [description]
+    :type srs_name: [str]
+    :return: [description]
+    :rtype: [type]
+    """
     sr = osr.SpatialReference()
-    # EPSG:4326
-    # urn:EPSG:geographicCRS:4326
-    # urn:ogc:def:crs:EPSG:4326
-    # urn:ogc:def:crs:EPSG::4326
-    # urn:ogc:def:crs:EPSG:6.6:4326
-    # urn:x-ogc:def:crs:EPSG:6.6:4326
-    # http://www.opengis.net/gml/srs/epsg.xml#4326
-    # http://www.epsg.org/6.11.2/4326
+
     # get the last number
     m = re.search("([0-9]+)/?$", srs_name)
     srid = int(m.group(1))
@@ -216,7 +226,6 @@ def _extractGmlGeometries(tree, swap_xy, default_srs=None, parent=None):
 
 
 def _extractGmlFromXPath(tree, xpath, swap_xy, default_srs=None):
-    # r = tree.xpath("./" + xpath, namespaces = tree.nsmap)
     r = resolve_xpath(tree, xpath)
     if r is not None:
         if isinstance(r, list):
@@ -296,7 +305,7 @@ class ComplexFeatureSource(object):
             feature2 = copy.deepcopy(feature)
             remove_prefix(feature2)
             for attr, xpath_t in self.xpath_mapping.items():
-                xpath, type = xpath_t
+                xpath, value_type = xpath_t
                 # resolve xpath
                 r = resolve_xpath(feature2, xpath)
                 v = None
@@ -312,13 +321,13 @@ class ComplexFeatureSource(object):
                     value = None
                 if v is not None:
                     try:
-                        if type == QVariant.Int:
+                        if value_type == QVariant.Int:
                             value = int(v)
-                        elif type == QVariant.String:
+                        elif value_type == QVariant.String:
                             value = v
-                        elif type == QVariant.Double:
+                        elif value_type == QVariant.Double:
                             value = float(v)
-                        elif type == QVariant.DateTime:
+                        elif value_type == QVariant.DateTime:
                             value = v
                         else:
                             value = None
@@ -380,7 +389,7 @@ class ComplexFeatureLoader(object):
 
             layers = {}
             features = {}
-            for id, fid, qgsgeoms, xml, attrs in src.getFeatures(swap_xy):
+            for feat_id, fid, qgsgeoms, xml, attrs in src.getFeatures(swap_xy):
                 # layer creation
                 if qgsgeoms == []:
                     if "" not in layers:
@@ -428,8 +437,8 @@ class ComplexFeatureLoader(object):
                         layers[tag] = layer
 
                 # collect features
-                f = QgsFeature(layer.dataProvider().fields(), id)
-                f.setAttribute("id", str(id))
+                f = QgsFeature(layer.dataProvider().fields(), feat_id)
+                f.setAttribute("id", str(feat_id))
                 f.setAttribute("fid", fid)
                 for k, v in attrs.items():
                     f.setAttribute(k, v)
@@ -528,10 +537,10 @@ class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
         """
         self.output_local_file = output_local_file
 
-    def _create_layer(self, type, srid, attributes, title, tag):
-        """
-        Creates an empty spatialite layer
-        :param type: 'Point', 'LineString', 'Polygon', etc.
+    def _create_layer(self, geom_type: str, srid, attributes, title, tag):
+        """Creates an empty spatialite layer.
+
+        :param geom_type: 'Point', 'LineString', 'Polygon', etc.
         :param srid: CRS ID of the layer
         :param attributes: list of (attribute_name, attribute_type, attribute_typename)
         :param title: title of the layer
@@ -555,7 +564,7 @@ class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
                 "curvepolygon": ogr.wkbCurvePolygonZ,
                 "multicurve": ogr.wkbMultiCurveZ,
                 "multisurface": ogr.wkbMultiSurfaceZ,
-            }[type]
+            }[geom_type]
             srs = osr.SpatialReference()
             srs.ImportFromEPSGA(int(srid))
         else:

@@ -33,7 +33,7 @@ from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QListWidgetItem, QMes
 from qgis.utils import iface
 
 from gml_application_schema_toolbox.__about__ import __title__
-from gml_application_schema_toolbox.core.logging import log
+from gml_application_schema_toolbox.core.log_handler import PluginLogHandler
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
@@ -53,6 +53,8 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         super(ImportGmlasPanel, self).__init__(parent)
         self.setupUi(self)
         self.databaseWidget.set_accept_mode(QFileDialog.AcceptSave)
+        # map to the plugin log handler
+        self.plg_logger = PluginLogHandler()
 
         self.gmlasConfigLineEdit.setText(settings.value("default_gmlas_config"))
         self.acceptLanguageHeaderInput.setText(settings.value("default_language"))
@@ -90,18 +92,18 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         # Set parameters
         c = xmlConfig.getroot()
 
-        for l in c.iter("ExposeMetadataLayers"):
-            l.text = str(self.ogrExposeMetadataLayersCheckbox.isChecked()).lower()
-        for l in c.iter("LayerBuildingRules"):
-            for n in l.iter("RemoveUnusedLayers"):
+        for lyr_md in c.iter("ExposeMetadataLayers"):
+            lyr_md.text = str(self.ogrExposeMetadataLayersCheckbox.isChecked()).lower()
+        for lyr_bldg in c.iter("LayerBuildingRules"):
+            for n in lyr_bldg.iter("RemoveUnusedLayers"):
                 n.text = str(self.ogrRemoveUnusedLayersCheckbox.isChecked()).lower()
-            for n in l.iter("RemoveUnusedFields"):
+            for n in lyr_bldg.iter("RemoveUnusedFields"):
                 n.text = str(self.ogrRemoveUnusedFieldsCheckbox.isChecked()).lower()
 
-        for l in c.findall("XLinkResolution/URLSpecificResolution/HTTPHeader"):
-            name = l.find("Name").text
+        for http_hdr in c.findall("XLinkResolution/URLSpecificResolution/HTTPHeader"):
+            name = http_hdr.find("Name").text
             if name == "Accept-Language":
-                l.find("Value").text = self.acceptLanguageHeaderInput.text()
+                http_hdr.find("Value").text = self.acceptLanguageHeaderInput.text()
 
         textConfig = BytesIO()
         xmlConfig.write(textConfig, encoding="utf-8", xml_declaration=False)
@@ -111,7 +113,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         )
         tf.write(textConfig.getvalue())
         tf.close()
-        log(
+        self.plg_logger.log(
             "Temporary configuration file created '{}' for conversion.".format(
                 str(tf.name)
             )
@@ -149,7 +151,6 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     @pyqtSlot()
     def on_loadLayersButton_clicked(self):
-        # self.parent.on_downloadButton_clicked()
         self.setCursor(Qt.WaitCursor)
         try:
             self.validate()
@@ -159,7 +160,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             self.unsetCursor()
 
     def validate(self):
-        # self.layerList.setTitle('Layers')
+
         data_source = self.gmlas_datasource()
 
         if data_source is None:
@@ -185,7 +186,6 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         self.datasetsListWidget.sortItems()
         self.datasetsListWidget.selectAll()
-        # self.layerList.setTitle('{} layer(s) found:'.format(self.datasetsListWidget.count()))
 
     def selected_layers(self):
         layers = []

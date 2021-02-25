@@ -1,3 +1,5 @@
+#! python3  # noqa: E265
+
 """
 /***************************************************************************
  ExportGmlasPanel
@@ -21,6 +23,7 @@
 """
 
 import os
+from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 from osgeo import gdal, osr
@@ -60,25 +63,31 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     @pyqtSlot()
     def on_gmlPathButton_clicked(self):
-        path, filter = QFileDialog.getSaveFileName(
-            self, self.tr("Save GML file"), "", self.tr("GML files (*.gml *.xml)")
+        filepath, suffix_filter = QFileDialog.getSaveFileName(
+            parent=self,
+            caption=self.tr("Save GML file"),
+            directory="",
+            filter=self.tr("GML files (*.gml *.xml)"),
         )
-        if path:
-            if os.path.splitext(path)[1] == "":
-                path = "{}.gml".format(path)
-            self.gmlPathLineEdit.setText(path)
+        if filepath:
+            filepath = Path(filepath)
+            if filepath.suffix != ".gml":
+                filepath = Path(str(filepath) + ".gml")
+                self.gmlPathLineEdit.setText(filepath)
 
     @pyqtSlot()
     def on_xsdPathButton_clicked(self):
         cur_dir = os.path.dirname(self.gmlasConfigLineEdit.text())
-        path, filter = QFileDialog.getOpenFileName(
-            self,
-            self.tr("Open XML schema definition file"),
-            cur_dir,
-            self.tr("XSD Files (*.xsd)"),
+
+        filepath, suffix_filter = QFileDialog.getOpenFileName(
+            parent=self,
+            caption=self.tr("Open XML schema definition file"),
+            directory=cur_dir,
+            filter=self.tr("XSD Files (*.xsd)"),
         )
-        if path:
-            self.xsdPathLineEdit.setText(path)
+
+        if filepath:
+            self.xsdPathLineEdit.setText(filepath)
 
     def gmlas_config(self):
         return self.gmlasConfigLineEdit.text()

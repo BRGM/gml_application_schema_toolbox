@@ -49,26 +49,3 @@ def resolve_xpath_in_model(model, table, xpath):
                 )
             return sql_tables, sql_wheres, sql_table, sql_column
     return [], [], None, None
-
-
-def xpath_to_sql(model, table, xpath, id):
-    sql_tables, sql_wheres, sql_table, sql_column = resolve_xpath_in_model(
-        model, table, xpath
-    )
-    if table.name() not in sql_tables:
-        sql_tables.append(table.name())
-    sql_wheres.append((table.name() + ".id", "'" + id + "'"))
-    return "SELECT {}.{} FROM {} WHERE {} ORDER by {}.id".format(
-        sql_table,
-        sql_column,
-        ", ".join(sql_tables),
-        " AND ".join(t + "=" + v for t, v in sql_wheres),
-        sql_table,
-    )
-
-
-def xpath_on_db(model, table, xpath, id, db):
-    cur = db.cursor()
-    sql = xpath_to_sql(model, table, xpath, id)
-    cur.execute(sql)
-    return [r[0] for r in cur.fetchall()]

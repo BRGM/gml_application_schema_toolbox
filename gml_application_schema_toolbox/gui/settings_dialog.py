@@ -57,7 +57,7 @@ class SettingsDialog(BASE, WIDGET):
 
     @pyqtSlot()
     def on_gmlasConfigButton_clicked(self):
-        path, filter = QFileDialog.getOpenFileName(
+        path, suffix_filter = QFileDialog.getOpenFileName(
             self,
             self.tr("Open GMLAS config file"),
             self.gmlasConfigLineEdit.text(),

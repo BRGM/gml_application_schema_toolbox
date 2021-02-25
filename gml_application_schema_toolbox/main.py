@@ -128,7 +128,7 @@ class MainPlugin(object):
     def onAbout(self):
         self.about_dlg = QWidget()
         vlayout = QVBoxLayout()
-        l = QLabel(
+        lbl_about_main = QLabel(
             """
         <h1>{}</h1>
         <h3>Version: {}</h3>
@@ -162,46 +162,46 @@ class MainPlugin(object):
                 __title__, __version__
             )
         )
-        l.setWordWrap(True)
-        vlayout.addWidget(l)
+        lbl_about_main.setWordWrap(True)
+        vlayout.addWidget(lbl_about_main)
         hlayout = QHBoxLayout()
         hlayout2 = QHBoxLayout()
-        l2 = QLabel()
-        l2.setPixmap(
+        lbl_logo_brgm = QLabel()
+        lbl_logo_brgm.setPixmap(
             QPixmap(
                 str(DIR_PLUGIN_ROOT / "resources/images/logo_brgm.svg")
             ).scaledToWidth(200, Qt.SmoothTransformation)
         )
-        l3 = QLabel()
-        l3.setPixmap(
+        lbl_logo_eea = QLabel()
+        lbl_logo_eea.setPixmap(
             QPixmap(
                 str(DIR_PLUGIN_ROOT / "resources/images/logo_eea.png")
             ).scaledToWidth(200, Qt.SmoothTransformation)
         )
-        l4 = QLabel()
-        l4.setPixmap(
+        lbl_logo_oslandia = QLabel()
+        lbl_logo_oslandia.setPixmap(
             QPixmap(
                 str(DIR_PLUGIN_ROOT / "resources/images/logo_oslandia.png")
             ).scaledToWidth(150, Qt.SmoothTransformation)
         )
-        l5 = QLabel()
-        l5.setPixmap(
+        lbl_logo_spatialys = QLabel()
+        lbl_logo_spatialys.setPixmap(
             QPixmap(
                 str(DIR_PLUGIN_ROOT / "resources/images/logo_spatialys.png")
             ).scaledToWidth(100, Qt.SmoothTransformation)
         )
-        l6 = QLabel()
-        l6.setPixmap(
+        lbl_logo_c2c = QLabel()
+        lbl_logo_c2c.setPixmap(
             QPixmap(
                 str(DIR_PLUGIN_ROOT / "resources/images/logo_c2c.svg")
             ).scaledToWidth(100, Qt.SmoothTransformation)
         )
-        hlayout.addWidget(l2)
-        hlayout.addWidget(l3)
+        hlayout.addWidget(lbl_logo_brgm)
+        hlayout.addWidget(lbl_logo_eea)
         vlayout.addLayout(hlayout)
-        hlayout2.addWidget(l4)
-        hlayout2.addWidget(l5)
-        hlayout2.addWidget(l6)
+        hlayout2.addWidget(lbl_logo_oslandia)
+        hlayout2.addWidget(lbl_logo_spatialys)
+        hlayout2.addWidget(lbl_logo_c2c)
         vlayout.addLayout(hlayout2)
         self.about_dlg.setLayout(vlayout)
         self.about_dlg.setWindowTitle(__title__)
@@ -234,7 +234,7 @@ class MainPlugin(object):
             else:
                 schema = None
             QApplication.setOverrideCursor(Qt.WaitCursor)
-            import_in_qgis(source, db_widget.format(), schema)
+            import_in_qgis(source, db_widget.get_db_format(), schema)
         except InputError as e:
             QMessageBox.warning(None, "Error during layer loading", e.args[0])
         except RuntimeError as e:

@@ -1,4 +1,7 @@
+#! python3  # noqa: E265
+
 import os
+from pathlib import Path
 
 from qgis.core import QgsApplication
 from qgis.PyQt import uic
@@ -78,19 +81,27 @@ class DatabaseWidget(BASE, WIDGET):
     @pyqtSlot()
     def on_sqlitePathButton_clicked(self):
         current_path = self.sqlitePathLineEdit.text()
-        filter = self.tr("SQLite Files (*.sqlite)")
+
         if self._accept_mode == QFileDialog.AcceptOpen:
-            path, filter = QFileDialog.getOpenFileName(
-                self, self.tr("Open SQLite database"), current_path, filter
+            filepath, suffix_filter = QFileDialog.getOpenFileName(
+                parent=self,
+                caption=self.tr("Open SQLite database"),
+                directory=current_path,
+                filter=self.tr("SQLite Files (*.sqlite)"),
             )
         else:
-            path, filter = QFileDialog.getSaveFileName(
-                self, self.tr("Save to SQLite database"), current_path, filter
+            filepath, suffix_filter = QFileDialog.getSaveFileName(
+                parent=self,
+                caption=self.tr("Save to SQLite database"),
+                directory=current_path,
+                filter=self.tr("SQLite Files (*.sqlite)"),
             )
-            if path:
-                if os.path.splitext(path)[1] == "":
-                    path = "{}.sqlite".format(path)
-        self.sqlitePathLineEdit.setText(path)
+            if filepath:
+                filepath = Path(filepath)
+                if filepath.suffix != ".sqlite":
+                    filepath = Path(str(filepath) + ".sqlite")
+
+        self.sqlitePathLineEdit.setText(filepath)
 
     @pyqtSlot(str)
     def on_pgsqlConnectionsBox_currentIndexChanged(self, text):
@@ -126,7 +137,7 @@ class DatabaseWidget(BASE, WIDGET):
         if value == "PostgreSQL":
             self.pgsqlRadioButton.setChecked(True)
 
-    def format(self):
+    def get_db_format(self):
         if self.sqliteRadioButton.isChecked():
             return "SQLite"
         if self.pgsqlRadioButton.isChecked():
