@@ -1,49 +1,50 @@
-# -*- coding: utf-8 -*-
+#! python3  # noqa: E265
 """
-***************************************************************************
-    An httplib2 replacement that uses QgsNetworkAccessManager
+    An httplib2 replacement that uses `QgsNetworkAccessManager <https://github.com/boundlessgeo/lib-qgis-commons/blob/master/qgiscommons2/network/networkaccessmanager.py>`_
 
-    https://github.com/boundlessgeo/lib-qgis-commons/blob/master/qgiscommons2/network/networkaccessmanager.py
+    - Date                 : August 2016
+    - Copyright            : (C) 2016 Boundless, http://boundlessgeo.com
+    - Email                : apasotti at boundlessgeo dot com
+    - Notes                : Enhanced in 2021 by Julien M. for Oslandia
 
-    ---------------------
-    Date                 : August 2016
-    Copyright            : (C) 2016 Boundless, http://boundlessgeo.com
-    Email                : apasotti at boundlessgeo dot com
-***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************
+    This program is free software; you can redistribute it and/or modify \
+    it under the terms of the GNU General Public License as published by \
+    the Free Software Foundation; either version 2 of the License, or \
+    (at your option) any later version.
 """
-from future import standard_library
 
-standard_library.install_aliases()
-from builtins import str
-from builtins import object
+# ############################################################################
+# ########## Imports ###############
+# ##################################
 
-__author__ = "Alessandro Pasotti"
-__date__ = "August 2016"
-
+# Standard library
+import logging
 import re
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
+import urllib.parse
+import urllib.request
+from builtins import str
+from typing import Tuple
 
-from qgis.PyQt.QtCore import (
-    pyqtSlot,
-    QUrl,
-    QEventLoop,
-    QTimer,
-    QCoreApplication,
-    QObject,
-)
-from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkReply
+# PyQGIS
+from PyQt5.QtCore import QEventLoop, QObject, QUrl, pyqtSignal
+from PyQt5.QtNetwork import QNetworkReply, QNetworkRequest
+from qgis.core import QgsAuthManager, QgsMessageLog, QgsNetworkAccessManager
 
-from qgis.core import QgsNetworkAccessManager, QgsAuthManager, QgsMessageLog
+# project
+from qtribu.toolbelt import PlgLogger
 
-# FIXME: ignored
-DEFAULT_MAX_REDIRECTS = 4
+# ############################################################################
+# ########## Globals ###############
+# ##################################
+
+DEFAULT_MAX_REDIRECTS: int = 4
+logger = logging.getLogger(__name__)
+plg_logger = PlgLogger()
+
+# ############################################################################
+# ########## Exceptions ############
+# ##################################
 
 
 class RequestsException(Exception):
@@ -60,6 +61,11 @@ class RequestsExceptionConnectionError(RequestsException):
 
 class RequestsExceptionUserAbort(RequestsException):
     pass
+
+
+# ############################################################################
+# ########## Classes ###############
+# ##################################
 
 
 class Map(dict):
@@ -101,34 +107,38 @@ class Response(Map):
     pass
 
 
-class NetworkAccessManager(object):
-    """
-    This class mimicks httplib2 by using QgsNetworkAccessManager for all
+class NetworkAccessManager(QObject):
+    """This class mimicks httplib2 by using QgsNetworkAccessManager for all
     network calls.
-    The return value is a tuple of (response, content), the first being and
-    instance of the Response class, the second being a string that contains
-    the response entity body.
-    Parameters
-    ----------
-    debug : bool
-        verbose logging if True
-    exception_class : Exception
-        Custom exception class
-    Usage 1 (blocking mode)
-    -----
-    ::
+
+    :param authid: [description], defaults to None
+    :type authid: str, optional
+    :param disable_ssl_certificate_validation: [description], defaults to False
+    :type disable_ssl_certificate_validation: bool, optional
+    :param exception_class: Custom exception class, defaults to None
+    :type exception_class: object, optional
+    :param debug: verbose logging if True, defaults to False
+    :type debug: bool, optional
+    :return: a tuple of (response, content), the first being and instance of the \
+    Response class, the second being a string that contains the response entity body.
+    :rtype: Tuple[Response, str]
+
+    :Note: If blocking mode returns immediatly it's up to the caller to manage listeners in \
+    case of non blocking mode.
+
+    :Example:
+
+    .. code-block:: python
+
+        # Blocking mode
         nam = NetworkAccessManager(authcgf)
         try:
             (response, content) = nam.request('http://www.example.com')
         except RequestsException as e:
             # Handle exception
             pass
-    Usage 2 (Non blocking mode)
-    -------------------------
-    ::
-        NOTE! if blocking mode returns immediatly
-              it's up to the caller to manage listeners in case
-              of non blocking mode
+
+        # Non blocking mode
         nam = NetworkAccessManager(authcgf)
         try:
             nam.request('http://www.example.com', blocking=False)
@@ -136,25 +146,31 @@ class NetworkAccessManager(object):
         except RequestsException as e:
             # Handle exception
             pass
-        Get response using method:
-        nam.httpResult() that return a dictionary with keys:
-            'status' - http code result come from reply.attribute(QNetworkRequest.HttpStatusCodeAttribute)
-            'status_code' - http code result come from reply.attribute(QNetworkRequest.HttpStatusCodeAttribute)
-            'status_message' - reply message string from reply.attribute(QNetworkRequest.HttpReasonPhraseAttribute)
-            'content' - bytearray returned from reply
-            'ok' - request success [True, False]
-            'headers' - Dicionary containing the reply header
-            'reason' - fomatted message string with reply.errorString()
-            'exception' - the exception returne dduring execution
+
+        # Get response using method:
+        # nam.httpResult() that return a dictionary with keys:
+        #     'status' - http code result come from reply.attribute(QNetworkRequest.HttpStatusCodeAttribute)
+        #     'status_code' - http code result come from reply.attribute(QNetworkRequest.HttpStatusCodeAttribute)
+        #     'status_message' - reply message string from reply.attribute(QNetworkRequest.HttpReasonPhraseAttribute)
+        #     'content' - bytearray returned from reply
+        #     'ok' - request success [True, False]
+        #     'headers' - Dictionary containing the reply header
+        #     'reason' - fomatted message string with reply.errorString()
+        #     'exception' - the exception returne dduring execution
     """
+
+    finished = pyqtSignal(Response)
 
     def __init__(
         self,
-        authid=None,
-        disable_ssl_certificate_validation=False,
-        exception_class=None,
-        debug=False,
-    ):
+        authid: str = None,
+        disable_ssl_certificate_validation: bool = False,
+        exception_class: object = None,
+        debug: bool = False,
+    ) -> Tuple[Response, str]:
+        """Initialization."""
+
+        QObject.__init__(self)
         self.disable_ssl_certificate_validation = disable_ssl_certificate_validation
         self.authid = authid
         self.reply = None
@@ -172,6 +188,7 @@ class NetworkAccessManager(object):
                 "headers": {},
                 "reason": "",
                 "exception": None,
+                "url": "",
             }
         )
 
@@ -184,27 +201,52 @@ class NetworkAccessManager(object):
 
     def request(
         self,
-        url,
-        method="GET",
+        url: str,
+        method: str = "GET",
         body=None,
         headers=None,
-        redirections=DEFAULT_MAX_REDIRECTS,
+        redirections: int = DEFAULT_MAX_REDIRECTS,
         connection_type=None,
-        blocking=True,
+        blocking: bool = True,
     ):
+        """Make a network request by calling QgsNetworkAccessManager. \
+        Redirections argument is ignored and is here only for httplib2 compatibility.
+
+        :param url: URL to request.
+        :type url: str
+        :param method: HTTP verb as request type, defaults to "GET"
+        :type method: str, optional
+        :param body: [description], defaults to None
+        :type body: [type], optional
+        :param headers: [description], defaults to None
+        :type headers: [type], optional
+        :param redirections: [description], defaults to DEFAULT_MAX_REDIRECTS
+        :type redirections: [type], optional
+        :param connection_type: [description], defaults to None
+        :type connection_type: [type], optional
+        :param blocking: sync (True) or async (False) , defaults to True
+        :type blocking: bool, optional
+
+        :raises e: [description]
+        :raises self.http_call_result.exception: [description]
+        :raises self.exception_class: [description]
+        :raises RequestsException: [description]
+
+        :return: [description]
+        :rtype: [type]
         """
-        Make a network request by calling QgsNetworkAccessManager.
-        redirections argument is ignored and is here only for httplib2 compatibility.
-        """
+        self.http_call_result.url = url
         self.msg_log("http_call request: {0}".format(url))
 
         self.blocking_mode = blocking
         req = QNetworkRequest()
+
         # Avoid double quoting form QUrl
         url = urllib.parse.unquote(url)
         req.setUrl(QUrl(url))
+
         if headers is not None:
-            # This fixes a wierd error with compressed content not being correctly
+            # This fixes a weird error with compressed content not being correctly
             # inflated.
             # If you set the header on the QNetworkRequest you are basically telling
             # QNetworkAccessManager "I know what I'm doing, please don't do any content
@@ -236,7 +278,7 @@ class NetworkAccessManager(object):
         for k, v in list(headers.items()):
             self.msg_log("%s: %s" % (k, v))
         if method.lower() in ["post", "put"]:
-            if isinstance(body, file):
+            if hasattr(body, "read"):
                 body = body.read()
             self.reply = func(req, body)
         else:
@@ -245,7 +287,7 @@ class NetworkAccessManager(object):
             self.msg_log("Update reply w/ authid: {0}".format(self.authid))
             QgsAuthManager.instance().updateNetworkReply(self.reply, self.authid)
 
-        # necessary to trap local timout manage by QgsNetworkAccessManager
+        # necessary to trap local timeout manage by QgsNetworkAccessManager
         # calling QgsNetworkAccessManager::abortRequest
         QgsNetworkAccessManager.instance().requestTimedOut.connect(self.requestTimedOut)
 
@@ -253,10 +295,10 @@ class NetworkAccessManager(object):
         self.reply.finished.connect(self.replyFinished)
         self.reply.downloadProgress.connect(self.downloadProgress)
 
-        # block if blocking mode otherwise return immediatly
+        # block if blocking mode otherwise return immediately
         # it's up to the caller to manage listeners in case of no blocking mode
         if not self.blocking_mode:
-            return (None, None)
+            return None, None
 
         # Call and block
         self.el = QEventLoop()
@@ -275,13 +317,15 @@ class NetworkAccessManager(object):
         if not self.http_call_result.ok:
             if self.http_call_result.exception and not self.exception_class:
                 raise self.http_call_result.exception
-            else:
+            elif self.exception_class:
                 raise self.exception_class(self.http_call_result.reason)
+            else:
+                raise RequestsException("Unknown reason")
 
-        return (self.http_call_result, self.http_call_result.content)
+        return self.http_call_result, self.http_call_result.content
 
     # @pyqtSlot()
-    def downloadProgress(self, bytesReceived, bytesTotal):
+    def downloadProgress(self, bytesReceived: int, bytesTotal: int):
         """Keep track of the download progress"""
         # self.msg_log("downloadProgress %s of %s ..." % (bytesReceived, bytesTotal))
         pass
@@ -350,21 +394,21 @@ class NetworkAccessManager(object):
 
         else:
             # Handle redirections
-            redirectionUrl = self.reply.attribute(
+            redirection_url = self.reply.attribute(
                 QNetworkRequest.RedirectionTargetAttribute
             )
-            if redirectionUrl is not None and redirectionUrl != self.reply.url():
-                if redirectionUrl.isRelative():
-                    redirectionUrl = self.reply.url().resolved(redirectionUrl)
+            if redirection_url is not None and redirection_url != self.reply.url():
+                if redirection_url.isRelative():
+                    redirection_url = self.reply.url().resolved(redirection_url)
 
                 msg = "Redirected from '{}' to '{}'".format(
-                    self.reply.url().toString(), redirectionUrl.toString()
+                    self.reply.url().toString(), redirection_url.toString()
                 )
                 self.msg_log(msg)
 
                 self.reply.deleteLater()
                 self.reply = None
-                self.request(redirectionUrl.toString())
+                self.request(redirection_url.toString())
 
             # really end request
             else:
@@ -377,10 +421,14 @@ class NetworkAccessManager(object):
                 self.http_call_result.ok = True
 
         # Let's log the whole response for debugging purposes:
-        # self.msg_log("Got response %s %s from %s" % \
-        #            (self.http_call_result.status_code,
-        #             self.http_call_result.status_message,
-        #             self.reply.url().toString()))
+        self.msg_log(
+            "Got response %s %s from %s"
+            % (
+                self.http_call_result.status_code,
+                self.http_call_result.status_message,
+                self.reply.url().toString() if self.reply else "reply has been deleted",
+            )
+        )
         for k, v in list(self.http_call_result.headers.items()):
             self.msg_log("%s: %s" % (k, v))
         if len(self.http_call_result.content) < 1024:
@@ -401,6 +449,8 @@ class NetworkAccessManager(object):
             self.reply = None
         else:
             self.msg_log("Reply was already deleted ...")
+
+        self.finished.emit(self.http_call_result)
 
     # @pyqtSlot()
     def sslErrors(self, ssl_errors):
