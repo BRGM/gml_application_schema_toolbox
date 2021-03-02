@@ -5,14 +5,13 @@ from PyQt5 import uic
 from qgis.PyQt.QtCore import pyqtSlot
 from qgis.PyQt.QtWidgets import QFileDialog, QVBoxLayout, QWizard, QWizardPage
 
-from ..core.qgis_urlopener import remote_open_from_qgis
+from gml_application_schema_toolbox.toolbelt.file_downloader import get_from_http
+
 from ..core.settings import settings
 from .import_gmlas_panel import ImportGmlasPanel
 from .load_wizard_wfs import LoadWizardWFS
 from .load_wizard_xml import LoadWizardXML
 from .wait_cursor_context import WaitCursor
-
-from gml_application_schema_toolbox.toolbelt.download_manager import get_from_http
 
 PAGE_1_W, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "load_wizard_data_source.ui")
