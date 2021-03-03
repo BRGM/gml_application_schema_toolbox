@@ -7,7 +7,7 @@ except ImportError:
     from gml_application_schema_toolbox.extlibs.qgis_processing_postgis import DbError
 
 # project package
-from gml_application_schema_toolbox.core.log_handler import PluginLogHandler
+from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
 from gml_application_schema_toolbox.extlibs.qgis_processing_postgis import GeoDB
 
 # ############################################################################
@@ -34,7 +34,7 @@ class ForeignKey:
 class GmlasPostgisDB(GeoDB):
     def __init__(self):
         # map to the plugin log handler
-        self.plg_logger = PluginLogHandler()
+        self.plg_logger = PlgLogger()
 
     def _add_foreign_key_constraint(self, schema, foreign_key):
         if self._constraint_exists(

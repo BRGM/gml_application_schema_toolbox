@@ -10,16 +10,13 @@ from qgis.utils import iface
 # project package
 from gml_application_schema_toolbox.__about__ import __title__
 
-
 # ############################################################################
 # ########## Classes ###############
 # ##################################
 
 
-class PluginLogHandler(logging.Handler):
-    def __init__(self):
-        """Python logging handler supercharged with QGIS useful methods."""
-        pass
+class PlgLogger(logging.Handler):
+    """Python logging handler supercharged with QGIS useful methods."""
 
     @staticmethod
     def log(
@@ -53,6 +50,17 @@ class PluginLogHandler(logging.Handler):
             log(message="Plugin loaded - SUCCESS", log_level=3, push=1)
             log(message="Plugin loaded - TEST", log_level=4, push=1)
         """
+        # ensure message is a string
+        if not isinstance(message, str):
+            try:
+                message = str(message)
+            except Exception as err:
+                err_msg = "Log message must be a string, not: {}. Trace: {}".format(
+                    type(message), err
+                )
+                logging.error(err_msg)
+                message = err_msg
+
         # send it to QGIS messages panel
         QgsMessageLog.logMessage(
             message=message, tag=application, notifyUser=push, level=log_level
