@@ -2,7 +2,7 @@ name: Release 🚀
 
 env:
   PROJECT_FOLDER: "gml_application_schema_toolbox"
-  PYTHON_VERSION: 3.8
+  PYTHON_VERSION: 3.7
 
 on:
   push:
@@ -15,9 +15,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
-    # - name: Install Qt lrelease
-    #   run: sudo apt install qt5-default qttools5-dev-tools
 
     - name: Setup Python
       uses: actions/setup-python@v2
@@ -46,9 +43,11 @@ jobs:
         release_name: ${{ github.ref }}
         body_path: release.md
 
-    # - name: Deploy plugin
-    #   run: >-
-    #     qgis-plugin-ci
-    #     release ${GITHUB_REF/refs\/tags\//}
-    #     --github-token ${{ secrets.BOT_HUB_TOKEN }}
-    #     --transifex-token ${{ secrets.TRANSIFEX_TOKEN }}
+    - name: Deploy plugin
+      run: >-
+        qgis-plugin-ci
+        release ${GITHUB_REF/refs\/tags\//}
+        --github-token ${{ secrets.GITHUB_TOKEN }}
+        --allow-uncommitted-changes
+        --osgeo-username ${{ secrets.OSGEO_USER }}
+        --osgeo-password ${{ secrets.OSGEO_PASSWORD }}
