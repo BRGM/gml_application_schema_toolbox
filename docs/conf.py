@@ -41,9 +41,9 @@ extensions = [
     # Sphinx included
     "sphinx.ext.autodoc",
     "sphinx.ext.autosectionlabel",
+    "sphinx.ext.extlinks",
     "sphinx.ext.githubpages",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.extlinks",
     "sphinx.ext.viewcode",
     # 3rd party
     "myst_parser",
@@ -122,4 +122,3 @@ def run_apidoc(_):
 # launch setup
 def setup(app):
     app.connect("builder-inited", run_apidoc)
-

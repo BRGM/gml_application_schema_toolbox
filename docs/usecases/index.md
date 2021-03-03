@@ -342,7 +342,7 @@ Sample datasets are provided in `/home/qgis/qgisgmlas/data` folder.
     └── array_type_test.sqlite
 ```
 
-A script is provided for conversion [`convert-samples.sh`](convert-samples.sh).
+A script is provided for conversion [`convert-samples.sh`](./convert-samples.sh).
 
 ---
 

@@ -22,7 +22,7 @@ To open the plugin panel, right click on the toolbars to add the `GML App Schema
 
 - [Download](DOWNLOAD.md)
 - [Read](READ.md)
-- [Read in XML mode](READ-XML-MODE.md)
-- [Read in database (relational) mode](READ-DB-MODE.md)
+- [Read in XML mode](read_mode_xml.md)
+- [Read in database (relational) mode](read_mode_db.md)
 - [Browse custom elements](READ-CUSTOM.md)
 - [Write](WRITE-FROM-DB.md)
