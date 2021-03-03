@@ -15,7 +15,7 @@
 #   You should have received a copy of the GNU Library General Public
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
-
+# standard library
 import copy
 import os
 import re
@@ -42,8 +42,8 @@ __all__ = ["load_as_xml_layer", "properties_from_layer", "is_layer_gml_xml"]
 
 
 def load_as_xml_layer(
-    xml_uri,
-    is_remote,
+    xml_uri: str,
+    is_remote: bool,
     attributes={},
     geometry_mapping=None,
     output_local_file=None,
@@ -360,12 +360,12 @@ class ComplexFeatureLoader(object):
 
     def load_complex_gml(
         self,
-        xml_uri,
-        is_remote,
+        xml_uri: str,
+        is_remote: bool,
         attributes={},
         geometry_mapping=None,
         logger=None,
-        swap_xy=False,
+        swap_xy: bool = False,
     ):
         """
         :param xml_uri: the XML URI

@@ -31,7 +31,7 @@ from qgis.PyQt.QtWidgets import QFileDialog, QProgressDialog
 
 # project package
 from gml_application_schema_toolbox.__about__ import __title__
-from gml_application_schema_toolbox.core.log_handler import PluginLogHandler
+from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 
 # ############################################################################
@@ -42,7 +42,7 @@ from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 class GmlasPanelMixin:
     def __init__(self):
         # map to the plugin log handler
-        self.plg_logger = PluginLogHandler()
+        self.plg_logger = PlgLogger()
 
     @pyqtSlot()
     def on_gmlasConfigButton_clicked(self):

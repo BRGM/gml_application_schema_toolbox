@@ -1,4 +1,10 @@
 #! python3  # noqa: E265
+
+# ############################################################################
+# ########## Imports ###############
+# ##################################
+
+# Standard library
 import os
 
 from PyQt5 import uic
@@ -7,18 +13,30 @@ from qgis.PyQt.QtCore import QRegExp, QVariant, pyqtSlot
 from qgis.PyQt.QtGui import QRegExpValidator
 from qgis.PyQt.QtWidgets import QComboBox, QLineEdit, QTableWidgetItem, QWizardPage
 
+from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
+
 from ..core.load_gml_as_xml import load_as_xml_layer
 from ..gui import qgis_form_custom_widget
 from ..gui.progress_bar import ProgressBarLogger
+
+# ############################################################################
+# ########## Globals ###############
+# ##################################
 
 PAGE_3_W, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "load_wizard_xml_options.ui")
 )
 
 
+# ############################################################################
+# ########## Classes ###############
+# ##################################
+
+
 class LoadWizardXML(QWizardPage, PAGE_3_W):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.log = PlgLogger().log
         self.setupUi(self)
         self.setFinalPage(True)
 
@@ -28,6 +46,8 @@ class LoadWizardXML(QWizardPage, PAGE_3_W):
         self.geometryColumnCheck.stateChanged.connect(
             self.geometryColumnEdit.setEnabled
         )
+        if __debug__:
+            self.log(message=f"DEBUG {__name__} loaded.", log_level=5)
 
     def nextId(self):
         return -1
