@@ -1,69 +1,72 @@
-#   Copyright (C) 2016 BRGM (http:///brgm.fr)
-#   Copyright (C) 2016 Oslandia <infos@oslandia.com>
-#
-#   This library is free software; you can redistribute it and/or
-#   modify it under the terms of the GNU Library General Public
-#   License as published by the Free Software Foundation; either
-#   version 2 of the License, or (at your option) any later version.
-#
-#   This library is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#   Library General Public License for more details.
-#   You should have received a copy of the GNU Library General Public
-#   License along with this library; if not, see <http://www.gnu.org/licenses/>.
+#! python3  # noqa: E265
 
+# ############################################################################
+# ########## Imports ###############
+# ##################################
+
+# Standard library
+import logging
 from io import BytesIO
+from typing import Dict
 
-from qgis.core import QgsNetworkAccessManager
-from qgis.PyQt.QtCore import QEventLoop, QUrl
-from qgis.PyQt.QtNetwork import QNetworkAccessManager, QNetworkRequest
-
+# project
 from gml_application_schema_toolbox.__about__ import __title__
 from gml_application_schema_toolbox.core.settings import settings
+from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
+from gml_application_schema_toolbox.toolbelt.network_manager import (
+    NetworkAccessManager,
+    RequestsException,
+)
+
+# ############################################################################
+# ########## Globals ###############
+# ##################################
 
 __network_manager = None
+logger = logging.getLogger(__name__)
+plg_logger = PlgLogger()
 
 
-def _sync_get(url):
-    global __network_manager
-    if __network_manager is None:
-        __network_manager = QNetworkAccessManager()
-        __network_manager.setProxy(QgsNetworkAccessManager.instance().proxy())
-    pause = QEventLoop()
-    req = QNetworkRequest(url)
-    req.setRawHeader(b"Accept", b"application/xml")
-    req.setRawHeader(
-        b"Accept-Language", bytes(settings.value("default_language", "fr"), "utf8")
-    )
-    req.setRawHeader(
-        b"User-Agent", bytes(settings.value("http_user_agent", __title__), "utf8")
-    )
-    reply = __network_manager.get(req)
-    reply.finished.connect(pause.quit)
-    is_ok = [True]
-
-    def onError(self):
-        is_ok[0] = False
-        pause.quit()
-
-    reply.error.connect(onError)
-    pause.exec_()
-    return reply, is_ok[0]
+# ############################################################################
+# ########## Functions #############
+# ##################################
 
 
-def remote_open_from_qgis(uri):
-    """Opens a remote URL using QGIS proxy preferences"""
-    reply, is_ok = _sync_get(QUrl.fromEncoded(bytes(uri, "utf8")))
-    if not is_ok:
-        raise RuntimeError("Network problem when downloading {}".format(uri))
-    redirect = reply.attribute(QNetworkRequest.RedirectionTargetAttribute)
-    # Handle HTTP 302 redirections
-    while redirect is not None and not redirect.isEmpty():
-        reply, is_ok = _sync_get(redirect)
-        if not is_ok:
-            raise RuntimeError("Network problem when downloading {}".format(uri))
-        redirect = reply.attribute(QNetworkRequest.RedirectionTargetAttribute)
-    r = bytes(reply.readAll())
-    reply.close()
-    return BytesIO(r)
+def remote_open_from_qgis(
+    uri: str,
+    headers: Dict[bytes, bytes] = {
+        b"Accept": b"application/xml",
+        b"Accept-Language": bytes(settings.value("default_language", "fr"), "utf8"),
+        b"User-Agent": bytes(settings.value("http_user_agent", __title__), "utf8"),
+    },
+) -> BytesIO:
+    """Opens a remote URL using Network Acess Manager. In fact, just a shortcut.
+
+    :param uri: URI to request
+    :type uri: str
+    :param headers: HTTP headers. Defaults to: \
+    .. code-block:: python
+
+        {
+            b"Accept": b"application/xml",
+            b"Accept-Language": bytes(settings.value("default_language", "fr"), "utf8"),
+            b"User-Agent": bytes(settings.value("http_user_agent", __title__), "utf8")
+            }
+    :type headers: Dict[bytes, bytes], optional
+
+    :return: response content as bytesarray or None if something went wrong
+    :rtype: BytesIO
+    """
+    nam = NetworkAccessManager()
+    try:
+        response, content = nam.request(url=uri, headers=headers)
+        plg_logger.log(response.status_code)
+        return BytesIO(content)
+    except RequestsException as err:
+        logger.error(err)
+        plg_logger.log(
+            message="Request to {} failed. Trace: {}".format(uri, err),
+            log_level=2,
+            push=1,
+        )
+        return None
