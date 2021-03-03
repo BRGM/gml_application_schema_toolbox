@@ -27,9 +27,12 @@ PAGE_3_W, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "load_wizard_xml_options.ui")
 )
 
+
 # ############################################################################
 # ########## Classes ###############
 # ##################################
+
+
 class LoadWizardXML(QWizardPage, PAGE_3_W):
     def __init__(self, parent=None):
         super().__init__(parent)

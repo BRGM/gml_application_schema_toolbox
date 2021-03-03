@@ -23,12 +23,13 @@ from qgis.PyQt.QtCore import Qt, QUrl, QUrlQuery, pyqtSlot
 from qgis.PyQt.QtWidgets import QDialog, QMessageBox, QTableWidgetItem, QWizardPage
 from qgis.PyQt.QtXml import QDomDocument
 
+# project
+from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
+from gml_application_schema_toolbox.core.qgis_urlopener import remote_open_from_qgis
+from gml_application_schema_toolbox.core.settings import settings
+from gml_application_schema_toolbox.core.xml_utils import xml_parse
 from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
 
-from ..core.proxy import qgis_proxy_settings
-from ..core.qgis_urlopener import remote_open_from_qgis
-from ..core.settings import settings
-from ..core.xml_utils import xml_parse
 from .wait_cursor_context import WaitCursor
 from .xml_dialog import XmlDialog
 
@@ -39,6 +40,7 @@ from .xml_dialog import XmlDialog
 PAGE_1A_W, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "load_wizard_wfs.ui")
 )
+
 
 # ############################################################################
 # ########## Classes ###############

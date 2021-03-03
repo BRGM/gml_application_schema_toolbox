@@ -8,14 +8,16 @@
 import os
 from tempfile import NamedTemporaryFile
 
+# PyQGIS
 from PyQt5 import uic
 from qgis.PyQt.QtCore import pyqtSlot
 from qgis.PyQt.QtWidgets import QFileDialog, QVBoxLayout, QWizard, QWizardPage
 
+# project
+from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.toolbelt.file_downloader import get_from_http
 from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
 
-from ..core.settings import settings
 from .import_gmlas_panel import ImportGmlasPanel
 from .load_wizard_wfs import LoadWizardWFS
 from .load_wizard_xml import LoadWizardXML
@@ -34,14 +36,17 @@ PAGE_2_W, _ = uic.loadUiType(
 )
 
 PAGE_ID_DATA_SOURCE = 0
-PAGE_ID_WFS = 1
-PAGE_ID_LOADING = 2
-PAGE_ID_XML = 3
 PAGE_ID_GMLAS = 4
+PAGE_ID_LOADING = 2
+PAGE_ID_WFS = 1
+PAGE_ID_XML = 3
+
 
 # ############################################################################
 # ########## Classes ###############
 # ##################################
+
+
 class LoadWizardDataSource(QWizardPage, PAGE_1_W):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -87,7 +92,12 @@ class LoadWizardDataSource(QWizardPage, PAGE_1_W):
             settings.setValue("last_file", filepath)
             self.gmlPathLineEdit.setText(filepath)
 
-    def download(self, output_path):
+    def download(self, output_path: str):
+        """Download (if gmlPath is a HTTP URL) or copy a local file to tha output path.
+
+        :param output_path: output filepath
+        :type output_path: str
+        """
         input_path = self.gmlPathLineEdit.text()
         if input_path.startswith("http://") or input_path.startswith("https://"):
             # URL

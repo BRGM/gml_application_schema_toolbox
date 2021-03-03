@@ -48,7 +48,9 @@ from qgis.PyQt.QtWidgets import (
     QWidgetItem,
 )
 
-from ..core.xml_utils import no_ns
+# project
+from gml_application_schema_toolbox.core.xml_utils import no_ns
+
 from . import xml_tree_widget
 from .custom_viewers import get_custom_viewers
 from .wait_cursor_context import WaitCursor
