@@ -32,7 +32,6 @@ from PyQt5.QtNetwork import QNetworkReply, QNetworkRequest
 from qgis.core import QgsAuthManager, QgsMessageLog, QgsNetworkAccessManager
 
 # project
-from qtribu.toolbelt import PlgLogger
 
 # ############################################################################
 # ########## Globals ###############
@@ -40,7 +39,6 @@ from qtribu.toolbelt import PlgLogger
 
 DEFAULT_MAX_REDIRECTS: int = 4
 logger = logging.getLogger(__name__)
-plg_logger = PlgLogger()
 
 # ############################################################################
 # ########## Exceptions ############
