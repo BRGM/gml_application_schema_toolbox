@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.3.0 - 03/03/2021
+
+- refactoring of network requests to better integration in QGIS
+- add log abilities
+- documentation completly overhauled with updated use cases, docstrings and publication workflow
+
 ## 1.2.1 - 18/12/2020
 
 - refactoring of network requests to better integration in QGIS
