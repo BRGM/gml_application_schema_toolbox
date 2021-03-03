@@ -1,3 +1,10 @@
+#! python3  # noqa: E265
+
+# ############################################################################
+# ########## Imports ###############
+# ##################################
+
+# Standard library
 import os
 from tempfile import NamedTemporaryFile
 
@@ -6,12 +13,17 @@ from qgis.PyQt.QtCore import pyqtSlot
 from qgis.PyQt.QtWidgets import QFileDialog, QVBoxLayout, QWizard, QWizardPage
 
 from gml_application_schema_toolbox.toolbelt.file_downloader import get_from_http
+from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
 
 from ..core.settings import settings
 from .import_gmlas_panel import ImportGmlasPanel
 from .load_wizard_wfs import LoadWizardWFS
 from .load_wizard_xml import LoadWizardXML
 from .wait_cursor_context import WaitCursor
+
+# ############################################################################
+# ########## Globals ###############
+# ##################################
 
 PAGE_1_W, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "load_wizard_data_source.ui")
@@ -27,10 +39,13 @@ PAGE_ID_LOADING = 2
 PAGE_ID_XML = 3
 PAGE_ID_GMLAS = 4
 
-
+# ############################################################################
+# ########## Classes ###############
+# ##################################
 class LoadWizardDataSource(QWizardPage, PAGE_1_W):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.log = PlgLogger().log
         self.setupUi(self)
 
         last = settings.value("last_source")
@@ -40,6 +55,8 @@ class LoadWizardDataSource(QWizardPage, PAGE_1_W):
         self.gmlPathLineEdit.setText(
             settings.value("last_file", settings.value("last_downloaded_file", ""))
         )
+        if __debug__:
+            self.log(message=f"DEBUG {__name__} loaded.", log_level=5)
 
     def nextId(self):
         if self.sourceFromWFS.isChecked():

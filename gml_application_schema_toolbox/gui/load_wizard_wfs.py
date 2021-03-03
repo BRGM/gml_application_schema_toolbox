@@ -1,4 +1,10 @@
 #! python3  # noqa: E265
+
+# ############################################################################
+# ########## Imports ###############
+# ##################################
+
+# Standard library
 import os
 
 import owslib
@@ -17,6 +23,8 @@ from qgis.PyQt.QtCore import Qt, QUrl, QUrlQuery, pyqtSlot
 from qgis.PyQt.QtWidgets import QDialog, QMessageBox, QTableWidgetItem, QWizardPage
 from qgis.PyQt.QtXml import QDomDocument
 
+from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
+
 from ..core.proxy import qgis_proxy_settings
 from ..core.qgis_urlopener import remote_open_from_qgis
 from ..core.settings import settings
@@ -24,14 +32,23 @@ from ..core.xml_utils import xml_parse
 from .wait_cursor_context import WaitCursor
 from .xml_dialog import XmlDialog
 
+# ############################################################################
+# ########## Globals ###############
+# ##################################
+
 PAGE_1A_W, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "load_wizard_wfs.ui")
 )
+
+# ############################################################################
+# ########## Classes ###############
+# ##################################
 
 
 class LoadWizardWFS(QWizardPage, PAGE_1A_W):
     def __init__(self, parent, next_id):
         super().__init__(parent)
+        self.log = PlgLogger().log
         self.setupUi(self)
 
         self.featureLimitBox.setValue(int(settings.value("default_maxfeatures")))
@@ -51,6 +68,8 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
         self._gml_path = None
 
         self._next_id = next_id
+        if __debug__:
+            self.log(message=f"DEBUG {__name__} loaded.", log_level=5)
 
     def on_wfs_layer_selection_changed(self):
         self._is_complete = self.featureTypesTableWidget.selectedItems() != []
