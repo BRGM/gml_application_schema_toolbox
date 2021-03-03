@@ -2,6 +2,9 @@
 
 ## 1.2.1 - 18/12/2020
 
+- refactoring of network requests to better integration in QGIS
+- add log abilities
+- documentation completly overhauled with updated use cases, docstrings and publication workflow
 - fix compatibility with QGIS >= 3.13 ([#94](https://github.com/BRGM/gml_application_schema_toolbox/issues/94))
 - start using GitHub Actions for continuous integration and deployment
 - bump development guidelines using black, flake8, isort and precommit [#95](https://github.com/BRGM/gml_application_schema_toolbox/pull/95)
