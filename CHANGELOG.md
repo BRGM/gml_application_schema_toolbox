@@ -6,7 +6,9 @@
 - add log abilities
 - documentation completly overhauled with updated use cases, docstrings and publication workflow
 
-## 1.2.1 - 18/12/2020
+## 1.3.0-beta1 - 18/12/2020
+
+> Tagged as 1.2.1-beta1 in QGIS Official plugins repository
 
 - refactoring of network requests to better integration in QGIS
 - add log abilities
