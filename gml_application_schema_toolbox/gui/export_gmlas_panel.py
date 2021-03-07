@@ -73,7 +73,7 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             filepath = Path(filepath)
             if filepath.suffix != ".gml":
                 filepath = Path(str(filepath) + ".gml")
-                self.gmlPathLineEdit.setText(filepath)
+            self.gmlPathLineEdit.setText(filepath)
 
     @pyqtSlot()
     def on_xsdPathButton_clicked(self):

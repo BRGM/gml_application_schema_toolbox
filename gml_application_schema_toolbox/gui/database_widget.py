@@ -100,8 +100,7 @@ class DatabaseWidget(BASE, WIDGET):
                 filepath = Path(filepath)
                 if filepath.suffix != ".sqlite":
                     filepath = Path(str(filepath) + ".sqlite")
-
-        self.sqlitePathLineEdit.setText(str(filepath.resolve()))
+                self.sqlitePathLineEdit.setText(str(filepath.resolve()))
 
     @pyqtSlot(str)
     def on_pgsqlConnectionsBox_currentIndexChanged(self, text):
