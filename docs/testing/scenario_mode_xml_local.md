@@ -6,7 +6,7 @@ This scenario uses files stored on GitHub to avoid potential content negociation
 
 Whatever suits you, provided the entire world is visible (will help detect X/Y Axis being flipped).
 
-## 2. Initial information seed
+## 2. Initial information seed
 
 Copy the URL to the [initial information seed](https://raw.githubusercontent.com/BRGM/gml_application_schema_toolbox/master/tests/basic_test_scenario/0_BoreholeView.xml):
 
