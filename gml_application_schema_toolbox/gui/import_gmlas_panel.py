@@ -33,11 +33,11 @@ from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QListWidgetItem, QMes
 from qgis.utils import iface
 
 from gml_application_schema_toolbox.__about__ import __title__
-from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
 from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
+from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
 
 from ..core.load_gmlas_in_qgis import import_in_qgis
 
@@ -194,12 +194,12 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         return layers
 
     def dataset_creation_options(self):
-        if self.databaseWidget.format() == "SQLite":
+        if self.databaseWidget.get_db_format() == "SQLite":
             return ["SPATIALITE=YES"]
 
     def layer_creation_options(self):
         options = []
-        if self.databaseWidget.format() == "PostgreSQL":
+        if self.databaseWidget.get_db_format() == "PostgreSQL":
             schema = self.databaseWidget.schema(create=True)
             options.append("SCHEMA={}".format(schema or "public"))
             if self.access_mode() == "overwrite":
@@ -250,7 +250,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         params = {
             "destNameOrDestDS": dest,
             "srcDS": self.gmlas_datasource(),
-            "format": self.databaseWidget.format(),
+            "format": self.databaseWidget.get_db_format(),
             "accessMode": self.access_mode(),
             "datasetCreationOptions": self.dataset_creation_options(),
             "layerCreationOptions": self.layer_creation_options(),
@@ -312,7 +312,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         if append_to_db is None:
             dest = self.databaseWidget.datasource_name()
-            if dest == "" and self.databaseWidget.format() == "SQLite":
+            if dest == "" and self.databaseWidget.get_db_format() == "SQLite":
                 with tempfile.NamedTemporaryFile(suffix=".sqlite") as tmp:
                     dest = tmp.name
                     QgsMessageLog.logMessage("Temp SQLITE: {}".format(dest), __title__)
@@ -321,7 +321,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
                 schema = self.databaseWidget.schema()
             else:
                 schema = None
-            db_format = self.databaseWidget.format()
+            db_format = self.databaseWidget.get_db_format()
             params = self.import_params(dest)
         else:
             schema = append_to_schema

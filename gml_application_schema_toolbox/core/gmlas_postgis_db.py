@@ -7,8 +7,8 @@ except ImportError:
     from gml_application_schema_toolbox.extlibs.qgis_processing_postgis import DbError
 
 # project package
-from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
 from gml_application_schema_toolbox.extlibs.qgis_processing_postgis import GeoDB
+from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
 
 # ############################################################################
 # ########## Classes ###############
