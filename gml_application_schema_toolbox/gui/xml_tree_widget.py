@@ -1,3 +1,5 @@
+#! python3  # noqa: E265
+
 #   Copyright (C) 2017 BRGM (http:///brgm.fr)
 #   Copyright (C) 2017 Oslandia <infos@oslandia.com>
 #
@@ -13,10 +15,16 @@
 #   You should have received a copy of the GNU Library General Public
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
+# ############################################################################
+# ########## Imports ###############
+# ##################################
 
+# standard
+import logging
 import xml.etree.ElementTree as ET
 from builtins import next, range
 
+# PyQGIS
 from qgis.core import QgsEditorWidgetSetup, QgsProject
 from qgis.PyQt.QtCore import QSize, Qt
 from qgis.PyQt.QtWidgets import (
@@ -35,15 +43,42 @@ from qgis.PyQt.QtWidgets import (
     QWidget,
 )
 
-from ..core.load_gml_as_xml import is_layer_gml_xml, load_as_xml_layer
-from ..core.qgis_urlopener import remote_open_from_qgis
-from ..core.xml_utils import no_prefix, split_tag, xml_parse, xml_parse_from_string
-from . import qgis_form_custom_widget
-from .custom_viewers import get_custom_viewers
+# project
+from gml_application_schema_toolbox.core.load_gml_as_xml import (
+    is_layer_gml_xml,
+    load_as_xml_layer,
+)
+from gml_application_schema_toolbox.core.qgis_urlopener import remote_open_from_qgis
+from gml_application_schema_toolbox.core.xml_utils import (
+    no_prefix,
+    split_tag,
+    xml_parse,
+    xml_parse_from_string,
+)
+from gml_application_schema_toolbox.gui import qgis_form_custom_widget
+from gml_application_schema_toolbox.gui.custom_viewers import get_custom_viewers
+from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
+
+# ############################################################################
+# ########## Globals ###############
+# ##################################
+
+logger = logging.getLogger(__name__)
+plg_logger = PlgLogger()
+
+
+# ############################################################################
+# ########## Functions #############
+# ##################################
 
 
 def fill_tree_with_element(
-    widget, treeItem, elt, ns_imap={}, custom_viewers={}, ns_map={}
+    widget: QTreeWidget,
+    treeItem: QTreeWidgetItem,
+    elt,
+    ns_imap: dict = {},
+    custom_viewers: dict = {},
+    ns_map: dict = {},
 ):
     """
     :param widget: the QTreeWidget
@@ -159,6 +194,11 @@ def fill_tree_with_xml(treeWidget, xml):
     recurse_expand(treeWidget.invisibleRootItem())
     treeWidget.resizeColumnToContents(0)
     treeWidget.resizeColumnToContents(1)
+
+
+# ############################################################################
+# ########## Classes ###############
+# ##################################
 
 
 class XMLTreeWidget(QTreeWidget):
@@ -278,7 +318,12 @@ class XMLTreeWidget(QTreeWidget):
             f = remote_open_from_qgis(uri)
             try:
                 doc, ns_map = xml_parse(f)
-            except ET.ParseError:
+            except ET.ParseError as err:
+                msg_err = "Error occurred reading the XML downloaded from {}. Trace: {}".format(
+                    uri, err
+                )
+                logger.error(msg_err)
+                plg_logger.log(message=msg_err, log_level=1, push=True)
                 # probably not an XML
                 QApplication.restoreOverrideCursor()
                 QMessageBox.warning(
