@@ -1,3 +1,5 @@
+#! python3  # noqa: E265
+
 #   Copyright (C) 2016 BRGM (http:///brgm.fr)
 #   Copyright (C) 2016 Oslandia <infos@oslandia.com>
 #
@@ -13,9 +15,28 @@
 #   You should have received a copy of the GNU Library General Public
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
+# ############################################################################
+# ########## Imports ###############
+# ##################################
 
+# standard
 import io
+import logging
 import xml.etree.ElementTree as ET
+
+# project
+from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
+
+# ############################################################################
+# ########## Globals ###############
+# ##################################
+
+logger = logging.getLogger(__name__)
+plg_logger = PlgLogger()
+
+# ############################################################################
+# ########## Functions #############
+# ##################################
 
 
 def no_prefix(tag):

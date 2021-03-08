@@ -230,6 +230,8 @@ class NetworkAccessManager(QObject):
         Response class, the second being a bytearray that contains the response entity body.
         :rtype: Tuple[Response, bytearray]
         """
+        # store headers in case of redirections
+        self.headers = headers
         self.http_call_result.url = url
         if self.debug:
             plg_logger.log(
@@ -426,7 +428,7 @@ class NetworkAccessManager(QObject):
 
                 self.reply.deleteLater()
                 self.reply = None
-                self.request(redirection_url.toString())
+                self.request(redirection_url.toString(), headers=self.headers)
 
             # really end request
             else:
