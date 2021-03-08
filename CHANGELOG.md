@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 1.3.1 - 08/03/2021
+
+### Fixed
+
+- request headers were not transmitted in case of redirections [#127](https://github.com/BRGM/gml_application_schema_toolbox/issues/127)
+- remove a method which was overriding Python builtin functions [#129](https://github.com/BRGM/gml_application_schema_toolbox/issues/129)
+- fix path in File Dialog [#130](https://github.com/BRGM/gml_application_schema_toolbox/issues/130)
+
 ## 1.3.0 - 03/03/2021
 
 - refactoring of network requests to better integration in QGIS
