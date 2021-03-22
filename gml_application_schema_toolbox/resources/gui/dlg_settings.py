@@ -1,29 +1,65 @@
-import os
+#! python3  # noqa: E265
 
-from qgis.core import QgsApplication
+"""
+    Plugin settings dialog.
+"""
+
+# standard
+import logging
+from pathlib import Path
+
+# PyQGIS
+from qgis.core import QgsSettings
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import pyqtSlot
-from qgis.PyQt.QtWidgets import QFileDialog
+from qgis.PyQt.QtWidgets import QFileDialog, QWidget
 
+# project
 from gml_application_schema_toolbox.__about__ import __title__
 from gml_application_schema_toolbox.core.settings import settings
+from gml_application_schema_toolbox.toolbelt import PlgLogger
 
-WIDGET, BASE = uic.loadUiType(
-    os.path.join(os.path.dirname(__file__), "..", "ui", "settings_dialog.ui")
+# ############################################################################
+# ########## Globals ###############
+# ##################################
+
+logger = logging.getLogger(__name__)
+FORM_CLASS, _ = uic.loadUiType(
+    Path(__file__).parent / "{}.ui".format(Path(__file__).stem)
 )
 
 
-class SettingsDialog(BASE, WIDGET):
+# ############################################################################
+# ########## Classes ###############
+# ##################################
+
+
+class SettingsDialog(QWidget, FORM_CLASS):
     def __init__(self, parent=None):
+        """Constructor."""
         super(SettingsDialog, self).__init__(parent)
         self.setupUi(self)
+        self.log = PlgLogger().log
 
+        # load previously saved settings
         self.load_settings()
 
-    def set_icon(self, button, icon):
-        button.setIcon(QgsApplication.getThemeIcon(icon))
+    def closeEvent(self, event):
+        """Map on plugin close.
+
+        :param event: [description]
+        :type event: [type]
+        """
+        self.closingPlugin.emit()
+        event.accept()
 
     def load_settings(self):
+        """Load options from QgsSettings into UI form."""
+        # open settings group
+        settings = QgsSettings()
+        settings.beginGroup(__title__)
+
+        # retrieve options
         self.featureLimitBox.setValue(int(settings.value("default_maxfeatures")))
         self.set_import_method(settings.value("default_import_method"))
         self.gmlasConfigLineEdit.setText(settings.value("default_gmlas_config"))
@@ -32,7 +68,11 @@ class SettingsDialog(BASE, WIDGET):
         self.set_access_mode(settings.value("default_access_mode"))
         self.httpUserAgentEdit.setText(settings.value("http_user_agent", __title__))
 
+        # end
+        settings.endGroup()
+
     def save_settings(self):
+        """Save options from UI form into QSettings."""
         settings.setValue("default_maxfeatures", self.featureLimitBox.value())
         settings.setValue("default_import_method", self.import_method())
         settings.setValue("default_language", self.languageLineEdit.text())
@@ -101,3 +141,6 @@ class SettingsDialog(BASE, WIDGET):
     def accept(self):
         self.save_settings()
         super(SettingsDialog, self).accept()
+
+    def reject(self):
+        super(SettingsDialog, self).reject()
