@@ -21,6 +21,6 @@
 
 
 def classFactory(iface):
-    from .main import MainPlugin
+    from .main import GmlasPlugin
 
-    return MainPlugin(iface)
+    return GmlasPlugin(iface)

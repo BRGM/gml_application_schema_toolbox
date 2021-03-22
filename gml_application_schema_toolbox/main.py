@@ -45,10 +45,15 @@ from gml_application_schema_toolbox.gui import InputError
 from gml_application_schema_toolbox.gui.database_widget import DatabaseWidget
 from gml_application_schema_toolbox.gui.export_gmlas_panel import ExportGmlasPanel
 from gml_application_schema_toolbox.gui.load_wizard import LoadWizard
-from gml_application_schema_toolbox.gui.settings_dialog import SettingsDialog
 from gml_application_schema_toolbox.gui.xml_custom_widget import (
     XMLWidgetFactory,
     XMLWidgetFormatter,
+)
+from gml_application_schema_toolbox.resources.gui.dlg_settings import SettingsDialog
+from gml_application_schema_toolbox.toolbelt import (
+    PlgLogger,
+    PlgOptionsFactory,
+    PlgOptionsManager,
 )
 
 # ############################################################################
@@ -68,44 +73,68 @@ def get_iface():
 # ##################################
 
 
-class MainPlugin(object):
+class GmlasPlugin(object):
     def __init__(self, iface):
         self.iface = iface
+        self.log = PlgLogger().log
         global g_iface
         g_iface = iface
 
     def initGui(self):
-        self.settingsAction = QAction("Settings", self.iface.mainWindow())
-        self.settingsAction.triggered.connect(self.onSettings)
+        """Set up plugin UI elements."""
 
-        self.aboutAction = QAction("About", self.iface.mainWindow())
-        self.aboutAction.triggered.connect(self.onAbout)
+        # settings page within the QGIS preferences menu
+        self.options_factory = PlgOptionsFactory()
+        self.iface.registerOptionsWidgetFactory(self.options_factory)
 
-        self.helpAction = QAction(
+        # -- Actions
+        self.action_about = QAction(
+            QIcon(str(DIR_PLUGIN_ROOT / "resources/images/info-circle.svg")),
+            "About",
+            self.iface.mainWindow(),
+        )
+        self.action_about.triggered.connect(self.onAbout)
+
+        self.action_export = QAction(
+            QIcon(QgsApplication.iconPath("mActionSharingExport.svg")),
+            "Export a GMLAS database to GML",
+            self.iface.mainWindow(),
+        )
+        self.action_export.triggered.connect(self.onExport)
+
+        self.action_help = QAction(
             QIcon(":/images/themes/default/mActionHelpContents.svg"),
             "Help",
             self.iface.mainWindow(),
         )
-        self.helpAction.triggered.connect(lambda: showPluginHelp(filename="doc/index"))
+        self.action_help.triggered.connect(lambda: showPluginHelp(filename="doc/index"))
 
-        self.loadAction = QAction("Load a GMLAS database", self.iface.mainWindow())
-        self.loadAction.triggered.connect(self.onLoad)
-
-        self.exportAction = QAction(
-            "Export a GMLAS database to GML", self.iface.mainWindow()
+        self.action_load = QAction(
+            QIcon(QgsApplication.iconPath("mActionSharingImport.svg")),
+            "Load a GMLAS database",
+            self.iface.mainWindow(),
         )
-        self.exportAction.triggered.connect(self.onExport)
+        self.action_load.triggered.connect(self.onLoad)
 
-        self.wizardAction = QAction("Load (wizard)", self.iface.mainWindow())
-        self.wizardAction.triggered.connect(self.onWizardLoad)
+        self.action_settings = QAction(
+            QgsApplication.getThemeIcon("console/iconSettingsConsole.svg"),
+            "Settings",
+            self.iface.mainWindow(),
+        )
+        self.action_settings.triggered.connect(
+            lambda: self.iface.showOptionsDialog(
+                currentPage="mOptionsPage{}".format(__title__)
+            )
+        )
 
-        self.iface.addPluginToMenu(__title__, self.wizardAction)
-        self.iface.addPluginToMenu(__title__, self.loadAction)
-        self.iface.addPluginToMenu(__title__, self.exportAction)
-        self.iface.addPluginToMenu(__title__, self.settingsAction)
-        self.iface.addPluginToMenu(__title__, self.aboutAction)
-        self.iface.addPluginToMenu(__title__, self.helpAction)
+        self.action_wizard = QAction(
+            QIcon(str(DIR_PLUGIN_ROOT / "resources/images/mActionAddGMLLayer.svg")),
+            "Load (wizard)",
+            self.iface.mainWindow(),
+        )
+        self.action_wizard.triggered.connect(self.onWizardLoad)
 
+        # Model and custom XML widget
         self.model_dlg = None
         self.model = None
 
@@ -116,14 +145,40 @@ class MainPlugin(object):
             self.xml_widget_formatter
         )
 
+        # -- Menu
+        self.iface.addPluginToMenu(__title__, self.action_wizard)
+        self.iface.addPluginToMenu(__title__, self.action_load)
+        self.iface.addPluginToMenu(__title__, self.action_export)
+        self.iface.addPluginToMenu(__title__, self.action_settings)
+        self.iface.addPluginToMenu(__title__, self.action_about)
+        self.iface.addPluginToMenu(__title__, self.action_help)
+
+        # -- Toolbar
+        self.iface.addToolBarIcon(self.action_wizard)
+
     def unload(self):
-        # Remove the plugin menu item and icon
-        self.iface.removePluginMenu(__title__, self.wizardAction)
-        self.iface.removePluginMenu(__title__, self.loadAction)
-        self.iface.removePluginMenu(__title__, self.exportAction)
-        self.iface.removePluginMenu(__title__, self.settingsAction)
-        self.iface.removePluginMenu(__title__, self.aboutAction)
-        self.iface.removePluginMenu(__title__, self.helpAction)
+        """Cleans up when plugin is disabled/uninstalled."""
+        # -- Clean up menu
+        self.iface.removePluginMenu(__title__, self.action_wizard)
+        self.iface.removePluginMenu(__title__, self.action_load)
+        self.iface.removePluginMenu(__title__, self.action_export)
+        self.iface.removePluginMenu(__title__, self.action_settings)
+        self.iface.removePluginMenu(__title__, self.action_about)
+        self.iface.removePluginMenu(__title__, self.action_help)
+
+        # -- Clean up toolbar
+        self.iface.removeToolBarIcon(self.action_wizard)
+
+        # -- Clean up preferences panel in QGIS settings
+        self.iface.unregisterOptionsWidgetFactory(self.options_factory)
+
+        # remove actions
+        del self.action_about
+        del self.action_export
+        del self.action_load
+        del self.action_help
+        del self.action_settings
+        del self.action_wizard
 
     def onAbout(self):
         self.about_dlg = QWidget()
@@ -208,10 +263,6 @@ class MainPlugin(object):
         self.about_dlg.setWindowModality(Qt.WindowModal)
         self.about_dlg.show()
         self.about_dlg.resize(600, 800)
-
-    def onSettings(self):
-        dlg = SettingsDialog()
-        dlg.exec_()
 
     def onLoad(self):
         dlg = QDialog(self.iface.mainWindow())
