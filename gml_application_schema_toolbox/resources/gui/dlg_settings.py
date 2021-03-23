@@ -15,8 +15,9 @@ from qgis.PyQt.QtCore import pyqtSlot
 from qgis.PyQt.QtWidgets import QFileDialog, QWidget
 
 # project
-from gml_application_schema_toolbox.__about__ import __title__
-from gml_application_schema_toolbox.core.settings import settings
+from gml_application_schema_toolbox.__about__ import __title__, __version__
+
+# from gml_application_schema_toolbox.core.settings import plg_settings as settings
 from gml_application_schema_toolbox.toolbelt import PlgLogger
 
 # ############################################################################
@@ -35,11 +36,45 @@ FORM_CLASS, _ = uic.loadUiType(
 
 
 class SettingsDialog(QWidget, FORM_CLASS):
+    """Form dialog to allow user change plugin settings.
+
+    Options codes:
+
+        - Import method:
+            1 = "GMLAS"
+            2 = "XML"
+        - Database type:
+            1 = "SQLite"
+            2 = "PostgreSQL"
+        - Access mode:
+            1 = "Create"
+            2 = "Update"
+            2 = "Append"
+            2 = "Overwrite"
+
+    :param QWidget: [description]
+    :type QWidget: [type]
+    :param FORM_CLASS: [description]
+    :type FORM_CLASS: [type]
+    """
+
     def __init__(self, parent=None):
         """Constructor."""
         super(SettingsDialog, self).__init__(parent)
         self.setupUi(self)
         self.log = PlgLogger().log
+
+        # set radio button ids to ensure consistency through launches
+        self.opt_group_access.addButton(self.createRadioButton, 1)
+        self.opt_group_access.addButton(self.updateRadioButton, 2)
+        self.opt_group_access.addButton(self.appendRadioButton, 3)
+        self.opt_group_access.addButton(self.overwriteRadioButton, 4)
+
+        self.opt_group_db_type.addButton(self.pgsqlRadioButton, 1)
+        self.opt_group_db_type.addButton(self.sqliteRadioButton, 2)
+
+        self.opt_group_import_method.addButton(self.gmlasRadioButton, 1)
+        self.opt_group_import_method.addButton(self.xmlRadioButton, 2)
 
         # load previously saved settings
         self.load_settings()
@@ -59,41 +94,73 @@ class SettingsDialog(QWidget, FORM_CLASS):
         settings = QgsSettings()
         settings.beginGroup(__title__)
 
-        # retrieve options
-        self.featureLimitBox.setValue(int(settings.value("default_maxfeatures")))
-        self.set_import_method(settings.value("default_import_method"))
-        self.gmlasConfigLineEdit.setText(settings.value("default_gmlas_config"))
-        self.languageLineEdit.setText(settings.value("default_language"))
-        self.set_db_type(settings.value("default_db_type"))
-        self.set_access_mode(settings.value("default_access_mode"))
-        self.httpUserAgentEdit.setText(settings.value("http_user_agent", __title__))
+        # download
+        self.featureLimitBox.setValue(
+            settings.value(key="network_max_features", defaultValue=100, type=int)
+        )
+        self.httpUserAgentEdit.setText(
+            settings.value(
+                key="network_http_user_agent",
+                defaultValue=f"{__title__}/{__version__}",
+                type=str,
+            )
+        )
+
+        # import - export
+        self.languageLineEdit.setText(
+            settings.value(key="impex_language", defaultValue="en", type=str)
+        )
+
+        self.opt_group_access.button(
+            abs(settings.value(key="impex_access_mode", defaultValue=1, type=int))
+        ).setChecked(True)
+        self.opt_group_db_type.button(
+            abs(settings.value(key="impex_db_type", defaultValue=1, type=int))
+        ).setChecked(True)
+        self.opt_group_import_method.button(
+            abs(settings.value(key="impex_import_method", defaultValue=1, type=int))
+        ).setChecked(True)
+
+        # global
+        self.opt_debug.setChecked(
+            settings.value("debug_mode", defaultValue=0, type=bool)
+        )
 
         # end
         settings.endGroup()
 
     def save_settings(self):
         """Save options from UI form into QSettings."""
-        settings.setValue("default_maxfeatures", self.featureLimitBox.value())
-        settings.setValue("default_import_method", self.import_method())
-        settings.setValue("default_language", self.languageLineEdit.text())
-        settings.setValue("default_db_type", self.db_type())
-        settings.setValue("default_access_mode", self.access_mode())
-        settings.setValue("http_user_agent", self.http_user_agent())
+        # open settings group
+        settings = QgsSettings()
+        settings.beginGroup(__title__)
 
-    def set_import_method(self, value):
-        if value == "gmlas":
-            self.gmlasRadioButton.setChecked(True)
-        if value == "xml":
-            self.xmlRadioButton.setChecked(True)
+        # download
+        settings.setValue("network_max_features", self.featureLimitBox.value())
+        settings.setValue("network_http_user_agent", self.httpUserAgentEdit.text())
 
-    def import_method(self):
-        if self.gmlasRadioButton.isChecked():
-            return "gmlas"
-        if self.xmlRadioButton.isChecked():
-            return "xml"
+        # import - export
+        settings.setValue("impex_language", self.languageLineEdit.text())
+        settings.setValue("impex_access_mode", abs(self.opt_group_access.checkedId()))
+        settings.setValue("impex_db_type", abs(self.opt_group_db_type.checkedId()))
+        settings.setValue(
+            "impex_import_method", abs(self.opt_group_import_method.checkedId())
+        )
 
-    def http_user_agent(self):
-        return self.httpUserAgentEdit.text()
+        # global
+        settings.setValue("debug_mode", self.opt_debug.isChecked())
+
+        # invisible
+        settings.setValue("version", __version__)
+
+        # end
+        settings.endGroup()
+
+        if __debug__:
+            self.log(
+                message="DEBUG - Settings successfully saved.",
+                log_level=4,
+            )
 
     @pyqtSlot()
     def on_gmlasConfigButton_clicked(self):
@@ -106,38 +173,7 @@ class SettingsDialog(QWidget, FORM_CLASS):
         if path:
             self.gmlasConfigLineEdit.setText(path)
 
-    def set_db_type(self, value):
-        if value == "SQLite":
-            self.sqliteRadioButton.setChecked(True)
-        if value == "PostgreSQL":
-            self.pgsqlRadioButton.setChecked(True)
-
-    def db_type(self):
-        if self.sqliteRadioButton.isChecked():
-            return "SQLite"
-        if self.pgsqlRadioButton.isChecked():
-            return "PostgreSQL"
-
-    def set_access_mode(self, value):
-        if value is None:
-            self.createRadioButton.setChecked(True)
-        if value == "update":
-            self.updateRadioButton.setChecked(True)
-        if value == "append":
-            self.appendRadioButton.setChecked(True)
-        if value == "overwrite":
-            self.overwriteRadioButton.setChecked(True)
-
-    def access_mode(self):
-        if self.createRadioButton.isChecked():
-            return None
-        if self.updateRadioButton.isChecked():
-            return "update"
-        if self.appendRadioButton.isChecked():
-            return "append"
-        if self.overwriteRadioButton.isChecked():
-            return "overwrite"
-
+    # -- Buttons box signals -----------------------------------------------------------
     def accept(self):
         self.save_settings()
         super(SettingsDialog, self).accept()
