@@ -50,10 +50,9 @@ from qgis.PyQt.QtWidgets import (
 
 # project
 from gml_application_schema_toolbox.core.xml_utils import no_ns
-
-from . import xml_tree_widget
-from .custom_viewers import get_custom_viewers
-from .wait_cursor_context import WaitCursor
+from gml_application_schema_toolbox.gui import xml_tree_widget
+from gml_application_schema_toolbox.gui.custom_viewers import get_custom_viewers
+from gml_application_schema_toolbox.gui.wait_cursor_context import WaitCursor
 
 
 def install_xml_tree_on_feature_form(lyr):
@@ -188,7 +187,7 @@ def on_resolve_href_(dialog, layer, feature, field):
     @param field the field name storing the href URL
     @param linked_layer_id the QGIS layer id of the already resolved layer, for update
     """
-    from .import_gmlas_panel import ImportGmlasPanel
+    from gml_application_schema_toolbox.gui.import_gmlas_panel import ImportGmlasPanel
 
     path = feature[field]
     if not path:

@@ -15,13 +15,12 @@ from qgis.PyQt.QtWidgets import QFileDialog, QVBoxLayout, QWizard, QWizardPage
 
 # project
 from gml_application_schema_toolbox.core.settings import settings
+from gml_application_schema_toolbox.gui.import_gmlas_panel import ImportGmlasPanel
+from gml_application_schema_toolbox.gui.load_wizard_wfs import LoadWizardWFS
+from gml_application_schema_toolbox.gui.load_wizard_xml import LoadWizardXML
+from gml_application_schema_toolbox.gui.wait_cursor_context import WaitCursor
 from gml_application_schema_toolbox.toolbelt.file_downloader import get_from_http
 from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
-
-from .import_gmlas_panel import ImportGmlasPanel
-from .load_wizard_wfs import LoadWizardWFS
-from .load_wizard_xml import LoadWizardXML
-from .wait_cursor_context import WaitCursor
 
 # ############################################################################
 # ########## Globals ###############

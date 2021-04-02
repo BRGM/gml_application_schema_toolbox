@@ -34,6 +34,8 @@ from qgis.core import (
 )
 from qgis.PyQt.QtCore import QVariant
 
+from gml_application_schema_toolbox.core.gml_utils import extract_features
+from gml_application_schema_toolbox.core.qgis_urlopener import remote_open_from_qgis
 from gml_application_schema_toolbox.core.xml_utils import (
     no_prefix,
     remove_prefix,
@@ -41,9 +43,6 @@ from gml_application_schema_toolbox.core.xml_utils import (
     split_tag,
     xml_parse,
 )
-
-from .gml_utils import extract_features
-from .qgis_urlopener import remote_open_from_qgis
 
 __all__ = ["load_as_xml_layer", "properties_from_layer", "is_layer_gml_xml"]
 
