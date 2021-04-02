@@ -10,9 +10,11 @@ from pathlib import Path
 
 # PyQGIS
 from qgis.core import QgsSettings
+from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import pyqtSlot
-from qgis.PyQt.QtWidgets import QFileDialog, QWidget
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QFileDialog, QVBoxLayout, QWidget
 
 # project
 from gml_application_schema_toolbox.__about__ import (
@@ -20,8 +22,7 @@ from gml_application_schema_toolbox.__about__ import (
     __title__,
     __version__,
 )
-
-from gml_application_schema_toolbox.toolbelt import PlgLogger
+from gml_application_schema_toolbox.toolbelt import PlgLogger, PlgOptionsManager
 
 # ############################################################################
 # ########## Globals ###############
@@ -199,3 +200,35 @@ class SettingsDialog(QWidget, FORM_CLASS):
 
     def reject(self):
         super(SettingsDialog, self).reject()
+
+
+class PlgOptionsFactory(QgsOptionsWidgetFactory):
+    def __init__(self):
+        super().__init__()
+
+    def icon(self):
+        return QIcon(str(DIR_PLUGIN_ROOT / "resources/images/mActionAddGMLLayer.svg"))
+
+    def createWidget(self, parent):
+        return ConfigOptionsPage(parent)
+
+    def title(self):
+        return "GMLAS Toolbox"
+
+
+class ConfigOptionsPage(QgsOptionsPageWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.dlg_settings = SettingsDialog(self)
+        self.dlg_settings.buttonBox.hide()
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.dlg_settings.setLayout(layout)
+        self.setLayout(layout)
+        self.setObjectName("mOptionsPage{}".format(__title__))
+
+    def apply(self):
+        """Called to permanently apply the settings shown in the options page (e.g. \
+        save them to QgsSettings objects). This is usually called when the options \
+        dialog is accepted."""
+        self.dlg_settings.save_settings()

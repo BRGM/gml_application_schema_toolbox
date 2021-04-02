@@ -49,12 +49,8 @@ from gml_application_schema_toolbox.gui.xml_custom_widget import (
     XMLWidgetFactory,
     XMLWidgetFormatter,
 )
-from gml_application_schema_toolbox.resources.gui.dlg_settings import SettingsDialog
-from gml_application_schema_toolbox.toolbelt import (
-    PlgLogger,
-    PlgOptionsFactory,
-    PlgOptionsManager,
-)
+from gml_application_schema_toolbox.resources.gui.dlg_settings import PlgOptionsFactory
+from gml_application_schema_toolbox.toolbelt import PlgLogger
 
 # ############################################################################
 # ########## Globals ###############

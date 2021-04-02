@@ -9,9 +9,6 @@ import logging
 
 # PyQGIS
 from qgis.core import QgsSettings
-from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QVBoxLayout
 
 # package
 from gml_application_schema_toolbox.__about__ import DIR_PLUGIN_ROOT, __title__
@@ -104,35 +101,3 @@ class PlgOptionsManager:
         settings.endGroup()
 
         return out_value
-
-
-class PlgOptionsFactory(QgsOptionsWidgetFactory):
-    def __init__(self):
-        super().__init__()
-
-    def icon(self):
-        return QIcon(str(DIR_PLUGIN_ROOT / "resources/images/mActionAddGMLLayer.svg"))
-
-    def createWidget(self, parent):
-        return ConfigOptionsPage(parent)
-
-    def title(self):
-        return "GMLAS Toolbox"
-
-
-class ConfigOptionsPage(QgsOptionsPageWidget):
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.dlg_settings = SettingsDialog(self)
-        self.dlg_settings.buttonBox.hide()
-        layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        self.dlg_settings.setLayout(layout)
-        self.setLayout(layout)
-        self.setObjectName("mOptionsPage{}".format(__title__))
-
-    def apply(self):
-        """Called to permanently apply the settings shown in the options page (e.g. \
-        save them to QgsSettings objects). This is usually called when the options \
-        dialog is accepted."""
-        self.dlg_settings.save_settings()
