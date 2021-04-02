@@ -39,8 +39,8 @@ class TestPlgPreferences(unittest.TestCase):
         self.assertEqual(settings.debug_mode, False)
 
         self.assertTrue(hasattr(settings, "version"))
-        self.assertIsInstance(settings.debug_mode, str)
-        self.assertEqual(settings.debug_mode, __version__)
+        self.assertIsInstance(settings.version, str)
+        self.assertEqual(settings.version, __version__)
 
         # network
         self.assertTrue(hasattr(settings, "network_http_user_agent"))
@@ -61,7 +61,7 @@ class TestPlgPreferences(unittest.TestCase):
         self.assertIsInstance(settings.impex_db_type, int)
         self.assertEqual(settings.impex_db_type, 1)
         self.assertTrue(hasattr(settings, "impex_import_method"))
-        self.assertIsInstance(settings.impex_import_method, 1)
+        self.assertIsInstance(settings.impex_import_method, int)
         self.assertEqual(settings.impex_import_method, 1)
         self.assertTrue(hasattr(settings, "impex_gmlas_config"))
         self.assertIsInstance(settings.impex_gmlas_config, str)

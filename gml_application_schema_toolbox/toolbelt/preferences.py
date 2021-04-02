@@ -160,11 +160,11 @@ class PlgOptionsManager:
         :return: plugin settings value matching key
         """
         if not hasattr(PlgSettingsStructure, key):
-            # logger.error(
-            #     "Bad settings key. Must be one of: {}".format(
-            #         ",".join(PLG_PREFERENCES.keys())
-            #     )
-            # )
+            logger.error(
+                "Bad settings key. Must be one of: {}".format(
+                    ",".join(PlgSettingsStructure._fields)
+                )
+            )
             return None
 
         settings = QgsSettings()
