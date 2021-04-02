@@ -1,23 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>SettingsDialog</class>
- <widget class="QDialog" name="SettingsDialog">
+ <widget class="QWidget" name="SettingsDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>581</width>
-    <height>347</height>
+    <width>719</width>
+    <height>442</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Plugin settings</string>
+   <string>Settings</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="5" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
     <widget class="QGroupBox" name="downloadGroupBox">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
      <property name="title">
       <string>Download</string>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -35,7 +57,7 @@
         <item row="0" column="1">
          <widget class="QSpinBox" name="featureLimitBox">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum number of features to download.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>Maximum number of features to download.</string>
           </property>
           <property name="suffix">
            <string> feature(s)</string>
@@ -63,8 +85,11 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="2" column="0">
     <widget class="QGroupBox" name="importExportGroupBox">
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
      <property name="title">
       <string>Import / Export</string>
      </property>
@@ -74,7 +99,7 @@
         <item row="0" column="0">
          <widget class="QLabel" name="importMethodLabel">
           <property name="text">
-           <string>Default method</string>
+           <string>Default import method</string>
           </property>
          </widget>
         </item>
@@ -98,6 +123,12 @@
              <property name="text">
               <string>Import using GMLAS driver</string>
              </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">opt_group_import_method</string>
+             </attribute>
             </widget>
            </item>
            <item>
@@ -105,6 +136,12 @@
              <property name="text">
               <string>Import as &amp;XML</string>
              </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">opt_group_import_method</string>
+             </attribute>
             </widget>
            </item>
            <item>
@@ -195,6 +232,9 @@
                 <property name="checked">
                  <bool>true</bool>
                 </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">opt_group_access</string>
+                </attribute>
                </widget>
               </item>
               <item>
@@ -202,6 +242,9 @@
                 <property name="text">
                  <string>&amp;Update</string>
                 </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">opt_group_access</string>
+                </attribute>
                </widget>
               </item>
               <item>
@@ -209,6 +252,9 @@
                 <property name="text">
                  <string>Append</string>
                 </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">opt_group_access</string>
+                </attribute>
                </widget>
               </item>
               <item>
@@ -216,6 +262,9 @@
                 <property name="text">
                  <string>O&amp;verwrite</string>
                 </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">opt_group_access</string>
+                </attribute>
                </widget>
               </item>
               <item>
@@ -267,6 +316,9 @@
              <property name="checked">
               <bool>true</bool>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">opt_group_db_type</string>
+             </attribute>
             </widget>
            </item>
            <item>
@@ -274,6 +326,9 @@
              <property name="text">
               <string>PostgreSQL</string>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">opt_group_db_type</string>
+             </attribute>
             </widget>
            </item>
            <item>
@@ -322,13 +377,54 @@
      </layout>
     </widget>
    </item>
-   <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
+   <item row="4" column="0">
+    <widget class="QGroupBox" name="grp_global">
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
+     <property name="title">
+      <string>General</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QCheckBox" name="opt_debug">
+        <property name="toolTip">
+         <string>Enable debug mode.</string>
+        </property>
+        <property name="autoFillBackground">
+         <bool>true</bool>
+        </property>
+        <property name="locale">
+         <locale language="English" country="UnitedStates"/>
+        </property>
+        <property name="text">
+         <string>Debug mode (degraded performances)</string>
+        </property>
+        <property name="tristate">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="Line" name="hrz_line_1">
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="Line" name="hrz_line_2">
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
@@ -369,4 +465,9 @@
    </hints>
   </connection>
  </connections>
+ <buttongroups>
+  <buttongroup name="opt_group_db_type"/>
+  <buttongroup name="opt_group_access"/>
+  <buttongroup name="opt_group_import_method"/>
+ </buttongroups>
 </ui>
