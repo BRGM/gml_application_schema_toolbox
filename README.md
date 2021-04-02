@@ -3,8 +3,9 @@
 [![documentation badge](https://img.shields.io/badge/documentation-autobuilt%20with%20Sphinx-blue)](https://brgm.github.io/gml_application_schema_toolbox/)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Flake8](https://img.shields.io/badge/flake8-enabled-yellowgreen)](https://flake8.pycqa.org/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/BRGM/gml_application_schema_toolbox/master.svg)](https://results.pre-commit.ci/latest/github/BRGM/gml_application_schema_toolbox/master)
 
 This QGIS 3 plugin provide the capabilities to:
 
