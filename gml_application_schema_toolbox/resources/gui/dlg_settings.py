@@ -42,41 +42,11 @@ FORM_CLASS, _ = uic.loadUiType(
 class SettingsDialog(QWidget, FORM_CLASS):
     """Form dialog to allow user change plugin settings.
 
-    Options codes:
-
-        - Import method:
-            1 = "GMLAS"
-            2 = "XML"
-        - Database type:
-            1 = "SQLite"
-            2 = "PostgreSQL"
-        - Access mode:
-            1 = "Create"
-            2 = "Update"
-            2 = "Append"
-            2 = "Overwrite"
-
     :param QWidget: [description]
     :type QWidget: [type]
     :param FORM_CLASS: [description]
     :type FORM_CLASS: [type]
     """
-
-    DEFAULT_PREFERENCES: dict = {
-        # download
-        "default_maxfeatures": 100,
-        "default_gmlas_config": str(DIR_PLUGIN_ROOT / "conf" / "gmlasconf.xml"),
-        "default_wfs2_service": None,
-        "wfs2_services": [],
-        # import/export
-        "impex_access_mode": None,
-        "impex_db_type": "SQLite",
-        "impex_import_method": "gmlas",
-        "impex_language": "en",
-        # usage
-        # global
-        "debug_mode": False,
-    }
 
     def __init__(self, parent=None):
         """Constructor."""
@@ -110,44 +80,28 @@ class SettingsDialog(QWidget, FORM_CLASS):
 
     def load_settings(self):
         """Load options from QgsSettings into UI form."""
-        # open settings group
-        settings = QgsSettings()
-        settings.beginGroup(__title__)
+        # get settings as dict
+        settings_dict = PlgOptionsManager.get_plg_settings()
 
         # download
-        self.featureLimitBox.setValue(
-            settings.value(key="network_max_features", defaultValue=100, type=int)
-        )
-        self.httpUserAgentEdit.setText(
-            settings.value(
-                key="network_http_user_agent",
-                defaultValue=f"{__title__}/{__version__}",
-                type=str,
-            )
-        )
+        self.featureLimitBox.setValue(settings_dict.get("network_max_features"))
+        self.httpUserAgentEdit.setText(settings_dict.get("network_http_user_agent"))
+        self.languageLineEdit.setText(settings_dict.get("network_language"))
 
         # import - export
-        self.languageLineEdit.setText(
-            settings.value(key="impex_language", defaultValue="en", type=str)
-        )
-
         self.opt_group_access.button(
-            abs(settings.value(key="impex_access_mode", defaultValue=1, type=int))
+            abs(settings_dict.get("impex_access_mode"))
         ).setChecked(True)
         self.opt_group_db_type.button(
-            abs(settings.value(key="impex_db_type", defaultValue=1, type=int))
+            abs(settings_dict.get("impex_db_type"))
         ).setChecked(True)
         self.opt_group_import_method.button(
-            abs(settings.value(key="impex_import_method", defaultValue=1, type=int))
+            abs(settings_dict.get("impex_import_method"))
         ).setChecked(True)
+        self.gmlasConfigLineEdit.setText(settings_dict.get("impex_gmlas_config"))
 
         # global
-        self.opt_debug.setChecked(
-            settings.value("debug_mode", defaultValue=0, type=bool)
-        )
-
-        # end
-        settings.endGroup()
+        self.opt_debug.setChecked(settings_dict.get("debug_mode"))
 
     def save_settings(self):
         """Save options from UI form into QSettings."""
@@ -158,9 +112,9 @@ class SettingsDialog(QWidget, FORM_CLASS):
         # download
         settings.setValue("network_max_features", self.featureLimitBox.value())
         settings.setValue("network_http_user_agent", self.httpUserAgentEdit.text())
+        settings.setValue("network_language", self.languageLineEdit.text())
 
         # import - export
-        settings.setValue("impex_language", self.languageLineEdit.text())
         settings.setValue("impex_access_mode", abs(self.opt_group_access.checkedId()))
         settings.setValue("impex_db_type", abs(self.opt_group_db_type.checkedId()))
         settings.setValue(
