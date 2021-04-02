@@ -41,14 +41,12 @@ class PlgSettingsStructure(NamedTuple):
     # global
     debug_mode: bool = False
     version: str = __version__
+
     # usage
-    # impex_access_mode: int = 1
-    # impex_db_type: int = 1
-    # impex_import_method: int = 1
-    impex_access_mode: str = None
-    impex_db_type: str = "SQLite"
+    impex_access_mode: int = 1
+    impex_db_type: int = 1
+    impex_import_method: int = 1
     impex_gmlas_config: str = str(DIR_PLUGIN_ROOT / "conf" / "gmlasconf.xml")
-    impex_import_method: str = None
     last_file: str = None
     last_path: str = None
     last_source: str = None
@@ -120,6 +118,9 @@ class PlgOptionsManager:
         settings.beginGroup(__title__)
 
         options = PlgSettingsStructure(
+            # normal
+            debug_mode=settings.value(key="debug_mode", defaultValue=False, type=bool),
+            version=settings.value(key="version", defaultValue=__version__, type=str),
             # usage
             impex_access_mode=settings.value(
                 key="impex_access_mode", defaultValue=1, type=int
@@ -147,8 +148,6 @@ class PlgOptionsManager:
             ),
         )
 
-        plg_logger.log(options)
-
         settings.endGroup()
 
         return options._asdict()
@@ -160,12 +159,12 @@ class PlgOptionsManager:
 
         :return: plugin settings value matching key
         """
-        if key not in PLG_PREFERENCES:
-            logger.error(
-                "Bad settings key. Must be one of: {}".format(
-                    ",".join(PLG_PREFERENCES.keys())
-                )
-            )
+        if not hasattr(PlgSettingsStructure, key):
+            # logger.error(
+            #     "Bad settings key. Must be one of: {}".format(
+            #         ",".join(PLG_PREFERENCES.keys())
+            #     )
+            # )
             return None
 
         settings = QgsSettings()
