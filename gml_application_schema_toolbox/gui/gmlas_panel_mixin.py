@@ -31,8 +31,8 @@ from qgis.PyQt.QtWidgets import QFileDialog, QProgressDialog
 
 # project package
 from gml_application_schema_toolbox.__about__ import __title__
-from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
+from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
 
 # ############################################################################
 # ########## Classes ###############

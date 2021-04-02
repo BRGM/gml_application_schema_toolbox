@@ -23,18 +23,18 @@ This scenario uses files stored on GitHub to avoid potential content negociation
 
 3. dereferencing vocabulary
     * on INSPIRE registry
-  
+
     `gsmlp:purpose/@xlink:href` ('Load' button click) > 'Options for xlink:href loading'
     - all default options EXCEPT
     - "Load layer list' : click and keep all
     - Target database > SQLite > same database as the one created in step 1 (write mode : Append)
-    
+
     Expected results:
    - the content of the created database SHALL be enriched with content coming from the INSPIRE registry
     ![GMLAS-INSPIRE-registry-response](../static/img/testing/2.GMLAS_de_rereferencing_vocabulary_filled.PNG)
    - the Layer list SHALL be enriched with the new tables created from the import
    ![GMLAS-INSPIRE-registry-response_in_TOC](../static/img/testing/2.GMLAS_de_rereferencing_vocabulary_filled_and_displayed.PNG)
-  
+
     * on OGC definition server
     proceed as above on attributes having xlink:href starting with <http://www.opengis.net/def/>...
 
@@ -48,7 +48,7 @@ This scenario uses files stored on GitHub to avoid potential content negociation
      - Target database > SQLite > same database as the one created in step 1 (write mode : Append)
      ![GMLAS-GeologyLog-Load-layer list](../static/img/testing/3.GMLAS_Geology_log_load_layer.PNG)
 
-    
+
     Expected results:
    - the content of the created database SHALL be enriched with content of the geological log description
     ![GMLAS-GeologyLog-response](../static/img/testing/3.GMLAS_Geology_log_filled.PNG)
@@ -57,14 +57,14 @@ This scenario uses files stored on GitHub to avoid potential content negociation
 
    TODO SG : check whether it's normal with the current status of the dev that the LogViewer widget is not proposed in the GUI (1st compare with what happens for the TimeSeries viewer)
 
-5. dereferencing another Feature (a GroundWater Quantity Monitoring Facility) 
-    TODO SG : 
+5. dereferencing another Feature (a GroundWater Quantity Monitoring Facility)
+    TODO SG :
       - crashed under 3.10.13 when loading layers at the time of writing
-      - add a 
+      - add a
 
 6.  access groundwater observation
     workaround while point 5. is blocked
-    
+
     On the following URL : <https://raw.githubusercontent.com/BRGM/gml_application_schema_toolbox/master/tests/basic_test_scenario/4_SOS_TimeSeries.xml>
 
    Load wizard > 'File/Url' > Load in relational mode (GMLAS)  > GMLAS Options
@@ -76,12 +76,12 @@ This scenario uses files stored on GitHub to avoid potential content negociation
    Expected result : 8 tables added in the Layer List
    - the content of the created database SHALL be enriched with content of the TimeSeries
     ![GMLAS-TimeSeries-response](../static/img/testing/5.SOS_TimeSeries_filled.PNG)
-   - the Layer list SHALL be enriched with the new tables created from the import of the TimeSeries 
+   - the Layer list SHALL be enriched with the new tables created from the import of the TimeSeries
    ![GMLAS-TimeSeries-response_in_TOC](../static/img/testing/5.SOS_TimeSeries_filled_and_displayed.PNG)
 
    TODO SG : check why the TimeSeries viewer is not displayed
 
-7. access  the GroundWater ressource monitored 
+7. access  the GroundWater ressource monitored
    workaround while point 5. is blocked
 
    On the following URL : <https://raw.githubusercontent.com/BRGM/gml_application_schema_toolbox/master/tests/basic_test_scenario/5_HydroGeoUnit.xml>
@@ -95,5 +95,5 @@ This scenario uses files stored on GitHub to avoid potential content negociation
    Expected result : 8 tables added in the Layer List
    - the content of the created database SHALL be enriched with content decribing the GroundWater ressource
     ![GMLAS-HydroGeoUnit-response](../static/img/testing/6.GMLAS_GWML2_filled.PNG)
-   - the Layer list SHALL be enriched with the new tables created from the import of the TimeSeries 
+   - the Layer list SHALL be enriched with the new tables created from the import of the TimeSeries
    ![GMLAS-HydroGeoUnit-response_in_TOC](../static/img/testing/6.GMLAS_GWML2_filled_and_displayed.PNG)

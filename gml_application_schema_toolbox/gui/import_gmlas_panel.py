@@ -33,13 +33,12 @@ from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QListWidgetItem, QMes
 from qgis.utils import iface
 
 from gml_application_schema_toolbox.__about__ import __title__
+from gml_application_schema_toolbox.core.load_gmlas_in_qgis import import_in_qgis
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
 from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
 from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
-
-from ..core.load_gmlas_in_qgis import import_in_qgis
 
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "import_gmlas_panel.ui")

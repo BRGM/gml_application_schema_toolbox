@@ -28,10 +28,9 @@ from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 from gml_application_schema_toolbox.core.qgis_urlopener import remote_open_from_qgis
 from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.core.xml_utils import xml_parse
+from gml_application_schema_toolbox.gui.wait_cursor_context import WaitCursor
+from gml_application_schema_toolbox.gui.xml_dialog import XmlDialog
 from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
-
-from .wait_cursor_context import WaitCursor
-from .xml_dialog import XmlDialog
 
 # ############################################################################
 # ########## Globals ###############

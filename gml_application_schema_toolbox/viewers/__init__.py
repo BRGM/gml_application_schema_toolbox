@@ -16,5 +16,9 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
-from .geology_logs import GeologyLogViewer  # noqa: F401
-from .wml2_timeseries import WML2TimeSeriesViewer  # noqa: F401
+from gml_application_schema_toolbox.viewers.geology_logs import (  # noqa: F401
+    GeologyLogViewer,
+)
+from gml_application_schema_toolbox.viewers.wml2_timeseries import (  # noqa: F401
+    WML2TimeSeriesViewer,
+)

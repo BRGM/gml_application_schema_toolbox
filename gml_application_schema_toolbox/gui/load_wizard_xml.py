@@ -13,11 +13,10 @@ from qgis.PyQt.QtCore import QRegExp, QVariant, pyqtSlot
 from qgis.PyQt.QtGui import QRegExpValidator
 from qgis.PyQt.QtWidgets import QComboBox, QLineEdit, QTableWidgetItem, QWizardPage
 
+from gml_application_schema_toolbox.core.load_gml_as_xml import load_as_xml_layer
+from gml_application_schema_toolbox.gui import qgis_form_custom_widget
+from gml_application_schema_toolbox.gui.progress_bar import ProgressBarLogger
 from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
-
-from ..core.load_gml_as_xml import load_as_xml_layer
-from ..gui import qgis_form_custom_widget
-from ..gui.progress_bar import ProgressBarLogger
 
 # ############################################################################
 # ########## Globals ###############
