@@ -39,6 +39,7 @@ usage/read_custom
 usage/read_mode_db
 usage/read_mode_xml
 usage/write_from_db
+usage/settings
 ```
 
 ```{toctree}
