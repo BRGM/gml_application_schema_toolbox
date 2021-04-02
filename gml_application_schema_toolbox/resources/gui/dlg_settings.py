@@ -15,9 +15,12 @@ from qgis.PyQt.QtCore import pyqtSlot
 from qgis.PyQt.QtWidgets import QFileDialog, QWidget
 
 # project
-from gml_application_schema_toolbox.__about__ import __title__, __version__
+from gml_application_schema_toolbox.__about__ import (
+    DIR_PLUGIN_ROOT,
+    __title__,
+    __version__,
+)
 
-# from gml_application_schema_toolbox.core.settings import plg_settings as settings
 from gml_application_schema_toolbox.toolbelt import PlgLogger
 
 # ############################################################################
@@ -57,6 +60,22 @@ class SettingsDialog(QWidget, FORM_CLASS):
     :param FORM_CLASS: [description]
     :type FORM_CLASS: [type]
     """
+
+    DEFAULT_PREFERENCES: dict = {
+        # download
+        "default_maxfeatures": 100,
+        "default_gmlas_config": str(DIR_PLUGIN_ROOT / "conf" / "gmlasconf.xml"),
+        "default_wfs2_service": None,
+        "wfs2_services": [],
+        # import/export
+        "impex_access_mode": None,
+        "impex_db_type": "SQLite",
+        "impex_import_method": "gmlas",
+        "impex_language": "en",
+        # usage
+        # global
+        "debug_mode": False,
+    }
 
     def __init__(self, parent=None):
         """Constructor."""
