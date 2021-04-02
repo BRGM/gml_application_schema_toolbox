@@ -16,7 +16,7 @@
 
 import xml.etree.ElementTree as ET
 
-from .xml_utils import no_prefix
+from gml_application_schema_toolbox.core.xml_utils import no_prefix
 
 
 def extract_features(doc):

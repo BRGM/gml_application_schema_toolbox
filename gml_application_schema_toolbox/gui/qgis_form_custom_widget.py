@@ -211,9 +211,9 @@ def on_resolve_href_(dialog, layer, feature, field):
     # and for GMLAS loading
     import tempfile
 
-    from ..core.gml_utils import extract_features_from_file
-    from ..core.qgis_urlopener import remote_open_from_qgis
-    from ..core.xml_utils import no_ns, no_prefix
+    from gml_application_schema_toolbox.core.gml_utils import extract_features_from_file
+    from gml_application_schema_toolbox.core.qgis_urlopener import remote_open_from_qgis
+    from gml_application_schema_toolbox.core.xml_utils import no_ns, no_prefix
 
     with remote_open_from_qgis(path) as fi:
         with tempfile.NamedTemporaryFile(delete=False) as fo:
@@ -329,7 +329,7 @@ def on_resolve_href_(dialog, layer, feature, field):
     layer.setCustomProperty("href_linked_layers", href_linked_layers)
 
     # 6. reload the current form
-    from ..main import get_iface
+    from gml_application_schema_toolbox.main import get_iface
 
     if is_feature_form:
         get_iface().openFeatureForm(layer, feature)

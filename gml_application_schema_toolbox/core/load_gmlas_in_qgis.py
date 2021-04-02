@@ -29,9 +29,11 @@ from qgis.core import (
     QgsVectorLayer,
 )
 
-from ..gui.custom_viewers import get_custom_viewers
-from ..gui.qgis_form_custom_widget import install_viewer_on_feature_form
-from .xml_utils import no_ns, no_prefix
+from gml_application_schema_toolbox.core.xml_utils import no_ns, no_prefix
+from gml_application_schema_toolbox.gui.custom_viewers import get_custom_viewers
+from gml_application_schema_toolbox.gui.qgis_form_custom_widget import (
+    install_viewer_on_feature_form,
+)
 
 
 def _qgis_layer(

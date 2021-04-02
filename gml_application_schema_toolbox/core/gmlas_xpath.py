@@ -1,6 +1,6 @@
 from osgeo import ogr
 
-from .xml_utils import no_ns
+from gml_application_schema_toolbox.core.xml_utils import no_ns
 
 
 def lstartswith(l1, l2):

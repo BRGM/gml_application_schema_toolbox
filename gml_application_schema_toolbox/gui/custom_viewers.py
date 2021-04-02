@@ -20,8 +20,6 @@
 
 import sys
 
-from ..viewers import GeologyLogViewer, WML2TimeSeriesViewer
-
 __custom_viewers = None
 
 
