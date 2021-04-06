@@ -47,6 +47,8 @@ Switching to the `Featuer form` in `Identify` leads to a warning popup:
 
 ![QGIS - Macro warning popup](../static/img/qgis_macros_warning.png "QGIS - Macro warning popup")
 
-If you don't want to be bothered by this, it's possible to tell QGIS to ignore this warning in `Settings` > `Project` :
+If you don't want to see this warning, it's possible to disable it in QGIS `Settings` > `Project Files` :
 
 ![QGIS - Macro warning option](../static/img/qgis_macros_warning_option.png "QGIS - Macro warning option")
+
+> It might be a security issue. See the documentation.
