@@ -36,3 +36,17 @@ Settings have been renamed since version 1.4.
 | last_file            | last_file            | X       | X        | string  |         |
 | last_path            | last_path            | X       | X        | string  |         |
 | last_source          | last_source          | X       | X        | string  |         |
+
+----
+
+## Related QGIS Settings
+
+### Disable macros warning
+
+Switching to the `Featuer form` in `Identify` leads to a warning popup:
+
+![QGIS - Macro warning popup](../static/img/qgis_macros_warning.png "QGIS - Macro warning popup")
+
+If you don't want to be bothered by this, it's possible to tell QGIS to ignore this warning in `Settings` > `Project` :
+
+![QGIS - Macro warning option](../static/img/qgis_macros_warning_option.png "QGIS - Macro warning option")
