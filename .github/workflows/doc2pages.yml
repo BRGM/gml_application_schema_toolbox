@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - uses: actions/cache@v2.1.5
+      - uses: actions/cache@v2
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements/documentation.txt') }}
@@ -47,4 +47,4 @@ jobs:
           if-no-files-found: error
 
       - name: Deploy to GitHub Pages
-        run: ghp-import --force --no-jekyll --push docs/_build/html
+        run: ghp-import --force --no-history --no-jekyll --push docs/_build/html

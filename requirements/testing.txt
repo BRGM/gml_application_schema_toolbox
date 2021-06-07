@@ -1,0 +1,5 @@
+# Testing dependencies
+# --------------------
+
+pytest-cov>=2.11,<2.14
+semver>=2.13,<2.14
