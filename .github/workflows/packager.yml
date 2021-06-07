@@ -6,7 +6,7 @@ env:
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   packaging:
@@ -21,7 +21,8 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - uses: actions/cache@v2.1.5
+      - name: Cache dependencie
+        uses: actions/cache@v2
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
@@ -31,7 +32,7 @@ jobs:
       - name: Install project requirements
         run: |
           python -m pip install -U pip setuptools wheel
-          python -m pip install -U 'qgis-plugin-ci>=1.8,<1.9'
+          python -m pip install -U -r requirements/packaging.txt
 
       - name: Package the latest version
         run: |
@@ -40,5 +41,5 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ env.PROJECT_FOLDER }}-latest
-          path: ${{ env.PROJECT_FOLDER }}.latest.zip
+          path: ${{ env.PROJECT_FOLDER }}.*.zip
           if-no-files-found: error
