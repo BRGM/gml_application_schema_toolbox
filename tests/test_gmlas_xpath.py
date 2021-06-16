@@ -1,12 +1,20 @@
-import os
-import sys
+#! python3  # noqa E265
+
+"""
+    Usage from the repo root folder:
+
+    .. code-block:: bash
+
+        # for whole tests
+        python -m unittest tests.test_gmlas_xpath
+        # for specific test
+        python -m unittest tests.test_gmlas_xpath.TestGMLASXPath.test_geologylog
+"""
+
+# standard library
 import unittest
 
-sys.path.append(
-    os.path.join(os.path.dirname(__file__), "..", "gml_application_schema_toolbox")
-)
-
-from core.gmlas_xpath import GmlAsXPathResolver
+from gml_application_schema_toolbox.core.gmlas_xpath import GmlAsXPathResolver
 
 
 class TestGMLASXPath(unittest.TestCase):
@@ -59,5 +67,8 @@ class TestGMLASXPath(unittest.TestCase):
         self.assertEqual(v, ["m"])
 
 
+# ############################################################################
+# ####### Stand-alone run ########
+# ################################
 if __name__ == "__main__":
     unittest.main()

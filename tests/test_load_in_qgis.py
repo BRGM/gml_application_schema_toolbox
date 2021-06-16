@@ -1,22 +1,43 @@
-# launch it with something like
-# QGIS_DEBUG=0 QGIS_PREFIX_PATH=/home/hme/src/QGIS/build/output PYTHONPATH=/home/hme/src/QGIS/build/output/python python3 test_load_in_qgis.py
+#! python3  # noqa E265
 
+"""
+    Usage from the repo root folder:
+
+    Launch it with something like
+
+    `QGIS_DEBUG=0 QGIS_PREFIX_PATH=/home/hme/src/QGIS/build/output PYTHONPATH=/home/hme/src/QGIS/build/output/python python3 test_load_in_qgis.py`
+
+    .. code-block:: bash
+
+        # for whole tests
+        python -m unittest tests.test_load_in_qgis
+        # for specific test
+        python -m unittest tests.test_load_in_qgis.TestLoadInQGIS.test_geologylog
+"""
+
+# standard library
 import os
-import sys
 import tempfile
 
-import qgis
-from osgeo import gdal, ogr, osr
-from qgis.core import QgsCoordinateReferenceSystem
+# 3rd party
+from osgeo import gdal, osr
+
+# PyQGIS
+from qgis.core import QgsCoordinateReferenceSystem, QgsProject
 from qgis.testing import start_app, unittest
 
-sys.path.append(
-    os.path.join(os.path.dirname(__file__), "..", "gml_application_schema_toolbox")
-)
+# project
+from gml_application_schema_toolbox.core.load_gmlas_in_qgis import import_in_qgis
 
-from core.load_gmlas_in_qgis import *
-
+# ############################################################################
+# ########## Main ################
+# ################################
 start_app()
+
+
+# ############################################################################
+# ########## Functions ###########
+# ################################
 
 
 def convert_and_import(xml_file):
@@ -77,6 +98,9 @@ def convert_and_import(xml_file):
     return sorted(layers), sorted(rels)
 
 
+# ############################################################################
+# ########## Classes #############
+# ################################
 class TestLoadInQGIS(unittest.TestCase):
     def test_1(self):
         f = os.path.join(
@@ -236,10 +260,12 @@ class TestLoadInQGIS(unittest.TestCase):
         self.assertListEqual(imported_layers, layers)
 
     def xtest_postgis(self):
-        f = os.path.join(os.path.dirname(__file__), "..", "samples", "gmlas.sqlite")
         import_in_qgis("dbname='test_gmlas' port=5434", "postgres", schema="piezo")
         QgsProject.instance().write("test.qgs")
 
 
+# ############################################################################
+# ####### Stand-alone run ########
+# ################################
 if __name__ == "__main__":
     unittest.main()
