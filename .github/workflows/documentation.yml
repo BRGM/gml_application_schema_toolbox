@@ -1,5 +1,4 @@
-name: "📚 Documentation Publisher"
-
+name: "📚 Documentation"
 
 env:
   PROJECT_FOLDER: "gml_application_schema_toolbox"
@@ -7,10 +6,10 @@ env:
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
     paths:
-      - 'docs/**/*'
-      - '.github/workflows/doc2pages.yml'
+      - "docs/**/*"
+      - ".github/workflows/doc2pages.yml"
 
 jobs:
   doc-publisher:
