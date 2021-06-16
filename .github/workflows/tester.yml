@@ -32,11 +32,6 @@ jobs:
       - name: Print QGIS version
         run: qgis --version
 
-      # - name: Set up Python
-      #   uses: actions/setup-python@v2
-      #   with:
-      #     python-version: ${{ env.PYTHON_VERSION }}
-
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pip
