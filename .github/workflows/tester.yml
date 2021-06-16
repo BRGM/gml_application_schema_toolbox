@@ -19,6 +19,12 @@ jobs:
   tests:
     runs-on: ubuntu-latest
 
+    container:
+      image: qgis/qgis:release-3_16
+      env:
+        DISPLAY: ":99"
+      options: -v ${{ github.workspace }}:/tests_directory
+
     steps:
       - name: Get source code
         uses: actions/checkout@v2
