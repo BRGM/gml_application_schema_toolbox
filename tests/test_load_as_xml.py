@@ -26,9 +26,12 @@ from qgis.testing import start_app, unittest
 # project
 from gml_application_schema_toolbox.core.load_gml_as_xml import load_as_xml_layer
 
-start_app()
+# start_app()
 
 
+# ############################################################################
+# ########## Classes #############
+# ################################
 class TestLoadAsXML(unittest.TestCase):
     def test_load_as_xml_layer(self):
         sample_file = Path("tests/samples/brgm_ef_piezo_50_2.xml")
@@ -50,5 +53,8 @@ class TestLoadAsXML(unittest.TestCase):
             self.assertEqual(layer.featureCount(), 50)
 
 
+# ############################################################################
+# ####### Stand-alone run ########
+# ################################
 if __name__ == "__main__":
     unittest.main()
