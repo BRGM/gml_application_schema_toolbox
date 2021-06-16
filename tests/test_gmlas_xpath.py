@@ -14,12 +14,18 @@
 # standard library
 import unittest
 
+# project
 from gml_application_schema_toolbox.core.gmlas_xpath import GmlAsXPathResolver
 
 
+# ############################################################################
+# ########## Classes #############
+# ################################
 class TestGMLASXPath(unittest.TestCase):
     def test_geologylog(self):
-        resolver = GmlAsXPathResolver("geology_log1.sqlite", "SQLite", "")
+        resolver = GmlAsXPathResolver(
+            "tests/fixtures/geology_log1.sqlite", "SQLite", ""
+        )
         v = resolver.resolve_xpath(
             "gw_geologylogcoverage",
             "id",
@@ -43,7 +49,7 @@ class TestGMLASXPath(unittest.TestCase):
         self.assertEqual(sorted(v), [0.3, 4.27, 9.14, 11.58])
 
     def test_timeseries(self):
-        resolver = GmlAsXPathResolver("timeseries1.sqlite", "SQLite", "")
+        resolver = GmlAsXPathResolver("tests/fixtures/timeseries1.sqlite", "SQLite", "")
         v = resolver.resolve_xpath(
             "measurementtimeseries",
             "id",
