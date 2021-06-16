@@ -19,8 +19,9 @@
 # standard library
 from pathlib import Path
 
+from qgis.core import QgsVectorLayer
+
 # PyQGIS
-import qgis  # NOQA
 from qgis.testing import start_app, unittest
 
 # project
@@ -32,11 +33,21 @@ start_app()
 class TestLoadAsXML(unittest.TestCase):
     def test_load_as_xml_layer(self):
         sample_file = Path("tests/samples/brgm_ef_piezo_50_2.xml")
+
+        self.assertTrue(sample_file.is_file())
+
         layer_gmloaded = load_as_xml_layer(
-            str(sample_file.resolve()), False, output_local_file="/tmp/t.gpkg"
+            xml_uri=str(sample_file.resolve()),
+            is_remote=False,
+            output_local_file="/tmp/gmlas_test_load_gml.gpkg",
         )
-        self.assertEqual(layer_gmloaded.isValid(), True)
-        self.assertEqual(layer_gmloaded.featureCount(), 50)
+
+        self.assertIsInstance(layer_gmloaded, dict)
+        self.assertEqual(len(layer_gmloaded), 2)
+
+        for layer in layer_gmloaded.values():
+            self.assertEqual(layer.isValid(), True)
+            self.assertEqual(layer.featureCount(), 50)
 
 
 if __name__ == "__main__":
