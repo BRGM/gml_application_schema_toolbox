@@ -1,4 +1,4 @@
-name: Linter 🐍
+name: "✅ Linter"
 
 env:
   PROJECT_FOLDER: "gml_application_schema_toolbox"
@@ -6,16 +6,17 @@ env:
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
     paths:
-      - '**.py'
+      - "**.py"
   pull_request:
-    branches: [ master ]
+    branches: [master]
     paths:
-      - '**.py'
+      - "**.py"
 
 jobs:
-  flake8_py3:
+  lint-py:
+    name: Python 🐍
     runs-on: ubuntu-latest
 
     steps:
