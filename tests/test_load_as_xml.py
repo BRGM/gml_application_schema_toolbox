@@ -19,9 +19,8 @@
 # standard library
 from pathlib import Path
 
-from qgis.core import QgsVectorLayer
-
 # PyQGIS
+from qgis.core import QgsVectorLayer
 from qgis.testing import start_app, unittest
 
 # project
@@ -46,6 +45,7 @@ class TestLoadAsXML(unittest.TestCase):
         self.assertEqual(len(layer_gmloaded), 2)
 
         for layer in layer_gmloaded.values():
+            self.assertIsInstance(layer, QgsVectorLayer)
             self.assertEqual(layer.isValid(), True)
             self.assertEqual(layer.featureCount(), 50)
 
