@@ -34,6 +34,7 @@ from gml_application_schema_toolbox.gui.custom_viewers import get_custom_viewers
 from gml_application_schema_toolbox.gui.qgis_form_custom_widget import (
     install_viewer_on_feature_form,
 )
+from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
 
 
 def _qgis_layer(
@@ -102,7 +103,12 @@ def import_in_qgis(gmlas_uri, provider: str, schema=None):
 
     ogr.UseExceptions()
     drv = ogr.GetDriverByName(provider)
-    ds = drv.Open(gmlas_uri)
+
+    try:
+        ds = drv.Open(gmlas_uri)
+    except Exception as err:
+        PlgLogger.log(err, log_level=2)
+
     if ds is None:
         raise RuntimeError("Problem opening {}".format(gmlas_uri))
 

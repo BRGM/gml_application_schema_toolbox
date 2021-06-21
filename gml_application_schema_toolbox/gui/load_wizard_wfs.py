@@ -292,7 +292,6 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
 
         try:
             with qgis_proxy_settings():
-                print("params", params)
                 response = wfs.getfeature(**params)
         except owslib.util.ServiceException as e:
             QMessageBox.critical(self, "ServiceException", str(e))

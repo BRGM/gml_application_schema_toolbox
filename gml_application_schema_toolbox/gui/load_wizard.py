@@ -200,7 +200,6 @@ class LoadWizard(QWizard):
     def initializePage(self, page_id):
         # reset gml_path when on the "loading" page
         if page_id == PAGE_ID_LOADING:
-            print("reset gml_path")
             self._gml_path = None
 
     def sizeHint(self):
