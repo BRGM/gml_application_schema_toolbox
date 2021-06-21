@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 1.4.0-beta1 - 21/06/2021
+
+- network requests use the better options from PyQGIS
+- settings windows has been redesigned and integrated into QGIS preferences
+- minimal QGIS version is now 3.16
+- unit tests have been restored
+- fix some bugs
+- UI improvments (icons...)
+
 ## 1.3.1 - 08/03/2021
 
 ### Fixed
