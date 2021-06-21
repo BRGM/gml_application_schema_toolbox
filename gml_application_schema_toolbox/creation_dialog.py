@@ -157,7 +157,6 @@ class CreationDialog(QDialog, FORM_CLASS):
     def accept(self):
         is_remote, src = self.source()
         # fix print with import
-        print((is_remote, src))
         QSettings("complex_features").setValue(
             "is_remote", "true" if is_remote else "false"
         )

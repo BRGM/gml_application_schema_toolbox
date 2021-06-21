@@ -103,7 +103,6 @@ def import_in_qgis(gmlas_uri, provider: str, schema=None):
 
     ogr.UseExceptions()
     drv = ogr.GetDriverByName(provider)
-    print(drv)
 
     try:
         ds = drv.Open(gmlas_uri)
