@@ -16,99 +16,98 @@
 """
 
 # standard library
-import os
 import tempfile
+from pathlib import Path
 
 # 3rd party
 from osgeo import gdal, osr
 
 # PyQGIS
 from qgis.core import QgsCoordinateReferenceSystem, QgsProject
-from qgis.testing import start_app, unittest
+from qgis.testing import unittest
 
 # project
 from gml_application_schema_toolbox.core.load_gmlas_in_qgis import import_in_qgis
-
-# ############################################################################
-# ########## Main ################
-# ################################
-start_app()
-
-
-# ############################################################################
-# ########## Functions ###########
-# ################################
-
-
-def convert_and_import(xml_file):
-    QgsProject.instance().clear()
-    with tempfile.NamedTemporaryFile(delete=True) as f:
-        out_f = f.name
-    config_file = os.path.join(os.path.dirname(__file__), "gmlasconf.xml")
-    gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
-    ds = gdal.OpenEx(
-        "GMLAS:{}".format(xml_file),
-        open_options=[
-            "EXPOSE_METADATA_LAYERS=YES",
-            "CONFIG_FILE={}".format(config_file),
-        ],
-    )
-    srs = osr.SpatialReference()
-    qgs_srs = QgsCoordinateReferenceSystem("EPSG:4326")
-    srs.ImportFromWkt(qgs_srs.toWkt())
-    params = {
-        "destNameOrDestDS": out_f,
-        "srcDS": ds,
-        "format": "SQLite",
-        "accessMode": "overwrite",
-        "datasetCreationOptions": ["SPATIALITE=YES"],
-        "options": ["-forceNullable", "-skipfailures"]
-        # , 'srcSRS': srs
-        # , 'dstSRS': srs
-        ,
-        "geometryType": "CONVERT_TO_LINEAR",
-        "reproject": False,
-    }
-    # call gdal to convert
-    gdal.VectorTranslate(**params)
-    # fix geometry types
-    ds = None
-    # populate the qgis project
-    import_in_qgis(out_f, "SQLite")
-
-    layers = []
-    for lid in sorted(QgsProject.instance().mapLayers().keys()):
-        vl = QgsProject.instance().mapLayer(lid)
-        layers.append((vl.name(), vl.wkbType()))
-    rels = []
-    relations = QgsProject.instance().relationManager().relations()
-    for relid in sorted(relations.keys()):
-        rel = relations[relid]
-        p = rel.fieldPairs()
-        rels.append(
-            (
-                rel.id()[0:3],
-                rel.referencingLayer().name(),
-                list(p.keys())[0],
-                rel.referencedLayer().name(),
-                list(p.values())[0],
-            )
-        )
-
-    return sorted(layers), sorted(rels)
 
 
 # ############################################################################
 # ########## Classes #############
 # ################################
 class TestLoadInQGIS(unittest.TestCase):
-    def test_1(self):
-        f = os.path.join(
-            os.path.dirname(__file__),
-            "..",
-            "samples",
-            "BRGM_raw_database_observation_waterml2_output.xml",
+    """Tests."""
+
+    def convert_and_import(self, xml_file):
+        # GMLAS configuration file
+        config_file = Path("tests/fixtures/gmlasconf.xml")
+        self.assertTrue(config_file.is_file())
+
+        # create fixture
+        QgsProject.instance().clear()
+        with tempfile.NamedTemporaryFile(prefix="qgis_gmlas_", delete=True) as f:
+            out_file = f.name
+
+        # open it
+        gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
+        ds = gdal.OpenEx(
+            "GMLAS:{}".format(xml_file),
+            open_options=[
+                "EXPOSE_METADATA_LAYERS=YES",
+                "CONFIG_FILE={}".format(config_file),
+            ],
         )
+
+        # SRS
+        srs = osr.SpatialReference()
+        qgs_srs = QgsCoordinateReferenceSystem("EPSG:4326")
+        srs.ImportFromWkt(qgs_srs.toWkt())
+
+        # GDAL vector conversion
+        params = {
+            "format": "SQLite",
+            "accessMode": "overwrite",
+            "datasetCreationOptions": ["SPATIALITE=YES"],
+            "options": ["-forceNullable", "-skipfailures"]
+            # , 'srcSRS': srs
+            # , 'dstSRS': srs
+            ,
+            "geometryType": "CONVERT_TO_LINEAR",
+            "reproject": False,
+        }
+        # call gdal to convert
+        gdal.VectorTranslate(destNameOrDestDS=out_file, srcDS=ds, **params)
+
+        # fix geometry types
+        # ds = None
+        # populate the qgis project
+        import_in_qgis(gmlas_uri=out_file, provider="SQLite")
+
+        layers = []
+        for lid in sorted(QgsProject.instance().mapLayers().keys()):
+            vl = QgsProject.instance().mapLayer(lid)
+            layers.append((vl.name(), vl.wkbType()))
+        rels = []
+        relations = QgsProject.instance().relationManager().relations()
+        for relid in sorted(relations.keys()):
+            rel = relations[relid]
+            p = rel.fieldPairs()
+            rels.append(
+                (
+                    rel.id()[0:3],
+                    rel.referencingLayer().name(),
+                    list(p.keys())[0],
+                    rel.referencedLayer().name(),
+                    list(p.values())[0],
+                )
+            )
+
+        return sorted(layers), sorted(rels)
+
+    def test_load_waterml2(self):
+        sample_file = Path(
+            "tests/fixtures/BRGM_raw_database_observation_waterml2_output.xml"
+        )
+        self.assertTrue(sample_file.is_file())
+
         layers = [
             ("defaulttvpmeasurementmetadata", 100),
             ("measurementtimeseries", 100),
@@ -214,17 +213,18 @@ class TestLoadInQGIS(unittest.TestCase):
                 ),
             ]
         )
-        imported_layers, imported_relations = convert_and_import(f)
-        self.assertCountEqual(imported_layers, layers)
+
+        imported_layers, imported_relations = self.convert_and_import(sample_file)
+
+        self.assertEqual(len(imported_layers), len(layers))
         self.assertListEqual(imported_layers, layers)
-        self.assertCountEqual(imported_relations, relations)
+        self.assertEqual(len(imported_relations), len(relations))
         self.assertListEqual(imported_relations, relations)
 
-    def test_multiple_geometries(self):
-        # Test streams that result in layers with multiple geometries
-        f = os.path.join(
-            os.path.dirname(__file__), "..", "samples", "EUReg.example.xml"
-        )
+    def test_load_multiple_geometries(self):
+        sample_file = Path("tests/fixtures/EUReg.example.xml")
+        self.assertTrue(sample_file.is_file())
+
         layers = sorted(
             [
                 ("competentauthority", 100),
@@ -255,13 +255,13 @@ class TestLoadInQGIS(unittest.TestCase):
                 ("type", 100),
             ]
         )
-        imported_layers, imported_relations = convert_and_import(f)
+        imported_layers, imported_relations = self.convert_and_import(sample_file)
         self.assertEqual(len(imported_layers), len(layers))
         self.assertListEqual(imported_layers, layers)
 
-    def xtest_postgis(self):
-        import_in_qgis("dbname='test_gmlas' port=5434", "postgres", schema="piezo")
-        QgsProject.instance().write("test.qgs")
+    # def xtest_postgis(self):
+    #     import_in_qgis("dbname='test_gmlas' port=5434", "postgres", schema="piezo")
+    #     QgsProject.instance().write("test.qgs")
 
 
 # ############################################################################
