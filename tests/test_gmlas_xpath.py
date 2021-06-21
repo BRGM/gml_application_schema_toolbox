@@ -1,17 +1,31 @@
-import os
-import sys
+#! python3  # noqa E265
+
+"""
+    Usage from the repo root folder:
+
+    .. code-block:: bash
+
+        # for whole tests
+        python -m unittest tests.test_gmlas_xpath
+        # for specific test
+        python -m unittest tests.test_gmlas_xpath.TestGMLASXPath.test_geologylog
+"""
+
+# standard library
 import unittest
 
-sys.path.append(
-    os.path.join(os.path.dirname(__file__), "..", "gml_application_schema_toolbox")
-)
-
-from core.gmlas_xpath import GmlAsXPathResolver
+# project
+from gml_application_schema_toolbox.core.gmlas_xpath import GmlAsXPathResolver
 
 
+# ############################################################################
+# ########## Classes #############
+# ################################
 class TestGMLASXPath(unittest.TestCase):
     def test_geologylog(self):
-        resolver = GmlAsXPathResolver("geology_log1.sqlite", "SQLite", "")
+        resolver = GmlAsXPathResolver(
+            "tests/fixtures/geology_log1.sqlite", "SQLite", ""
+        )
         v = resolver.resolve_xpath(
             "gw_geologylogcoverage",
             "id",
@@ -35,7 +49,7 @@ class TestGMLASXPath(unittest.TestCase):
         self.assertEqual(sorted(v), [0.3, 4.27, 9.14, 11.58])
 
     def test_timeseries(self):
-        resolver = GmlAsXPathResolver("timeseries1.sqlite", "SQLite", "")
+        resolver = GmlAsXPathResolver("tests/fixtures/timeseries1.sqlite", "SQLite", "")
         v = resolver.resolve_xpath(
             "measurementtimeseries",
             "id",
@@ -59,5 +73,8 @@ class TestGMLASXPath(unittest.TestCase):
         self.assertEqual(v, ["m"])
 
 
+# ############################################################################
+# ####### Stand-alone run ########
+# ################################
 if __name__ == "__main__":
     unittest.main()
