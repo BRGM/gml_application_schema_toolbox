@@ -34,7 +34,7 @@ from gml_application_schema_toolbox.core.load_gml_as_xml import load_as_xml_laye
 # ################################
 class TestLoadAsXML(unittest.TestCase):
     def test_load_as_xml_layer(self):
-        sample_file = Path("tests/samples/brgm_ef_piezo_50_2.xml")
+        sample_file = Path("tests/fixtures/brgm_ef_piezo_50_2.xml")
 
         self.assertTrue(sample_file.is_file())
 
