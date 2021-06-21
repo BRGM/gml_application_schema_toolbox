@@ -36,4 +36,4 @@ deprecated=False
 author=BRGM, Oslandia, Copernicus, Camptocamp, Spatialys, titellus
 
 # email of the plugin administrator
-email=julienm@oslandia.com
+email=qgis@oslandia.com
