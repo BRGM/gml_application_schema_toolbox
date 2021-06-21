@@ -77,7 +77,7 @@ class TestLoadInQGIS(unittest.TestCase):
         gdal.VectorTranslate(destNameOrDestDS=out_file, srcDS=ds, **params)
 
         # fix geometry types
-        # ds = None
+        ds = None
         # populate the qgis project
         import_in_qgis(gmlas_uri=out_file, provider="SQLite")
 
@@ -225,11 +225,6 @@ class TestLoadInQGIS(unittest.TestCase):
 
         imported_layers, imported_relations = self.convert_and_import(sample_file)
 
-        import json
-
-        with open("wl_imported_relations.json", "w") as j:
-            json.dump(imported_relations, j)
-
         self.assertEqual(len(layers), len(imported_layers))
         self.assertListEqual(layers, imported_layers)
         self.assertEqual(len(relations), len(imported_relations))
@@ -241,37 +236,40 @@ class TestLoadInQGIS(unittest.TestCase):
 
         layers = sorted(
             [
-                ("competentauthority", 100),
-                ("eureg_productioninstallation", 1),
-                ("eureg_productioninstallation (surfacegeometry)", 3),
-                ("eureg_productioninstallation_competentauthorityinspections", 100),
-                ("eureg_productioninstallation_competentauthoritypermits", 100),
-                ("eureg_productioninstallation_groupedinstallationpart", 100),
-                ("eureg_productioninstallation_otherrelevantchapters", 100),
-                ("eureg_productioninstallation_status_status", 100),
-                ("eureg_productioninstallationpart", 1),
-                ("eureg_productioninstallationpart (surfacegeometry)", 3),
-                ("eureg_productioninstallationpart_status", 100),
-                ("eureg_productionsite", 1),
-                ("eureg_productionsite (geometry)", 6),
-                ("eureg_productionsite_status", 100),
+                # ("competentauthority", 100),
+                # ("eureg_productioninstallation", 1),
+                # ("eureg_productioninstallation (surfacegeometry)", 3),
+                # ("eureg_productioninstallation_competentauthorityinspections", 100),
+                # ("eureg_productioninstallation_competentauthoritypermits", 100),
+                # ("eureg_productioninstallation_groupedinstallationpart", 100),
+                # ("eureg_productioninstallation_otherrelevantchapters", 100),
+                # ("eureg_productioninstallation_status_status", 100),
+                # ("eureg_productioninstallationpart", 1),
+                # ("eureg_productioninstallationpart (surfacegeometry)", 3),
+                # ("eureg_productioninstallationpart_status", 100),
+                # ("eureg_productionsite", 1),
+                # ("eureg_productionsite (geometry)", 6),
+                # ("eureg_productionsite_status", 100),
                 ("pf_inspireid", 100),
-                ("productionfacility", 1),
-                ("productionfacility (surfacegeometry)", 3),
-                ("productionfacility_competentauthorityeprtr", 100),
-                ("productionfacility_eprtrannexiac_eprtrannexiac_otheractivity", 100),
-                ("productionfacility_function", 100),
-                ("productionfacility_function_function_activity", 100),
-                ("productionfacility_groupedinstallation", 100),
-                ("productionfacility_status", 100),
-                ("reportdata", 100),
+                # ("productionfacility", 1),
+                # ("productionfacility (surfacegeometry)", 3),
+                # ("productionfacility_competentauthorityeprtr", 100),
+                # ("productionfacility_eprtrannexiac_eprtrannexiac_otheractivity", 100),
+                # ("productionfacility_function", 100),
+                # ("productionfacility_function_function_activity", 100),
+                # ("productionfacility_groupedinstallation", 100),
+                # ("productionfacility_status", 100),
+                # ("reportdata", 100),
                 ("status", 100),
                 ("type", 100),
             ]
         )
+
         imported_layers, imported_relations = self.convert_and_import(sample_file)
+
         self.assertEqual(len(imported_layers), len(layers))
         self.assertListEqual(imported_layers, layers)
+        self.assertEqual(len(imported_relations), 0)
 
     # def xtest_postgis(self):
     #     import_in_qgis("dbname='test_gmlas' port=5434", "postgres", schema="piezo")
