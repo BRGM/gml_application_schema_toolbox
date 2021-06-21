@@ -108,22 +108,25 @@ class TestLoadInQGIS(unittest.TestCase):
         )
         self.assertTrue(sample_file.is_file())
 
-        layers = [
-            ("defaulttvpmeasurementmetadata", 100),
-            ("measurementtimeseries", 100),
-            ("measurementtimeseries_defaultpointmetadata", 100),
-            ("measurementtimeseries_point", 100),
-            ("measurementtimeseriesmetadata", 100),
-            ("monitoringpoint", 1),
-            ("monitoringpoint_name", 100),
-            ("monitoringpoint_sampledfeature", 100),
-            ("namedvalue", 100),
-            ("om_observation", 100),
-            ("om_observation_parameter", 100),
-            ("temporalextent", 100),
-            ("timeinstant", 100),
-            ("timeperiod", 100),
-        ]
+        layers = sorted(
+            [
+                ("defaulttvpmeasurementmetadata", 100),
+                ("measurementtimeseries", 100),
+                ("measurementtimeseries_defaultpointmetadata", 100),
+                ("measurementtimeseries_point", 100),
+                ("measurementtimeseriesmetadata", 100),
+                ("monitoringpoint", 1),
+                ("monitoringpoint_name", 100),
+                ("monitoringpoint_sampledfeature", 100),
+                ("namedvalue", 100),
+                ("om_observation", 100),
+                ("om_observation_parameter", 100),
+                ("temporalextent", 100),
+                ("timeinstant", 100),
+                ("timeperiod", 100),
+            ]
+        )
+
         relations = sorted(
             [
                 (
@@ -152,28 +155,28 @@ class TestLoadInQGIS(unittest.TestCase):
                     "om_observation",
                     "featureofinterest_abstractfeature_monitoringpoint_pkid",
                     "monitoringpoint",
-                    "id",
+                    "ogr_pkid",
                 ),
                 (
                     "1_1",
                     "om_observation",
                     "phenomenontime_abstracttimeobject_timeperiod_pkid",
                     "timeperiod",
-                    "id",
+                    "ogr_pkid",
                 ),
                 (
                     "1_1",
                     "om_observation",
                     "result_measurementtimeseries_pkid",
                     "measurementtimeseries",
-                    "id",
+                    "ogr_pkid",
                 ),
                 (
                     "1_1",
                     "om_observation",
                     "resulttime_timeinstant_pkid",
                     "timeinstant",
-                    "id",
+                    "ogr_pkid",
                 ),
                 (
                     "1_1",
@@ -185,41 +188,52 @@ class TestLoadInQGIS(unittest.TestCase):
                 (
                     "1_n",
                     "measurementtimeseries_defaultpointmetadata",
-                    "parent_id",
+                    "parent_ogr_pkid",
                     "measurementtimeseries",
-                    "id",
+                    "ogr_pkid",
                 ),
                 (
                     "1_n",
                     "measurementtimeseries_point",
-                    "parent_id",
+                    "parent_ogr_pkid",
                     "measurementtimeseries",
-                    "id",
+                    "ogr_pkid",
                 ),
-                ("1_n", "monitoringpoint_name", "parent_id", "monitoringpoint", "id"),
+                (
+                    "1_n",
+                    "monitoringpoint_name",
+                    "parent_ogr_pkid",
+                    "monitoringpoint",
+                    "ogr_pkid",
+                ),
                 (
                     "1_n",
                     "monitoringpoint_sampledfeature",
-                    "parent_id",
+                    "parent_ogr_pkid",
                     "monitoringpoint",
-                    "id",
+                    "ogr_pkid",
                 ),
                 (
                     "1_n",
                     "om_observation_parameter",
-                    "parent_id",
+                    "parent_ogr_pkid",
                     "om_observation",
-                    "id",
+                    "ogr_pkid",
                 ),
             ]
         )
 
         imported_layers, imported_relations = self.convert_and_import(sample_file)
 
-        self.assertEqual(len(imported_layers), len(layers))
-        self.assertListEqual(imported_layers, layers)
-        self.assertEqual(len(imported_relations), len(relations))
-        self.assertListEqual(imported_relations, relations)
+        import json
+
+        with open("wl_imported_relations.json", "w") as j:
+            json.dump(imported_relations, j)
+
+        self.assertEqual(len(layers), len(imported_layers))
+        self.assertListEqual(layers, imported_layers)
+        self.assertEqual(len(relations), len(imported_relations))
+        self.assertListEqual(relations, imported_relations)
 
     def test_load_multiple_geometries(self):
         sample_file = Path("tests/fixtures/EUReg.example.xml")
