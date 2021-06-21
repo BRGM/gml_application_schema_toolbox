@@ -17,8 +17,14 @@
  */
 """
 
-
+# standard library
 import sys
+
+# plugin
+from gml_application_schema_toolbox.viewers import (  # noqa: F401
+    GeologyLogViewer,
+    WML2TimeSeriesViewer,
+)
 
 __custom_viewers = None
 
