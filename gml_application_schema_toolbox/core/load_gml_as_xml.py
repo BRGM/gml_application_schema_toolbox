@@ -17,8 +17,10 @@
 
 # standard library
 import copy
+import json
 import os
 import re
+import tempfile
 import xml.etree.ElementTree as ET
 from builtins import object, str
 
@@ -66,8 +68,6 @@ def load_as_xml_layer(
     :returns: the created layer
     """
     if not output_local_file:
-        import tempfile
-
         f = tempfile.NamedTemporaryFile()
         output_local_file = f.name
         f.close()
@@ -258,7 +258,6 @@ class ComplexFeatureSource(object):
             self.title = no_prefix(self.features[0].tag)
         else:
             self.title = ""
-
         self.xpath_mapping = xpath_mapping
         self.geometry_mapping = geometry_mapping
         self.logger = logger
@@ -372,7 +371,7 @@ class ComplexFeatureLoader(object):
         geometry_mapping=None,
         logger=None,
         swap_xy: bool = False,
-    ):
+    ) -> dict:
         """
         :param xml_uri: the XML URI
         :param is_remote: True if it has to be fetched by http
@@ -389,6 +388,7 @@ class ComplexFeatureLoader(object):
                 # instead of a string whose encoding would have to be interpreted
                 # it is up to the XML parser to determine which encoding it is
                 xml_src = open(xml_uri, "rb")
+
             src = ComplexFeatureSource(xml_src, attributes, geometry_mapping, logger)
 
             attr_list = [(k, v[1]) for k, v in attributes.items()]
@@ -402,6 +402,7 @@ class ComplexFeatureLoader(object):
                         layer = self._create_layer(
                             "none", None, attr_list, src.title, "nogeom"
                         )
+
                         self._add_properties_to_layer(
                             layer, xml_uri, is_remote, attributes, geometry_mapping
                         )
@@ -537,7 +538,7 @@ class ComplexFeatureLoaderInMemory(ComplexFeatureLoader):
 
 
 class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
-    def __init__(self, output_local_file):
+    def __init__(self, output_local_file: str):
         """
         :param output_local_file: name of the local sqlite file
         """
@@ -603,7 +604,6 @@ class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
     def _add_properties_to_layer(
         self, layer, xml_uri, is_remote, attributes, geom_mapping
     ):
-        import json
 
         tag = layer.customProperty("tag")
         fn = "{}_{}.gpkg".format(self.output_local_file, tag)

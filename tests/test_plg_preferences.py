@@ -13,7 +13,6 @@
 
 # standard library
 import unittest
-from pathlib import Path
 
 # project
 from gml_application_schema_toolbox.__about__ import (
