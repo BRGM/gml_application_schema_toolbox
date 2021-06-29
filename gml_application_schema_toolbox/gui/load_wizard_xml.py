@@ -7,8 +7,8 @@
 # Standard library
 import os
 
-from PyQt5 import uic
 from qgis.core import QgsEditorWidgetSetup, QgsProject
+from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QRegExp, QVariant, pyqtSlot
 from qgis.PyQt.QtGui import QRegExpValidator
 from qgis.PyQt.QtWidgets import QComboBox, QLineEdit, QTableWidgetItem, QWizardPage

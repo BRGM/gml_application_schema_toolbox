@@ -9,7 +9,6 @@ import os
 
 import owslib
 from owslib.wfs import WebFeatureService
-from PyQt5 import uic
 from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
@@ -19,6 +18,7 @@ from qgis.core import (
     QgsSettings,
 )
 from qgis.gui import QgsNewHttpConnection
+from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt, QUrl, QUrlQuery, pyqtSlot
 from qgis.PyQt.QtWidgets import QDialog, QMessageBox, QTableWidgetItem, QWizardPage
 from qgis.PyQt.QtXml import QDomDocument
