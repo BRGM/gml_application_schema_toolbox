@@ -86,7 +86,7 @@ class TestPlgPreferences(unittest.TestCase):
 
         self.assertTrue(hasattr(settings, "last_source"))
         self.assertIsInstance(settings.last_source, str)
-        self.assertIsNone(settings.last_source, "file")
+        self.assertEqual(settings.last_source, "file")
 
 
 # ############################################################################
