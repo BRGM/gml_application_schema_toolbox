@@ -26,11 +26,10 @@ from qgis.PyQt.QtXml import QDomDocument
 # project
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
 from gml_application_schema_toolbox.core.qgis_urlopener import remote_open_from_qgis
-from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.core.xml_utils import xml_parse
 from gml_application_schema_toolbox.gui.wait_cursor_context import WaitCursor
 from gml_application_schema_toolbox.gui.xml_dialog import XmlDialog
-from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
+from gml_application_schema_toolbox.toolbelt import PlgLogger, PlgOptionsManager
 
 # ############################################################################
 # ########## Globals ###############
@@ -51,8 +50,9 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
         super().__init__(parent)
         self.log = PlgLogger().log
         self.setupUi(self)
+        plg_settings = PlgOptionsManager().get_plg_settings()
 
-        self.featureLimitBox.setValue(int(settings.value("default_maxfeatures")))
+        self.featureLimitBox.setValue(plg_settings.network_max_features)
 
         self.refresh_connections()
         self.connectionCombo.currentTextChanged.connect(self.on_change_connection)
