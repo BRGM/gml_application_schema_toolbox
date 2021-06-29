@@ -68,6 +68,26 @@ class TestPlgPreferences(unittest.TestCase):
             settings.impex_gmlas_config, str(DIR_PLUGIN_ROOT / "conf" / "gmlasconf.xml")
         )
 
+        self.assertTrue(hasattr(settings, "last_file"))
+        self.assertIsInstance(settings.last_file, str)
+        self.assertIsNone(settings.last_file, None)
+
+        self.assertTrue(hasattr(settings, "last_dowloaded_file"))
+        self.assertIsInstance(settings.last_dowloaded_file, str)
+        self.assertIsNone(settings.last_dowloaded_file, None)
+
+        self.assertTrue(hasattr(settings, "last_path"))
+        self.assertIsInstance(settings.last_path, str)
+        self.assertIsNone(settings.last_path, None)
+
+        self.assertTrue(hasattr(settings, "last_downloaded_path"))
+        self.assertIsInstance(settings.last_downloaded_path, str)
+        self.assertIsNone(settings.last_downloaded_path, None)
+
+        self.assertTrue(hasattr(settings, "last_source"))
+        self.assertIsInstance(settings.last_source, str)
+        self.assertIsNone(settings.last_source, "file")
+
 
 # ############################################################################
 # ####### Stand-alone run ########
