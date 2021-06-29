@@ -5,11 +5,12 @@
 """
 
 # standard
-import logging
 from typing import NamedTuple
 
 # PyQGIS
 from qgis.core import QgsSettings
+
+import gml_application_schema_toolbox.toolbelt.log_handler as log_hdlr
 
 # package
 from gml_application_schema_toolbox.__about__ import (
@@ -17,14 +18,6 @@ from gml_application_schema_toolbox.__about__ import (
     __title__,
     __version__,
 )
-from gml_application_schema_toolbox.toolbelt import PlgLogger
-
-# ############################################################################
-# ########## Globals ###############
-# ##################################
-
-logger = logging.getLogger(__name__)
-plg_logger = PlgLogger()
 
 # ############################################################################
 # ########## Classes ###############
@@ -81,7 +74,9 @@ class PlgSettingsStructure(NamedTuple):
         elif self.impex_access_mode == 4:
             return "overwrite"
         else:
-            logger.error(f"Invalid access_mode code: {self.impex_access_mode}")
+            log_hdlr.PlgLogger.log(
+                f"Invalid access_mode code: {self.impex_access_mode}", log_level=1
+            )
             return "create"
 
     @property
@@ -91,7 +86,9 @@ class PlgSettingsStructure(NamedTuple):
         elif self.impex_db_type == 2:
             return "sqlite"
         else:
-            logger.error(f"Invalid db_type code: {self.impex_db_type}")
+            log_hdlr.PlgLogger.log(
+                f"Invalid db_type code: {self.impex_db_type}", log_level=1
+            )
             return "create"
 
     @property
@@ -101,7 +98,9 @@ class PlgSettingsStructure(NamedTuple):
         elif self.impex_import_method == 2:
             return "xml"
         else:
-            logger.error(f"Invalid import_method code: {self.impex_import_method}")
+            log_hdlr.PlgLogger.log(
+                f"Invalid import_method code: {self.impex_import_method}", log_level=1
+            )
             return "create"
 
 
@@ -150,7 +149,8 @@ class PlgOptionsManager:
 
         settings.endGroup()
 
-        return options._asdict()
+        # log_hdlr.PlgLogger.log("Settings retrieved", log_level=4)
+        return options
 
     @staticmethod
     def get_value_from_key(key: str, default=None, exp_type=None):
@@ -160,10 +160,11 @@ class PlgOptionsManager:
         :return: plugin settings value matching key
         """
         if not hasattr(PlgSettingsStructure, key):
-            logger.error(
-                "Bad settings key. Must be one of: {}".format(
+            log_hdlr.PlgLogger.log(
+                message="Bad settings key. Must be one of: {}".format(
                     ",".join(PlgSettingsStructure._fields)
-                )
+                ),
+                log_level=1,
             )
             return None
 
@@ -173,10 +174,65 @@ class PlgOptionsManager:
         try:
             out_value = settings.value(key=key, defaultValue=default, type=exp_type)
         except Exception as err:
-            logger.error(err)
-            plg_logger.log(err)
+            log_hdlr.PlgLogger.log(
+                message="Error occurred trying to get settings: {}.Trace: {}".format(
+                    key, err
+                )
+            )
             out_value = None
 
         settings.endGroup()
 
         return out_value
+
+    @classmethod
+    def set_value_from_key(cls, key: str, value):
+        """Load and return plugin settings as a dictionary. \
+        Useful to get user preferences across plugin logic.
+
+        :return: plugin settings value matching key
+        """
+        if not hasattr(PlgSettingsStructure, key):
+            log_hdlr.PlgLogger.log(
+                message="Bad settings key. Must be one of: {}".format(
+                    ",".join(PlgSettingsStructure._fields)
+                ),
+                log_level=2,
+            )
+            return False
+
+        settings = QgsSettings()
+        settings.beginGroup(__title__)
+
+        try:
+            settings.setValue(key, value)
+            out_value = True
+            log_hdlr.PlgLogger.log(
+                f"Setting `{key}` saved with value `{value}`", log_level=4
+            )
+        except Exception as err:
+            log_hdlr.PlgLogger.log(
+                message="Error occurred trying to set settings: {}.Trace: {}".format(
+                    key, err
+                )
+            )
+            out_value = False
+
+        settings.endGroup()
+
+        return out_value
+
+    @classmethod
+    def save_from_object(cls, plugin_settings_obj: PlgSettingsStructure):
+        """Load and return plugin settings as a dictionary. \
+        Useful to get user preferences across plugin logic.
+
+        :return: plugin settings value matching key
+        """
+        settings = QgsSettings()
+        settings.beginGroup(__title__)
+
+        for k, v in plugin_settings_obj._asdict().items():
+            cls.set_value_from_key(k, v)
+
+        settings.endGroup()
