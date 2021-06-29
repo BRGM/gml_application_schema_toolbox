@@ -106,7 +106,7 @@ class PlgSettingsStructure(NamedTuple):
 
 class PlgOptionsManager:
     @staticmethod
-    def get_plg_settings() -> dict:
+    def get_plg_settings() -> PlgSettingsStructure:
         """Load and return plugin settings as a dictionary. \
         Useful to get user preferences across plugin logic.
 

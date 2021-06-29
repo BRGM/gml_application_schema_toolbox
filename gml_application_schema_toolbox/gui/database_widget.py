@@ -10,8 +10,8 @@ from qgis.PyQt.QtWidgets import QFileDialog, QMessageBox
 
 from gml_application_schema_toolbox.__about__ import __title__
 from gml_application_schema_toolbox.core.gmlas_postgis_db import GmlasPostgisDB
-from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
+from gml_application_schema_toolbox.toolbelt import PlgOptionsManager
 
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "database_widget.ui")
@@ -48,6 +48,7 @@ class DatabaseWidget(BASE, WIDGET):
     def __init__(self, parent=None, is_input=False):
         super(DatabaseWidget, self).__init__(parent)
         self.setupUi(self)
+        plg_settings = PlgOptionsManager().get_plg_settings()
         self.set_accept_mode(QFileDialog.AcceptOpen)
 
         self._pgsql_db = None
@@ -63,7 +64,7 @@ class DatabaseWidget(BASE, WIDGET):
         self.addFkeysButton.setIcon(QgsApplication.getThemeIcon("/mActionAdd.svg"))
         self.dropFkeysButton.setIcon(QgsApplication.getThemeIcon("/mActionRemove.svg"))
 
-        self.set_format(settings.value("default_db_type"))
+        self.set_format(plg_settings.db_type_as_str)
 
     def set_accept_mode(self, accept_mode):
         """QFileDialog.AcceptOpen or QFileDialog.AcceptSave"""
@@ -131,16 +132,16 @@ class DatabaseWidget(BASE, WIDGET):
         self._pgsql_db.drop_foreign_key_constraints(self.schema())
 
     def set_format(self, value):
-        if value == "SQLite":
+        if value == "sqlite":
             self.sqliteRadioButton.setChecked(True)
-        if value == "PostgreSQL":
+        if value == "postgresql":
             self.pgsqlRadioButton.setChecked(True)
 
     def get_db_format(self):
         if self.sqliteRadioButton.isChecked():
-            return "SQLite"
+            return "sqlite"
         if self.pgsqlRadioButton.isChecked():
-            return "PostgreSQL"
+            return "postgresql"
 
     def datasource_name(self):
         if self.sqliteRadioButton.isChecked():
