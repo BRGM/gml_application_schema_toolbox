@@ -72,9 +72,9 @@ class TestPlgPreferences(unittest.TestCase):
         self.assertIsInstance(settings.last_file, (str, type(None)))
         self.assertIsNone(settings.last_file, None)
 
-        self.assertTrue(hasattr(settings, "last_dowloaded_file"))
-        self.assertIsInstance(settings.last_dowloaded_file, (str, type(None)))
-        self.assertIsNone(settings.last_dowloaded_file, None)
+        self.assertTrue(hasattr(settings, "last_downloaded_file"))
+        self.assertIsInstance(settings.last_downloaded_file, (str, type(None)))
+        self.assertIsNone(settings.last_downloaded_file, None)
 
         self.assertTrue(hasattr(settings, "last_path"))
         self.assertIsInstance(settings.last_path, (str, type(None)))

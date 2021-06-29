@@ -156,7 +156,7 @@ class LoadWizardLoading(QWizardPage, PAGE_2_W):
         path, suffix_filter = QFileDialog.getSaveFileName(
             self,
             self.tr("Select output file"),
-            self.plg_settings.last_dowloaded_path or ".",
+            self.plg_settings.last_downloaded_path or ".",
             self.tr("GML Files (*.gml *.xml)"),
         )
         if path:

@@ -41,9 +41,9 @@ class PlgSettingsStructure(NamedTuple):
     impex_import_method: int = 1
     impex_gmlas_config: str = str(DIR_PLUGIN_ROOT / "conf" / "gmlasconf.xml")
     last_file: str = None
-    last_dowloaded_file: str = None
+    last_downloaded_file: str = None
     last_path: str = None
-    last_dowloaded_path: str = None
+    last_downloaded_path: str = None
     last_source: str = "file"
 
     # network
@@ -140,8 +140,8 @@ class PlgOptionsManager:
                 defaultValue=None,
                 type=str,
             ),
-            last_dowloaded_file=settings.value(
-                key="last_dowloaded_file",
+            last_downloaded_file=settings.value(
+                key="last_downloaded_file",
                 defaultValue=None,
                 type=str,
             ),
@@ -150,8 +150,8 @@ class PlgOptionsManager:
                 defaultValue=None,
                 type=str,
             ),
-            last_dowloaded_path=settings.value(
-                key="last_dowloaded_path",
+            last_downloaded_path=settings.value(
+                key="last_downloaded_path",
                 defaultValue=None,
                 type=str,
             ),
