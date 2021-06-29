@@ -17,4 +17,4 @@ RUN python3 -m pip install -U -r requirements/testing.txt
 # RUN ls -a
 
 RUN qgis --version
-RUN pytest
+# RUN pytest

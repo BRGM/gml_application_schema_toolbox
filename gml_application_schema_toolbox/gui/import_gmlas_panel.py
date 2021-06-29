@@ -35,10 +35,9 @@ from qgis.utils import iface
 from gml_application_schema_toolbox.__about__ import __title__
 from gml_application_schema_toolbox.core.load_gmlas_in_qgis import import_in_qgis
 from gml_application_schema_toolbox.core.proxy import qgis_proxy_settings
-from gml_application_schema_toolbox.core.settings import settings
 from gml_application_schema_toolbox.gui import InputError
 from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
-from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
+from gml_application_schema_toolbox.toolbelt import PlgLogger, PlgOptionsManager
 
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "import_gmlas_panel.ui")
@@ -54,10 +53,11 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         self.databaseWidget.set_accept_mode(QFileDialog.AcceptSave)
         # map to the plugin log handler
         self.plg_logger = PlgLogger()
+        self.plg_settings = PlgOptionsManager().get_plg_settings()
 
-        self.gmlasConfigLineEdit.setText(settings.value("default_gmlas_config"))
-        self.acceptLanguageHeaderInput.setText(settings.value("default_language"))
-        self.set_access_mode(settings.value("default_access_mode"))
+        self.gmlasConfigLineEdit.setText(self.plg_settings.impex_gmlas_config)
+        self.acceptLanguageHeaderInput.setText(self.plg_settings.network_language)
+        self.set_access_mode(self.plg_settings.access_mode_as_str)
 
         g = "gml_application_schema_toolbox"
         self.layers_group.setSettingGroup(g)
@@ -142,7 +142,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             driverConnection = "GMLAS:{}".format(datasourceFile)
         gdal.SetConfigOption("GDAL_HTTP_UNSAFESSL", "YES")
         gdal.SetConfigOption(
-            "GDAL_HTTP_USERAGENT", settings.value("http_user_agent", __title__)
+            "GDAL_HTTP_USERAGENT", self.plg_settings.network_http_user_agent
         )
 
         with qgis_proxy_settings():
@@ -300,7 +300,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
         gdal.SetConfigOption("GDAL_HTTP_UNSAFESSL", "YES")
         gdal.SetConfigOption(
-            "GDAL_HTTP_USERAGENT", settings.value("http_user_agent", __title__)
+            "GDAL_HTTP_USERAGENT", self.plg_settings.network_http_user_agent
         )
 
         def error_handler(err, err_no, msg):

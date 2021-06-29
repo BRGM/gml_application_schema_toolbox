@@ -8,6 +8,7 @@ from qgis.core import QgsMessageLog
 from qgis.utils import iface
 
 # project package
+import gml_application_schema_toolbox.toolbelt.preferences as plg_prefs_hdlr
 from gml_application_schema_toolbox.__about__ import __title__
 
 # ############################################################################
@@ -50,6 +51,11 @@ class PlgLogger(logging.Handler):
             log(message="Plugin loaded - SUCCESS", log_level=3, push=1)
             log(message="Plugin loaded - TEST", log_level=4, push=1)
         """
+        # if debug mode, let's ignore INFO, SUCCESS and TEST
+        debug_mode = plg_prefs_hdlr.PlgOptionsManager.get_plg_settings().debug_mode
+        if not debug_mode and (1 < log_level < 3 or not push):
+            return
+
         # ensure message is a string
         if not isinstance(message, str):
             try:
