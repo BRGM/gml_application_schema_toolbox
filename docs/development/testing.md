@@ -30,8 +30,16 @@ python -m unittest tests.test_plg_metadata.TestPluginMetadata.test_version_semve
 
 ## Using Docker
 
-Alternatively, you can run unit tests using Docker:
+Alternatively, you can run unit tests using Docker.
 
-```bash
-docker build -f tests/tests_qgis.dockerfile -t qgis-plugin-testing .
-```
+1. Build the container:
+
+    ```bash
+    docker build -f tests/tests_qgis.dockerfile -t qgis-plg-testing-gmlas .
+    ```
+
+2. Run pytest:
+
+    ```bash
+    docker container run qgis-plg-testing-gmlas pytest
+    ```
