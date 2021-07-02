@@ -1,21 +1,30 @@
 #! python3  # noqa: E265
 
-import os
+# standard library
 from pathlib import Path
 
-from qgis.core import QgsApplication
+# PyQGIS
+from qgis.core import QgsApplication, QgsProviderRegistry
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QAbstractItemModel, QModelIndex, QSettings, Qt, pyqtSlot
 from qgis.PyQt.QtWidgets import QFileDialog, QMessageBox
 
-from gml_application_schema_toolbox.__about__ import __title__
+# plugin
+from gml_application_schema_toolbox.__about__ import DIR_PLUGIN_ROOT, __title__
+from gml_application_schema_toolbox.constants import DATABASE_TYPES
 from gml_application_schema_toolbox.core.gmlas_postgis_db import GmlasPostgisDB
 from gml_application_schema_toolbox.gui import InputError
-from gml_application_schema_toolbox.toolbelt import PlgOptionsManager
+from gml_application_schema_toolbox.toolbelt import PlgLogger, PlgOptionsManager
 
-WIDGET, BASE = uic.loadUiType(
-    os.path.join(os.path.dirname(__file__), "..", "ui", "database_widget.ui")
-)
+# ############################################################################
+# ########## Globals ###############
+# ##################################
+
+WIDGET, BASE = uic.loadUiType(DIR_PLUGIN_ROOT / "ui/{}.ui".format(Path(__file__).stem))
+
+# ############################################################################
+# ########## Classes ###############
+# ##################################
 
 
 class PgsqlConnectionsModel(QAbstractItemModel):
@@ -48,6 +57,7 @@ class DatabaseWidget(BASE, WIDGET):
     def __init__(self, parent=None, is_input=False):
         super(DatabaseWidget, self).__init__(parent)
         self.setupUi(self)
+        self.log = PlgLogger().log
         plg_settings = PlgOptionsManager().get_plg_settings()
         self.set_accept_mode(QFileDialog.AcceptOpen)
 
@@ -65,6 +75,66 @@ class DatabaseWidget(BASE, WIDGET):
         self.dropFkeysButton.setIcon(QgsApplication.getThemeIcon("/mActionRemove.svg"))
 
         self.set_format(plg_settings.db_type_as_str)
+        self.populate_connections_combobox()
+        self.cbb_connections.activated.connect(self.switch_form_according_database_type)
+
+    def populate_connections_combobox(self):
+        """List existing database connections into the combobox."""
+        # clear and add a placeholder to avoid select item before user does by himself
+        self.cbb_connections.clear()
+        self.cbb_connections.addItem(" - ", "")
+
+        # list connections per compatible database types (defined in constants)
+        for db_type in DATABASE_TYPES:
+            connections = (
+                QgsProviderRegistry.instance().providerMetadata(db_type).connections()
+            )
+
+            if not len(connections):
+                continue
+
+            for connection_name in connections:
+                self.cbb_connections.addItem(
+                    connections.get(connection_name).icon(),
+                    connection_name,
+                    connections.get(connection_name),
+                )
+        self.log(
+            message="DEBUG - {} connections listed.".format(
+                self.cbb_connections.count() - 1
+            ),
+            log_level=4,
+        )
+        self.cbb_connections.setEnabled(True)
+
+        # check if at least one database connection exists
+        if self.cbb_connections.count() == 1:
+            self.log(
+                message=self.tr(
+                    "No database connection configured. "
+                    "Please add one through the QGIS source manager."
+                ),
+                log_level=1,
+                push=True,
+            )
+            self.cbb_connections.setEnabled(False)
+
+    def switch_form_according_database_type(self):
+        """Update the form depending on connection"""
+        selected_conn = self.cbb_connections.itemData(
+            self.cbb_connections.currentIndex()
+        )
+        if selected_conn.providerKey().startswith("postgr"):
+            self.pgsqlFormWidget.setVisible(True)
+            self.sqliteFormWidget.setVisible(False)
+
+            # list schemas
+            self.pgsqlSchemaBox.clear()
+            for schema_name in sorted(selected_conn.schemas()):
+                self.pgsqlSchemaBox.addItem(schema_name)
+        elif selected_conn.providerKey().startswith("spatialite"):
+            self.pgsqlFormWidget.setVisible(False)
+            self.sqliteFormWidget.setVisible(True)
 
     def set_accept_mode(self, accept_mode):
         """QFileDialog.AcceptOpen or QFileDialog.AcceptSave"""
