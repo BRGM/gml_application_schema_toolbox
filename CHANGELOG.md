@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.4.0-beta2 - 02/07/2021
+
+- fix settings and debug mode which was lost in git confusion
+- unit tests enlarged
+
 ## 1.4.0-beta1 - 21/06/2021
 
 - network requests use the better options from PyQGIS
