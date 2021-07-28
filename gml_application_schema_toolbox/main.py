@@ -271,14 +271,20 @@ class GmlasPlugin(object):
         layout.addWidget(db_widget)
         layout.addWidget(button_box)
 
+        # if dialog is closed or if no connection is selected
         dlg.setLayout(layout)
         if dlg.exec_() == QDialog.Rejected:
             return
 
+        if not db_widget.selected_connection_name:
+            return
+
+        # if a connection is selected
         self.log(
             message=f"Selected database to load: {db_widget.selected_connection_name} -"
             f" Schema: {db_widget.selected_schema} - Format: {db_widget.get_db_format}"
         )
+        print(db_widget.get_database_connection.uri())
 
         try:
             QApplication.setOverrideCursor(Qt.WaitCursor)

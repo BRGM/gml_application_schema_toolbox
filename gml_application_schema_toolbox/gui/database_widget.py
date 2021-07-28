@@ -52,6 +52,8 @@ class DatabaseWidget(BASE, WIDGET):
 
         self._pgsql_db = None
 
+        self.placeholder = " - "
+
         # icons
         self.btn_refresh_connections.setIcon(
             QgsApplication.getThemeIcon("mActionRefresh.svg")
@@ -81,7 +83,7 @@ class DatabaseWidget(BASE, WIDGET):
         """List existing database connections into the combobox."""
         # clear and add a placeholder to avoid select item before user does by himself
         self.cbb_connections.clear()
-        self.cbb_connections.addItem(" - ", "")
+        self.cbb_connections.addItem(self.placeholder, "")
 
         # list connections per compatible database types (defined in constants)
         for db_type in DATABASE_TYPES:
@@ -175,6 +177,9 @@ class DatabaseWidget(BASE, WIDGET):
         :return: connection name
         :rtype: Union[str, None]
         """
+        if self.cbb_connections.currentText() == self.placeholder:
+            return None
+
         return self.cbb_connections.currentText() or None
 
     @property
