@@ -29,7 +29,7 @@ from owslib.etree import etree
 from qgis.core import QgsMessageLog
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt, pyqtSlot
-from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QListWidgetItem, QMessageBox
+from qgis.PyQt.QtWidgets import QApplication, QListWidgetItem, QMessageBox
 from qgis.utils import iface
 
 from gml_application_schema_toolbox.__about__ import __title__
@@ -50,7 +50,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
     def __init__(self, parent=None, gml_path=None):
         super(ImportGmlasPanel, self).__init__(parent)
         self.setupUi(self)
-        self.databaseWidget.set_accept_mode(QFileDialog.AcceptSave)
+
         # map to the plugin log handler
         self.plg_logger = PlgLogger()
         self.plg_settings = PlgOptionsManager().get_plg_settings()

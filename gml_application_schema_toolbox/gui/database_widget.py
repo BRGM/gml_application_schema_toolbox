@@ -2,19 +2,21 @@
 
 # standard library
 from pathlib import Path
+from typing import Union
 
 # PyQGIS
-from qgis.core import QgsApplication, QgsProviderRegistry
+from qgis.core import (
+    QgsAbstractDatabaseProviderConnection,
+    QgsApplication,
+    QgsProviderRegistry,
+)
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import QAbstractItemModel, QModelIndex, QSettings, Qt, pyqtSlot
-from qgis.PyQt.QtWidgets import QFileDialog, QMessageBox
+from qgis.PyQt.QtWidgets import QWidget
 
 # plugin
-from gml_application_schema_toolbox.__about__ import DIR_PLUGIN_ROOT, __title__
+from gml_application_schema_toolbox.__about__ import DIR_PLUGIN_ROOT
 from gml_application_schema_toolbox.constants import DATABASE_TYPES
-from gml_application_schema_toolbox.core.gmlas_postgis_db import GmlasPostgisDB
-from gml_application_schema_toolbox.gui import InputError
-from gml_application_schema_toolbox.toolbelt import PlgLogger, PlgOptionsManager
+from gml_application_schema_toolbox.toolbelt import PlgLogger
 
 # ############################################################################
 # ########## Globals ###############
@@ -27,34 +29,23 @@ WIDGET, BASE = uic.loadUiType(DIR_PLUGIN_ROOT / "ui/{}.ui".format(Path(__file__)
 # ##################################
 
 
-# class PgsqlConnectionsModel(QAbstractItemModel):
-#     def __init__(self, parent=None):
-#         super(PgsqlConnectionsModel, self).__init__(parent)
-
-#         self._settings = QSettings()
-#         self._settings.beginGroup("/PostgreSQL/connections/")
-
-#     def _groups(self):
-#         return self._settings.childGroups()
-
-#     def parent(self, index):
-#         return QModelIndex()
-
-#     def index(self, row, column, parent):
-#         return self.createIndex(row, column)
-
-#     def rowCount(self, parent):
-#         return len(self._groups())
-
-#     def columnCount(self, parent):
-#         return 1
-
-#     def data(self, index, role=Qt.DisplayRole):
-#         return self._groups()[index.row()]
-
-
 class DatabaseWidget(BASE, WIDGET):
-    def __init__(self, parent=None, is_input=False):
+    """Form allowing the end-user picks the database connection to use.
+
+    :param BASE: [description]
+    :type BASE: [type]
+    :param WIDGET: [description]
+    :type WIDGET: [type]
+    """
+
+    def __init__(self, parent: QWidget = None, is_input: bool = False):
+        """Form initialization.
+
+        :param parent: [description], defaults to None
+        :type parent: QWidget, optional
+        :param is_input: [description], defaults to False
+        :type is_input: bool, optional
+        """
         super(DatabaseWidget, self).__init__(parent)
         self.log = PlgLogger().log
         self.setupUi(self)
@@ -128,7 +119,7 @@ class DatabaseWidget(BASE, WIDGET):
             self.cbb_connections.setEnabled(False)
 
     def switch_form_according_database_type(self):
-        """Update the form depending on connection"""
+        """Update the form depending on selected connection."""
         selected_conn = self.cbb_connections.itemData(
             self.cbb_connections.currentIndex()
         )
@@ -147,3 +138,43 @@ class DatabaseWidget(BASE, WIDGET):
             self.pgsqlFormWidget.setEnabled(False)
         else:
             pass
+
+    @property
+    def get_database_connection(
+        self,
+    ) -> Union[QgsAbstractDatabaseProviderConnection, None]:
+        """Retrieve selected connection.
+
+        :return: selected connection or None
+        :rtype: Union[QgsAbstractDatabaseProviderConnection, None]
+        """
+        selected_conn = self.cbb_connections.itemData(
+            self.cbb_connections.currentIndex()
+        )
+
+        # ignore if it's the placeholder
+        if isinstance(selected_conn, str):
+            return None
+
+        # determmine database type
+        return selected_conn
+
+    @property
+    def get_db_format(self) -> Union[str, None]:
+        """Database format as lowercased string.
+
+        :return: database provider key
+        :rtype: Union[str, None]
+        """
+        return self.get_database_connection.providerKey() or None
+
+    @property
+    def datasource_name(self) -> Union[str, None]:
+        """[summary]
+
+        :raises InputError: [description]
+        :raises InputError: [description]
+        :return: [description]
+        :rtype: Union[str, None]
+        """
+        return self.get_database_connection.name() or None

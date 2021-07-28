@@ -50,7 +50,6 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         self.setupUi(self)
         plg_settings = PlgOptionsManager().get_plg_settings()
 
-        self.databaseWidget.set_accept_mode(QFileDialog.AcceptOpen)
         self.gmlasConfigLineEdit.setText(plg_settings.impex_gmlas_config)
 
     def showEvent(self, event):
