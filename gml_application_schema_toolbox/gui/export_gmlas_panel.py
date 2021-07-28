@@ -96,7 +96,9 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         options = ["LIST_ALL_TABLES=YES"]
         options.append("SCHEMAS={}".format(self.databaseWidget.schema()))
         datasource = gdal.OpenEx(
-            self.databaseWidget.datasource_name(), gdal.OF_VECTOR, open_options=options
+            self.databaseWidget.selected_connection_name,
+            gdal.OF_VECTOR,
+            open_options=options,
         )
         return datasource
 
@@ -160,7 +162,7 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             temp_datasource_path, open_options=["LIST_ALL_TABLES=YES"]
         )
         params = {
-            "destNameOrDestDS": self.dst_datasource_name(),
+            "destNameOrDestDS": self.dst_selected_connection_name(),
             "srcDS": temp_datasource,
             "format": "GMLAS",
             "datasetCreationOptions": self.dataset_creation_options(),

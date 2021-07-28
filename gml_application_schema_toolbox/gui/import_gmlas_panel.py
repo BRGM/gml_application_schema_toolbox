@@ -310,7 +310,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
                 )
 
         if append_to_db is None:
-            dest = self.databaseWidget.datasource_name()
+            dest = self.databaseWidget.selected_connection_name
             if dest == "" and self.databaseWidget.get_db_format() == "SQLite":
                 with tempfile.NamedTemporaryFile(suffix=".sqlite") as tmp:
                     dest = tmp.name

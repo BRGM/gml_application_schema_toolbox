@@ -169,12 +169,22 @@ class DatabaseWidget(BASE, WIDGET):
         return self.get_database_connection.providerKey() or None
 
     @property
-    def datasource_name(self) -> Union[str, None]:
-        """[summary]
+    def selected_connection_name(self) -> Union[str, None]:
+        """Return selected connection name.
 
-        :raises InputError: [description]
-        :raises InputError: [description]
-        :return: [description]
+        :return: connection name
         :rtype: Union[str, None]
         """
-        return self.get_database_connection.name() or None
+        return self.cbb_connections.currentText() or None
+
+    @property
+    def selected_schema(self) -> Union[str, None]:
+        """Return selected schema.
+
+        :return: schema name
+        :rtype: Union[str, None]
+        """
+        if self.get_db_format == "postgres":
+            return self.cbb_schemas.currentText() or None
+        else:
+            return None
