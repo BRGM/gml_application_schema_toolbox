@@ -145,8 +145,8 @@ class LoadWizardLoading(QWizardPage, PAGE_2_W):
 
     def validatePage(self):
         self.plg_settings_mngr.set_value_from_key(
-            key="last_import_method",
-            value="xml" if self.loadInXMLRadio.isChecked() else "gmlas",
+            key="impex_import_method",
+            value=2 if self.loadInXMLRadio.isChecked() else 1,
         )
 
         return super().validatePage()
