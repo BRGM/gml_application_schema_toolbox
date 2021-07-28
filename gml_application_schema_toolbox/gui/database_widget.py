@@ -88,7 +88,9 @@ class DatabaseWidget(BASE, WIDGET):
         # list connections per compatible database types (defined in constants)
         for db_type in DATABASE_TYPES:
             connections = (
-                QgsProviderRegistry.instance().providerMetadata(db_type).connections()
+                QgsProviderRegistry.instance()
+                .providerMetadata(db_type)
+                .connections(cached=False)
             )
 
             if not len(connections):
