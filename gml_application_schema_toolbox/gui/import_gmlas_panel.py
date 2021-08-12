@@ -193,12 +193,12 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         return layers
 
     def dataset_creation_options(self):
-        if self.databaseWidget.get_db_format() == "SQLite":
+        if self.databaseWidget.get_db_format == "SQLite":
             return ["SPATIALITE=YES"]
 
     def layer_creation_options(self):
         options = []
-        if self.databaseWidget.get_db_format() == "PostgreSQL":
+        if self.databaseWidget.get_db_format == "PostgreSQL":
             schema = self.databaseWidget.schema(create=True)
             options.append("SCHEMA={}".format(schema or "public"))
             if self.access_mode() == "overwrite":
@@ -249,7 +249,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         params = {
             "destNameOrDestDS": dest,
             "srcDS": self.gmlas_datasource(),
-            "format": self.databaseWidget.get_db_format(),
+            "format": self.databaseWidget.get_db_format,
             "accessMode": self.access_mode(),
             "datasetCreationOptions": self.dataset_creation_options(),
             "layerCreationOptions": self.layer_creation_options(),
@@ -311,16 +311,16 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         if append_to_db is None:
             dest = self.databaseWidget.selected_connection_name
-            if dest == "" and self.databaseWidget.get_db_format() == "SQLite":
+            if dest == "" and self.databaseWidget.get_db_format == "SQLite":
                 with tempfile.NamedTemporaryFile(suffix=".sqlite") as tmp:
                     dest = tmp.name
                     QgsMessageLog.logMessage("Temp SQLITE: {}".format(dest), __title__)
 
             if dest.startswith("PG:"):
-                schema = self.databaseWidget.schema()
+                schema = self.databaseWidget.schema
             else:
                 schema = None
-            db_format = self.databaseWidget.get_db_format()
+            db_format = self.databaseWidget.get_db_format
             params = self.import_params(dest)
         else:
             schema = append_to_schema
