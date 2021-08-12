@@ -19,6 +19,7 @@ from qgis.core import (
     QgsAttributeEditorField,
     QgsAttributeEditorRelation,
     QgsCoordinateReferenceSystem,
+    QgsDataSourceUri,
     QgsEditFormConfig,
     QgsEditorWidgetSetup,
     QgsMapLayerLegend,
@@ -96,6 +97,12 @@ def import_in_qgis(gmlas_uri, provider: str, schema=None):
     @param provider name of the QGIS provider that handles gmlas_uri parameters (postgresql or spatialite)
     @param schema name of the PostgreSQL schema where tables and metadata tables are
     """
+    # get path or URI
+    gmlas_uri = QgsDataSourceUri(gmlas_uri)
+    if provider == "spatialite":
+        gmlas_uri = QgsDataSourceUri(gmlas_uri).database()
+        provider = "sqlite"
+
     if schema is not None:
         schema_s = schema + "."
     else:
