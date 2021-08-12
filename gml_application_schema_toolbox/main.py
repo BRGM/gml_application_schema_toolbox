@@ -284,7 +284,6 @@ class GmlasPlugin(object):
             message=f"Selected database to load: {db_widget.selected_connection_name} -"
             f" Schema: {db_widget.selected_schema} - Format: {db_widget.get_db_format}"
         )
-        print(db_widget.get_database_connection.uri())
 
         try:
             QApplication.setOverrideCursor(Qt.WaitCursor)
