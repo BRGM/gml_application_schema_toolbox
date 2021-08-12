@@ -8,6 +8,7 @@ from typing import Union
 from qgis.core import (
     QgsAbstractDatabaseProviderConnection,
     QgsApplication,
+    QgsDataSourceUri,
     QgsProviderRegistry,
 )
 from qgis.PyQt import uic
@@ -173,6 +174,15 @@ class DatabaseWidget(BASE, WIDGET):
         return self.get_database_connection.providerKey() or None
 
     @property
+    def get_db_name_or_path(self) -> Union[str, None]:
+        """Database name or path
+
+        :return: database name
+        :rtype: Union[str, None]
+        """
+        return QgsDataSourceUri(self.get_database_connection.uri()).database() or None
+
+    @property
     def selected_connection_name(self) -> Union[str, None]:
         """Return selected connection name.
 
@@ -195,3 +205,20 @@ class DatabaseWidget(BASE, WIDGET):
             return self.cbb_schemas.currentText() or None
         else:
             return None
+
+    def schema_create(self) -> str:
+        """Create schema into selected database.
+
+        :return: schema name.
+        :rtype: str
+        """
+        schema = self.selected_schema
+        if isinstance(schema, str):
+            self.log(
+                message=f"Schema '{schema}' already exists in '{self.get_db_name_or_path}' database."
+            )
+            return schema
+
+        self.get_database_connection.createSchema(schema)
+
+        return schema
