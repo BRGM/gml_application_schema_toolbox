@@ -9,6 +9,7 @@ from qgis.core import (
     QgsAbstractDatabaseProviderConnection,
     QgsApplication,
     QgsDataSourceUri,
+    QgsProviderConnectionException,
     QgsProviderRegistry,
 )
 from qgis.PyQt import uic
@@ -168,10 +169,10 @@ class DatabaseWidget(BASE, WIDGET):
     def get_db_format(self) -> Union[str, None]:
         """Database format as lowercased string.
 
-        :return: database provider key
+        :return: database provider key (postgresql or spatialite)
         :rtype: Union[str, None]
         """
-        return self.get_database_connection.providerKey() or None
+        return self.get_database_connection.providerKey().lower() or None
 
     @property
     def get_db_name_or_path(self) -> Union[str, None]:
@@ -206,19 +207,18 @@ class DatabaseWidget(BASE, WIDGET):
         else:
             return None
 
-    def schema_create(self) -> str:
+    def schema_create(self, schema_name: str = None) -> str:
         """Create schema into selected database.
 
         :return: schema name.
         :rtype: str
         """
-        schema = self.selected_schema
-        if isinstance(schema, str):
-            self.log(
-                message=f"Schema '{schema}' already exists in '{self.get_db_name_or_path}' database."
-            )
-            return schema
+        if not schema_name or schema_name == self.selected_schema:
+            return self.selected_schema
 
-        self.get_database_connection.createSchema(schema)
+        try:
+            self.get_database_connection.createSchema(schema_name)
+        except QgsProviderConnectionException:
+            pass
 
-        return schema
+        return schema_name
