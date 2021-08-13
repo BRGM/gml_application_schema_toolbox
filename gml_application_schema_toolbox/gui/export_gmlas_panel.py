@@ -50,7 +50,6 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         self.setupUi(self)
         plg_settings = PlgOptionsManager().get_plg_settings()
 
-        self.databaseWidget.set_accept_mode(QFileDialog.AcceptOpen)
         self.gmlasConfigLineEdit.setText(plg_settings.impex_gmlas_config)
 
     def showEvent(self, event):
@@ -95,9 +94,11 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
     def src_datasource(self):
         options = ["LIST_ALL_TABLES=YES"]
-        options.append("SCHEMAS={}".format(self.databaseWidget.schema()))
+        options.append("SCHEMAS={}".format(self.databaseWidget.selected_schema))
         datasource = gdal.OpenEx(
-            self.databaseWidget.datasource_name(), gdal.OF_VECTOR, open_options=options
+            self.databaseWidget.selected_connection_name,
+            gdal.OF_VECTOR,
+            open_options=options,
         )
         return datasource
 
@@ -161,7 +162,7 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             temp_datasource_path, open_options=["LIST_ALL_TABLES=YES"]
         )
         params = {
-            "destNameOrDestDS": self.dst_datasource_name(),
+            "destNameOrDestDS": self.dst_selected_connection_name(),
             "srcDS": temp_datasource,
             "format": "GMLAS",
             "datasetCreationOptions": self.dataset_creation_options(),

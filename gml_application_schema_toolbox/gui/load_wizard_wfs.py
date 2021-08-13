@@ -8,7 +8,6 @@
 import os
 
 import owslib
-from owslib.wfs import WebFeatureService
 from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
@@ -146,7 +145,7 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
             version = req_version
 
         with qgis_proxy_settings():
-            return WebFeatureService(url=uri, version=version)
+            return owslib.wfs.WebFeatureService(url=uri, version=version)
 
     @pyqtSlot(str)
     def on_change_connection(self, currentConnection):

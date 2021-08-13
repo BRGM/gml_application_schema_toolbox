@@ -10,7 +10,6 @@ from io import BytesIO
 from typing import Dict
 
 # project
-from gml_application_schema_toolbox.__about__ import __title__
 from gml_application_schema_toolbox.toolbelt import PlgLogger, PlgOptionsManager
 from gml_application_schema_toolbox.toolbelt.network_manager import (
     NetworkAccessManager,

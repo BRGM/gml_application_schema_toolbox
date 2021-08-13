@@ -270,18 +270,28 @@ class GmlasPlugin(object):
         db_widget = DatabaseWidget(dlg, is_input=True)
         layout.addWidget(db_widget)
         layout.addWidget(button_box)
+
+        # if dialog is closed or if no connection is selected
         dlg.setLayout(layout)
         if dlg.exec_() == QDialog.Rejected:
             return
 
+        if not db_widget.selected_connection_name:
+            return
+
+        # if a connection is selected
+        self.log(
+            message=f"Selected database to load: {db_widget.selected_connection_name} -"
+            f" Schema: {db_widget.selected_schema} - Format: {db_widget.get_db_format}"
+        )
+
         try:
-            source = db_widget.datasource_name()
-            if source.startswith("PG:"):
-                schema = db_widget.schema()
-            else:
-                schema = None
             QApplication.setOverrideCursor(Qt.WaitCursor)
-            import_in_qgis(source, db_widget.get_db_format(), schema)
+            import_in_qgis(
+                gmlas_uri=db_widget.get_database_connection.uri(),
+                provider=db_widget.get_db_format,
+                schema=db_widget.selected_schema,
+            )
         except InputError as e:
             QMessageBox.warning(None, "Error during layer loading", e.args[0])
         except RuntimeError as e:

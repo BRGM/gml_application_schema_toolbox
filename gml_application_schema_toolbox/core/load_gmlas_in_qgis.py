@@ -13,6 +13,8 @@
 #   You should have received a copy of the GNU Library General Public
 #   License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from osgeo import ogr
 from qgis.core import (
     QgsAttributeEditorContainer,
@@ -89,13 +91,26 @@ class CustomViewerLegend(QgsMapLayerLegend):
         return [QgsSimpleLegendNode(layer_tree_layer, self.text, self.icon, self)]
 
 
-def import_in_qgis(gmlas_uri, provider: str, schema=None):
+def import_in_qgis(gmlas_uri: str, provider: str, schema: Union[str, None] = None):
     """Imports layers from a GMLAS file in QGIS with relations and editor widgets
 
     @param gmlas_uri connection parameters
-    @param provider name of the QGIS provider that handles gmlas_uri parameters (postgresql or spatialite)
+    @param provider name of the QGIS provider that handles gmlas_uri parameters
     @param schema name of the PostgreSQL schema where tables and metadata tables are
     """
+    PlgLogger.log(
+        message=f"Start importing {gmlas_uri} (provider: {provider}) into QGIS",
+        log_level=4,
+    )
+
+    # get path or URI
+    if provider in ("spatialite", "sqlite"):
+        provider = "sqlite"
+    elif provider in ("postgres", "postgresql"):
+        gmlas_uri = "PG: {}".format(gmlas_uri)
+    else:
+        pass
+
     if schema is not None:
         schema_s = schema + "."
     else:
@@ -107,7 +122,11 @@ def import_in_qgis(gmlas_uri, provider: str, schema=None):
     try:
         ds = drv.Open(gmlas_uri)
     except Exception as err:
-        PlgLogger.log(err, log_level=2)
+        PlgLogger.log(
+            "Import failed - Dataset unproperly loaded. Trace: {}".format(err),
+            log_level=2,
+        )
+        raise err
 
     if ds is None:
         raise RuntimeError("Problem opening {}".format(gmlas_uri))

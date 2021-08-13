@@ -1,3 +1,5 @@
+#! python3  # noqa: E265
+
 """
 ***************************************************************************
     postgis.py
@@ -45,9 +47,9 @@ class DbError(Exception):
         return "MESSAGE: %s\nQUERY: %s" % (self.message, self.query)
 
 
-def uri_from_name(conn_name):
+def uri_from_name(conn_name) -> str:
     settings = QgsSettings()
-    settings.beginGroup(u"/PostgreSQL/connections/%s" % conn_name)
+    settings.beginGroup("/PostgreSQL/connections/%s" % conn_name)
 
     if not settings.contains("database"):  # non-existent entry?
         raise QgsProcessingException(
@@ -812,7 +814,7 @@ class GeoDB(object):
 
     def create_spatial_index(self, table, schema=None, geom_column="the_geom"):
         table_name = self._table_name(schema, table)
-        idx_name = self._quote(u"sidx_%s_%s" % (table, geom_column))
+        idx_name = self._quote("sidx_%s_%s" % (table, geom_column))
         sql = 'CREATE INDEX "%s" ON %s USING GIST(%s)' % (
             idx_name,
             table_name,
@@ -950,7 +952,7 @@ class GeoDB(object):
             return identifier
 
         # It's needed - let's quote it (and double the double-quotes)
-        return u'"%s"' % identifier.replace('"', '""')
+        return '"%s"' % identifier.replace('"', '""')
 
     def _quote_unicode(self, txt):
         """Make the string safe - replace ' with ''."""
@@ -963,26 +965,42 @@ class GeoDB(object):
         if not schema:
             return self._quote(table)
         else:
-            return u'"%s"."%s"' % (self._quote(schema), self._quote(table))
+            return '"%s"."%s"' % (self._quote(schema), self._quote(table))
 
 
 # For debugging / testing
 if __name__ == "__main__":
 
     db = GeoDB(host="localhost", dbname="gis", user="gisak", passwd="g")
+    # fix_print_with_import
     print(db.list_schemas())
+    # fix_print_with_import
     print("==========")
 
     for row in db.list_geotables():
+        # fix_print_with_import
         print(row)
+    # fix_print_with_import
     print("==========")
 
     for row in db.get_table_indexes("trencin"):
+        # fix_print_with_import
         print(row)
+    # fix_print_with_import
     print("==========")
 
     for row in db.get_table_constraints("trencin"):
+        # fix_print_with_import
         print(row)
+    # fix_print_with_import
     print("==========")
 
+    # fix_print_with_import
     print(db.get_table_rows("trencin"))
+
+    # for fld in db.get_table_metadata('trencin'):
+    # ....print fld
+    # try:
+    # ....db.create_table('trrrr', [('id','serial'), ('test','text')])
+    # except DbError, e:
+    # ....print unicode(e), e.query

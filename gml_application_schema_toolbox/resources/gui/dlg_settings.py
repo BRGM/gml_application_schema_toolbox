@@ -10,7 +10,6 @@ from functools import partial
 from pathlib import Path
 
 # PyQGIS
-from qgis.core import QgsSettings
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 from qgis.PyQt import uic
 from qgis.PyQt.Qt import QUrl

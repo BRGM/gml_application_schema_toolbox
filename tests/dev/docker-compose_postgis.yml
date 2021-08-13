@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  postgis:
+    image: postgis/postgis:13-3.1-alpine
+    ports:
+      - "5454:5432"
+    environment:
+      - POSTGRES_DB=postgis_gmlas
+      - POSTGRES_USER=plugin_gmlas
+      - POSTGRES_PASSWORD=plugin_gmlas
+      - POSTGRES_INITDB_ARGS="--data-checksums"

@@ -29,7 +29,7 @@ from owslib.etree import etree
 from qgis.core import QgsMessageLog
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt, pyqtSlot
-from qgis.PyQt.QtWidgets import QApplication, QFileDialog, QListWidgetItem, QMessageBox
+from qgis.PyQt.QtWidgets import QApplication, QListWidgetItem, QMessageBox
 from qgis.utils import iface
 
 from gml_application_schema_toolbox.__about__ import __title__
@@ -50,7 +50,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
     def __init__(self, parent=None, gml_path=None):
         super(ImportGmlasPanel, self).__init__(parent)
         self.setupUi(self)
-        self.databaseWidget.set_accept_mode(QFileDialog.AcceptSave)
+
         # map to the plugin log handler
         self.plg_logger = PlgLogger()
         self.plg_settings = PlgOptionsManager().get_plg_settings()
@@ -120,9 +120,15 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         return tf.name
 
-    def gmlas_datasource(self):
+    def gmlas_datasource(self) -> gdal.Dataset:
         gmlasconf = self.gmlas_config()
         datasourceFile = self.gml_path()
+
+        self.plg_logger.log(
+            f"Opening GMLAS file '{datasourceFile}', using the configuration file: '{gmlasconf}'",
+            log_level=4,
+        )
+
         if datasourceFile == "":
             raise InputError(self.tr("You must select a input file or URL"))
         isXsd = datasourceFile.endswith(".xsd")
@@ -193,13 +199,13 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         return layers
 
     def dataset_creation_options(self):
-        if self.databaseWidget.get_db_format() == "SQLite":
+        if self.databaseWidget.get_db_format in ("sqlite", "spatialite"):
             return ["SPATIALITE=YES"]
 
     def layer_creation_options(self):
         options = []
-        if self.databaseWidget.get_db_format() == "PostgreSQL":
-            schema = self.databaseWidget.schema(create=True)
+        if self.databaseWidget.get_db_format in ("postgresql", "postgres"):
+            schema = self.databaseWidget.schema_create()
             options.append("SCHEMA={}".format(schema or "public"))
             if self.access_mode() == "overwrite":
                 options.append("OVERWRITE=YES")
@@ -245,11 +251,22 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             options.append("-skipfailures")
         return options
 
-    def import_params(self, dest):
+    def import_params(self, dest: str) -> dict:
+        """Build the parameters dictionary for GDAL import.
+
+        :param dest: database name or path
+        :type dest: str
+
+        :raises InputError: [description]
+        :raises InputError: [description]
+
+        :return: [description]
+        :rtype: dict
+        """
         params = {
             "destNameOrDestDS": dest,
             "srcDS": self.gmlas_datasource(),
-            "format": self.databaseWidget.get_db_format(),
+            "format": self.databaseWidget.get_db_format,
             "accessMode": self.access_mode(),
             "datasetCreationOptions": self.dataset_creation_options(),
             "layerCreationOptions": self.layer_creation_options(),
@@ -296,7 +313,15 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         return params
 
-    def do_load(self, append_to_db=None, append_to_schema=None):
+    def do_load(self, append_to_db: str = None, append_to_schema: str = None):
+        """Load selected GMLAS into a database. If no database is selected \
+        (placeholder), a temporary SQLite database is created.
+
+        :param append_to_db: [description], defaults to None
+        :type append_to_db: str, optional
+        :param append_to_schema: [description], defaults to None
+        :type append_to_schema: str, optional
+        """
         gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
         gdal.SetConfigOption("GDAL_HTTP_UNSAFESSL", "YES")
         gdal.SetConfigOption(
@@ -310,31 +335,63 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
                 )
 
         if append_to_db is None:
-            dest = self.databaseWidget.datasource_name()
-            if dest == "" and self.databaseWidget.get_db_format() == "SQLite":
-                with tempfile.NamedTemporaryFile(suffix=".sqlite") as tmp:
-                    dest = tmp.name
-                    QgsMessageLog.logMessage("Temp SQLITE: {}".format(dest), __title__)
+            self.plg_logger.log(
+                f"Loading to a {self.databaseWidget.get_db_format or ''} database: "
+                f"{self.databaseWidget.get_db_name_or_path or ''}",
+                log_level=4,
+            )
 
-            if dest.startswith("PG:"):
-                schema = self.databaseWidget.schema()
+            dest_db_name = self.databaseWidget.get_db_name_or_path
+
+            if self.databaseWidget.selected_connection_name is None:
+                with tempfile.NamedTemporaryFile(suffix=".sqlite") as tmp:
+                    dest_db_name = tmp.name
+                    self.plg_logger.log(
+                        "Temp SQLite: {}".format(dest_db_name), log_level=4
+                    )
+
+            if self.databaseWidget.get_db_format.startswith(("PG:", "postgres")):
+                schema = self.databaseWidget.selected_schema
+                self.plg_logger.log("PostgreSQL schema: {}".format(schema), log_level=4)
             else:
                 schema = None
-            db_format = self.databaseWidget.get_db_format()
-            params = self.import_params(dest)
+
         else:
+            pass
+
+        if self.databaseWidget.get_db_format == "postgres":
+            params = self.import_params(
+                "PG: {}".format(self.databaseWidget.get_database_connection.uri())
+            )
+        elif self.databaseWidget.get_db_format == "spatialite":
+            params = self.import_params(dest_db_name)
+            params["format"] = "sqlite"
+        else:
+            return
+
+        if append_to_db:
             schema = append_to_schema
-            db_format = "PostgreSQL" if append_to_db.startswith("PG:") else "SQLite"
-            params = self.import_params(append_to_db)
-            # force append
             params["accessMode"] = "append"
+
+        self.plg_logger.log(f"Loading mode: {params.get('accessMode')}", log_level=4)
+        self.plg_logger.log(
+            "Translation params keys: {}".format(", ".join(params.keys())), log_level=4
+        )
+
+        if params.get("format") == "postgres":
+            params["format"] = "postgresql"
 
         try:
             QApplication.setOverrideCursor(Qt.WaitCursor)
             gdal.PushErrorHandler(error_handler)
             self.translate(params)
+            self.plg_logger.log("Dataset translated", log_level=3)
             if append_to_db is None:
-                import_in_qgis(dest, db_format, schema)
+                import_in_qgis(
+                    gmlas_uri=self.databaseWidget.get_database_connection.uri(),
+                    provider=params.get("format"),
+                    schema=schema,
+                )
 
         except InputError as e:
             e.show()
