@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.4.0-beta3 - 13/08/2021
+
+- fix URI error #163
+- modernize database widget
+- improved tests
+
 ## 1.4.0-beta2 - 02/07/2021
 
 - fix settings and debug mode which was lost in git confusion
