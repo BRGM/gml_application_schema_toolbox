@@ -62,7 +62,7 @@ class LoadWizardDataSource(QWizardPage, PAGE_1_W):
             self.plg_settings.last_file or self.plg_settings.last_path
         )
         if __debug__:
-            self.log(message=f"DEBUG {__name__} loaded.", log_level=5)
+            self.log(message=f"DEBUG {__name__} loaded.", log_level=4)
 
     def nextId(self):
         if self.sourceFromWFS.isChecked():
@@ -82,7 +82,7 @@ class LoadWizardDataSource(QWizardPage, PAGE_1_W):
     def on_gmlPathButton_clicked(self):
         gml_path = self.plg_settings.last_file or self.plg_settings.last_path
 
-        filepath, suffix_filter = QFileDialog.getOpenFileName(
+        filepath, _ = QFileDialog.getOpenFileName(
             parent=self,
             caption=self.tr("Open GML file"),
             directory=gml_path,
@@ -95,6 +95,9 @@ class LoadWizardDataSource(QWizardPage, PAGE_1_W):
             self.plg_settings_mngr.set_value_from_key(key="last_file", value=filepath)
 
             self.gmlPathLineEdit.setText(filepath)
+            self.log(
+                message=f"GMLAS configuration file selected: {filepath}", log_level=4
+            )
 
     def download(self, output_path: str):
         """Download (if gmlPath is a HTTP URL) or copy a local file to tha output path.
@@ -117,6 +120,7 @@ class LoadWizardLoading(QWizardPage, PAGE_2_W):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.log = PlgLogger().log
         self.plg_settings_mngr = PlgOptionsManager()
         self.plg_settings = self.plg_settings_mngr.get_plg_settings()
 
@@ -181,16 +185,20 @@ class LoadWizardLoading(QWizardPage, PAGE_2_W):
 class LoadWizardGMLAS(QWizardPage):
     def __init__(self, parent):
         super().__init__(parent)
+        self.log = PlgLogger().log
         self._panel = ImportGmlasPanel(self)
         self._layout = QVBoxLayout()
         self._layout.addWidget(self._panel)
         self.setLayout(self._layout)
         self.setTitle("GMLAS Options")
+        if __debug__:
+            self.log(message=f"DEBUG {__name__} loaded.", log_level=4)
 
     def gml_path(self):
         return self.wizard().gml_path()
 
     def validatePage(self):
+        self.log(message="Let's load it!", log_level=4)
         self._panel.do_load()
         return True
 
@@ -198,6 +206,7 @@ class LoadWizardGMLAS(QWizardPage):
 class LoadWizard(QWizard):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.log = PlgLogger().log
         self.setWindowTitle("Load wizard")
         self._data_source_page = LoadWizardDataSource(self)
         self._wfs_page = LoadWizardWFS(self, PAGE_ID_LOADING)
@@ -211,6 +220,9 @@ class LoadWizard(QWizard):
         self.setPage(PAGE_ID_XML, self._xml_page)
         self.setPage(PAGE_ID_GMLAS, self._gmlas_page)
         self._gml_path = None
+
+        if __debug__:
+            self.log(message=f"DEBUG {__name__} loaded.", log_level=4)
 
     def initializePage(self, page_id):
         # reset gml_path when on the "loading" page

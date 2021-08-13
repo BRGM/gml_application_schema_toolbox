@@ -8,6 +8,7 @@
 # ########## Globals ###############
 # ##################################
 
+# TODO: add names variants of provider names
 DATABASE_TYPES = (
     "postgres",
     "spatialite",
