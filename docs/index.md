@@ -62,6 +62,7 @@ maxdepth: 1
 Code documentation <_apidoc/modules>
 development/contributing
 development/environment
+development/testing
 development/documentation
 development/history
 ```
