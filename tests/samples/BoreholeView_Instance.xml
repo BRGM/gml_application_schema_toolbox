@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:eposl="https://data.geoscience.earth/def/eposl" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" numberMatched="unknown" numberReturned="1" timeStamp="2021-03-11T14:06:21.679Z" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd https://data.geoscience.earth/def/eposl https://data.geoscience.earth/def/eposl.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+	<wfs:member>
+		<eposl:BoreholeView gml:id="BSS001QZJH">
+			<gml:description>Borehole numberBSS001QZJH from BSS (french subsoils databank)</gml:description>
+			<gml:identifier codeSpace="http://www.ietf.org/rfc/rfc2616">https://data.geoscience.fr/id/Borehole/BSS001QZJH</gml:identifier>
+			<gml:name>Forage BSS001QZJH</gml:name>
+			<eposl:identifier>https://data.geoscience.fr/id/BoreholeView/BSS001QZJH</eposl:identifier>
+			<eposl:purpose/>
+			<eposl:status xlink:href="https://data.geoscience.earth/ncl/BoreholeStatus/drillingCompleted" xlink:title="drillingCompleted"/>
+			<eposl:drillingMethod xlink:href="http://www.opengis.net/def/nil/OGC/0/unknown" xlink:title="unknown"/>
+			<eposl:operator>Classified</eposl:operator>
+			<eposl:driller>Classified</eposl:driller>
+			<eposl:startPoint xlink:href="https://data.geoscience.earth/ncl/StartPoint/naturalLandSurface" xlink:title="naturalLandSurface"/>
+			<eposl:inclinationType xlink:href="https://data.geoscience.earth/ncl/BoreholeInclinationType/vertical" xlink:title="vertical"/>
+			<eposl:boreholeMaterialCustodian>unknown</eposl:boreholeMaterialCustodian>
+			<eposl:elevation_m uom="http://qudt.org/vocab/unit/M">631.0</eposl:elevation_m>
+			<eposl:elevation_srs>http://www.opengis.net/def/crs/EPSG/0/5720</eposl:elevation_srs>
+			<eposl:positionalAccuracy>25.0</eposl:positionalAccuracy>
+			<eposl:source>http://ficheinfoterre.brgm.fr/InfoterreFiche/ficheBss.action?id=BSS001QZJH</eposl:source>
+			<eposl:parentBorehole_uri>http://www.opengis.net/def/nil/OGC/0/inapplicable</eposl:parentBorehole_uri>
+			<eposl:metadata_uri>https://data.geoscience.fr/id/dataset/borehole</eposl:metadata_uri>
+			<eposl:genericSymbolizer>Not provided</eposl:genericSymbolizer>
+			<eposl:shape>
+				<gml:Point gml:id="eposl.shape.BSS001QZJH" srsDimension="2" srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+					<gml:pos>2.76771 46.14524</gml:pos>
+				</gml:Point>
+			</eposl:shape>
+			<eposl:cored>false</eposl:cored>
+			<eposl:accessToPhysicalDrillCore>false</eposl:accessToPhysicalDrillCore>
+			<eposl:boreholeUse  xlink:href="https://data.geoscience.fr/ncl/UseMaMa/1" xlink:title="https://data.geoscience.fr/ncl/UseMaMa/1"/>
+			<eposl:detailedDescription xlink:href="http://www.opengis.net/def/nil/OGC/0/template" xlink:title="template"/>
+			<eposl:geophysicalLogs xlink:href="http://www.opengis.net/def/nil/OGC/0/unknown" xlink:title="unknown"/>
+			<eposl:geologicalDescription xlink:href="http://www.opengis.net/def/nil/OGC/0/template" xlink:title="template"/>
+			<eposl:groundWaterLevel xlink:href="http://www.opengis.net/def/nil/OGC/0/unknown" xlink:title="unknown"/>
+			<eposl:groundWaterChemistry xlink:href="http://www.opengis.net/def/nil/OGC/0/unknown" xlink:title="unknown"/>
+			<eposl:rockGeochemistry xlink:href="http://www.opengis.net/def/nil/OGC/0/unknown" xlink:title="unknown"/>
+			<eposl:poreGasChemistry xlink:href="http://www.opengis.net/def/nil/OGC/0/unknown" xlink:title="unknown"/>
+			<eposl:geoTechnicalInfo xlink:href="http://www.opengis.net/def/nil/OGC/0/unknown" xlink:title="unknown"/>
+		</eposl:BoreholeView>
+	</wfs:member>
+</wfs:FeatureCollection>
