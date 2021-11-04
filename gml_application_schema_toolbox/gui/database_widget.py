@@ -1,5 +1,7 @@
 #! python3  # noqa: E265
 
+"""Database connection picker."""
+
 # standard library
 from pathlib import Path
 from typing import List, Union
@@ -36,7 +38,7 @@ class ForeignKey:
 
     def __init__(
         self, table: str, column: str, referenced_table: str, referenced_column: str
-    ):
+    ) -> None:
         """Foreign key initialization
 
         :param table: table name
@@ -54,7 +56,12 @@ class ForeignKey:
         self.referenced_column = referenced_column
         self.name = "{self.column}_fkey".format(self=self)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Returns formatted foreign key.
+
+        :return: formatted foreign key.
+        :rtype: str
+        """
         return (
             'ForeignKey("{self.name}", '
             '"{self.table}"."{self.column}" => '
@@ -71,7 +78,7 @@ class DatabaseWidget(BASE, WIDGET):
     :type WIDGET: [type]
     """
 
-    def __init__(self, parent: QWidget = None, is_input: bool = False):
+    def __init__(self, parent: QWidget = None, is_input: bool = False) -> None:
         """Form initialization.
 
         :param parent: [description], defaults to None
@@ -108,7 +115,7 @@ class DatabaseWidget(BASE, WIDGET):
         self.populate_connections_combobox()
         self.switch_form_according_database_type()
 
-    def btn_add_foreign_key_constraints(self):
+    def btn_add_foreign_key_constraints(self) -> None:
         """Add constraints to the selected schema."""
         try:
             for foreign_key in self.get_foreign_keys:
@@ -123,7 +130,7 @@ class DatabaseWidget(BASE, WIDGET):
             self.log(message=err, log_level=2, push=True)
             raise
 
-    def btn_drop_foreign_key_constraints(self):
+    def btn_drop_foreign_key_constraints(self) -> None:
         """Delete constraints in the selected schema."""
         try:
             for foreign_key in self.get_foreign_keys:
@@ -146,7 +153,7 @@ class DatabaseWidget(BASE, WIDGET):
             self.log(message=err, log_level=2, push=True)
             raise
 
-    def _add_foreign_key_constraint(self, schema: str, foreign_key: ForeignKey):
+    def _add_foreign_key_constraint(self, schema: str, foreign_key: ForeignKey) -> None:
         """Add a foreign key constraint to a table.
 
         :param schema: schema name
@@ -173,7 +180,7 @@ class DatabaseWidget(BASE, WIDGET):
         except QgsProviderConnectionException as err:
             self.log(message=err, log_level=2, push=True)
 
-    def _add_unique_constraint(self, schema: str, table: str, column: str):
+    def _add_unique_constraint(self, schema: str, table: str, column: str) -> None:
         """Add a unique constraint to a table.
 
         :param schema: schema name
@@ -233,7 +240,7 @@ class DatabaseWidget(BASE, WIDGET):
         self.log(message=f"DEBUG {result}", log_level=4)
         return result[0][0] == 1
 
-    def _drop_constraint(self, schema: str, table: str, constraint: str):
+    def _drop_constraint(self, schema: str, table: str, constraint: str) -> None:
         """Drop constraint in a table.
 
         :param schema: schema name
@@ -260,7 +267,7 @@ class DatabaseWidget(BASE, WIDGET):
         except QgsProviderConnectionException as err:
             self.log(message=err, log_level=2, push=True)
 
-    def populate_connections_combobox(self):
+    def populate_connections_combobox(self) -> None:
         """List existing database connections into the combobox."""
         # clear and add a placeholder to avoid select item before user does by himself
         self.cbb_connections.clear()
@@ -303,7 +310,7 @@ class DatabaseWidget(BASE, WIDGET):
             )
             self.cbb_connections.setEnabled(False)
 
-    def switch_form_according_database_type(self):
+    def switch_form_according_database_type(self) -> None:
         """Update the form depending on selected connection."""
         selected_conn = self.cbb_connections.itemData(
             self.cbb_connections.currentIndex()
