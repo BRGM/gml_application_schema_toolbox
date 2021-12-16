@@ -38,6 +38,5 @@ repos:
       - id: flake8
         language: python
         files: ^gml_application_schema_toolbox/.*\.py$
-        additional_dependencies: ["flake8-annotations<3", "flake8-docstrings<2"]
-        args: ["--config=setup.cfg", "--select=ANN001,ANN201,D102,D103,E9,F63,F7,F82"]
+        args: ["--config=setup.cfg", "--select=E9,F63,F7,F82"]
         types: [python]
