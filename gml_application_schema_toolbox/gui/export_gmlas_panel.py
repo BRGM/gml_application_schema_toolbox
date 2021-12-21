@@ -35,6 +35,7 @@ from qgis.utils import iface
 from gml_application_schema_toolbox.gui import InputError
 from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
 from gml_application_schema_toolbox.toolbelt import PlgOptionsManager
+from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
 
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "export_gmlas_panel.ui")
@@ -49,6 +50,7 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         super(ExportGmlasPanel, self).__init__(parent)
         self.setupUi(self)
         plg_settings = PlgOptionsManager().get_plg_settings()
+        self.plg_logger = PlgLogger()
 
         self.gmlasConfigLineEdit.setText(plg_settings.impex_gmlas_config)
 
