@@ -49,6 +49,7 @@ from gml_application_schema_toolbox.gui.xml_custom_widget import (
     XMLWidgetFactory,
     XMLWidgetFormatter,
 )
+from gml_application_schema_toolbox.processing import GmlasProvider
 from gml_application_schema_toolbox.resources.gui.dlg_settings import PlgOptionsFactory
 from gml_application_schema_toolbox.toolbelt import PlgLogger
 
@@ -152,6 +153,14 @@ class GmlasPlugin(object):
         # -- Toolbar
         self.iface.addToolBarIcon(self.action_wizard)
 
+        # -- Processing
+        self.initProcessing()
+
+    def initProcessing(self):
+        """Initialize processings provider."""
+        self.provider = GmlasProvider()
+        QgsApplication.processingRegistry().addProvider(self.provider)
+
     def unload(self):
         """Cleans up when plugin is disabled/uninstalled."""
         # -- Clean up menu
@@ -167,6 +176,9 @@ class GmlasPlugin(object):
 
         # -- Clean up preferences panel in QGIS settings
         self.iface.unregisterOptionsWidgetFactory(self.options_factory)
+
+        # -- Unregister processing
+        QgsApplication.processingRegistry().removeProvider(self.provider)
 
         # remove actions
         del self.action_about
