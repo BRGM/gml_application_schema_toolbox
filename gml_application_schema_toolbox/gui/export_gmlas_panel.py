@@ -164,7 +164,7 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             temp_datasource_path, open_options=["LIST_ALL_TABLES=YES"]
         )
         params = {
-            "destNameOrDestDS": self.dst_selected_connection_name(),
+            "destNameOrDestDS": self.dst_datasource_name(),
             "srcDS": temp_datasource,
             "format": "GMLAS",
             "datasetCreationOptions": self.dataset_creation_options(),
@@ -178,8 +178,8 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         with NamedTemporaryFile(mode="w+t", suffix=".sqlite", delete=True) as out:
             temp_datasource_path = out.name
         try:
-            self.translate(self.reproject_params(temp_datasource_path))
-            self.translate(self.export_params(temp_datasource_path))
+            self.translate(params=self.reproject_params(temp_datasource_path))
+            self.translate(params=self.export_params(temp_datasource_path))
         except InputError as e:
             e.show()
 
