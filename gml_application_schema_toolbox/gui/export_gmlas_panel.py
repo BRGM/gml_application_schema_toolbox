@@ -96,7 +96,7 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         options = ["LIST_ALL_TABLES=YES"]
         options.append("SCHEMAS={}".format(self.databaseWidget.selected_schema))
         datasource = gdal.OpenEx(
-            self.databaseWidget.selected_connection_name,
+            self.databaseWidget.get_connection_uri_gdal,
             gdal.OF_VECTOR,
             open_options=options,
         )

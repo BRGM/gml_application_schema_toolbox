@@ -370,6 +370,26 @@ class DatabaseWidget(BASE, WIDGET):
         return QgsDataSourceUri(self.get_database_connection.uri()).database() or None
 
     @property
+    def get_connection_uri_gdal(self) -> Union[str, None]:
+        """Connection URI formatted for GDAL (https://gdal.org/drivers/vector/pg.html#connecting-to-a-database).
+
+        :return: connection uri
+        :rtype: Union[str, None]
+        """
+        if self.get_db_format is None:
+            return None
+        if self.get_db_format == "postgresql":
+            return f"PG: {self.get_database_connection.uri()}"
+        elif self.get_db_format == "spatialite":
+            return self.get_db_name_or_path
+        else:
+            self.log(
+                message="Unable to build GDAL connection string because of unknown database format.",
+                log_level=1,
+            )
+            return None
+
+    @property
     def get_foreign_keys(self) -> List[str]:
         """Return list of foreign keys
 
