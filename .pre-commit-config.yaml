@@ -2,7 +2,7 @@ exclude: "node_modules|migrations|.venv|tests/dev/|tests/fixtures/|presentations
 fail_fast: false
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.1.0
     hooks:
       - id: check-added-large-files
         args: ["--maxkb=500"]
@@ -40,3 +40,7 @@ repos:
         files: ^gml_application_schema_toolbox/.*\.py$
         args: ["--config=setup.cfg", "--select=E9,F63,F7,F82"]
         types: [python]
+
+ci:
+  autofix_prs: true
+  autoupdate_schedule: quarterly
