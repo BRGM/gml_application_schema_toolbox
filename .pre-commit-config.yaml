@@ -40,3 +40,8 @@ repos:
         files: ^gml_application_schema_toolbox/.*\.py$
         args: ["--config=setup.cfg", "--select=E9,F63,F7,F82"]
         types: [python]
+
+ci:
+  autofix_prs: true
+  autoupdate_schedule: quarterly
+
