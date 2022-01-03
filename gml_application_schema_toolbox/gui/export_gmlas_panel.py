@@ -27,6 +27,11 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 from osgeo import gdal, osr
+from qgis.core import (
+    QgsDataSourceUri,
+    QgsProcessingFeatureSourceDefinition,
+    QgsVectorLayer,
+)
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import pyqtSlot
 from qgis.PyQt.QtWidgets import QDialog, QFileDialog
@@ -34,8 +39,7 @@ from qgis.utils import iface
 
 from gml_application_schema_toolbox.gui import InputError
 from gml_application_schema_toolbox.gui.gmlas_panel_mixin import GmlasPanelMixin
-from gml_application_schema_toolbox.toolbelt import PlgOptionsManager
-from gml_application_schema_toolbox.toolbelt.log_handler import PlgLogger
+from gml_application_schema_toolbox.toolbelt import PlgLogger, PlgOptionsManager
 
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "..", "ui", "export_gmlas_panel.ui")
@@ -48,11 +52,11 @@ gdal.UseExceptions()
 class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
     def __init__(self, parent=None):
         super(ExportGmlasPanel, self).__init__(parent)
+        self.log = PlgLogger().log
         self.setupUi(self)
-        plg_settings = PlgOptionsManager().get_plg_settings()
-        self.plg_logger = PlgLogger()
+        self.plg_settings = PlgOptionsManager().get_plg_settings()
 
-        self.gmlasConfigLineEdit.setText(plg_settings.impex_gmlas_config)
+        self.gmlasConfigLineEdit.setText(self.plg_settings.impex_gmlas_config)
 
     def showEvent(self, event):
         # Cannot do that in the constructor. The project is not fully setup when
@@ -73,9 +77,8 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         )
         if filepath:
             filepath = Path(filepath)
-            if filepath.suffix != ".gml":
-                filepath = Path(str(filepath) + ".gml")
-            self.gmlPathLineEdit.setText(str(filepath.resolve()))
+            filepath = filepath.with_suffix(".gml")
+            self.gmlPathLineEdit.setText(str(filepath))
 
     @pyqtSlot()
     def on_xsdPathButton_clicked(self):
@@ -91,24 +94,11 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         if filepath:
             self.xsdPathLineEdit.setText(filepath)
 
-    def gmlas_config(self):
-        return self.gmlasConfigLineEdit.text()
-
-    def src_datasource(self):
-        options = ["LIST_ALL_TABLES=YES"]
-        options.append("SCHEMAS={}".format(self.databaseWidget.selected_schema))
-        datasource = gdal.OpenEx(
-            self.databaseWidget.get_connection_uri_gdal,
-            gdal.OF_VECTOR,
-            open_options=options,
-        )
-        return datasource
-
     def dst_datasource_name(self):
         gml_path = self.gmlPathLineEdit.text()
         if gml_path == "":
             raise InputError("You must select a GML output file")
-        return "GMLAS:{}".format(gml_path)
+        return gml_path
 
     def dataset_creation_options(self):
         config_file = self.gmlasConfigLineEdit.text()
@@ -123,64 +113,40 @@ class ExportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
 
         return options
 
-    def dest_srs(self):
-        srs = osr.SpatialReference()
-        srs.ImportFromWkt(self.srsSelectionWidget.crs().toWkt())
-        assert srs.Validate() == 0
-        return srs
+    def set_params(self):
+        provider = self.databaseWidget.get_db_format
+        uri = self.databaseWidget.get_database_connection
+        src_layer = QgsVectorLayer(uri.uri(), "source", provider)
 
-    def reproject_params(self, temp_datasource_path):
+        options = []
+        options.append('-f "GMLAS"')
+        if provider == "postgres":
+            options.append(f"-oo SCHEMAS={self.databaseWidget.selected_schema}")
+        options.append("-oo LIST_ALL_TABLES=YES")
+        # Reproject
+        options.append(f"-t_srs {self.srsSelectionWidget.crs().authid()}")
+        dataset_creation_options = self.dataset_creation_options()
+        options.append(f"-dsco CONFIG_FILE={dataset_creation_options['CONFIG_FILE']}")
+        if "INPUT_XSD" in dataset_creation_options:
+            options.append(f"-dsco INPUT_XSD={dataset_creation_options['INPUT_XSD']}")
+        # if self.plg_settings.debug_mode:
+        #     options.append("--debug ON")
+
+        gml_path = self.dst_datasource_name()
         params = {
-            "destNameOrDestDS": temp_datasource_path,
-            "srcDS": self.src_datasource(),
-            "format": "SQLite",
-            "datasetCreationOptions": ["SPATIALITE=YES"],
-            "dstSRS": self.dest_srs(),
-            "reproject": True,
-            "options": ["-skipfailures"],
-        }
-
-        if self.bboxGroupBox.isChecked():
-            if self.bboxWidget.value() == "":
-                raise InputError("Extent is empty")
-            if not self.bboxWidget.isValid():
-                raise InputError("Extent is invalid")
-            bbox = self.bboxWidget.rectangle()
-            params["spatFilter"] = (
-                bbox.xMinimum(),
-                bbox.yMinimum(),
-                bbox.xMaximum(),
-                bbox.yMaximum(),
-            )
-            srs = osr.SpatialReference()
-            srs.ImportFromWkt(self.bboxWidget.crs().toWkt())
-            assert srs.Validate() == 0
-            params["spatSRS"] = srs
-
-        return params
-
-    def export_params(self, temp_datasource_path):
-        temp_datasource = gdal.OpenEx(
-            temp_datasource_path, open_options=["LIST_ALL_TABLES=YES"]
-        )
-        params = {
-            "destNameOrDestDS": self.dst_datasource_name(),
-            "srcDS": temp_datasource,
-            "format": "GMLAS",
-            "datasetCreationOptions": self.dataset_creation_options(),
+            "INPUT": src_layer,
+            "CONVERT_ALL_LAYERS": True,
+            "OPTIONS": " ".join(options),
+            "OUTPUT": gml_path,
         }
         return params
 
     # @pyqtSlot()
     # def on_exportButton_clicked(self):
     def accept(self):
-        gdal.SetConfigOption("OGR_SQLITE_SYNCHRONOUS", "OFF")
-        with NamedTemporaryFile(mode="w+t", suffix=".sqlite", delete=True) as out:
-            temp_datasource_path = out.name
         try:
-            self.translate(params=self.reproject_params(temp_datasource_path))
-            self.translate(params=self.export_params(temp_datasource_path))
+            self.translate_processing(self.set_params())
         except InputError as e:
             e.show()
 
-        return QDialog.accept()
+        QDialog.accept(self)

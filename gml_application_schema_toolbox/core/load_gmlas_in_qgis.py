@@ -25,12 +25,15 @@ from qgis.core import (
     QgsEditorWidgetSetup,
     QgsMapLayerLegend,
     QgsProject,
+    QgsProviderConnectionException,
+    QgsProviderRegistry,
     QgsRelation,
     QgsSettings,
     QgsSimpleLegendNode,
     QgsVectorLayer,
 )
 
+from gml_application_schema_toolbox.__about__ import DIR_PLUGIN_ROOT
 from gml_application_schema_toolbox.core.xml_utils import no_ns, no_prefix
 from gml_application_schema_toolbox.gui.custom_viewers import get_custom_viewers
 from gml_application_schema_toolbox.gui.qgis_form_custom_widget import (
@@ -53,7 +56,7 @@ def _qgis_layer(
         g_column = "({})".format(geometry_column)
     else:
         g_column = ""
-    if provider == "SQLite":
+    if provider in ("SQLite", "sqlite", "ogr"):
         # use OGR for spatialite loading
         couche = QgsVectorLayer(
             "{}|layername={}{}".format(uri, layer_name, g_column),
@@ -61,13 +64,19 @@ def _qgis_layer(
             "ogr",
         )
         couche.setProviderEncoding("UTF-8")
+    elif provider in ("spatialite"):
+        # use OGR for spatialite loading
+        couche = QgsVectorLayer(
+            "{} table={} {}".format(uri, layer_name, g_column),
+            qgis_layer_name,
+            "spatialite",
+        )
+        couche.setProviderEncoding("UTF-8")
     else:
         if schema_name is not None:
             s_table = '"{}"."{}"'.format(schema_name, layer_name)
         else:
             s_table = '"{}"'.format(layer_name)
-        # remove "PG:" in front of the uri
-        uri = uri[3:]
         couche = QgsVectorLayer(
             "{} table={} {} sql=".format(uri, s_table, g_column),
             qgis_layer_name,
@@ -103,51 +112,48 @@ def import_in_qgis(gmlas_uri: str, provider: str, schema: Union[str, None] = Non
         log_level=4,
     )
 
-    # get path or URI
-    if provider in ("spatialite", "sqlite"):
-        provider = "sqlite"
-    elif provider in ("postgres", "postgresql"):
-        gmlas_uri = "PG: {}".format(gmlas_uri)
-    else:
-        pass
+    # set provider to ogr only for SQLite
+    if provider in ("sqlite", "SQLite"):
+        provider = "ogr"
 
     if schema is not None:
         schema_s = schema + "."
     else:
         schema_s = ""
 
-    ogr.UseExceptions()
-    drv = ogr.GetDriverByName(provider)
-
-    try:
-        ds = drv.Open(gmlas_uri)
-    except Exception as err:
-        PlgLogger.log(
-            "Import failed - Dataset unproperly loaded. Trace: {}".format(err),
-            log_level=2,
-        )
-        raise err
-
-    if ds is None:
-        raise RuntimeError("Problem opening {}".format(gmlas_uri))
+    md = QgsProviderRegistry.instance().providerMetadata(provider)
+    conn = md.createConnection(gmlas_uri, {})
+    PlgLogger.log(message=f"DEBUG Connect to {conn.uri()}", log_level=4)
 
     # get list of layers
-    sql = "select o.*, g.f_geometry_column, g.srid from {}_ogr_layers_metadata o left join geometry_columns g on g.f_table_name = o.layer_name".format(
-        schema_s
-    )
+    layers_attrs = {
+        "layer_name": 0,
+        "layer_xpath": 1,
+        "layer_category": 2,
+        "layer_pkid_name": 3,
+        "layer_parent_pkid_name": 4,
+        "f_geometry_column": 5,
+        "srid": 6,
+    }
+    sql = f"select o.layer_name, o.layer_xpath, o.layer_category, o.layer_pkid_name, o.layer_parent_pkid_name, g.f_geometry_column, g.srid from {schema_s}_ogr_layers_metadata o left join geometry_columns g on g.f_table_name = o.layer_name"
+    PlgLogger.log(message=f"DEBUG Get list of layers with query : {sql}", log_level=4)
+    try:
+        result = conn.executeSql(sql)
+    except QgsProviderConnectionException as err:
+        PlgLogger.log(message=err, log_level=2, push=True)
+    PlgLogger.log(message=f"DEBUG List of layers : {result}", log_level=4)
 
-    couches = ds.ExecuteSQL(sql)
     layers = {}
-    for f in couches:
-        ln = f.GetField("layer_name")
+    for f in result:
+        ln = f[layers_attrs["layer_name"]]
         if ln not in layers:
             layers[ln] = {
-                "uid": f.GetField("layer_pkid_name"),
-                "category": f.GetField("layer_category"),
-                "xpath": f.GetField("layer_xpath"),
-                "parent_pkid": f.GetField("layer_parent_pkid_name"),
-                "srid": f.GetField("srid"),
-                "geometry_column": f.GetField("f_geometry_column"),
+                "uid": f[layers_attrs["layer_pkid_name"]],
+                "category": f[layers_attrs["layer_category"]],
+                "xpath": f[layers_attrs["layer_xpath"]],
+                "parent_pkid": f[layers_attrs["layer_parent_pkid_name"]],
+                "srid": f[layers_attrs["srid"]],
+                "geometry_column": f[layers_attrs["f_geometry_column"]],
                 "1_n": [],  # 1:N relations
                 "layer_id": None,
                 "layer_name": ln,
@@ -156,22 +162,30 @@ def import_in_qgis(gmlas_uri: str, provider: str, schema: Union[str, None] = Non
             }
         else:
             # additional geometry columns
-            g = f.GetField("f_geometry_column")
+            g = f[layers_attrs["f_geometry_column"]]
             k = "{} ({})".format(ln, g)
             layers[k] = dict(layers[ln])
             layers[k]["geometry_column"] = g
 
     # collect fields with xlink:href
+    fields_attrs = {"field_name": 0, "field_xpath": 1}
     href_fields = {}
     for ln, layer in layers.items():
         layer_name = layer["layer_name"]
-        for f in ds.ExecuteSQL(
-            "select field_name, field_xpath from {}_ogr_fields_metadata where layer_name='{}'".format(
-                schema_s, layer_name
-            )
-        ):
-            field_name, field_xpath = f.GetField("field_name"), f.GetField(
-                "field_xpath"
+        sql = f"select field_name, field_xpath from {schema_s}_ogr_fields_metadata where layer_name='{layer_name}'"
+        PlgLogger.log(
+            message=f"DEBUG Get fields of layer {layer_name} with query : {sql}",
+            log_level=4,
+        )
+        try:
+            result = conn.executeSql(sql)
+        except QgsProviderConnectionException as err:
+            PlgLogger.log(message=err, log_level=2, push=True)
+        PlgLogger.log(message=f"DEBUG List of fields : {result}", log_level=4)
+        for f in result:
+            field_name, field_xpath = (
+                f[fields_attrs["field_name"]],
+                f[fields_attrs["field_xpath"]],
             )
             if field_xpath and field_xpath.endswith("@xlink:href"):
                 if ln not in href_fields:
@@ -190,6 +204,10 @@ def import_in_qgis(gmlas_uri: str, provider: str, schema: Union[str, None] = Non
     for ln in sorted(layers.keys()):
         lyr = layers[ln]
         g_column = lyr["geometry_column"] or None
+        PlgLogger.log(
+            message=f"DEBUG Load layer with uri={gmlas_uri}, schema={schema}, layer={lyr['layer_name']}, geometry={g_column}, \
+            provider={provider}, ln={ln}, xpath={lyr['xpath']}, uid={lyr['uid']}"
+        )
         couches = _qgis_layer(
             gmlas_uri,
             schema,
@@ -200,10 +218,10 @@ def import_in_qgis(gmlas_uri: str, provider: str, schema: Union[str, None] = Non
             lyr["xpath"],
             lyr["uid"],
         )
-        if not couches.isValid():
-            raise RuntimeError(
-                "Problem loading layer {} with {}".format(ln, couches.source())
-            )
+        # if not couches.isValid():
+        #     raise RuntimeError(
+        #         "Problem loading layer {} with {}".format(ln, couches.source())
+        #     )
         if g_column is not None:
             if lyr["srid"]:
                 crs = QgsCoordinateReferenceSystem("EPSG:{}".format(lyr["srid"]))
@@ -231,109 +249,102 @@ def import_in_qgis(gmlas_uri: str, provider: str, schema: Union[str, None] = Non
     settings.setValue("Projections/layerDefaultCrs", projection_default)
 
     # add 1:1 relations
+    relations_1_1_attrs = {
+        "layer_name": 0,
+        "field_name": 1,
+        "field_related_layer": 2,
+        "child_pkid": 3,
+    }
     relations_1_1 = []
-    sql = """
-select
-  layer_name, field_name, field_related_layer, r.child_pkid
-from
-  {0}_ogr_fields_metadata f
-  join {0}_ogr_layer_relationships r
-    on r.parent_layer = f.layer_name
-   and r.parent_element_name = f.field_name
-where
-  field_category in ('PATH_TO_CHILD_ELEMENT_WITH_LINK', 'PATH_TO_CHILD_ELEMENT_NO_LINK')
-  and field_max_occurs=1
-""".format(
-        schema_s
-    )
-    couches = ds.ExecuteSQL(sql)
-    if couches is not None:
-        for f in couches:
+    with open(DIR_PLUGIN_ROOT / "sql/get_1_1_relations.sql", "r") as f:
+        sql = f.read().format(schema=schema_s)
+
+    PlgLogger.log(message=f"DEBUG Add relations 1:1 with query : {sql}", log_level=4)
+    try:
+        result = conn.executeSql(sql)
+    except QgsProviderConnectionException as err:
+        PlgLogger.log(message=err, log_level=2, push=True)
+    PlgLogger.log(message=f"DEBUG Relations 1:1 : {result}", log_level=4)
+    if result is not None:
+        for f in result:
             rel = QgsRelation()
             rel.setId(
-                "1_1_" + f.GetField("layer_name") + "_" + f.GetField("field_name")
+                "1_1_"
+                + f[relations_1_1_attrs["layer_name"]]
+                + "_"
+                + f[relations_1_1_attrs["field_name"]]
             )
             rel.setName(
-                "1_1_" + f.GetField("layer_name") + "_" + f.GetField("field_name")
+                "1_1_"
+                + f[relations_1_1_attrs["layer_name"]]
+                + "_"
+                + f[relations_1_1_attrs["field_name"]]
             )
             # parent layer
-            rel.setReferencingLayer(layers[f.GetField("layer_name")]["layer_id"])
+            rel.setReferencingLayer(
+                layers[f[relations_1_1_attrs["layer_name"]]]["layer_id"]
+            )
             # child layer
             rel.setReferencedLayer(
-                layers[f.GetField("field_related_layer")]["layer_id"]
+                layers[f[relations_1_1_attrs["field_related_layer"]]]["layer_id"]
             )
             # parent, child
-            rel.addFieldPair(f.GetField("field_name"), f.GetField("child_pkid"))
+            rel.addFieldPair(
+                f[relations_1_1_attrs["field_name"]],
+                f[relations_1_1_attrs["child_pkid"]],
+            )
             if rel.isValid():
                 relations_1_1.append(rel)
 
     # add 1:N relations
+    relations_1_n_attrs = {
+        "layer_name": 0,
+        "parent_pkid": 1,
+        "child_layer": 2,
+        "child_pkid": 3,
+    }
     relations_1_n = []
-    sql = """
-select
-  layer_name, r.parent_pkid, field_related_layer as child_layer, r.child_pkid
-from
-  {0}_ogr_fields_metadata f
-  join {0}_ogr_layer_relationships r
-    on r.parent_layer = f.layer_name
-   and r.child_layer = f.field_related_layer
-where
-  field_category in ('PATH_TO_CHILD_ELEMENT_WITH_LINK', 'PATH_TO_CHILD_ELEMENT_NO_LINK')
-  and field_max_occurs>1
--- junctions - 1st way
-union all
-select
-  layer_name, r.parent_pkid, field_junction_layer as child_layer, 'parent_pkid' as child_pkid
-from
-  {0}_ogr_fields_metadata f
-  join {0}_ogr_layer_relationships r
-    on r.parent_layer = f.layer_name
-   and r.child_layer = f.field_related_layer
-where
-  field_category = 'PATH_TO_CHILD_ELEMENT_WITH_JUNCTION_TABLE'
--- junctions - 2nd way
-union all
-select
-  field_related_layer as layer_name, r.child_pkid, field_junction_layer as child_layer, 'child_pkid' as child_pkid
-from
-  {0}_ogr_fields_metadata f
-  join {0}_ogr_layer_relationships r
-    on r.parent_layer = f.layer_name
-   and r.child_layer = f.field_related_layer
-where
-  field_category = 'PATH_TO_CHILD_ELEMENT_WITH_JUNCTION_TABLE'
-""".format(
-        schema_s
-    )
-    couches = ds.ExecuteSQL(sql)
-    if couches is not None:
-        for f in couches:
-            parent_layer = f.GetField("layer_name")
-            child_layer = f.GetField("child_layer")
+    with open(DIR_PLUGIN_ROOT / "sql/get_1_n_relations.sql", "r") as f:
+        sql = f.read().format(schema=schema_s)
+
+    PlgLogger.log(message=f"DEBUG Add relations 1:N with query : {sql}", log_level=4)
+    try:
+        result = conn.executeSql(sql)
+    except QgsProviderConnectionException as err:
+        PlgLogger.log(message=err, log_level=2, push=True)
+    PlgLogger.log(message=f"DEBUG Relations 1:N : {result}", log_level=4)
+
+    if result is not None:
+        for f in result:
+            parent_layer = f[relations_1_n_attrs["layer_name"]]
+            child_layer = f[relations_1_n_attrs["child_layer"]]
             if parent_layer not in layers or child_layer not in layers:
                 continue
             rel = QgsRelation()
             rel.setId(
                 "1_n_"
-                + f.GetField("layer_name")
+                + f[relations_1_n_attrs["layer_name"]]
                 + "_"
-                + f.GetField("child_layer")
+                + f[relations_1_n_attrs["child_layer"]]
                 + "_"
-                + f.GetField("parent_pkid")
+                + f[relations_1_n_attrs["parent_pkid"]]
                 + "_"
-                + f.GetField("child_pkid")
+                + f[relations_1_n_attrs["child_pkid"]]
             )
-            rel.setName(f.GetField("child_layer"))
+            rel.setName(f[relations_1_n_attrs["child_layer"]])
             # parent layer
             rel.setReferencedLayer(layers[parent_layer]["layer_id"])
             # child layer
             rel.setReferencingLayer(layers[child_layer]["layer_id"])
             # parent, child
-            rel.addFieldPair(f.GetField("child_pkid"), f.GetField("parent_pkid"))
+            rel.addFieldPair(
+                f[relations_1_n_attrs["child_pkid"]],
+                f[relations_1_n_attrs["parent_pkid"]],
+            )
             if rel.isValid():
                 relations_1_n.append(rel)
                 # add relation to layer
-                layers[f.GetField("layer_name")]["1_n"].append(rel)
+                layers[f[relations_1_n_attrs["layer_name"]]]["1_n"].append(rel)
 
     for rel in relations_1_1 + relations_1_n:
         QgsProject.instance().relationManager().addRelation(rel)

@@ -21,11 +21,12 @@
  *                                                                         *
  ***************************************************************************/
 """
+# PyQGIS
+import processing
+
 # 3rd party
 from osgeo import gdal
-
-# PyQGIS
-from qgis.core import QgsApplication
+from qgis.core import Qgis, QgsApplication, QgsProcessingFeedback
 from qgis.PyQt.QtCore import QEventLoop, Qt, pyqtSlot
 from qgis.PyQt.QtWidgets import QFileDialog, QProgressDialog
 
@@ -87,3 +88,21 @@ class GmlasPanelMixin:
         if self.progress_dlg.wasCanceled():
             return 0
         return 1
+
+    def translate_processing(self, params):
+        """Use GDAL processing to convert GMLAS to database and vice versa.
+
+        :param params: Parameters for GDAL processing
+        :type params: dict
+        """
+        feedback = QgsProcessingFeedback()
+        if Qgis.versionInt() < 32400:
+            self.log(
+                message=f"gmlas:convertformat_gmlas with params = {params}", log_level=4
+            )
+            res = processing.run("gmlas:convertformat_gmlas", params, feedback=feedback)
+        else:
+            self.log(message=f"gdal:convertformat with params = {params}", log_level=4)
+            res = processing.run("gdal:convertformat", params, feedback=feedback)
+        self.log(message=str(res), log_level=4)
+        self.log(message=feedback.textLog(), log_level=4)

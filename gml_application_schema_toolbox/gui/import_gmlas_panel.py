@@ -49,6 +49,7 @@ gdal.UseExceptions()
 class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
     def __init__(self, parent=None, gml_path=None):
         super(ImportGmlasPanel, self).__init__(parent)
+        self.log = PlgLogger().log
         self.setupUi(self)
 
         # map to the plugin log handler
@@ -199,16 +200,30 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         return layers
 
     def dataset_creation_options(self):
-        if self.databaseWidget.get_db_format in ("sqlite", "spatialite"):
-            return ["SPATIALITE=YES"]
+        options = []
+        if (
+            self.databaseWidget.get_database_connection is None
+            or self.databaseWidget.get_db_format in ("sqlite", "spatialite")
+        ):
+            options.append("-dsco SPATIALITE=YES")
+            return options
 
     def layer_creation_options(self):
         options = []
-        if self.databaseWidget.get_db_format in ("postgresql", "postgres"):
-            schema = self.databaseWidget.schema_create()
-            options.append("SCHEMA={}".format(schema or "public"))
-            if self.access_mode() == "overwrite":
-                options.append("OVERWRITE=YES")
+        if self.databaseWidget.get_database_connection:
+            if self.databaseWidget.get_db_format in ("postgresql", "postgres"):
+                schema = self.databaseWidget.schema_create()
+                options.append("-lco SCHEMA={}".format(schema or "public"))
+                if self.access_mode() == "overwrite":
+                    options.append("-lco OVERWRITE=YES")
+        # Reproject
+        # TODO Remove default SRID when we will handle destSrs widget
+        options.append("-lco SRID=4326")
+        if self.reprojectCheck.isChecked():
+            options.append(f"-lco SRID={self.destSrs.crs().authid()}")
+            self.plg_logger.log(
+                "Dest CRS : {}".format(self.destSrs.crs().authid()), log_level=4
+            )
         return options
 
     def set_access_mode(self, value):
@@ -251,11 +266,13 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             options.append("-skipfailures")
         return options
 
-    def import_params(self, dest: str) -> dict:
+    def import_params(self, dest: str, provider: str) -> dict:
         """Build the parameters dictionary for GDAL import.
 
         :param dest: database name or path
         :type dest: str
+        :param provider: driver to use to convert with GDAL
+        :type provider: str
 
         :raises InputError: [description]
         :raises InputError: [description]
@@ -263,55 +280,76 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
         :return: [description]
         :rtype: dict
         """
-        params = {
-            "destNameOrDestDS": dest,
-            "srcDS": self.gmlas_datasource(),
-            "format": self.databaseWidget.get_db_format,
-            "accessMode": self.access_mode(),
-            "datasetCreationOptions": self.dataset_creation_options(),
-            "layerCreationOptions": self.layer_creation_options(),
-            "options": self.translate_options(),
-        }
-        if self.reprojectCheck.isChecked():
-            params["reproject"] = True
-            params["dstSRS"] = self.dest_srs()
-        else:
-            params["reproject"] = False
-        if self.sourceSrsCheck.isChecked():
-            params["srcSRS"] = self.src_srs()
+        options = []
+        options.append(f"-f {provider}")
+
+        gmlasconf = self.gmlas_config()
+
+        # TODO Handle in dataset open options method
+        options.append(f"-oo CONFIG_FILE={gmlasconf}")
+
+        # TODO Handle in dataset open options method
+        if self.ogrExposeMetadataLayersCheckbox.isChecked():
+            options.append("-oo EXPOSE_METADATA_LAYERS=YES")
+
+        # TODO Handle source CRS with widget
+        # if self.sourceSrsCheck.isChecked():
+        #     params["srcSRS"] = self.src_srs()
 
         if self.convertToLinearCheckbox.isChecked():
-            params["geometryType"] = "CONVERT_TO_LINEAR"
+            options.append("-nlt CONVERT_TO_LINEAR")
 
-        layers = self.selected_layers()
-        if len(layers) > 0:
-            params["layers"] = self.selected_layers()
-            if self.ogrExposeMetadataLayersCheckbox.isChecked():
-                params["layers"] = params["layers"] + [
-                    "_ogr_fields_metadata",
-                    "_ogr_layer_relationships",
-                    "_ogr_layers_metadata",
-                    "_ogr_other_metadata",
-                ]
+        dataset_creation_options = self.dataset_creation_options()
+        [options.append(opt) for opt in dataset_creation_options]
+        layer_creation_options = self.layer_creation_options()
+        [options.append(opt) for opt in layer_creation_options]
+        translation_options = self.translate_options()
+        [options.append(opt) for opt in translation_options]
 
-        if self.gmlas_bbox_group.isChecked():
-            if self.bboxWidget.value() == "":
-                raise InputError("Extent is empty")
-            if not self.bboxWidget.isValid():
-                raise InputError("Extent is invalid")
-            bbox = self.bboxWidget.rectangle()
-            params["spatFilter"] = (
-                bbox.xMinimum(),
-                bbox.yMinimum(),
-                bbox.xMaximum(),
-                bbox.yMaximum(),
-            )
-            srs = osr.SpatialReference()
-            srs.ImportFromWkt(self.bboxWidget.crs().toWkt())
-            assert srs.Validate() == 0
-            params["spatSRS"] = srs
+        # if self.plg_settings.debug_mode:
+        #     options.append("--debug ON")
 
+        gml_path = self.gml_path()
+        self.plg_logger.log("GDAL OPTIONS: {}".format(options), log_level=4)
+        params = {
+            "INPUT_FILE": f"GMLAS:{gml_path}",
+            "CONVERT_ALL_LAYERS": True,
+            "OPTIONS": " ".join(options),
+            "OUTPUT": dest,
+        }
         return params
+
+        # TODO Handle AccessMode
+
+        # TODO Handle selected layers
+        # layers = self.selected_layers()
+        # if len(layers) > 0:
+        #     params["layers"] = self.selected_layers()
+        #     if self.ogrExposeMetadataLayersCheckbox.isChecked():
+        #         params["layers"] = params["layers"] + [
+        #             "_ogr_fields_metadata",
+        #             "_ogr_layer_relationships",
+        #             "_ogr_layers_metadata",
+        #             "_ogr_other_metadata",
+        #         ]
+
+        # TODO Handle spatial extent
+        # if self.gmlas_bbox_group.isChecked():
+        #     if self.bboxWidget.value() == "":
+        #         raise InputError("Extent is empty")
+        #     if not self.bboxWidget.isValid():
+        #         raise InputError("Extent is invalid")
+        #     bbox = self.bboxWidget.rectangle()
+        #     params["spatFilter"] = (
+        #         bbox.xMinimum(),
+        #         bbox.yMinimum(),
+        #         bbox.xMaximum(),
+        #         bbox.yMaximum(),
+        #     )
+        #     srs = osr.SpatialReference()
+        #     srs.ImportFromWkt(self.bboxWidget.crs().toWkt())
+        #     assert srs.Validate() == 0
+        #     params["spatSRS"] = srs
 
     def do_load(self, append_to_db: str = None, append_to_schema: str = None):
         """Load selected GMLAS into a database. If no database is selected \
@@ -334,62 +372,38 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
                     "{} {}: {}".format(err, err_no, msg), __title__
                 )
 
-        if append_to_db is None:
-            self.plg_logger.log(
-                f"Loading to a {self.databaseWidget.get_db_format or ''} database: "
-                f"{self.databaseWidget.get_db_name_or_path or ''}",
-                log_level=4,
-            )
-
+        conn = self.databaseWidget.get_database_connection
+        schema = None
+        # Create temp SQLite database if no connection is selected
+        if conn is None:
+            with tempfile.NamedTemporaryFile(suffix=".sqlite") as tmp:
+                dest_db_name = tmp.name
+                provider = "SQLite"
+                self.plg_logger.log(f"Temp SQLite: {dest_db_name}", log_level=4)
+        elif self.databaseWidget.get_db_format == "postgres":
+            dest_db_name = f"{self.databaseWidget.get_database_connection.uri()}"
+            schema = self.databaseWidget.selected_schema
+            provider = "PostgreSQL"
+            self.plg_logger.log(f"PostgreSQL schema: {schema}", log_level=4)
+        elif self.databaseWidget.get_db_format == "sqlite":
             dest_db_name = self.databaseWidget.get_db_name_or_path
-
-            if self.databaseWidget.selected_connection_name is None:
-                with tempfile.NamedTemporaryFile(suffix=".sqlite") as tmp:
-                    dest_db_name = tmp.name
-                    self.plg_logger.log(
-                        "Temp SQLite: {}".format(dest_db_name), log_level=4
-                    )
-
-            if self.databaseWidget.get_db_format.startswith(("PG:", "postgres")):
-                schema = self.databaseWidget.selected_schema
-                self.plg_logger.log("PostgreSQL schema: {}".format(schema), log_level=4)
-            else:
-                schema = None
-
-        else:
-            pass
-
-        if self.databaseWidget.get_db_format == "postgres":
-            params = self.import_params(
-                "PG: {}".format(self.databaseWidget.get_database_connection.uri())
-            )
-        elif self.databaseWidget.get_db_format == "spatialite":
-            params = self.import_params(dest_db_name)
-            params["format"] = "sqlite"
+            provider = "SQLite"
         else:
             return
 
-        if append_to_db:
-            schema = append_to_schema
-            params["accessMode"] = "append"
+        params = self.import_params(dest_db_name, provider)
 
-        self.plg_logger.log(f"Loading mode: {params.get('accessMode')}", log_level=4)
-        self.plg_logger.log(
-            "Translation params keys: {}".format(", ".join(params.keys())), log_level=4
-        )
-
-        if params.get("format") == "postgres":
-            params["format"] = "postgresql"
+        # TODO Handle append_to_db, accessMode, append_to_schema
 
         try:
             QApplication.setOverrideCursor(Qt.WaitCursor)
             gdal.PushErrorHandler(error_handler)
-            self.translate(params)
+            self.translate_processing(params)
             self.plg_logger.log("Dataset translated", log_level=3)
             if append_to_db is None:
                 import_in_qgis(
-                    gmlas_uri=self.databaseWidget.get_database_connection.uri(),
-                    provider=params.get("format"),
+                    gmlas_uri=dest_db_name,
+                    provider=provider,
                     schema=schema,
                 )
 
