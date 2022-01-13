@@ -16,7 +16,7 @@ description=Consumption and use of GML complex features like INSPIRE harmonised 
 about=This plugins allows to import Complex Features streams in QGIS either through a native XML mode or through a conversion to a relational database model.
 hasProcessingProvider=yes
 
-version=1.4.0-beta3
+version=1.4.0-beta4
 changelog=
 
 # tags are comma separated with spaces allowed

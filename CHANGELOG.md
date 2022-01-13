@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 1.4.0-beta4 - 13/01/2022
+
+- fix some issues with the new database widget
+- fix debug mode
+- restore buttons related to foreign key management
+- use a processing to convert GMLAS file to database and vice versa instead of subprocessed calls to GDAL
+- dependencies upgrade
+
 ## 1.4.0-beta3 - 13/08/2021
 
 - fix URI error #163
