@@ -218,7 +218,7 @@ class PlotScene(QGraphicsScene):
         last = None
         for z1, z2, text in self.data:
             brush = QBrush(
-                QColor.fromHsl(z2 / (self.zMax - self.zMin) * 360.0, 128, 128)
+                QColor.fromHsl(int(z2 / (self.zMax - self.zMin) * 360.0), 128, 128)
             )
             self.addRect(
                 self.xOffset + self.legendWidth,
