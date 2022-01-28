@@ -139,9 +139,9 @@ def import_in_qgis(gmlas_uri: str, provider: str, schema: Union[str, None] = Non
     PlgLogger.log(message=f"DEBUG Get list of layers with query : {sql}", log_level=4)
     try:
         result = conn.executeSql(sql)
+        PlgLogger.log(message=f"DEBUG List of layers : {result}", log_level=4)
     except QgsProviderConnectionException as err:
         PlgLogger.log(message=err, log_level=2, push=True)
-    PlgLogger.log(message=f"DEBUG List of layers : {result}", log_level=4)
 
     layers = {}
     for f in result:
