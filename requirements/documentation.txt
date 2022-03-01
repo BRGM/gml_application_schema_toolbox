@@ -3,7 +3,7 @@
 
 ghp-import>=2.0,<2.1
 furo==2022.2.23
-myst-parser[linkify]>=0.15,<0.17
+myst-parser[linkify]>=0.15,<0.18
 sphinx-autobuild==2021.3.14
 sphinx-copybutton>=0.3,<1
 sphinxext-opengraph>=0.4,<1
