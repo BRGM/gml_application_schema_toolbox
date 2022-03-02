@@ -66,7 +66,7 @@ def _qgis_layer(
     elif provider in ("spatialite"):
         # use OGR for spatialite loading
         couche = QgsVectorLayer(
-            "{} table={} {}".format(uri, layer_name, g_column),
+            "{} table=({}) {}".format(uri, layer_name, g_column),
             qgis_layer_name,
             "spatialite",
         )
