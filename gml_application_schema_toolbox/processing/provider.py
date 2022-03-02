@@ -10,11 +10,7 @@ from qgis.PyQt.QtCore import QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 
 # project
-from gml_application_schema_toolbox.__about__ import (
-    DIR_PLUGIN_ROOT,
-    __icon_path__,
-    __version__,
-)
+from gml_application_schema_toolbox.__about__ import __icon_path__, __version__
 
 from .gdal.ogr2ogr_3_24 import ogr2ogr_3_24
 

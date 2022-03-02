@@ -15,7 +15,6 @@
 
 from typing import Union
 
-from osgeo import ogr
 from qgis.core import (
     QgsAttributeEditorContainer,
     QgsAttributeEditorField,

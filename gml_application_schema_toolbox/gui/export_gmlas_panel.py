@@ -24,14 +24,9 @@
 
 import os
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 
-from osgeo import gdal, osr
-from qgis.core import (
-    QgsDataSourceUri,
-    QgsProcessingFeatureSourceDefinition,
-    QgsVectorLayer,
-)
+from osgeo import gdal
+from qgis.core import QgsVectorLayer
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import pyqtSlot
 from qgis.PyQt.QtWidgets import QDialog, QFileDialog
