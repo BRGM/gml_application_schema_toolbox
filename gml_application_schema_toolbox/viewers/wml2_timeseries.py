@@ -82,15 +82,12 @@ class WML2TimeSeriesViewer(QWidget):
     ):
         resolver = GmlAsXPathResolver(db_uri, provider, schema)
 
-        ytitle = (
-            resolver.resolve_xpath(
-                layer_name,
-                pkid_name,
-                pkid_value,
-                "defaultPointMetadata/DefaultTVPMeasurementMetadata/uom/@code",
-            )
-            or [""]
-        )
+        ytitle = resolver.resolve_xpath(
+            layer_name,
+            pkid_name,
+            pkid_value,
+            "defaultPointMetadata/DefaultTVPMeasurementMetadata/uom/@code",
+        ) or [""]
         times = resolver.resolve_xpath(
             layer_name, pkid_name, pkid_value, "point/MeasurementTVP/time/text()"
         )
