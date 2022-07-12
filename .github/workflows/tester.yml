@@ -45,7 +45,7 @@ jobs:
         run: pytest tests/unit/
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
 
   test-qgis:
     runs-on: ubuntu-20.04
@@ -79,4 +79,4 @@ jobs:
         run: pytest tests/qgis/
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
