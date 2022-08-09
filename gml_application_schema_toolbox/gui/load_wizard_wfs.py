@@ -7,7 +7,8 @@
 # Standard library
 import os
 
-import owslib
+from owslib.wfs import WebFeatureService
+from owslib.util import ServiceException
 from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
@@ -145,7 +146,7 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
             version = req_version
 
         with qgis_proxy_settings():
-            return owslib.wfs.WebFeatureService(url=uri, version=version)
+            return WebFeatureService(url=uri, version=version)
 
     @pyqtSlot(str)
     def on_change_connection(self, currentConnection):
@@ -292,7 +293,7 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
         try:
             with qgis_proxy_settings():
                 response = wfs.getfeature(**params)
-        except owslib.util.ServiceException as e:
+        except ServiceException as e:
             QMessageBox.critical(self, "ServiceException", str(e))
             return
         xml = response.read()
