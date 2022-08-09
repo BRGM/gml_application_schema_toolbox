@@ -258,7 +258,7 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
             bbox.yMinimum(),
             bbox.xMaximum(),
             bbox.yMaximum(),
-            default_crs_name,
+            str(default_crs_name),
         ]
 
     def download(self, output_path):
