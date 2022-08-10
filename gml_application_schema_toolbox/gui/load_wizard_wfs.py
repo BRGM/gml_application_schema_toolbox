@@ -7,8 +7,8 @@
 # Standard library
 import os
 
-from owslib.wfs import WebFeatureService
 from owslib.util import ServiceException
+from owslib.wfs import WebFeatureService
 from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
