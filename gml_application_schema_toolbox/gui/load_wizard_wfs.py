@@ -187,14 +187,29 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
         self.featureTypesTableWidget.sortItems(1)
 
         self.storedQueriesListWidget.clear()
-        if hasattr(wfs, "storedqueries"):
-            for stored_query in list(wfs.storedqueries):
-                params = ", ".join(
-                    ["{}: {}".format(p.name, p.type) for p in stored_query.parameters]
+        try:
+            if hasattr(wfs, "storedqueries"):
+                for stored_query in list(wfs.storedqueries):
+                    params = ", ".join(
+                        [
+                            "{}: {}".format(p.name, p.type)
+                            for p in stored_query.parameters
+                        ]
+                    )
+                    self.storedQueriesListWidget.addItem(
+                        "{}({})".format(stored_query.id, params)
+                    )
+                self.datasetsTabWidget.setTabEnabled(
+                    self.datasetsTabWidget.indexOf(self.tab_2), True
                 )
-                self.storedQueriesListWidget.addItem(
-                    "{}({})".format(stored_query.id, params)
+            else:
+                self.datasetsTabWidget.setTabEnabled(
+                    self.datasetsTabWidget.indexOf(self.tab_2), False
                 )
+        except ServiceException:
+            self.datasetsTabWidget.setTabEnabled(
+                self.datasetsTabWidget.indexOf(self.tab_2), False
+            )
 
         self.storedQueriesListWidget.sortItems()
 
