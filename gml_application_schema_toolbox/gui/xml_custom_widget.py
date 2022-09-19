@@ -1,10 +1,10 @@
-from PyQt5.QtWidgets import QWidget
 from qgis.core import QgsFieldFormatter
 from qgis.gui import (
     QgsEditorConfigWidget,
     QgsEditorWidgetFactory,
     QgsEditorWidgetWrapper,
 )
+from qgis.PyQt.QtWidgets import QWidget
 
 
 class XMLCustomWidgetWrapper(QgsEditorWidgetWrapper):
