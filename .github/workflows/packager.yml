@@ -36,7 +36,7 @@ jobs:
 
       - name: Package the latest version
         run: |
-          qgis-plugin-ci package latest
+          qgis-plugin-ci package --allow-uncommitted-changes latest
 
       - uses: actions/upload-artifact@v3
         with:
