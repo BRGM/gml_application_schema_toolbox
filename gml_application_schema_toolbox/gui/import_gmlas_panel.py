@@ -206,7 +206,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             or self.databaseWidget.get_db_format in ("sqlite", "spatialite")
         ):
             options.append("-dsco SPATIALITE=YES")
-            return options
+        return options
 
     def layer_creation_options(self):
         options = []
