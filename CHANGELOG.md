@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.4.0-beta5 - 19/09/2022
+
+- Bug fixes, mainly by @towa (Thanks!)
+
 ## 1.4.0-beta4 - 13/01/2022
 
 - fix some issues with the new database widget
