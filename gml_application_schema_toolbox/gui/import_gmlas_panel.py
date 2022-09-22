@@ -372,24 +372,22 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
                     "{} {}: {}".format(err, err_no, msg), __title__
                 )
 
-        conn = self.databaseWidget.get_database_connection
         schema = None
+        db_format = self.databaseWidget.get_db_format
         # Create temp SQLite database if no connection is selected
-        if conn is None:
-            with tempfile.NamedTemporaryFile(suffix=".sqlite") as tmp:
-                dest_db_name = tmp.name
-                provider = "SQLite"
-                self.plg_logger.log(f"Temp SQLite: {dest_db_name}", log_level=4)
-        elif self.databaseWidget.get_db_format == "postgres":
+        if db_format == "postgres":
             dest_db_name = f"{self.databaseWidget.get_database_connection.uri()}"
             schema = self.databaseWidget.selected_schema
             provider = "PostgreSQL"
             self.plg_logger.log(f"PostgreSQL schema: {schema}", log_level=4)
-        elif self.databaseWidget.get_db_format == "sqlite":
+        elif db_format == "sqlite" or db_format == "spatialite":
             dest_db_name = self.databaseWidget.get_db_name_or_path
             provider = "SQLite"
         else:
-            return
+            with tempfile.NamedTemporaryFile(suffix=".sqlite") as tmp:
+                dest_db_name = tmp.name
+                provider = "SQLite"
+                self.plg_logger.log(f"Temp SQLite: {dest_db_name}", log_level=4)
 
         params = self.import_params(dest_db_name, provider)
 
