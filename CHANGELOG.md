@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## 1.4.0-beta5 - 19/09/2022
+## 1.4.0-beta6 - 2022-09-23
+
+- Rework database selection: fix for spatialite selection #237 by @towa
+
+## 1.4.0-beta5 - 2022-09-19
 
 - Bug fixes, mainly by @towa (Thanks!)
 
