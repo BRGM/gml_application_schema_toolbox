@@ -99,8 +99,9 @@ class CustomViewerLegend(QgsMapLayerLegend):
         return [QgsSimpleLegendNode(layer_tree_layer, self.text, self.icon, self)]
 
 
-def import_in_qgis(gmlas_uri: str, provider: str,
-                   add_form_code: bool, schema: Union[str, None] = None):
+def import_in_qgis(
+    gmlas_uri: str, provider: str, add_form_code: bool, schema: Union[str, None] = None
+):
     """Imports layers from a GMLAS file in QGIS with relations and editor widgets
 
     @param gmlas_uri connection parameters
