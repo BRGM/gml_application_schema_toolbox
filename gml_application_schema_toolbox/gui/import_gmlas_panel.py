@@ -373,7 +373,11 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
                 )
 
         schema = None
-        db_format = self.databaseWidget.get_db_format
+        if self.databaseWidget.get_database_connection is None:
+            db_format = None
+        else:
+            db_format = self.databaseWidget.get_db_format
+
         # Create temp SQLite database if no connection is selected
         if db_format == "postgres":
             dest_db_name = f"{self.databaseWidget.get_database_connection.uri()}"
