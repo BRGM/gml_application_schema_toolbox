@@ -138,6 +138,8 @@ def import_in_qgis(
     }
     sql = f"select o.layer_name, o.layer_xpath, o.layer_category, o.layer_pkid_name, o.layer_parent_pkid_name, g.f_geometry_column, g.srid from {schema_s}_ogr_layers_metadata o left join geometry_columns g on g.f_table_name = o.layer_name"
     PlgLogger.log(message=f"DEBUG Get list of layers with query : {sql}", log_level=4)
+
+    result = []
     try:
         result = conn.executeSql(sql)
         PlgLogger.log(message=f"DEBUG List of layers : {result}", log_level=4)
