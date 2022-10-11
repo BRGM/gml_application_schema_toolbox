@@ -79,7 +79,7 @@ class TestLoadInQGIS(unittest.TestCase):
         # fix geometry types
         ds = None
         # populate the qgis project
-        import_in_qgis(gmlas_uri=out_file, provider="SQLite")
+        import_in_qgis(gmlas_uri=out_file, provider="SQLite", auto_join=False)
 
         layers = []
         for lid in sorted(QgsProject.instance().mapLayers().keys()):
