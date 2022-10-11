@@ -49,7 +49,7 @@
         <x>0</x>
         <y>0</y>
         <width>663</width>
-        <height>825</height>
+        <height>856</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -282,6 +282,13 @@ p, li { white-space: pre-wrap; }
             </property>
             <property name="text">
              <string>Skip failures</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="addFormCodeCheckbox">
+            <property name="text">
+             <string>Add form code</string>
             </property>
            </widget>
           </item>

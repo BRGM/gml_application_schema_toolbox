@@ -101,7 +101,11 @@ class CustomViewerLegend(QgsMapLayerLegend):
 
 
 def import_in_qgis(
-    gmlas_uri: str, provider: str, auto_join: bool, schema: Union[str, None] = None
+    gmlas_uri: str,
+    provider: str,
+    auto_join: bool,
+    add_form_code: bool,
+    schema: Union[str, None] = None,
 ):
     """Imports layers from a GMLAS file in QGIS with relations and editor widgets
 
@@ -413,5 +417,5 @@ def import_in_qgis(
             c_1_n.addChildElement(QgsAttributeEditorRelation(rel.name(), rel, c_1_n))
 
         couche.setEditFormConfig(fc)
-
-        install_viewer_on_feature_form(couche)
+        if add_form_code:
+            install_viewer_on_feature_form(couche)
