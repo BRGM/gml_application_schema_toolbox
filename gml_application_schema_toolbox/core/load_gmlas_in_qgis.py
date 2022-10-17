@@ -107,6 +107,7 @@ def import_in_qgis(
 
     @param gmlas_uri connection parameters
     @param provider name of the QGIS provider that handles gmlas_uri parameters
+    @param auto_join set this to True for auto joining of 1:1 relations
     @param schema name of the PostgreSQL schema where tables and metadata tables are
     """
     PlgLogger.log(
