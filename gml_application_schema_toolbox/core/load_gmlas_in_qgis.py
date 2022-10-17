@@ -99,11 +99,14 @@ class CustomViewerLegend(QgsMapLayerLegend):
         return [QgsSimpleLegendNode(layer_tree_layer, self.text, self.icon, self)]
 
 
-def import_in_qgis(gmlas_uri: str, provider: str, schema: Union[str, None] = None):
+def import_in_qgis(
+    gmlas_uri: str, provider: str, add_form_code: bool, schema: Union[str, None] = None
+):
     """Imports layers from a GMLAS file in QGIS with relations and editor widgets
 
     @param gmlas_uri connection parameters
     @param provider name of the QGIS provider that handles gmlas_uri parameters
+    @param add_form_code set this to true to load the custom form code
     @param schema name of the PostgreSQL schema where tables and metadata tables are
     """
     PlgLogger.log(
@@ -391,4 +394,5 @@ def import_in_qgis(gmlas_uri: str, provider: str, schema: Union[str, None] = Non
 
         couche.setEditFormConfig(fc)
 
-        install_viewer_on_feature_form(couche)
+        if add_form_code:
+            install_viewer_on_feature_form(couche)
