@@ -407,6 +407,7 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
                     gmlas_uri=dest_db_name,
                     provider=provider,
                     auto_join=self.autoJoinCheckbox.isChecked(),
+                    add_form_code=self.addCodeToForm.isChecked(),
                     schema=schema,
                 )
 
