@@ -406,7 +406,8 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
                 import_in_qgis(
                     gmlas_uri=dest_db_name,
                     provider=provider,
-                    add_form_code=self.addCodeToForm.isChecked(),
+                    auto_join=self.autoJoinCheckbox.isChecked(),
+                    add_form_code=self.addFormCodeCheckbox.isChecked(),
                     schema=schema,
                 )
 

@@ -30,6 +30,7 @@ from qgis.core import (
     QgsSettings,
     QgsSimpleLegendNode,
     QgsVectorLayer,
+    QgsVectorLayerJoinInfo,
 )
 
 from gml_application_schema_toolbox.__about__ import DIR_PLUGIN_ROOT
@@ -100,7 +101,11 @@ class CustomViewerLegend(QgsMapLayerLegend):
 
 
 def import_in_qgis(
-    gmlas_uri: str, provider: str, add_form_code: bool, schema: Union[str, None] = None
+    gmlas_uri: str,
+    provider: str,
+    auto_join: bool,
+    add_form_code: bool,
+    schema: Union[str, None] = None,
 ):
     """Imports layers from a GMLAS file in QGIS with relations and editor widgets
 
@@ -371,6 +376,26 @@ def import_in_qgis(
         )
         couches.setEditorWidgetSetup(idx, s)
 
+    # auto join 1:1 relations
+    if auto_join:
+        if len(relations_1_1) == 0:
+            PlgLogger.log(message="there are no 1:1 relations to auto join")
+        else:
+            for rel in relations_1_1:
+                target_field, join_field = list(rel.fieldPairs().items())[0]
+                join_object = QgsVectorLayerJoinInfo()
+                join_object.setJoinLayerId(rel.referencedLayerId())
+                join_object.setJoinLayer(rel.referencedLayer())
+                join_object.setJoinFieldName(join_field)
+                join_object.setTargetFieldName(target_field)
+                join_object.setUsingMemoryCache(True)
+
+                parent_layer = QgsProject.instance().mapLayers()[
+                    rel.referencingLayerId()
+                ]
+                parent_layer.addJoin(join_object)
+                PlgLogger.log(message="joined layer {parent_layer}")
+
     # setup form for layers
     for layer, lyr in layers.items():
         couche = lyr["layer"]
@@ -393,6 +418,6 @@ def import_in_qgis(
             c_1_n.addChildElement(QgsAttributeEditorRelation(rel.name(), rel, c_1_n))
 
         couche.setEditFormConfig(fc)
-
+        
         if add_form_code:
             install_viewer_on_feature_form(couche)
