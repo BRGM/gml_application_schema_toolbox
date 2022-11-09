@@ -7,6 +7,7 @@
 # Standard library
 import os
 
+from lxml.etree import XMLSyntaxError
 from owslib.util import ServiceException
 from owslib.wfs import WebFeatureService
 from qgis.core import (
@@ -207,6 +208,10 @@ class LoadWizardWFS(QWizardPage, PAGE_1A_W):
                     self.datasetsTabWidget.indexOf(self.tab_2), False
                 )
         except ServiceException:
+            self.datasetsTabWidget.setTabEnabled(
+                self.datasetsTabWidget.indexOf(self.tab_2), False
+            )
+        except XMLSyntaxError:
             self.datasetsTabWidget.setTabEnabled(
                 self.datasetsTabWidget.indexOf(self.tab_2), False
             )
