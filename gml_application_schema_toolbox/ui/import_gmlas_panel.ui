@@ -248,7 +248,7 @@ p, li { white-space: pre-wrap; }
              <string>&lt;html&gt; Auto Join &lt;b&gt;1:1 relations&lt;/b&gt; using the QGIS Join Feature.&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>Auto Join tables</string>
+             <string>Automatically join 1:1 relation tables</string>
             </property>
            </widget>
           </item>
