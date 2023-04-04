@@ -604,7 +604,6 @@ class ComplexFeatureLoaderInGpkg(ComplexFeatureLoader):
     def _add_properties_to_layer(
         self, layer, xml_uri, is_remote, attributes, geom_mapping
     ):
-
         tag = layer.customProperty("tag")
         fn = "{}_{}.gpkg".format(self.output_local_file, tag)
         qgs_layer = QgsVectorLayer("{}|layername=meta".format(fn), "meta", "ogr")

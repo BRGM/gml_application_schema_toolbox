@@ -53,7 +53,6 @@ from gml_application_schema_toolbox.__about__ import DIR_PLUGIN_ROOT
 
 
 class ModelDialog(QGraphicsView):
-
     tableSelected = pyqtSignal(str)
 
     def __init__(self, model, parent=None):
@@ -97,7 +96,6 @@ def spiral_iterator():
 
 
 class TableWidget(QWidget):
-
     linkActivated = pyqtSignal(str)
 
     def __init__(self, table):
@@ -202,7 +200,6 @@ def enable_link_item(item):
 
 
 class ModelDialogScene(QGraphicsScene):
-
     tableSelected = pyqtSignal(str)
 
     def __init__(self, model, parent):
