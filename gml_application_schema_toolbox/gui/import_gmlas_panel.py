@@ -166,7 +166,6 @@ class ImportGmlasPanel(BASE, WIDGET, GmlasPanelMixin):
             self.unsetCursor()
 
     def validate(self):
-
         data_source = self.gmlas_datasource()
 
         if data_source is None:

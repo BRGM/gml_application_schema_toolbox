@@ -412,7 +412,7 @@ class DatabaseWidget(BASE, WIDGET):
             results = conn.executeSql(sql)
         except QgsProviderConnectionException as err:
             self.log(message=err, log_level=2, push=True)
-        for (layer_name, field_name, child_layer, child_pkid) in results:
+        for layer_name, field_name, child_layer, child_pkid in results:
             foreign_keys.append(
                 ForeignKey(
                     table=layer_name,
