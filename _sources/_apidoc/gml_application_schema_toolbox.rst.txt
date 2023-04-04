@@ -1,0 +1,31 @@
+gml\_application\_schema\_toolbox package
+=========================================
+
+.. automodule:: gml_application_schema_toolbox
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   gml_application_schema_toolbox.core
+   gml_application_schema_toolbox.extlibs
+   gml_application_schema_toolbox.gui
+   gml_application_schema_toolbox.processing
+   gml_application_schema_toolbox.toolbelt
+   gml_application_schema_toolbox.viewers
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   gml_application_schema_toolbox.constants
+   gml_application_schema_toolbox.creation_dialog
+   gml_application_schema_toolbox.main
+   gml_application_schema_toolbox.model_dialog

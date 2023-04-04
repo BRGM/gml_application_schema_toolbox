@@ -1,0 +1,21 @@
+gml\_application\_schema\_toolbox.core package
+==============================================
+
+.. automodule:: gml_application_schema_toolbox.core
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   gml_application_schema_toolbox.core.gml_utils
+   gml_application_schema_toolbox.core.gmlas_xpath
+   gml_application_schema_toolbox.core.load_gml_as_xml
+   gml_application_schema_toolbox.core.load_gmlas_in_qgis
+   gml_application_schema_toolbox.core.proxy
+   gml_application_schema_toolbox.core.qgis_urlopener
+   gml_application_schema_toolbox.core.xml_utils

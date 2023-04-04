@@ -1,0 +1,7 @@
+gml\_application\_schema\_toolbox.gui.load\_wizard\_xml module
+==============================================================
+
+.. automodule:: gml_application_schema_toolbox.gui.load_wizard_xml
+   :members:
+   :undoc-members:
+   :show-inheritance:

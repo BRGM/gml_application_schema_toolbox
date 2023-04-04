@@ -1,0 +1,7 @@
+gml\_application\_schema\_toolbox.gui.xml\_dialog module
+========================================================
+
+.. automodule:: gml_application_schema_toolbox.gui.xml_dialog
+   :members:
+   :undoc-members:
+   :show-inheritance:

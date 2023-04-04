@@ -1,0 +1,593 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="XML Mode - local test scenario" href="../testing/scenario_mode_xml_local.html" /><link rel="prev" title="Documentation" href="documentation.html" />
+
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+        <title>CHANGELOG - QGIS GML Application Schema Toolbox 1.4.0-beta6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">QGIS GML Application Schema Toolbox 1.4.0-beta6 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">QGIS GML Application Schema Toolbox 1.4.0-beta6 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Use the plugin</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/download.html">Download GML from WFS 2 services</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/read_files.html">Read GML App Schema files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/read_custom.html">Custom element viewers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/read_mode_db.html">Convert GML App Schema files in PostGIS and SQLite format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/read_mode_xml.html">Read GML App Schema files in XML mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/write_from_db.html">Export PostGIS and SQLite format to GML App Schema files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/settings.html">Settings</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Use cases</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usecases/index.html">Consumption and use of GML complex features like INSPIRE harmonised data (vector), GeoSciML within QGIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usecases/UC_vbox.html">Setting up the virtual box with QGIS3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usecases/UC_overlap.html">Combine datasets from different countries on the same map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usecases/UC_codelist.html">Codelist resolution based on user language</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usecases/UC_create_inspire_data.html">Populate a database created from the XSD model</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribute to the plugin</span></p>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../_apidoc/modules.html">Code documentation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.html">gml_application_schema_toolbox package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.html">gml_application_schema_toolbox.core package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.gml_utils.html">gml_application_schema_toolbox.core.gml_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.gmlas_xpath.html">gml_application_schema_toolbox.core.gmlas_xpath module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.load_gml_as_xml.html">gml_application_schema_toolbox.core.load_gml_as_xml module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.load_gmlas_in_qgis.html">gml_application_schema_toolbox.core.load_gmlas_in_qgis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.proxy.html">gml_application_schema_toolbox.core.proxy module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.qgis_urlopener.html">gml_application_schema_toolbox.core.qgis_urlopener module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.xml_utils.html">gml_application_schema_toolbox.core.xml_utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.extlibs.html">gml_application_schema_toolbox.extlibs package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.extlibs.owslib_hacks.html">gml_application_schema_toolbox.extlibs.owslib_hacks module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.html">gml_application_schema_toolbox.gui package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.bbox_widget.html">gml_application_schema_toolbox.gui.bbox_widget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.custom_viewers.html">gml_application_schema_toolbox.gui.custom_viewers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.database_widget.html">gml_application_schema_toolbox.gui.database_widget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.export_gmlas_panel.html">gml_application_schema_toolbox.gui.export_gmlas_panel module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.gmlas_panel_mixin.html">gml_application_schema_toolbox.gui.gmlas_panel_mixin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.import_gmlas_panel.html">gml_application_schema_toolbox.gui.import_gmlas_panel module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.load_wizard.html">gml_application_schema_toolbox.gui.load_wizard module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.load_wizard_wfs.html">gml_application_schema_toolbox.gui.load_wizard_wfs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.load_wizard_xml.html">gml_application_schema_toolbox.gui.load_wizard_xml module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.progress_bar.html">gml_application_schema_toolbox.gui.progress_bar module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.qgis_form_custom_widget.html">gml_application_schema_toolbox.gui.qgis_form_custom_widget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.wait_cursor_context.html">gml_application_schema_toolbox.gui.wait_cursor_context module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.xml_custom_widget.html">gml_application_schema_toolbox.gui.xml_custom_widget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.xml_dialog.html">gml_application_schema_toolbox.gui.xml_dialog module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.xml_tree_widget.html">gml_application_schema_toolbox.gui.xml_tree_widget module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.processing.html">gml_application_schema_toolbox.processing package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.processing.gdal.html">gml_application_schema_toolbox.processing.gdal package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.processing.gdal.ogr2ogr_3_24.html">gml_application_schema_toolbox.processing.gdal.ogr2ogr_3_24 module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.processing.provider.html">gml_application_schema_toolbox.processing.provider module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.html">gml_application_schema_toolbox.toolbelt package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.file_downloader.html">gml_application_schema_toolbox.toolbelt.file_downloader module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.log_handler.html">gml_application_schema_toolbox.toolbelt.log_handler module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.network_manager.html">gml_application_schema_toolbox.toolbelt.network_manager module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.preferences.html">gml_application_schema_toolbox.toolbelt.preferences module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.viewers.html">gml_application_schema_toolbox.viewers package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.viewers.geology_logs.html">gml_application_schema_toolbox.viewers.geology_logs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.viewers.viewers_utils.html">gml_application_schema_toolbox.viewers.viewers_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.viewers.wml2_timeseries.html">gml_application_schema_toolbox.viewers.wml2_timeseries module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.constants.html">gml_application_schema_toolbox.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.creation_dialog.html">gml_application_schema_toolbox.creation_dialog module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.main.html">gml_application_schema_toolbox.main module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.model_dialog.html">gml_application_schema_toolbox.model_dialog module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment.html">Development environment setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing the plugin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html">Documentation</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">CHANGELOG</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Testing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testing/scenario_mode_xml_local.html">XML Mode - local test scenario</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing/scenario_mode_gmlas_local.html">Relational mode (GMLAS) scenario - Local test scenario</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing/scenario_mode_xml_content_negociation.html">XML Mode - Content negociation test scenario</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="changelog">
+<h1>CHANGELOG<a class="headerlink" href="#changelog" title="Permalink to this heading">#</a></h1>
+<section id="beta6-2022-09-23">
+<h2>1.4.0-beta6 - 2022-09-23<a class="headerlink" href="#beta6-2022-09-23" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Rework database selection: fix for spatialite selection #237 by &#64;towa</p></li>
+</ul>
+</section>
+<section id="beta5-2022-09-19">
+<h2>1.4.0-beta5 - 2022-09-19<a class="headerlink" href="#beta5-2022-09-19" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Bug fixes, mainly by &#64;towa (Thanks!)</p></li>
+</ul>
+</section>
+<section id="beta4-13-01-2022">
+<h2>1.4.0-beta4 - 13/01/2022<a class="headerlink" href="#beta4-13-01-2022" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>fix some issues with the new database widget</p></li>
+<li><p>fix debug mode</p></li>
+<li><p>restore buttons related to foreign key management</p></li>
+<li><p>use a processing to convert GMLAS file to database and vice versa instead of subprocessed calls to GDAL</p></li>
+<li><p>dependencies upgrade</p></li>
+</ul>
+</section>
+<section id="beta3-13-08-2021">
+<h2>1.4.0-beta3 - 13/08/2021<a class="headerlink" href="#beta3-13-08-2021" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>fix URI error #163</p></li>
+<li><p>modernize database widget</p></li>
+<li><p>improved tests</p></li>
+</ul>
+</section>
+<section id="beta2-02-07-2021">
+<h2>1.4.0-beta2 - 02/07/2021<a class="headerlink" href="#beta2-02-07-2021" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>fix settings and debug mode which was lost in git confusion</p></li>
+<li><p>unit tests enlarged</p></li>
+</ul>
+</section>
+<section id="beta1-21-06-2021">
+<h2>1.4.0-beta1 - 21/06/2021<a class="headerlink" href="#beta1-21-06-2021" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>network requests use the better options from PyQGIS</p></li>
+<li><p>settings windows has been redesigned and integrated into QGIS preferences</p></li>
+<li><p>minimal QGIS version is now 3.16</p></li>
+<li><p>unit tests have been restored</p></li>
+<li><p>fix some bugs</p></li>
+<li><p>UI improvments (icons…)</p></li>
+</ul>
+</section>
+<section id="id1">
+<h2>1.3.1 - 08/03/2021<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<section id="fixed">
+<h3>Fixed<a class="headerlink" href="#fixed" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>request headers were not transmitted in case of redirections <a class="reference external" href="https://github.com/BRGM/gml_application_schema_toolbox/issues/127">#127</a></p></li>
+<li><p>remove a method which was overriding Python builtin functions <a class="reference external" href="https://github.com/BRGM/gml_application_schema_toolbox/issues/129">#129</a></p></li>
+<li><p>fix path in File Dialog <a class="reference external" href="https://github.com/BRGM/gml_application_schema_toolbox/issues/130">#130</a></p></li>
+</ul>
+</section>
+</section>
+<section id="id2">
+<h2>1.3.0 - 03/03/2021<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>refactoring of network requests to better integration in QGIS</p></li>
+<li><p>add log abilities</p></li>
+<li><p>documentation completly overhauled with updated use cases, docstrings and publication workflow</p></li>
+</ul>
+</section>
+<section id="beta1-18-12-2020">
+<h2>1.3.0-beta1 - 18/12/2020<a class="headerlink" href="#beta1-18-12-2020" title="Permalink to this heading">#</a></h2>
+<blockquote>
+<div><p>Tagged as 1.2.1-beta1 in QGIS Official plugins repository</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>refactoring of network requests to better integration in QGIS</p></li>
+<li><p>add log abilities</p></li>
+<li><p>documentation completly overhauled with updated use cases, docstrings and publication workflow</p></li>
+<li><p>fix compatibility with QGIS &gt;= 3.13 (<a class="reference external" href="https://github.com/BRGM/gml_application_schema_toolbox/issues/94">#94</a>)</p></li>
+<li><p>start using GitHub Actions for continuous integration and deployment</p></li>
+<li><p>bump development guidelines using black, flake8, isort and precommit <a class="reference external" href="https://github.com/BRGM/gml_application_schema_toolbox/pull/95">#95</a></p></li>
+<li><p>add template for issues <a class="reference external" href="https://github.com/BRGM/gml_application_schema_toolbox/pull/97">#97</a></p></li>
+<li><p>bump codebase to Python 3 only <a class="reference external" href="https://github.com/BRGM/gml_application_schema_toolbox/pull/98">#98</a></p></li>
+<li><p>automate release workflow using qgis-plugin-ci <a class="reference external" href="https://github.com/BRGM/gml_application_schema_toolbox/pull/101">#101</a></p></li>
+</ul>
+</section>
+<section id="id3">
+<h2>1.2.0 - 08/06/2018<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<p>New major version, with the following main changes:</p>
+<ul class="simple">
+<li><p>XML mode: support for multiple geometries</p></li>
+<li><p>XML mode: support for polyhedral / curves</p></li>
+<li><p>UI refactor using a Wizard</p></li>
+<li><p>GMLAS mode: handle custom viewers</p></li>
+<li><p>GMLAS mode: add href resolution</p></li>
+<li><p>WFS version negotiation</p></li>
+<li><p>Lots of bug fixes</p></li>
+</ul>
+<p>This work has been funded by <a class="reference external" href="http://www.brgm.fr">BRGM</a> and <a class="reference external" href="https://www.localfinland.fi/">the Association of Finnish Local and Regional Authorities</a> (via <a class="reference external" href="http://www.gispo.fi/">Gispo</a>)</p>
+</section>
+<section id="id4">
+<h2>1.1.4 - 06/11/2017<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Handle multi geometries (#30)</p></li>
+<li><p>Allow nested FeatureCollection/members (#29)</p></li>
+</ul>
+</section>
+<section id="id5">
+<h2>1.1.3 - 17/07/2017<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Fix download tab</p></li>
+<li><p>Fix XML mode with non-spatiail layers</p></li>
+</ul>
+</section>
+<section id="id6">
+<h2>1.1.2 - 17/07/2017<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Fix encoding issues</p></li>
+<li><p>Code cleanup</p></li>
+<li><p>Fix error during export</p></li>
+<li><p>Fix handling of unsafe SSL</p></li>
+</ul>
+</section>
+<section id="id7">
+<h2>1.1.1 - 13/07/2017<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Use ogr API instead of QGIS to load spatialite layers</p></li>
+<li><p>Add TypingConstraints for wml2 and geologylog</p></li>
+<li><p>Handle layers with multiple geometries</p></li>
+</ul>
+</section>
+<section id="id8">
+<h2>1.1.0 - 11/07/2017<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Remove dependency to pyspatialite</p></li>
+<li><p>Bring back XML mode with custom widgets</p></li>
+<li><p>Add a custom widget for geology logs</p></li>
+<li><p>GMLAS import: option to automatically load layers and configure relations + editor widgets</p></li>
+</ul>
+</section>
+<section id="id9">
+<h2>1.0.0 - 15/12/2016<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Add WFS 2 download panel</p></li>
+<li><p>Add OGR GMLAS convert panel</p></li>
+<li><p>Remove DB relational mode using PyXB (replaced by GMLAS OGR mode)</p></li>
+<li><p>Add OGR GMLAS write panel</p></li>
+</ul>
+</section>
+<section id="id10">
+<h2>0.8.4 - 17/08/2016<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Handle HTTP 302 redirections</p></li>
+</ul>
+</section>
+<section id="id11">
+<h2>0.8.3 - 27/06/2016<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Add licences</p></li>
+<li><p>Add doc / readme</p></li>
+</ul>
+</section>
+<section id="id12">
+<h2>0.8.2 - 27/06/2016<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Fix custom viewer SQL queries to include order by</p></li>
+</ul>
+</section>
+<section id="id13">
+<h2>0.8.1 - 24/06/2016<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Fix an ownership bug only seen on Windows</p></li>
+</ul>
+</section>
+<section id="id14">
+<h2>0.8.0 - 20/06/2016<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Add an ‘enforce not null constraints’ option</p></li>
+<li><p>Treat SOS:observationData as features</p></li>
+<li><p>Enable custom widgets for embedded href</p></li>
+<li><p>Add viewer plugins to the relational mode</p></li>
+<li><p>Embed the XML tree widget in the attribute form (and remove custom identify / attribute table buttons)</p></li>
+</ul>
+</section>
+<section id="id15">
+<h2>0.7.3 - 16/06/2016<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Fix URI resolution under Windows</p></li>
+</ul>
+</section>
+<section id="id16">
+<h2>0.7.1 - 15/06/2016<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Fix remote URI resolving</p></li>
+<li><p>Fix XPath handling</p></li>
+<li><p>Fix default SRID</p></li>
+<li><p>Add support for a Date/Time type in xpath mappings</p></li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../testing/scenario_mode_xml_local.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">XML Mode - local test scenario</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="documentation.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Documentation</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2014 - 2023, BRGM, Oslandia, Copernicus, Camptocamp, Spatialys, titellus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">CHANGELOG</a><ul>
+<li><a class="reference internal" href="#beta6-2022-09-23">1.4.0-beta6 - 2022-09-23</a></li>
+<li><a class="reference internal" href="#beta5-2022-09-19">1.4.0-beta5 - 2022-09-19</a></li>
+<li><a class="reference internal" href="#beta4-13-01-2022">1.4.0-beta4 - 13/01/2022</a></li>
+<li><a class="reference internal" href="#beta3-13-08-2021">1.4.0-beta3 - 13/08/2021</a></li>
+<li><a class="reference internal" href="#beta2-02-07-2021">1.4.0-beta2 - 02/07/2021</a></li>
+<li><a class="reference internal" href="#beta1-21-06-2021">1.4.0-beta1 - 21/06/2021</a></li>
+<li><a class="reference internal" href="#id1">1.3.1 - 08/03/2021</a><ul>
+<li><a class="reference internal" href="#fixed">Fixed</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id2">1.3.0 - 03/03/2021</a></li>
+<li><a class="reference internal" href="#beta1-18-12-2020">1.3.0-beta1 - 18/12/2020</a></li>
+<li><a class="reference internal" href="#id3">1.2.0 - 08/06/2018</a></li>
+<li><a class="reference internal" href="#id4">1.1.4 - 06/11/2017</a></li>
+<li><a class="reference internal" href="#id5">1.1.3 - 17/07/2017</a></li>
+<li><a class="reference internal" href="#id6">1.1.2 - 17/07/2017</a></li>
+<li><a class="reference internal" href="#id7">1.1.1 - 13/07/2017</a></li>
+<li><a class="reference internal" href="#id8">1.1.0 - 11/07/2017</a></li>
+<li><a class="reference internal" href="#id9">1.0.0 - 15/12/2016</a></li>
+<li><a class="reference internal" href="#id10">0.8.4 - 17/08/2016</a></li>
+<li><a class="reference internal" href="#id11">0.8.3 - 27/06/2016</a></li>
+<li><a class="reference internal" href="#id12">0.8.2 - 27/06/2016</a></li>
+<li><a class="reference internal" href="#id13">0.8.1 - 24/06/2016</a></li>
+<li><a class="reference internal" href="#id14">0.8.0 - 20/06/2016</a></li>
+<li><a class="reference internal" href="#id15">0.7.3 - 16/06/2016</a></li>
+<li><a class="reference internal" href="#id16">0.7.1 - 15/06/2016</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    </body>
+</html>

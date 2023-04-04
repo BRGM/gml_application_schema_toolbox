@@ -1,0 +1,535 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="gml_application_schema_toolbox" href="../_apidoc/modules.html" /><link rel="prev" title="Codelist resolution based on user language" href="UC_codelist.html" />
+
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+        <title>Populate a database created from the XSD model - QGIS GML Application Schema Toolbox 1.4.0-beta6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">QGIS GML Application Schema Toolbox 1.4.0-beta6 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">QGIS GML Application Schema Toolbox 1.4.0-beta6 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Use the plugin</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/download.html">Download GML from WFS 2 services</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/read_files.html">Read GML App Schema files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/read_custom.html">Custom element viewers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/read_mode_db.html">Convert GML App Schema files in PostGIS and SQLite format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/read_mode_xml.html">Read GML App Schema files in XML mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/write_from_db.html">Export PostGIS and SQLite format to GML App Schema files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/settings.html">Settings</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Use cases</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Consumption and use of GML complex features like INSPIRE harmonised data (vector), GeoSciML within QGIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UC_vbox.html">Setting up the virtual box with QGIS3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UC_overlap.html">Combine datasets from different countries on the same map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UC_codelist.html">Codelist resolution based on user language</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Populate a database created from the XSD model</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribute to the plugin</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../_apidoc/modules.html">Code documentation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.html">gml_application_schema_toolbox package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.html">gml_application_schema_toolbox.core package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.gml_utils.html">gml_application_schema_toolbox.core.gml_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.gmlas_xpath.html">gml_application_schema_toolbox.core.gmlas_xpath module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.load_gml_as_xml.html">gml_application_schema_toolbox.core.load_gml_as_xml module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.load_gmlas_in_qgis.html">gml_application_schema_toolbox.core.load_gmlas_in_qgis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.proxy.html">gml_application_schema_toolbox.core.proxy module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.qgis_urlopener.html">gml_application_schema_toolbox.core.qgis_urlopener module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.xml_utils.html">gml_application_schema_toolbox.core.xml_utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.extlibs.html">gml_application_schema_toolbox.extlibs package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.extlibs.owslib_hacks.html">gml_application_schema_toolbox.extlibs.owslib_hacks module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.html">gml_application_schema_toolbox.gui package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.bbox_widget.html">gml_application_schema_toolbox.gui.bbox_widget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.custom_viewers.html">gml_application_schema_toolbox.gui.custom_viewers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.database_widget.html">gml_application_schema_toolbox.gui.database_widget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.export_gmlas_panel.html">gml_application_schema_toolbox.gui.export_gmlas_panel module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.gmlas_panel_mixin.html">gml_application_schema_toolbox.gui.gmlas_panel_mixin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.import_gmlas_panel.html">gml_application_schema_toolbox.gui.import_gmlas_panel module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.load_wizard.html">gml_application_schema_toolbox.gui.load_wizard module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.load_wizard_wfs.html">gml_application_schema_toolbox.gui.load_wizard_wfs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.load_wizard_xml.html">gml_application_schema_toolbox.gui.load_wizard_xml module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.progress_bar.html">gml_application_schema_toolbox.gui.progress_bar module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.qgis_form_custom_widget.html">gml_application_schema_toolbox.gui.qgis_form_custom_widget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.wait_cursor_context.html">gml_application_schema_toolbox.gui.wait_cursor_context module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.xml_custom_widget.html">gml_application_schema_toolbox.gui.xml_custom_widget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.xml_dialog.html">gml_application_schema_toolbox.gui.xml_dialog module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.xml_tree_widget.html">gml_application_schema_toolbox.gui.xml_tree_widget module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.processing.html">gml_application_schema_toolbox.processing package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.processing.gdal.html">gml_application_schema_toolbox.processing.gdal package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.processing.gdal.ogr2ogr_3_24.html">gml_application_schema_toolbox.processing.gdal.ogr2ogr_3_24 module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.processing.provider.html">gml_application_schema_toolbox.processing.provider module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.html">gml_application_schema_toolbox.toolbelt package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.file_downloader.html">gml_application_schema_toolbox.toolbelt.file_downloader module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.log_handler.html">gml_application_schema_toolbox.toolbelt.log_handler module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.network_manager.html">gml_application_schema_toolbox.toolbelt.network_manager module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.preferences.html">gml_application_schema_toolbox.toolbelt.preferences module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.viewers.html">gml_application_schema_toolbox.viewers package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.viewers.geology_logs.html">gml_application_schema_toolbox.viewers.geology_logs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.viewers.viewers_utils.html">gml_application_schema_toolbox.viewers.viewers_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.viewers.wml2_timeseries.html">gml_application_schema_toolbox.viewers.wml2_timeseries module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.constants.html">gml_application_schema_toolbox.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.creation_dialog.html">gml_application_schema_toolbox.creation_dialog module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.main.html">gml_application_schema_toolbox.main module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.model_dialog.html">gml_application_schema_toolbox.model_dialog module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../development/contributing.html">Contributing Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment.html">Development environment setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testing.html">Testing the plugin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/documentation.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/history.html">CHANGELOG</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Testing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testing/scenario_mode_xml_local.html">XML Mode - local test scenario</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing/scenario_mode_gmlas_local.html">Relational mode (GMLAS) scenario - Local test scenario</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing/scenario_mode_xml_content_negociation.html">XML Mode - Content negociation test scenario</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="populate-a-database-created-from-the-xsd-model">
+<h1>Populate a database created from the XSD model<a class="headerlink" href="#populate-a-database-created-from-the-xsd-model" title="Permalink to this heading">#</a></h1>
+<p>2 sample datasets are used in this use case:</p>
+<ul class="simple">
+<li><p>Geological Unit</p></li>
+<li><p>Environmental Facilities</p></li>
+</ul>
+<section id="environmental-factilities">
+<h2>Environmental Factilities<a class="headerlink" href="#environmental-factilities" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>XSD: <a class="reference external" href="http://inspire.ec.europa.eu/schemas/ef/4.0/EnvironmentalMonitoringFacilities.xsd">http://inspire.ec.europa.eu/schemas/ef/4.0/EnvironmentalMonitoringFacilities.xsd</a></p></li>
+<li><p>Source dataset: PostGIS</p></li>
+</ul>
+<p>### Load PostGIS dump</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>psql<span class="w"> </span>-U<span class="w"> </span>qgis<span class="w"> </span>-W<span class="w"> </span>-f<span class="w"> </span>poc_gwml2_20161207.sql<span class="w"> </span>inspire
+</pre></div>
+</div>
+<section id="create-database-structure">
+<h3>Create database structure<a class="headerlink" href="#create-database-structure" title="Permalink to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ogr2ogr<span class="w"> </span>PG:<span class="s1">&#39;host=localhost user=qgis password=qgis dbname=inspire&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>GMLAS:<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-f<span class="w"> </span>PostgreSQL<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-oo<span class="w"> </span><span class="nv">XSD</span><span class="o">=</span>http://inspire.ec.europa.eu/schemas/ef/4.0/EnvironmentalMonitoringFacilities.xsd<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-nlt<span class="w"> </span>CONVERT_TO_LINEAR<span class="w"> </span>-lco<span class="w"> </span><span class="nv">SCHEMA</span><span class="o">=</span>poc_gwml2_inspire<span class="w"> </span>-lco<span class="w"> </span><span class="nv">OVERWRITE</span><span class="o">=</span>YES
+</pre></div>
+</div>
+</section>
+<section id="populate-database">
+<h3>Populate database<a class="headerlink" href="#populate-database" title="Permalink to this heading">#</a></h3>
+<p>In this step, we convert original database model to the INSPIRE one.
+SQL queries are created to do the conversion. An ETL process could
+also be an option.</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">poc_gwml2_inspire</span><span class="p">.</span><span class="n">environmentalmonitoringfacility</span><span class="w"> </span><span class="p">(</span>
+<span class="n">ogc_fid</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">identifier</span><span class="p">,</span><span class="w"> </span><span class="n">identifier_codespace</span><span class="p">,</span><span class="w"> </span><span class="n">location_location_pkid</span><span class="p">,</span><span class="w"> </span><span class="n">inspireid_pkid</span><span class="p">,</span>
+<span class="n">representativepoint</span><span class="p">)</span><span class="w"> </span><span class="k">SELECT</span>
+<span class="n">cid</span><span class="p">,</span><span class="w"> </span><span class="n">gml_id</span><span class="p">,</span><span class="w"> </span><span class="n">code_bss_sans_slash</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;BSS&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">gml_id</span><span class="p">,</span><span class="w"> </span><span class="n">inspire_id</span><span class="p">,</span>
+<span class="n">geom_wgs84</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">poc_gwml2</span><span class="p">.</span><span class="n">ef_environmentalmonitoringfacility_2</span><span class="p">;</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">poc_gwml2_inspire</span><span class="p">.</span><span class="n">environmentalmonitoringfacility_ef_name</span><span class="w"> </span><span class="p">(</span>
+<span class="n">ogc_fid</span><span class="p">,</span><span class="w"> </span><span class="n">ogr_pkid</span><span class="p">,</span><span class="w"> </span><span class="n">parent_id</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="k">SELECT</span>
+<span class="n">cid</span><span class="p">,</span><span class="w"> </span><span class="n">cid</span><span class="p">,</span><span class="w"> </span><span class="n">cid</span><span class="p">,</span><span class="w"> </span><span class="n">libelle</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">poc_gwml2</span><span class="p">.</span><span class="n">ef_environmentalmonitoringfacility_2</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">libelle</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="export-to-gml">
+<h3>Export to GML<a class="headerlink" href="#export-to-gml" title="Permalink to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ogr2ogr<span class="w"> </span>-f<span class="w"> </span>GMLAS<span class="w"> </span>ef.gml<span class="w"> </span>PG:<span class="s1">&#39;host=localhost user=qgis password=qgis dbname=inspire&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>environmentalmonitoringfacility
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>## Geological Unit</p>
+<ul class="simple">
+<li><p>XSD: <a class="reference external" href="http://inspire.ec.europa.eu/schemas/ge-core/3.0/GeologyCore.xsd">http://inspire.ec.europa.eu/schemas/ge-core/3.0/GeologyCore.xsd</a></p></li>
+<li><p>Source dataset format: PostGIS</p></li>
+</ul>
+</section>
+<section id="create-ge-core-schema-in-postgis">
+<h3>Create ge-core schema in PostGIS<a class="headerlink" href="#create-ge-core-schema-in-postgis" title="Permalink to this heading">#</a></h3>
+<section id="id1">
+<h4>Create database structure<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ogr2ogr<span class="w"> </span>PG:<span class="s1">&#39;host=localhost user=qgis password=qgis dbname=inspire&#39;</span><span class="w"> </span>GMLAS:<span class="w"> </span>-f<span class="w"> </span>PostgreSQL<span class="w"> </span>-oo<span class="w"> </span><span class="nv">XSD</span><span class="o">=</span>http://inspire.ec.europa.eu/schemas/ge-core/3.0/GeologyCore.xsd<span class="w"> </span>-nlt<span class="w"> </span>MULTIPOLYGON<span class="w"> </span>-lco<span class="w"> </span><span class="nv">SCHEMA</span><span class="o">=</span>ge-core<span class="w"> </span>-lco<span class="w"> </span><span class="nv">OVERWRITE</span><span class="o">=</span>YES
+<span class="m">856</span><span class="w"> </span>tables<span class="w"> </span>created
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h4>Populate database<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h4>
+<p>Copy of data from “ge” schema into “ge-core”</p>
+<p>List of updated tables :</p>
+<ul class="simple">
+<li><p>Geologicevent</p></li>
+<li><p>Geologicevent_eventprocess</p></li>
+<li><p>Geologichistory</p></li>
+<li><p>Geologicunit</p></li>
+<li><p>Geologicunit_composition</p></li>
+<li><p>Geologicunit_geologichistory_geologichistory</p></li>
+<li><p>Inspireid</p></li>
+<li><p>Quantityrange</p></li>
+</ul>
+<p>In this step, we convert original database model to the INSPIRE one.
+SQL queries are created to do the conversion. An ETL process could
+also be an option.</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span>-- geologicunit
+INSERT INTO &quot;ge-core&quot;.geologicunit(ogc_fid, id, description, identifier_codespace, identifier, inspireid_pkid, name, geologicunittype_href, geologicunittype_title)
+SELECT ogc_fid, id, description, identifier_codespace, identifier, inspireid_pkid, name, geologicunittype_href, geologicunittype_title FROM &quot;ge&quot;.geologicunit
+
+-- geologicunit_composition
+/!\ Dans ge-core : parent_id alors que dans ge : parent_ogr_pkid
+INSERT INTO &quot;ge-core&quot;.geologicunit_composition(ogc_fid, ogr_pkid, parent_id, compositionpart_material_href, compositionpart_material_title, compositionpart_proportion_quantityrange_pkid, compositionpart_role_href, compositionpart_role_title)
+SELECT ogc_fid, ogr_pkid, parent_ogr_pkid, compositionpart_material_href, compositionpart_material_title, compositionpart_proportion_quantityrange_pkid, compositionpart_role_href, compositionpart_role_title
+FROM &quot;ge&quot;.geologicunit_composition
+
+-- geologicevent
+INSERT INTO &quot;ge-core&quot;.geologicevent(ogc_fid, id, eventenvironment_href, eventenvironment_title, oldernamedage_href, oldernamedage_title, youngernamedage_href, youngernamedage_title)
+SELECT ogc_fid, id, eventenvironment_href, eventenvironment_title, oldernamedage_href, oldernamedage_title, youngernamedage_href, youngernamedage_title
+FROM &quot;ge&quot;.geologicevent
+
+-- geologicevent_eventprocess
+INSERT INTO &quot;ge-core&quot;.geologicevent_eventprocess(ogc_fid, ogr_pkid, parent_id, href, title)
+SELECT ogc_fid, ogr_pkid, parent_ogr_pkid, href, title
+FROM &quot;ge&quot;.geologicevent_eventprocess
+
+-- geologichistory
+INSERT INTO &quot;ge-core&quot;.geologichistory(ogc_fid, ogr_pkid, geologicevent_pkid)
+
+SELECT ogc_fid, ogr_pkid, geologicevent_pkid
+FROM &quot;ge&quot;.geologichistory
+
+-- geologicunit_geologichistory_geologichistory;
+INSERT INTO &quot;ge-core&quot;.geologicunit_geologichistory_geologichistory(ogc_fid, occurrence, parent_pkid, child_pkid)
+SELECT ogc_fid, occurrence, parent_pkid, child_pkid
+FROM &quot;ge&quot;.geologicunit_geologichistory_geologichistory
+
+-- inspireid;
+ INSERT INTO &quot;ge-core&quot;.inspireid(ogc_fid, ogr_pkid, identifier_localid, identifier_namespace)
+SELECT ogc_fid, ogr_pkid, identifier_localid, identifier_namespace
+FROM &quot;ge&quot;.inspireid
+
+ -- quantityrange
+INSERT INTO &quot;ge-core&quot;.quantityrange(ogc_fid, ogr_pkid, uom_code, uom_href, uom_title, value)
+SELECT ogc_fid, ogr_pkid, uom_code, uom_href, uom_title, value
+FROM &quot;ge&quot;.quantityrange
+</pre></div>
+</div>
+<p>Comments:</p>
+<ul class="simple">
+<li><p>In geologicunit_composition table :</p>
+<ul>
+<li><p>parent_id column in ge schema &lt;&gt; parent_ogr_pkid in ge-core schema</p></li>
+</ul>
+</li>
+<li><p>Necessary adjustments to do to get a proper result:</p>
+<ul>
+<li><p>Geologicunit_composition: parent_id must be equal to <a class="reference external" href="http://geologicunit.id">geologicunit.id</a></p></li>
+<li><p>Geologicunit_geologichistory_geologichistory: parent_id must be equal to <a class="reference external" href="http://geologicunit.id">geologicunit.id</a></p></li>
+<li><p>Geologicevent_eventprocess: parent_id must be equal to <a class="reference external" href="http://geologicevent.id">geologicevent.id</a></p></li>
+<li><p>Geologichistory: geologiceventpkid must be equal to <a class="reference external" href="http://geologicevent.id">geologicevent.id</a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="id3">
+<h3>Export to GML<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ogr2ogr<span class="w"> </span>-f<span class="w"> </span>GMLAS<span class="w"> </span>geolunit2.gml<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>PG:<span class="s1">&#39;host=localhost user=qgis password=qgis dbname=inspire&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>geologicunit<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>-oo<span class="w"> </span><span class="nv">ACTIVE_SCHEMA</span><span class="o">=</span>ge-core<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>-dsco<span class="w"> </span><span class="nv">INPUT_XSD</span><span class="o">=</span>http://inspire.ec.europa.eu/schemas/ge-core/3.0/GeologyCore.xsd
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../_apidoc/modules.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">gml_application_schema_toolbox</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="UC_codelist.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Codelist resolution based on user language</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2014 - 2023, BRGM, Oslandia, Copernicus, Camptocamp, Spatialys, titellus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Populate a database created from the XSD model</a><ul>
+<li><a class="reference internal" href="#environmental-factilities">Environmental Factilities</a><ul>
+<li><a class="reference internal" href="#create-database-structure">Create database structure</a></li>
+<li><a class="reference internal" href="#populate-database">Populate database</a></li>
+<li><a class="reference internal" href="#export-to-gml">Export to GML</a></li>
+<li><a class="reference internal" href="#create-ge-core-schema-in-postgis">Create ge-core schema in PostGIS</a><ul>
+<li><a class="reference internal" href="#id1">Create database structure</a></li>
+<li><a class="reference internal" href="#id2">Populate database</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3">Export to GML</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    </body>
+</html>

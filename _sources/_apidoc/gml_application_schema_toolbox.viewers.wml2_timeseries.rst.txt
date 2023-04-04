@@ -1,0 +1,7 @@
+gml\_application\_schema\_toolbox.viewers.wml2\_timeseries module
+=================================================================
+
+.. automodule:: gml_application_schema_toolbox.viewers.wml2_timeseries
+   :members:
+   :undoc-members:
+   :show-inheritance:

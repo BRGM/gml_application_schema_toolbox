@@ -1,0 +1,7 @@
+gml\_application\_schema\_toolbox.gui.database\_widget module
+=============================================================
+
+.. automodule:: gml_application_schema_toolbox.gui.database_widget
+   :members:
+   :undoc-members:
+   :show-inheritance:

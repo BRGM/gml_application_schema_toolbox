@@ -1,0 +1,777 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Setting up the virtual box with QGIS3" href="UC_vbox.html" /><link rel="prev" title="Settings" href="../usage/settings.html" />
+
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+        <title>Consumption and use of GML complex features like INSPIRE harmonised data (vector), GeoSciML within QGIS - QGIS GML Application Schema Toolbox 1.4.0-beta6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">QGIS GML Application Schema Toolbox 1.4.0-beta6 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">QGIS GML Application Schema Toolbox 1.4.0-beta6 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Use the plugin</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/download.html">Download GML from WFS 2 services</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/read_files.html">Read GML App Schema files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/read_custom.html">Custom element viewers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/read_mode_db.html">Convert GML App Schema files in PostGIS and SQLite format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/read_mode_xml.html">Read GML App Schema files in XML mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/write_from_db.html">Export PostGIS and SQLite format to GML App Schema files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/settings.html">Settings</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Use cases</span></p>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Consumption and use of GML complex features like INSPIRE harmonised data (vector), GeoSciML within QGIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UC_vbox.html">Setting up the virtual box with QGIS3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UC_overlap.html">Combine datasets from different countries on the same map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UC_codelist.html">Codelist resolution based on user language</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UC_create_inspire_data.html">Populate a database created from the XSD model</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribute to the plugin</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../_apidoc/modules.html">Code documentation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.html">gml_application_schema_toolbox package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.html">gml_application_schema_toolbox.core package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.gml_utils.html">gml_application_schema_toolbox.core.gml_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.gmlas_xpath.html">gml_application_schema_toolbox.core.gmlas_xpath module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.load_gml_as_xml.html">gml_application_schema_toolbox.core.load_gml_as_xml module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.load_gmlas_in_qgis.html">gml_application_schema_toolbox.core.load_gmlas_in_qgis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.proxy.html">gml_application_schema_toolbox.core.proxy module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.qgis_urlopener.html">gml_application_schema_toolbox.core.qgis_urlopener module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.core.xml_utils.html">gml_application_schema_toolbox.core.xml_utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.extlibs.html">gml_application_schema_toolbox.extlibs package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.extlibs.owslib_hacks.html">gml_application_schema_toolbox.extlibs.owslib_hacks module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.html">gml_application_schema_toolbox.gui package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.bbox_widget.html">gml_application_schema_toolbox.gui.bbox_widget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.custom_viewers.html">gml_application_schema_toolbox.gui.custom_viewers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.database_widget.html">gml_application_schema_toolbox.gui.database_widget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.export_gmlas_panel.html">gml_application_schema_toolbox.gui.export_gmlas_panel module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.gmlas_panel_mixin.html">gml_application_schema_toolbox.gui.gmlas_panel_mixin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.import_gmlas_panel.html">gml_application_schema_toolbox.gui.import_gmlas_panel module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.load_wizard.html">gml_application_schema_toolbox.gui.load_wizard module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.load_wizard_wfs.html">gml_application_schema_toolbox.gui.load_wizard_wfs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.load_wizard_xml.html">gml_application_schema_toolbox.gui.load_wizard_xml module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.progress_bar.html">gml_application_schema_toolbox.gui.progress_bar module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.qgis_form_custom_widget.html">gml_application_schema_toolbox.gui.qgis_form_custom_widget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.wait_cursor_context.html">gml_application_schema_toolbox.gui.wait_cursor_context module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.xml_custom_widget.html">gml_application_schema_toolbox.gui.xml_custom_widget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.xml_dialog.html">gml_application_schema_toolbox.gui.xml_dialog module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.gui.xml_tree_widget.html">gml_application_schema_toolbox.gui.xml_tree_widget module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.processing.html">gml_application_schema_toolbox.processing package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.processing.gdal.html">gml_application_schema_toolbox.processing.gdal package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.processing.gdal.ogr2ogr_3_24.html">gml_application_schema_toolbox.processing.gdal.ogr2ogr_3_24 module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.processing.provider.html">gml_application_schema_toolbox.processing.provider module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.html">gml_application_schema_toolbox.toolbelt package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.file_downloader.html">gml_application_schema_toolbox.toolbelt.file_downloader module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.log_handler.html">gml_application_schema_toolbox.toolbelt.log_handler module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.network_manager.html">gml_application_schema_toolbox.toolbelt.network_manager module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.toolbelt.preferences.html">gml_application_schema_toolbox.toolbelt.preferences module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.viewers.html">gml_application_schema_toolbox.viewers package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.viewers.geology_logs.html">gml_application_schema_toolbox.viewers.geology_logs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.viewers.viewers_utils.html">gml_application_schema_toolbox.viewers.viewers_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.viewers.wml2_timeseries.html">gml_application_schema_toolbox.viewers.wml2_timeseries module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.constants.html">gml_application_schema_toolbox.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.creation_dialog.html">gml_application_schema_toolbox.creation_dialog module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.main.html">gml_application_schema_toolbox.main module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_apidoc/gml_application_schema_toolbox.model_dialog.html">gml_application_schema_toolbox.model_dialog module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../development/contributing.html">Contributing Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment.html">Development environment setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testing.html">Testing the plugin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/documentation.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/history.html">CHANGELOG</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Testing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testing/scenario_mode_xml_local.html">XML Mode - local test scenario</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing/scenario_mode_gmlas_local.html">Relational mode (GMLAS) scenario - Local test scenario</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing/scenario_mode_xml_content_negociation.html">XML Mode - Content negociation test scenario</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="consumption-and-use-of-gml-complex-features-like-inspire-harmonised-data-vector-geosciml-within-qgis">
+<h1>Consumption and use of GML complex features like INSPIRE harmonised data (vector), GeoSciML within QGIS<a class="headerlink" href="#consumption-and-use-of-gml-complex-features-like-inspire-harmonised-data-vector-geosciml-within-qgis" title="Permalink to this heading">#</a></h1>
+<section id="inspire-use-cases">
+<h2>INSPIRE use cases<a class="headerlink" href="#inspire-use-cases" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="UC_vbox.html"><span class="doc std std-doc">Setting up the virtual box with QGIS3 &amp; GML Application Schema toolbox plugin</span></a></p></li>
+<li><p><a class="reference internal" href="UC_overlap.html"><span class="doc std std-doc">Combine datasets from different countries on the same map</span></a></p></li>
+<li><p><a class="reference internal" href="UC_codelist.html"><span class="doc std std-doc">Codelist resolution based on user language</span></a></p></li>
+<li><p><span class="xref myst">Create INSPIRE datasets</span></p></li>
+</ul>
+<p>See all videos on <a class="reference external" href="https://www.youtube.com/channel/UCM0-LWeavnqldykLpDUWwNA">this channel</a>.</p>
+</section>
+<section id="testing-qgis">
+<h2>Testing QGIS<a class="headerlink" href="#testing-qgis" title="Permalink to this heading">#</a></h2>
+<section id="relationship-between-tables-discovery">
+<h3>Relationship between tables discovery<a class="headerlink" href="#relationship-between-tables-discovery" title="Permalink to this heading">#</a></h3>
+<p>When spatial and attribute tables are added to a QGIS project, the user can automatically setup relations between tables based on the database foreign key analysis. Open the project properties, relations tab and select the discover relation actions. The database is analyzed and user can select which relations to enable in the current project.</p>
+<p><img alt="Relationship discovery" src="../_images/qgis-relations-discovery.png" /></p>
+</section>
+</section>
+<section id="testing-gdal">
+<h2>Testing GDAL<a class="headerlink" href="#testing-gdal" title="Permalink to this heading">#</a></h2>
+<section id="how-to">
+<h3>How-to?<a class="headerlink" href="#how-to" title="Permalink to this heading">#</a></h3>
+<section id="how-to-check-gmlas-driver-is-available-in-gdal">
+<h4>How-to check GMLAS driver is available in GDAL?<a class="headerlink" href="#how-to-check-gmlas-driver-is-available-in-gdal" title="Permalink to this heading">#</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gdalinfo<span class="w"> </span>--format<span class="w"> </span>GMLAS
+</pre></div>
+</div>
+</section>
+<section id="how-to-list-gml-file-feature-types">
+<h4>How-to list GML file feature types?<a class="headerlink" href="#how-to-list-gml-file-feature-types" title="Permalink to this heading">#</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ogrinfo<span class="w"> </span>-ro<span class="w"> </span>GMLAS:cddaDesignatedArea.gml
+INFO:<span class="w"> </span>Open<span class="w"> </span>of<span class="w"> </span><span class="sb">`</span>GMLAS:cddaDesignatedArea.gml<span class="s1">&#39;</span>
+<span class="s1">      using driver `GMLAS&#39;</span><span class="w"> </span>successful.
+<span class="m">1</span>:<span class="w"> </span>DesignatedArea<span class="w"> </span><span class="o">(</span>Unknown<span class="w"> </span><span class="o">(</span>any<span class="o">)</span>,<span class="w"> </span>Point<span class="o">)</span>
+<span class="m">2</span>:<span class="w"> </span>DesignatedArea_metaDataProperty<span class="w"> </span><span class="o">(</span>None<span class="o">)</span>
+<span class="m">3</span>:<span class="w"> </span>DesignatedArea_name<span class="w"> </span><span class="o">(</span>None<span class="o">)</span>
+<span class="m">4</span>:<span class="w"> </span>DesignatedArea_legalFoundationDocument_CI_Citation_alternateTitle<span class="w"> </span><span class="o">(</span>None<span class="o">)</span>
+<span class="m">5</span>:<span class="w"> </span>DesignatedArea_legalFoundationDocument_CI_Citation_date<span class="w"> </span><span class="o">(</span>None<span class="o">)</span>
+<span class="m">6</span>:<span class="w"> </span>DesignatedArea_legalFoundationDocument_CI_Citation_identifier<span class="w"> </span><span class="o">(</span>None<span class="o">)</span>
+<span class="m">7</span>:<span class="w"> </span>DesignatedArea_legalFoundationDocument_CI_Citation_citedResponsibleParty<span class="w"> </span><span class="o">(</span>None<span class="o">)</span>
+...
+</pre></div>
+</div>
+</section>
+<section id="how-to-display-gml-file-content">
+<h4>How-to display GML file content?<a class="headerlink" href="#how-to-display-gml-file-content" title="Permalink to this heading">#</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ogrinfo<span class="w"> </span>-ro<span class="w"> </span>-al<span class="w"> </span>GMLAS:cddaDesignatedArea.gml
+</pre></div>
+</div>
+</section>
+<section id="how-to-display-layer-metadata">
+<h4>How-to display layer metadata?<a class="headerlink" href="#how-to-display-layer-metadata" title="Permalink to this heading">#</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ogrinfo<span class="w"> </span>-ro<span class="w"> </span>-al<span class="w"> </span>GMLAS:cddaDesignatedArea.gml<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-oo<span class="w"> </span><span class="nv">EXPOSE_METADATA_LAYERS</span><span class="o">=</span>YES
+</pre></div>
+</div>
+</section>
+<section id="how-to-convert-from-gml-to-spatialite">
+<h4>How-to convert from GML to spatialite?<a class="headerlink" href="#how-to-convert-from-gml-to-spatialite" title="Permalink to this heading">#</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ogr2ogr<span class="w"> </span>cdda.sqlite<span class="w"> </span>GMLAS:cddaDesignatedArea.gml<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-f<span class="w"> </span>sqlite<span class="w"> </span>-dsco<span class="w"> </span><span class="nv">spatialite</span><span class="o">=</span>yes<span class="w">  </span>-oo<span class="w"> </span><span class="nv">EXPOSE_METADATA_LAYERS</span><span class="o">=</span>YES
+</pre></div>
+</div>
+</section>
+<section id="how-to-convert-from-gml-to-postgis">
+<h4>How-to convert from GML to PostGIS?<a class="headerlink" href="#how-to-convert-from-gml-to-postgis" title="Permalink to this heading">#</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ogr2ogr<span class="w"> </span>PG:<span class="s1">&#39;host=localhost user=qgis password=qgis dbname=inspire&#39;</span><span class="w"> </span>GMLAS:cddaDesignatedArea.gml<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-f<span class="w"> </span>PostgreSQL<span class="w"> </span>-dsco<span class="w"> </span><span class="nv">spatialite</span><span class="o">=</span>yes<span class="w">  </span>-oo<span class="w"> </span><span class="nv">EXPOSE_METADATA_LAYERS</span><span class="o">=</span>YES
+</pre></div>
+</div>
+</section>
+<section id="how-to-convert-from-spatialite-or-postgis-to-gml">
+<h4>How-to convert from spatialite or PostGIS to GML?<a class="headerlink" href="#how-to-convert-from-spatialite-or-postgis-to-gml" title="Permalink to this heading">#</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ogr2ogr<span class="w"> </span>-f<span class="w"> </span>GMLAS<span class="w"> </span>br.gml<span class="w"> </span>br.sqlite
+</pre></div>
+</div>
+<p>OGR use the <code class="docutils literal notranslate"><span class="pre">_ogr_other_metadata</span></code> table to check which schema should be used to generate the output document.</p>
+<p>If the schema can not be found, the following message is returned:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ERROR<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>No<span class="w"> </span>schema<span class="w"> </span>locations<span class="w"> </span>found<span class="w"> </span>when<span class="w"> </span>analyzing<span class="w"> </span>data<span class="w"> </span>file:<span class="w"> </span>XSD<span class="w"> </span>open<span class="w"> </span>option<span class="w"> </span>must<span class="w"> </span>be<span class="w"> </span>provided
+</pre></div>
+</div>
+<p>In such case use the <code class="docutils literal notranslate"><span class="pre">INPUT_XSD</span></code> dataset creation options to customize the schema:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ogr2ogr<span class="w"> </span>-f<span class="w"> </span>GMLAS<span class="w"> </span>rtn.gml<span class="w"> </span>-dsco<span class="w"> </span><span class="nv">INPUT_XSD</span><span class="o">=</span>xsd/RoadTransportNetwork.xsd<span class="w"> </span>rtn.sqlite
+</pre></div>
+</div>
+</section>
+<section id="how-to-build-database-from-xsd">
+<h4>How-to build database from XSD?<a class="headerlink" href="#how-to-build-database-from-xsd" title="Permalink to this heading">#</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List schema entities</span>
+ogrinfo<span class="w"> </span>GMLAS:<span class="w"> </span>-oo<span class="w"> </span><span class="nv">XSD</span><span class="o">=</span>http://inspire.ec.europa.eu/schemas/hy-n/4.0/HydroNetwork.xsd
+Had<span class="w"> </span>to<span class="w"> </span>open<span class="w"> </span>data<span class="w"> </span><span class="nb">source</span><span class="w"> </span>read-only.
+INFO:<span class="w"> </span>Open<span class="w"> </span>of<span class="w"> </span><span class="sb">`</span>GMLAS:<span class="s1">&#39;</span>
+<span class="s1">      using driver `GMLAS&#39;</span><span class="w"> </span>successful.
+<span class="m">1</span>:<span class="w"> </span>HydroNode<span class="w"> </span><span class="o">(</span>Point<span class="o">)</span>
+<span class="m">2</span>:<span class="w"> </span>HydroNode_metaDataProperty<span class="w"> </span><span class="o">(</span>None<span class="o">)</span>
+<span class="m">3</span>:<span class="w"> </span>HydroNode_name<span class="w"> </span><span class="o">(</span>None<span class="o">)</span>
+<span class="m">4</span>:<span class="w"> </span>HydroNode_inNetwork<span class="w"> </span><span class="o">(</span>None<span class="o">)</span>
+<span class="m">5</span>:<span class="w"> </span>HydroNode_spokeEnd<span class="w"> </span><span class="o">(</span>None<span class="o">)</span>
+
+
+<span class="c1"># Create sqlite database from schema</span>
+ogr2ogr<span class="w"> </span>ps_db.sqlite<span class="w"> </span>GMLAS:<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-f<span class="w"> </span>sqlite<span class="w"> </span>-dsco<span class="w"> </span><span class="nv">SPATIALITE</span><span class="o">=</span>YES<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-oo<span class="w"> </span><span class="nv">XSD</span><span class="o">=</span>http://inspire.ec.europa.eu/schemas/ps/4.0/ProtectedSites.xsd
+
+<span class="c1"># Create PostGIS database from schema</span>
+ogr2ogr<span class="w"> </span>PG:<span class="s1">&#39;host=localhost user=qgis password=qgis dbname=inspire&#39;</span><span class="w"> </span>GMLAS:<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-f<span class="w"> </span>PostgreSQL<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-oo<span class="w"> </span><span class="nv">XSD</span><span class="o">=</span>http://inspire.ec.europa.eu/schemas/ef/4.0/EnvironmentalMonitoringFacilities.xsd<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-nlt<span class="w"> </span>CONVERT_TO_LINEAR<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-lco<span class="w"> </span><span class="nv">SCHEMA</span><span class="o">=</span>poc_gwml2_inspire<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-lco<span class="w"> </span><span class="nv">OVERWRITE</span><span class="o">=</span>YES
+</pre></div>
+</div>
+</section>
+<section id="how-to-append-dataset-from-different-areas">
+<h4>How-to append dataset from different areas?<a class="headerlink" href="#how-to-append-dataset-from-different-areas" title="Permalink to this heading">#</a></h4>
+<p>Use -append option.</p>
+</section>
+<section id="how-to-deal-with-non-spatial-tables">
+<h4>How-to deal with non spatial tables?<a class="headerlink" href="#how-to-deal-with-non-spatial-tables" title="Permalink to this heading">#</a></h4>
+<p>Use -append -doo LIST_ALL_TABLES=YES options.</p>
+</section>
+<section id="how-to-deal-with-nullable">
+<h4>How-to deal with nullable?<a class="headerlink" href="#how-to-deal-with-nullable" title="Permalink to this heading">#</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ERROR<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>sqlite3_step<span class="o">()</span><span class="w"> </span>failed:
+<span class="w">  </span>NOT<span class="w"> </span>NULL<span class="w"> </span>constraint<span class="w"> </span>failed:<span class="w"> </span>designatedarea.identifier_codespace<span class="w"> </span><span class="o">(</span><span class="m">19</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>Use -forceNullable option to remove NOT NULL constraints.</p>
+</section>
+<section id="how-to-remove-empty-tables-or-attributes">
+<h4>How-to remove empty tables or attributes?<a class="headerlink" href="#how-to-remove-empty-tables-or-attributes" title="Permalink to this heading">#</a></h4>
+<p>In some cases, the GML may contains only a subset of elements described in the XSD.
+2 options allow to cleanup the database after processing of all GML file content:</p>
+<ul class="simple">
+<li><p>RemoveUnusedLayers</p></li>
+<li><p>RemoveUnusedFields</p></li>
+</ul>
+<p><img alt="Database create with or without table cleanup" src="../_images/ogr-options-RemoveUnusedLayers.png" /></p>
+</section>
+<section id="how-to-convert-from-gml-to-spatialite-using-python">
+<h4>How-to convert from GML to spatialite using python?<a class="headerlink" href="#how-to-convert-from-gml-to-spatialite-using-python" title="Permalink to this heading">#</a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+<span class="n">src_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">OpenEx</span><span class="p">(</span> <span class="s1">&#39;GMLAS:cddaDesignatedArea.gml&#39;</span><span class="p">,</span> \
+                             <span class="n">open_options</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EXPOSE_METADATA_LAYERS=YES&#39;</span><span class="p">])</span>
+<span class="n">gdal</span><span class="o">.</span><span class="n">VectorTranslate</span><span class="p">(</span><span class="s1">&#39;gmlas_test1.sqlite&#39;</span><span class="p">,</span>  \
+                               <span class="n">src_ds</span><span class="p">,</span> \
+                               <span class="nb">format</span> <span class="o">=</span> <span class="s1">&#39;SQLite&#39;</span><span class="p">,</span> \
+                               <span class="n">datasetCreationOptions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;SPATIALITE=YES&#39;</span><span class="p">]</span> <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="how-to-resolve-inspire-codelist-using-registry">
+<h4>How-to resolve INSPIRE codelist using Registry ?<a class="headerlink" href="#how-to-resolve-inspire-codelist-using-registry" title="Permalink to this heading">#</a></h4>
+<p>By default, no XLink resolution is made.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ogrinfo</span> <span class="n">GMLAS</span><span class="p">:</span><span class="n">inspire</span><span class="o">/</span><span class="n">PS</span><span class="o">/</span><span class="n">cddaDesignatedArea</span><span class="o">.</span><span class="n">gml</span> <span class="n">DesignatedArea_siteDesignation</span>
+
+<span class="n">OGRFeature</span><span class="p">(</span><span class="n">DesignatedArea_siteDesignation</span><span class="p">):</span><span class="mi">174</span>
+  <span class="n">ogr_pkid</span> <span class="p">(</span><span class="n">String</span><span class="p">)</span> <span class="o">=</span> <span class="n">CDDA_DESIGNATEDAREA_70584b91</span><span class="o">-</span><span class="mi">6434</span><span class="o">-</span><span class="mi">4762</span><span class="o">-</span><span class="mi">9</span><span class="n">bc1</span><span class="o">-</span><span class="n">a78ebb25412a_siteDesignation_174</span>
+  <span class="n">parent_id</span> <span class="p">(</span><span class="n">String</span><span class="p">)</span> <span class="o">=</span> <span class="n">CDDA_DESIGNATEDAREA_70584b91</span><span class="o">-</span><span class="mi">6434</span><span class="o">-</span><span class="mi">4762</span><span class="o">-</span><span class="mi">9</span><span class="n">bc1</span><span class="o">-</span><span class="n">a78ebb25412a</span>
+  <span class="n">nilReason</span> <span class="p">(</span><span class="n">String</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">null</span><span class="p">)</span>
+  <span class="n">DesignationType_designationScheme_owns</span> <span class="p">(</span><span class="n">Integer</span><span class="p">(</span><span class="n">Boolean</span><span class="p">))</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">DesignationType_designationScheme_href</span> <span class="p">(</span><span class="n">String</span><span class="p">)</span> <span class="o">=</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">inspire</span><span class="o">.</span><span class="n">ec</span><span class="o">.</span><span class="n">europa</span><span class="o">.</span><span class="n">eu</span><span class="o">/</span><span class="n">codelist</span><span class="o">/</span><span class="n">DesignationSchemeValue</span><span class="o">/</span><span class="n">IUCN</span>
+
+</pre></div>
+</div>
+<p>To enable XLink resolution and collect information in the remote document, add a <code class="docutils literal notranslate"><span class="pre">CONFIG_FILE</span></code> option (eg. <code class="docutils literal notranslate"><span class="pre">-oo</span> <span class="pre">CONFIG_FILE=~/qgisgmlas/qgis-ogr-gmlas/gmlasconf-inspire.xml</span></code> and turn on XLink resolution. In the INSPIRE context, codelist elements are described in more details in the Registry (<a class="reference external" href="http://inspire.ec.europa.eu/codelist/">http://inspire.ec.europa.eu/codelist/</a>). The following example shows how to collect the codelist name and definition based on the Registry API:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nt">&lt;XLinkResolution&gt;</span>
+<span class="w">        </span><span class="nt">&lt;URLSpecificResolution&gt;</span>
+<span class="w">            </span><span class="nt">&lt;URLPrefix&gt;</span>http://inspire.ec.europa.eu/codelist<span class="nt">&lt;/URLPrefix&gt;</span>
+<span class="w">            </span><span class="nt">&lt;HTTPHeader&gt;</span>
+<span class="w">                </span><span class="nt">&lt;Name&gt;</span>Accept<span class="nt">&lt;/Name&gt;</span>
+<span class="w">                </span><span class="nt">&lt;Value&gt;</span>application/x-iso19135+xml<span class="nt">&lt;/Value&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/HTTPHeader&gt;</span>
+<span class="w">            </span><span class="nt">&lt;HTTPHeader&gt;</span>
+<span class="w">                </span><span class="nt">&lt;Name&gt;</span>Accept-Language<span class="nt">&lt;/Name&gt;</span>
+<span class="w">                </span><span class="nt">&lt;Value&gt;</span>en<span class="nt">&lt;/Value&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/HTTPHeader&gt;</span>
+<span class="w">            </span><span class="nt">&lt;AllowRemoteDownload&gt;</span>true<span class="nt">&lt;/AllowRemoteDownload&gt;</span>
+<span class="w">            </span><span class="nt">&lt;ResolutionMode&gt;</span>FieldsFromXPath<span class="nt">&lt;/ResolutionMode&gt;</span>
+<span class="w">            </span><span class="nt">&lt;ResolutionDepth&gt;</span>1<span class="nt">&lt;/ResolutionDepth&gt;</span>
+<span class="w">            </span><span class="nt">&lt;CacheResults&gt;</span>true<span class="nt">&lt;/CacheResults&gt;</span>
+<span class="w">            </span><span class="nt">&lt;Field&gt;</span>
+<span class="w">                </span><span class="nt">&lt;Name&gt;</span>name<span class="nt">&lt;/Name&gt;</span>
+<span class="w">                </span><span class="nt">&lt;Type&gt;</span>string<span class="nt">&lt;/Type&gt;</span>
+<span class="w">                </span><span class="nt">&lt;XPath&gt;</span>RE_RegisterItem/name/gco:CharacterString<span class="nt">&lt;/XPath&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/Field&gt;</span>
+<span class="w">            </span><span class="nt">&lt;Field&gt;</span>
+<span class="w">                </span><span class="nt">&lt;Name&gt;</span>definition<span class="nt">&lt;/Name&gt;</span>
+<span class="w">                </span><span class="nt">&lt;Type&gt;</span>string<span class="nt">&lt;/Type&gt;</span>
+<span class="w">                </span><span class="nt">&lt;XPath&gt;</span>RE_RegisterItem/definition/gco:CharacterString<span class="nt">&lt;/XPath&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/Field&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/URLSpecificResolution&gt;</span>
+</pre></div>
+</div>
+<p>To execute the conversion with a custom <code class="docutils literal notranslate"><span class="pre">CONFIG_FILE</span></code> use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ogrinfo<span class="w"> </span>GMLAS:inspire/PS/cddaDesignatedArea.gml<span class="w"> </span>DesignatedArea_siteDesignation<span class="w"> </span>-oo<span class="w"> </span><span class="nv">CONFIG_FILE</span><span class="o">=</span>~/qgisgmlas/qgis-ogr-gmlas/gmlasconf-inspire.xml
+
+OGRFeature<span class="o">(</span>DesignatedArea_siteDesignation<span class="o">)</span>:174
+<span class="w">  </span>ogr_pkid<span class="w"> </span><span class="o">(</span>String<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>CDBCBACC5B6ED965FF611A1D7C8B51CA_DesignatedArea_102_siteDesignation_174
+<span class="w">  </span>parent_ogr_pkid<span class="w"> </span><span class="o">(</span>String<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>CDBCBACC5B6ED965FF611A1D7C8B51CA_DesignatedArea_102
+<span class="w">  </span>nilReason<span class="w"> </span><span class="o">(</span>String<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">(</span>null<span class="o">)</span>
+<span class="w">  </span>DesignationType_designationScheme_owns<span class="w"> </span><span class="o">(</span>Integer<span class="o">(</span>Boolean<span class="o">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
+<span class="w">  </span>DesignationType_designationScheme_href<span class="w"> </span><span class="o">(</span>String<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>http://inspire.ec.europa.eu/codelist/DesignationSchemeValue/IUCN
+<span class="w">  </span>DesignationType_designationScheme_name<span class="w"> </span><span class="o">(</span>String<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>IUCN
+<span class="w">  </span>DesignationType_designationScheme_definition<span class="w"> </span><span class="o">(</span>String<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>The<span class="w"> </span>Protected<span class="w"> </span>Site<span class="w"> </span>has<span class="w"> </span>a<span class="w"> </span>classification<span class="w"> </span>using<span class="w"> </span>the<span class="w"> </span>International<span class="w"> </span>Union<span class="w"> </span><span class="k">for</span><span class="w"> </span>Conservation<span class="w"> </span>of<span class="w"> </span>Nature<span class="w"> </span>classification<span class="w"> </span>scheme.
+</pre></div>
+</div>
+<p>The feature #174 has now 2 custom attributes populated from the registry:</p>
+<ul class="simple">
+<li><p>DesignationType_designationScheme_name</p></li>
+<li><p>DesignationType_designationScheme_definition</p></li>
+</ul>
+<p><img alt="Attributes populated from INSPIRE Registry" src="../_images/ogr-options-xlink-RegistryResolution.png" /></p>
+</section>
+<section id="how-to-deal-with-long-table-column-names">
+<h4>How-to deal with long table/column names?<a class="headerlink" href="#how-to-deal-with-long-table-column-names" title="Permalink to this heading">#</a></h4>
+<p>Some target datasources may constraint on the length of table or column names (eg. 64 for Postgres).
+In this case the option <code class="docutils literal notranslate"><span class="pre">IdentifierMaxLength</span></code> is available to limit the size of feature names and column names.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="w">   </span><span class="nt">&lt;IdentifierMaxLength&gt;</span>60<span class="nt">&lt;/IdentifierMaxLength&gt;</span>
+</pre></div>
+</div>
+<p><img alt="Truncated table names" src="../_images/ogr-mapping-long-table-names.png" /></p>
+</section>
+</section>
+<section id="faq">
+<h3>FAQ<a class="headerlink" href="#faq" title="Permalink to this heading">#</a></h3>
+<section id="use-convert-to-linear-to-fix-error-on-create-geometry">
+<h4>Use CONVERT_TO_LINEAR to fix error on create geometry<a class="headerlink" href="#use-convert-to-linear-to-fix-error-on-create-geometry" title="Permalink to this heading">#</a></h4>
+<p>Example:</p>
+<ul class="simple">
+<li><p>Curve type not supported in spatialite</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ERROR<span class="w"> </span><span class="m">6</span>:<span class="w"> </span>Cannot<span class="w"> </span>create<span class="w"> </span>geometry<span class="w"> </span>field<span class="w"> </span>of<span class="w"> </span><span class="nb">type</span><span class="w"> </span>CURVE
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Mix of geometry type</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Warning<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>Geometry<span class="w"> </span>to<span class="w"> </span>be<span class="w"> </span>inserted<span class="w"> </span>is<span class="w"> </span>of<span class="w"> </span><span class="nb">type</span><span class="w"> </span>Multi<span class="w"> </span>Polygon,<span class="w"> </span>whereas<span class="w"> </span>the<span class="w"> </span>layer<span class="w"> </span>geometry<span class="w"> </span><span class="nb">type</span><span class="w"> </span>is<span class="w"> </span>Multi<span class="w"> </span>Surface.
+</pre></div>
+</div>
+<p>Add the <code class="docutils literal notranslate"><span class="pre">-nlt</span> <span class="pre">CONVERT_TO_LINEAR</span></code> option to fix those types of errors.</p>
+</section>
+<section id="error-gml-abstractcrs-not-found">
+<h4>Error ‘gml:AbstractCRS’ not found<a class="headerlink" href="#error-gml-abstractcrs-not-found" title="Permalink to this heading">#</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">  </span>File
+&gt;<span class="w"> </span><span class="s2">&quot;/home/qgis/.qgis3/python/plugins/gml_application_schema_toolbox/gui/import_</span>
+<span class="s2">&gt; gmlas_panel.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">162</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>gmlas_datasource
+&gt;<span class="w">    </span><span class="s1">&#39;EXPOSE_METADATA_LAYERS=YES&#39;</span><span class="o">])</span>
+&gt;<span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;/usr/lib/python3/dist-packages/osgeo/gdal.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">2992</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>OpenEx
+&gt;<span class="w">    </span><span class="k">return</span><span class="w"> </span>_gdal.OpenEx<span class="o">(</span>*args,<span class="w"> </span>**kwargs<span class="o">)</span>
+&gt;<span class="w"> </span>RuntimeError:<span class="w"> </span>/vsicurl_streaming/
+&gt;<span class="w"> </span>http://schemas.opengis.net/iso/19139/20070417/gsr/spatialReferencing.xsd:19:
+&gt;<span class="w"> </span><span class="m">39</span><span class="w"> </span>referenced<span class="w"> </span>element<span class="w"> </span><span class="s1">&#39;gml:AbstractCRS&#39;</span><span class="w"> </span>not<span class="w"> </span>found
+&gt;<span class="w"> </span>http://geoserv.weichand.de:8080/geoserver/wfs?request<span class="o">=</span>GetFeature<span class="p">&amp;</span><span class="nv">count</span><span class="o">=</span><span class="m">10</span><span class="p">&amp;</span>ty
+&gt;<span class="w"> </span><span class="nv">penames</span><span class="o">=</span>bvv%3Abayern_ex<span class="p">&amp;</span><span class="nv">service</span><span class="o">=</span>WFS<span class="p">&amp;</span><span class="nv">version</span><span class="o">=</span><span class="m">2</span>.0.0
+</pre></div>
+</div>
+<p>This is usually related to the same XSD imported using 2 differents URL. eg.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;xsd:import</span><span class="w"> </span><span class="na">namespace=</span><span class="s">&quot;http://www.opengis.net/gml/3.2&quot;</span>
+<span class="w">            </span><span class="na">schemaLocation=</span><span class="s">&quot;http://geoserv.weichand.de:8080/geoserver/schemas/gml/3.2.1/gml.xsd&quot;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+<p>and further during XSD resolution</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;xs:import</span><span class="w"> </span><span class="na">namespace=</span><span class="s">&quot;http://www.opengis.net/gml/3.2&quot;</span>
+<span class="w">           </span><span class="na">schemaLocation=</span><span class="s">&quot;http://schemas.opengis.net/gml/3.2.1/gml.xsd&quot;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+<p>This issue is probably related to Xerces. To workaround the issue, user can
+try to edit manually the XSD from the cach in <code class="docutils literal notranslate"><span class="pre">$HOME/.gdal/gmlas_xsd_cache/</span></code>
+and fix the URL path.</p>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="testing-with-the-virtual-box">
+<h2>Testing with the virtual box<a class="headerlink" href="#testing-with-the-virtual-box" title="Permalink to this heading">#</a></h2>
+<p>This virtual box runs Ubuntu and is provided to test GML Application Schema support in QGIS and GDAL/OGR.</p>
+<p>Download from <a class="reference external" href="http://files.titellus.net/vbox/">http://files.titellus.net/vbox/</a>.</p>
+<p>Software are installed in <code class="docutils literal notranslate"><span class="pre">/home/qgis/qgisgmlas/sourcecode</span></code> folder.</p>
+<p>Username and password are <code class="docutils literal notranslate"><span class="pre">qgis</span></code>/<code class="docutils literal notranslate"><span class="pre">qgis</span></code>.</p>
+</section>
+<hr class="docutils" />
+<section id="sample-datasets">
+<h2>Sample datasets<a class="headerlink" href="#sample-datasets" title="Permalink to this heading">#</a></h2>
+<p>Sample datasets are provided in <code class="docutils literal notranslate"><span class="pre">/home/qgis/qgisgmlas/data</span></code> folder.</p>
+<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>├── convert-samples.sh
+├── db
+│   ├── BR.sqlite
+│   └── GE.sqlite
+├── geosciml
+│   └── mappedfeature.gml
+├── inspire
+│   ├── BR
+│   │   ├── bioGeographicalRegion.gfs
+│   │   ├── bioGeographicalRegion.gml
+│   │   └── INSPIRE_DataSpecification_BR_v3.0.pdf
+│   ├── GE
+│   │   └── geologicalunit.gml
+│   ├── LC
+│   │   ├── INSPIRE_DataSpecification_LC_v3.0.pdf
+│   │   ├── lcvLandCoverDataset.gml
+│   │   ├── lcvLandCoverUnit.gfs
+│   │   ├── lcvLandCoverUnit.gml
+│   │   └── lcv.sqlite-journal
+│   └── PS
+│       ├── cddaDesignatedArea.gfs
+│       ├── cddaDesignatedArea.gml
+│       └── INSPIRE_DataSpecification_PS_v3.2.pdf
+
+└── testing
+    └── array_type_test.sqlite
+</pre></div>
+</div>
+<p>A script is provided for conversion <a class="reference download internal" download="" href="../_downloads/cf196d2300442c453aa8e83705787eea/convert-samples.sh"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">convert-samples.sh</span></code></span></a>.</p>
+</section>
+<hr class="docutils" />
+<section id="versions">
+<h2>Versions<a class="headerlink" href="#versions" title="Permalink to this heading">#</a></h2>
+<section id="v20161102">
+<h3>v20161102<a class="headerlink" href="#v20161102" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Update QGIS, GDAL and plugins</p></li>
+<li><p>Update SQL script for creating DB relation from OGR metadata table</p></li>
+</ul>
+</section>
+<section id="v20161024">
+<h3>v20161024<a class="headerlink" href="#v20161024" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Update QGIS, GDAL and plugins</p></li>
+</ul>
+</section>
+<section id="v20161012">
+<h3>v20161012<a class="headerlink" href="#v20161012" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>GDAL GMLAS driver (Read mode) with XLink support</p></li>
+<li><p>QGIS3 with relation discovery support</p></li>
+<li><p>GML App Schema toolbox QGIS plugin installed</p></li>
+<li><p>Layer menu from project QGIS plugin installed</p></li>
+<li><p>Test with samples from BRGM</p></li>
+</ul>
+</section>
+<section id="v20160923">
+<h3>v20160923<a class="headerlink" href="#v20160923" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Samples conversion script</p></li>
+</ul>
+</section>
+<section id="v20160919">
+<h3>v20160919<a class="headerlink" href="#v20160919" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>QGIS3 with array support</p></li>
+<li><p>GDAL GMLAS driver basic support</p></li>
+<li><p>Sample datasets for landcover, protected sites, biogeographical region</p></li>
+</ul>
+</section>
+<section id="v20160901">
+<h3>v20160901<a class="headerlink" href="#v20160901" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Initial release with QGIS3 and GDAL2 build</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="UC_vbox.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Setting up the virtual box with QGIS3</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../usage/settings.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Settings</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2014 - 2023, BRGM, Oslandia, Copernicus, Camptocamp, Spatialys, titellus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Consumption and use of GML complex features like INSPIRE harmonised data (vector), GeoSciML within QGIS</a><ul>
+<li><a class="reference internal" href="#inspire-use-cases">INSPIRE use cases</a></li>
+<li><a class="reference internal" href="#testing-qgis">Testing QGIS</a><ul>
+<li><a class="reference internal" href="#relationship-between-tables-discovery">Relationship between tables discovery</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#testing-gdal">Testing GDAL</a><ul>
+<li><a class="reference internal" href="#how-to">How-to?</a><ul>
+<li><a class="reference internal" href="#how-to-check-gmlas-driver-is-available-in-gdal">How-to check GMLAS driver is available in GDAL?</a></li>
+<li><a class="reference internal" href="#how-to-list-gml-file-feature-types">How-to list GML file feature types?</a></li>
+<li><a class="reference internal" href="#how-to-display-gml-file-content">How-to display GML file content?</a></li>
+<li><a class="reference internal" href="#how-to-display-layer-metadata">How-to display layer metadata?</a></li>
+<li><a class="reference internal" href="#how-to-convert-from-gml-to-spatialite">How-to convert from GML to spatialite?</a></li>
+<li><a class="reference internal" href="#how-to-convert-from-gml-to-postgis">How-to convert from GML to PostGIS?</a></li>
+<li><a class="reference internal" href="#how-to-convert-from-spatialite-or-postgis-to-gml">How-to convert from spatialite or PostGIS to GML?</a></li>
+<li><a class="reference internal" href="#how-to-build-database-from-xsd">How-to build database from XSD?</a></li>
+<li><a class="reference internal" href="#how-to-append-dataset-from-different-areas">How-to append dataset from different areas?</a></li>
+<li><a class="reference internal" href="#how-to-deal-with-non-spatial-tables">How-to deal with non spatial tables?</a></li>
+<li><a class="reference internal" href="#how-to-deal-with-nullable">How-to deal with nullable?</a></li>
+<li><a class="reference internal" href="#how-to-remove-empty-tables-or-attributes">How-to remove empty tables or attributes?</a></li>
+<li><a class="reference internal" href="#how-to-convert-from-gml-to-spatialite-using-python">How-to convert from GML to spatialite using python?</a></li>
+<li><a class="reference internal" href="#how-to-resolve-inspire-codelist-using-registry">How-to resolve INSPIRE codelist using Registry ?</a></li>
+<li><a class="reference internal" href="#how-to-deal-with-long-table-column-names">How-to deal with long table/column names?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#faq">FAQ</a><ul>
+<li><a class="reference internal" href="#use-convert-to-linear-to-fix-error-on-create-geometry">Use CONVERT_TO_LINEAR to fix error on create geometry</a></li>
+<li><a class="reference internal" href="#error-gml-abstractcrs-not-found">Error ‘gml:AbstractCRS’ not found</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#testing-with-the-virtual-box">Testing with the virtual box</a></li>
+<li><a class="reference internal" href="#sample-datasets">Sample datasets</a></li>
+<li><a class="reference internal" href="#versions">Versions</a><ul>
+<li><a class="reference internal" href="#v20161102">v20161102</a></li>
+<li><a class="reference internal" href="#v20161024">v20161024</a></li>
+<li><a class="reference internal" href="#v20161012">v20161012</a></li>
+<li><a class="reference internal" href="#v20160923">v20160923</a></li>
+<li><a class="reference internal" href="#v20160919">v20160919</a></li>
+<li><a class="reference internal" href="#v20160901">v20160901</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    </body>
+</html>
