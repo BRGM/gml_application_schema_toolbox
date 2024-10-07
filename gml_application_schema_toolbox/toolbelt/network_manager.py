@@ -448,9 +448,11 @@ class NetworkAccessManager(QObject):
                 % (
                     self.http_call_result.status_code,
                     self.http_call_result.status_message,
-                    self.reply.url().toString()
-                    if self.reply
-                    else "reply has been deleted",
+                    (
+                        self.reply.url().toString()
+                        if self.reply
+                        else "reply has been deleted"
+                    ),
                 )
             )
             for k, v in list(self.http_call_result.headers.items()):

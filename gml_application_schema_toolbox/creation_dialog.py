@@ -17,7 +17,6 @@
  */
 """
 
-
 import os
 from builtins import range, str
 

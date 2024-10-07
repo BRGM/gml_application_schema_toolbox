@@ -131,9 +131,11 @@ where parent_layer='{}' and parent_element_name='{}'""".format(
 
         where = " and ".join(
             [
-                "{}.{} = {}.{}".format(lyr[0], lyr[1], rec[0], rec[1])
-                if isinstance(rec, tuple)
-                else "{}.{} = {}".format(lyr[0], lyr[1], rec)
+                (
+                    "{}.{} = {}.{}".format(lyr[0], lyr[1], rec[0], rec[1])
+                    if isinstance(rec, tuple)
+                    else "{}.{} = {}".format(lyr[0], lyr[1], rec)
+                )
                 for lyr, rec in sql_wheres
             ]
         )
