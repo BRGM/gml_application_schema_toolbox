@@ -16,6 +16,7 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 """
+
 from gml_application_schema_toolbox.viewers.geology_logs import (  # noqa: F401
     GeologyLogViewer,
 )
