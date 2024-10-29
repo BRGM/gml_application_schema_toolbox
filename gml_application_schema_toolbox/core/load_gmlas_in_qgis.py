@@ -30,6 +30,7 @@ from qgis.core import (
     QgsSettings,
     QgsSimpleLegendNode,
     QgsVectorLayer,
+    QgsVectorLayerJoinInfo,
 )
 
 from gml_application_schema_toolbox.__about__ import DIR_PLUGIN_ROOT
@@ -100,12 +101,17 @@ class CustomViewerLegend(QgsMapLayerLegend):
 
 
 def import_in_qgis(
-    gmlas_uri: str, provider: str, add_form_code: bool, schema: Union[str, None] = None
+    gmlas_uri: str,
+    provider: str,
+    auto_join: bool,
+    add_form_code: bool,
+    schema: Union[str, None] = None,
 ):
     """Imports layers from a GMLAS file in QGIS with relations and editor widgets
 
     @param gmlas_uri connection parameters
     @param provider name of the QGIS provider that handles gmlas_uri parameters
+    @param auto_join set this to True for auto joining of 1:1 relations
     @param add_form_code set this to true to load the custom form code
     @param schema name of the PostgreSQL schema where tables and metadata tables are
     """
@@ -370,6 +376,26 @@ def import_in_qgis(
             },
         )
         couches.setEditorWidgetSetup(idx, s)
+
+    # auto join 1:1 relations
+    if auto_join:
+        if len(relations_1_1) == 0:
+            PlgLogger.log(message="there are no 1:1 relations to auto join")
+        else:
+            for rel in relations_1_1:
+                target_field, join_field = list(rel.fieldPairs().items())[0]
+                join_object = QgsVectorLayerJoinInfo()
+                join_object.setJoinLayerId(rel.referencedLayerId())
+                join_object.setJoinLayer(rel.referencedLayer())
+                join_object.setJoinFieldName(join_field)
+                join_object.setTargetFieldName(target_field)
+                join_object.setUsingMemoryCache(True)
+
+                parent_layer = QgsProject.instance().mapLayers()[
+                    rel.referencingLayerId()
+                ]
+                parent_layer.addJoin(join_object)
+                PlgLogger.log(message="joined layer {parent_layer}")
 
     # setup form for layers
     for layer, lyr in layers.items():
