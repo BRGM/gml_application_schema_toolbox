@@ -1,7 +1,7 @@
 #! python3  # noqa: E265
 
 """
-    Plugin settings.
+Plugin settings.
 """
 
 # standard

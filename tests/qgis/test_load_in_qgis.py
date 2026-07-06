@@ -1,18 +1,18 @@
 #! python3  # noqa E265
 
 """
-    Usage from the repo root folder:
+Usage from the repo root folder:
 
-    Launch it with something like
+Launch it with something like
 
-    `QGIS_DEBUG=0 QGIS_PREFIX_PATH=/home/hme/src/QGIS/build/output PYTHONPATH=/home/hme/src/QGIS/build/output/python python3 test_load_in_qgis.py`
+`QGIS_DEBUG=0 QGIS_PREFIX_PATH=/home/hme/src/QGIS/build/output PYTHONPATH=/home/hme/src/QGIS/build/output/python python3 test_load_in_qgis.py`
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        # for whole tests
-        python -m unittest tests.test_load_in_qgis
-        # for specific test
-        python -m unittest tests.test_load_in_qgis.TestLoadInQGIS.test_geologylog
+    # for whole tests
+    python -m unittest tests.test_load_in_qgis
+    # for specific test
+    python -m unittest tests.test_load_in_qgis.TestLoadInQGIS.test_geologylog
 """
 
 # standard library

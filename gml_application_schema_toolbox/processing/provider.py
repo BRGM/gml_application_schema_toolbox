@@ -1,7 +1,7 @@
 #! python3  # noqa: E265
 
 """
-    Processing provider module.
+Processing provider module.
 """
 
 # PyQGIS

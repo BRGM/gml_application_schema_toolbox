@@ -1,14 +1,14 @@
 #! python3  # noqa E265
 
 """
-    Usage from the repo root folder:
+Usage from the repo root folder:
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        # for whole tests
-        python -m unittest tests.test_gmlas_xpath
-        # for specific test
-        python -m unittest tests.test_gmlas_xpath.TestGMLASXPath.test_geologylog
+    # for whole tests
+    python -m unittest tests.test_gmlas_xpath
+    # for specific test
+    python -m unittest tests.test_gmlas_xpath.TestGMLASXPath.test_geologylog
 """
 
 # standard library

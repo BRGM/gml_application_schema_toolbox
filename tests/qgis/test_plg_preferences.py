@@ -1,14 +1,14 @@
 #! python3  # noqa E265
 
 """
-    Usage from the repo root folder:
+Usage from the repo root folder:
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        # for whole tests
-        python -m unittest tests.test_plg_preferences
-        # for specific test
-        python -m unittest tests.test_plg_preferences.TestPlgPreferences.test_plg_preferences_structure
+    # for whole tests
+    python -m unittest tests.test_plg_preferences
+    # for specific test
+    python -m unittest tests.test_plg_preferences.TestPlgPreferences.test_plg_preferences_structure
 """
 
 # standard library

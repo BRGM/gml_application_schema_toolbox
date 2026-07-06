@@ -60,14 +60,10 @@ class GmlAsXPathResolver:
             field_name = None
             field_category = None
             field_max_occurs = 0
-            for f in self._ds.ExecuteSQL(
-                """
+            for f in self._ds.ExecuteSQL("""
 select field_xpath, field_name, field_category, field_max_occurs
 from {}_ogr_fields_metadata
-where layer_name='{}'""".format(
-                    self._schema, ogr_layer_name
-                )
-            ):
+where layer_name='{}'""".format(self._schema, ogr_layer_name)):
                 field_xpath = f.GetField("field_xpath").split("/")
                 if lstartswith(field_xpath, layer_xpath):
                     # remove the layer_xpath
