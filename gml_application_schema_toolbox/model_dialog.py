@@ -274,7 +274,7 @@ class ModelDialogScene(QGraphicsScene):
         def add_link(table_name, table_name2, y_idx):
             tx, ty, tw, th, table = table_pos[table_name]
             tx2, ty2, tw2, th2, _ = table_pos[table_name2]
-            (ax, ay, aw, ah) = table.widget().attributeCoords(y_idx)
+            ax, ay, aw, ah = table.widget().attributeCoords(y_idx)
             l1 = QLineF(ax - 3, ay + ah / 2.0, tx2 + tw2 / 2.0, ty2 + th2 / 2.0)
             l2 = QLineF(ax + aw + 3, ay + ah / 2.0, tx2 + tw2 / 2.0, ty2 + th2 / 2.0)
             if l1.length() < l2.length():

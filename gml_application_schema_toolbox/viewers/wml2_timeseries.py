@@ -189,7 +189,7 @@ class PlotView(QGraphicsView):
         self.scene().displayPlot()
 
     def mouseMoveEvent(self, event):
-        (x, y) = (event.x(), event.y())
+        x, y = (event.x(), event.y())
         pt = self.mapToScene(x, y)
         self.scene().onMouseOver(pt)
 

@@ -1,20 +1,19 @@
 #! python3  # noqa E265
 
 """
-    Usage from the repo root folder:
+Usage from the repo root folder:
 
-    Launch it with something like
+Launch it with something like
 
-    `QGIS_DEBUG=0 QGIS_PREFIX_PATH=/home/hme/src/QGIS/build/output PYTHONPATH=/home/hme/src/QGIS/build/output/python python3 test_custom_viewers.py`
+`QGIS_DEBUG=0 QGIS_PREFIX_PATH=/home/hme/src/QGIS/build/output PYTHONPATH=/home/hme/src/QGIS/build/output/python python3 test_custom_viewers.py`
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        # for whole tests
-        python -m unittest tests.test_custom_viewers
-        # for specific test
-        python -m unittest tests.test_custom_viewers.TestCustomViewers.test_custom_viewers_layer
+    # for whole tests
+    python -m unittest tests.test_custom_viewers
+    # for specific test
+    python -m unittest tests.test_custom_viewers.TestCustomViewers.test_custom_viewers_layer
 """
-
 
 # PyQGIS
 from qgis.testing import unittest

@@ -1,7 +1,7 @@
 #! python3  # noqa: E265
 
 """
-    Functions used to manage network requests (remote files, etc.)
+Functions used to manage network requests (remote files, etc.)
 """
 
 # Standard library

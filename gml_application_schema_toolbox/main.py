@@ -191,8 +191,7 @@ class GmlasPlugin(object):
     def onAbout(self):
         self.about_dlg = QWidget()
         vlayout = QVBoxLayout()
-        lbl_about_main = QLabel(
-            """
+        lbl_about_main = QLabel("""
         <h1>{}</h1>
         <h3>Version: {}</h3>
         <p>This plugin is a prototype aiming at experimenting with the manipulation of <b>Complex Features</b> streams.</p>
@@ -221,10 +220,7 @@ class GmlasPlugin(object):
         <li><b>The Association of Finnish Local and Regional Authorities</b> (through <a href="http://www.gispo.fi">Gispo.fi</a>)</li>
         </ul>
         </p>
-        """.format(
-                __title__, __version__
-            )
-        )
+        """.format(__title__, __version__))
         lbl_about_main.setWordWrap(True)
         vlayout.addWidget(lbl_about_main)
         hlayout = QHBoxLayout()

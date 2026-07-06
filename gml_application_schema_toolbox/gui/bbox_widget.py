@@ -62,7 +62,7 @@ class BboxWidget(BASE, WIDGET):
             layerName = layer.name()
             extents.append(layerName)
             extentsDict[layerName] = {"extent": layer.extent(), "authid": authid}
-        (item, ok) = QInputDialog.getItem(
+        item, ok = QInputDialog.getItem(
             self, self.tr("Select extent"), self.tr("Use extent from"), extents, False
         )
         if ok:
